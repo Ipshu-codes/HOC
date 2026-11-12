@@ -36,6 +36,7 @@ export const heritageFrontmatterSchema = z.object({
     entry: z.string().min(1).optional(),
     tips: z.string().min(1).optional(),
   }),
+  /** One of the gallery photos (its alt text is reused). */
   cover: z.string().startsWith("/images/"),
   gallery: z.array(
     z.object({
@@ -43,7 +44,11 @@ export const heritageFrontmatterSchema = z.object({
       alt: z.string().min(1),
     }),
   ),
-});
+})
+  .refine((data) => data.gallery.some((image) => image.src === data.cover), {
+    message: "cover must be one of the gallery images",
+    path: ["cover"],
+  });
 
 export type HeritageFrontmatter = z.infer<typeof heritageFrontmatterSchema>;
 export type GalleryImage = HeritageFrontmatter["gallery"][number];

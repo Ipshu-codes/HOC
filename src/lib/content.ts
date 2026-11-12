@@ -18,6 +18,7 @@ import {
   type Locale,
   type TocEntry,
 } from "@/types/heritage";
+import { homeSchema, type HomeConfig } from "@/types/home";
 import { wardSchema, type Ward } from "@/types/ward";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
@@ -83,14 +84,22 @@ export function getHeritageSlugs(): HeritageSlug[] {
   return getHeritageList("en").map((heritage) => heritage.slug);
 }
 
-const WARD_FILE = path.join(process.cwd(), "content", "ward.json");
-
-export function getWard(): Ward {
-  const parsed = wardSchema.safeParse(JSON.parse(fs.readFileSync(WARD_FILE, "utf8")));
+/** Reads a JSON file from content/ and validates it against a zod schema. */
+function readJson<T>(name: string, schema: z.ZodType<T>): T {
+  const file = path.join(process.cwd(), "content", name);
+  const parsed = schema.safeParse(JSON.parse(fs.readFileSync(file, "utf8")));
   if (!parsed.success) {
-    throw new Error(`Invalid ${WARD_FILE}:\n${z.prettifyError(parsed.error)}`);
+    throw new Error(`Invalid ${file}:\n${z.prettifyError(parsed.error)}`);
   }
   return parsed.data;
+}
+
+export function getWard(): Ward {
+  return readJson("ward.json", wardSchema);
+}
+
+export function getHomeConfig(): HomeConfig {
+  return readJson("home.json", homeSchema);
 }
 
 /** "01-4981653" → "tel:+97714981653" (Nepal country code, leading 0 dropped). */

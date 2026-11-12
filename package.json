@@ -6,7 +6,8 @@
     "dev": "next dev",
     "prebuild": "npm run check-content",
     "build": "next build",
-    "build:preview": "tsx scripts/check-content.ts --allow-drafts && next build && tsx scripts/prune-drafts.ts",
+    "postbuild": "tsx scripts/verify-output.ts",
+    "build:preview": "tsx scripts/check-content.ts --allow-drafts && next build && tsx scripts/verify-output.ts",
     "start": "npx serve out",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
+    "image-size": "^2.1.0",
     "mdast-util-to-string": "^4.0.0",
     "next": "16.4.6",
     "react": "19.3.0",

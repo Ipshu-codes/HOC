@@ -34,8 +34,53 @@
     "phone": "Phone",
     "email": "Email",
     "quickLinks": "Quick links",
-    "heritages": "Heritage sites",
+    "heritages": {
+      "one": "Heritage site",
+      "other": "Heritage sites"
+    },
     "copyright": "© Ward No. 16, KMC"
+  },
+  "home": {
+    "heroTitle": "Heritage of Ward No. 16",
+    "heroSubtitle": "Discover {sites} in Ward No. 16, Kathmandu Metropolitan City.",
+    "explore": {
+      "one": "Explore {sites}",
+      "other": "Explore Heritages"
+    },
+    "viewMap": "View 3D Map",
+    "overviewTitle": "Overview",
+    "overviewIntro": {
+      "one": "Ward No. 16 of Kathmandu Metropolitan City is home to {sites}. This website brings together its history, legends, festivals and photographs, in English and Nepali.",
+      "other": "Ward No. 16 of Kathmandu Metropolitan City is home to {sites}. This website brings together their history, legends, festivals and photographs, in English and Nepali."
+    },
+    "overviewNext": {
+      "one": "Read on to learn how to visit it, or find it on the 3D map.",
+      "other": "Read on to learn how to visit them, or find them on the 3D map."
+    },
+    "aboutTitle": "About Ward No. 16",
+    "aboutIntro": "Ward No. 16 is a ward of Kathmandu Metropolitan City. Its ward office is in {address}.",
+    "aboutMunicipality": "Municipality",
+    "aboutWard": "Ward",
+    "aboutOffice": "Ward office",
+    "aboutSites": {
+      "one": "Heritage site on this website",
+      "other": "Heritage sites on this website"
+    },
+    "aboutPlaceholder": "[PLACEHOLDER: more about Ward No. 16 — localities, population, area and history — once a source provides them. Shown in development only.]",
+    "heritagesTitle": {
+      "one": "Heritage site",
+      "other": "Heritage sites"
+    },
+    "location": "Location",
+    "readMore": "Read more",
+    "draftBadge": "Draft",
+    "galleryTitle": "Gallery",
+    "galleryIntro": "Photos from {sites}.",
+    "seeAll": "See all photos",
+    "contactTitle": "Contact",
+    "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office.",
+    "openInOsm": "Open in OpenStreetMap",
+    "opensInNewTab": "(opens in a new tab)"
   },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."

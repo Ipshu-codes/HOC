@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import SectionDivider from "@/components/SectionDivider";
 import { phoneHref } from "@/lib/content";
-import type { Dictionary, NavItem } from "@/lib/i18n";
+import { byCount, type Dictionary, type NavItem } from "@/lib/i18n";
 import type { Heritage, Locale } from "@/types/heritage";
 import type { Ward } from "@/types/ward";
 
@@ -17,6 +17,7 @@ interface FooterProps {
 }
 
 export default function Footer({ lang, dict, ward, navItems, heritages }: FooterProps) {
+  const heritagesTitle = byCount(dict.footer.heritages, heritages.length);
   const linkClass = "underline-offset-4 hover:text-white hover:underline focus-visible:outline-cream";
 
   return (
@@ -67,8 +68,8 @@ export default function Footer({ lang, dict, ward, navItems, heritages }: Footer
           </ul>
         </nav>
 
-        <nav aria-label={dict.footer.heritages}>
-          <h2 className="mb-3 font-sans text-lg font-bold text-white">{dict.footer.heritages}</h2>
+        <nav aria-label={heritagesTitle}>
+          <h2 className="mb-3 font-sans text-lg font-bold text-white">{heritagesTitle}</h2>
           <ul className="space-y-1">
             {heritages.map((heritage) => (
               <li key={heritage.slug}>

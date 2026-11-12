@@ -1,11 +1,12 @@
 /**
- * Last step of `npm run build:preview`.
+ * Last step of both `npm run build` (as "postbuild") and `npm run build:preview`.
  *
- * Pages, links, gallery photos, map markers and chatbot answers for draft sites
- * are already left out by src/lib/content.ts. Two things remain:
- *   1. public/ is copied into out/ as-is, so delete out/images/<draft-slug>/.
- *   2. Verify: scan every file in out/ and fail if a draft site's slug or name
- *      still appears anywhere, so a preview can never leak draft content.
+ * 1. Draft sites: pages, links, gallery photos, map markers and chatbot answers
+ *    are already left out by src/lib/content.ts, but public/ is copied into out/
+ *    as-is, so delete out/images/<draft-slug>/. Then fail if a draft site's slug
+ *    or name still appears anywhere in out/.
+ * 2. Placeholders: fail if "[PLACEHOLDER" or "[TODO" appears anywhere in out/
+ *    (for example dev-only filler text that slipped into a production build).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -13,6 +14,7 @@ import matter from "gray-matter";
 
 const HERITAGE_DIR = path.join("content", "heritage");
 const OUT_DIR = "out";
+const MARKERS = ["[PLACEHOLDER", "[TODO"];
 const TEXT_FILE = /\.(html|txt|js|json|css|xml|webmanifest)$/;
 
 interface DraftSite {
@@ -41,7 +43,7 @@ function listFiles(dir: string): string[] {
 }
 
 if (!fs.existsSync(OUT_DIR)) {
-  console.error(`prune-drafts: "${OUT_DIR}/" not found — run next build first.`);
+  console.error(`verify-output: "${OUT_DIR}/" not found — run next build first.`);
   process.exit(1);
 }
 
@@ -51,22 +53,27 @@ for (const { slug } of drafts) {
   console.log(`  removed out/images/${slug}/ (draft)`);
 }
 
-const leaks: string[] = [];
+const findings: string[] = [];
 for (const file of listFiles(OUT_DIR)) {
   if (!TEXT_FILE.test(file)) continue;
   const text = fs.readFileSync(file, "utf8");
+  for (const marker of MARKERS) {
+    if (text.includes(marker)) findings.push(`${file}: contains "${marker}"`);
+  }
   for (const { needles } of drafts) {
     for (const needle of needles) {
-      if (text.includes(needle)) leaks.push(`${file}: contains "${needle}"`);
+      if (text.includes(needle)) findings.push(`${file}: contains draft site "${needle}"`);
     }
   }
 }
 
-if (leaks.length > 0) {
-  console.error(`\n✖ prune-drafts: draft content leaked into ${OUT_DIR}/:\n`);
-  for (const leak of leaks) console.error(`  ${leak}`);
-  console.error("\nEvery page/component must get sites from getHeritageList() in src/lib/content.ts.\n");
+if (findings.length > 0) {
+  console.error(`\n✖ verify-output: draft or placeholder content found in ${OUT_DIR}/:\n`);
+  for (const finding of findings) console.error(`  ${finding}`);
+  console.error(
+    "\nSites must come from getHeritageList() in src/lib/content.ts, and placeholder text must be dev-only.\n",
+  );
   process.exit(1);
 }
 
-console.log(`✔ prune-drafts: ${drafts.length} draft site(s) fully excluded from ${OUT_DIR}/.`);
+console.log(`✔ verify-output: no placeholders; ${drafts.length} draft site(s) fully excluded from ${OUT_DIR}/.`);

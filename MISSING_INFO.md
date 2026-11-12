@@ -77,6 +77,12 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
 - [ ] **Video**: none is used yet. Decide whether to include a short clip; the files are 6–297 MB and would need compressing.
 
+## 3b. Home page
+
+- [ ] **Hero photo**: the options are in `docs/screenshots/phase-4/hero-options/`. Option 1 (`courtyard-view`) is in use until one is chosen; the choice is set by `heroCandidates` in `content/home.json`.
+- [ ] **Hero option 2** (`carved-windows`) shows two identifiable people at the windows. It needs their consent if chosen.
+- [ ] **Chairperson's name** is in `content/ward.json` but deliberately not shown anywhere until confirmed.
+
 ## 4. Ward information (for `ward.json`, header, footer, contact page)
 
 - [x] **Ward logo**: `wardlogo.png` added to raw data (the KMC emblem); cropped to a circle in `public/images/logo/`
@@ -86,7 +92,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Phone**: 01-4981653
 - [x] **Email**: ward16@kathmandu.gov.np
 - [ ] **Office hours**
-- [ ] **Ward facts** for the About section: area, population, tole names, etc.
+- [ ] **Ward facts** for the About section: area, population, tole names, etc. The home page About section currently has only the municipality, ward number, office location and the list of sites. A dev-only `[PLACEHOLDER]` box (`home.aboutPlaceholder` in `src/i18n/*.json`) marks the gap. Production builds never render it, and `verify-output` would fail if they did.
 - [x] **Ward chairperson**: Rojina Shrestha (in `ward.json`; not yet shown on the site)
   - [ ] Check the Nepali spelling रोजिना श्रेष्ठ (written by Claude)
 - [ ] **Official portal URL**: the ward team named "Kathmandu Metropolitan City Ward No. 16" as the official portal but gave no web address

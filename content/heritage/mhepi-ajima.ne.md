@@ -16,7 +16,7 @@ visiting:
   hours: "[PLACEHOLDER: खुल्ने समय]"
   entry: "[PLACEHOLDER: प्रवेश शुल्क]"
   tips: "मन्दिरको ढोका अगाडि कुनै पनि पसल नराख्न अनुरोध छ। [PLACEHOLDER: थप सुझाव]"
-cover: "/images/mhepi-ajima/cover.webp"
+cover: "/images/mhepi-ajima/temple-front.webp"
 gallery:
   - src: "/images/mhepi-ajima/temple-front.webp"
     alt: "म्हेपी अजिमा मन्दिरको अगाडिको भाग: ढुङ्गा छापिएको चोकमाथि कुँदिएको कालो काठको दुई तले छाना"

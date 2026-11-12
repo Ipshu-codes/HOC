@@ -16,7 +16,7 @@ visiting:
   hours: "[PLACEHOLDER: opening hours]"
   entry: "[PLACEHOLDER: entry fee]"
   tips: "Please do not set up stalls in front of the temple door. [PLACEHOLDER: more visiting tips]"
-cover: "/images/mhepi-ajima/cover.webp"
+cover: "/images/mhepi-ajima/temple-front.webp"
 gallery:
   - src: "/images/mhepi-ajima/temple-front.webp"
     alt: "Front of the Mhepi Ajima temple: a two-tiered roof of dark carved wood above a stone-paved courtyard"

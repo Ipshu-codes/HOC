@@ -9,7 +9,9 @@ import type { Locale } from "@/types/locale";
 
 interface NavProps {
   lang: Locale;
-  dict: Dictionary;
+  /** Only the strings this component needs: the whole dictionary would be sent to the browser. */
+  labels: Dictionary["nav"];
+  languageLabels: Dictionary["language"];
   items: NavItem[];
 }
 
@@ -18,7 +20,7 @@ interface NavProps {
  * below that they collapse behind a hamburger button. This is a client
  * component only because the menu has open/closed state.
  */
-export default function Nav({ lang, dict, items }: NavProps) {
+export default function Nav({ lang, labels, languageLabels, items }: NavProps) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
 
@@ -34,20 +36,20 @@ export default function Nav({ lang, dict, items }: NavProps) {
     "block rounded-md px-3 py-2 font-medium text-cream hover:bg-crimson hover:text-white focus-visible:bg-crimson focus-visible:outline-cream";
 
   return (
-    <nav aria-label={dict.nav.label} className="sticky top-0 z-40 bg-brick shadow-md">
+    <nav aria-label={labels.label} className="sticky top-0 z-40 bg-brick shadow-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2">
         <button
           type="button"
           className="flex items-center gap-2 rounded-md px-2 py-2 text-cream hover:bg-crimson focus-visible:outline-cream md:hidden"
           aria-expanded={open}
           aria-controls={menuId}
-          aria-label={open ? dict.nav.closeMenu : dict.nav.openMenu}
+          aria-label={open ? labels.closeMenu : labels.openMenu}
           onClick={() => setOpen((value) => !value)}
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="2">
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
           </svg>
-          <span>{dict.nav.menu}</span>
+          <span>{labels.menu}</span>
         </button>
 
         <ul className="hidden items-center gap-1 md:flex">
@@ -60,7 +62,7 @@ export default function Nav({ lang, dict, items }: NavProps) {
           ))}
         </ul>
 
-        <LanguageToggle lang={lang} dict={dict} />
+        <LanguageToggle lang={lang} labels={languageLabels} />
       </div>
 
       {/* Mobile menu: rendered always (hidden when closed) so aria-controls points at a real element. */}

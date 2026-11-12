@@ -2,7 +2,7 @@ import "server-only";
 
 import en from "@/i18n/en.json";
 import ne from "@/i18n/ne.json";
-import { LOCALES, type Locale } from "@/types/heritage";
+import { LOCALES, type Heritage, type Locale } from "@/types/heritage";
 
 export type Dictionary = typeof en;
 
@@ -32,3 +32,21 @@ export function getNavItems(lang: Locale, dict: Dictionary) {
 }
 
 export type NavItem = ReturnType<typeof getNavItems>[number];
+
+/** Strings that differ by number, e.g. { one: "Heritage site", other: "Heritage sites" }. */
+export interface CountForms {
+  one: string;
+  other: string;
+}
+
+export function byCount(forms: CountForms, count: number): string {
+  return count === 1 ? forms.one : forms.other;
+}
+
+/** "Nanak Math" or "Mhepi Ajima and Nanak Math", in the page language, from the sites on this build. */
+export function siteNameList(heritages: Heritage[], lang: Locale, dict: Dictionary): string {
+  return joinList(
+    heritages.map((heritage) => (lang === "ne" ? heritage.nameNe : heritage.name)),
+    dict.site.and,
+  );
+}

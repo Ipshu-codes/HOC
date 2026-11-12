@@ -8,17 +8,17 @@ import { LOCALES, type Locale } from "@/types/locale";
 
 interface LanguageToggleProps {
   lang: Locale;
-  dict: Dictionary;
+  labels: Dictionary["language"];
 }
 
 const SHORT_LABEL: Record<Locale, string> = { en: "EN", ne: "ने" };
 
 /** "EN | ने" switch that keeps you on the same page: /en/gallery/ ⇄ /ne/gallery/. */
-export default function LanguageToggle({ lang, dict }: LanguageToggleProps) {
+export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
   const pathname = usePathname();
 
   return (
-    <ul aria-label={dict.language.label} className="flex items-center rounded-full border border-cream/40 p-0.5">
+    <ul aria-label={labels.label} className="flex items-center rounded-full border border-cream/40 p-0.5">
       {LOCALES.map((locale) => {
         const current = locale === lang;
         const href = pathname.replace(/^\/(en|ne)(?=\/|$)/, `/${locale}`);
@@ -28,7 +28,7 @@ export default function LanguageToggle({ lang, dict }: LanguageToggleProps) {
               href={href}
               lang={locale}
               hrefLang={locale}
-              aria-label={dict.language[locale]}
+              aria-label={labels[locale]}
               aria-current={current ? "true" : undefined}
               className={
                 current

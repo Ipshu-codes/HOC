@@ -29,7 +29,7 @@ festivals:
 visiting:
   hours: "7:00 am – 6:00 pm"
   tips: "The temple is open to all visitors for darshan, worship and seva. Cows at the gaushala may be offered green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt — never stale, rotten or leftover food."
-cover: "/images/nanak-math/cover.webp"
+cover: "/images/nanak-math/samadhi-temple.webp"
 gallery:
   - src: "/images/nanak-math/samadhi-temple.webp"
     alt: "The living bhu-samadhi temple: a small white and maroon shrine with a conical spire, its door flanked by two painted plaques, approached by steps through greenery"
