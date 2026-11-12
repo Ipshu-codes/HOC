@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (PLAN.md §4). Tailwind's default palette is switched off so
+ * only these named colors exist: bg-crimson, text-brick, border-gold, …
+ *
+ * WCAG AA contrast (normal text needs 4.5:1):
+ *   white on crimson 5.88 ✓   white on brick 9.12 ✓   crimson on cream 5.59 ✓
+ *   crimson on sand 4.80 ✓    brick on cream 8.66 ✓   ink on cream 15.76 ✓
+ *   white on vermilion 4.12 ✗ vermilion on cream 3.91 ✗  → vermilion only for
+ *     decoration or large text (≥ 24px, or ≥ 18.66px bold); use brick for hover states.
+ *   gold on cream 2.26 ✗      → gold only for borders, dividers and icons, never text.
+ */
+@theme {
+  --color-*: initial;
+  --color-crimson: #c8102e;
+  --color-brick: #8b1e1e;
+  --color-vermilion: #e34234;
+  --color-gold: #d4a017;
+  --color-cream: #fff8f0;
+  --color-sand: #f3e6d8;
+  --color-ink: #2b1a1a;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Font variables are set by next/font in src/app/fonts.ts */
+  --font-sans: var(--font-mukta), system-ui, sans-serif;
+  --font-heading: var(--font-playfair), var(--font-mukta), Georgia, serif;
+}
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+  }
+
+  /* Devanagari has no Playfair glyphs; headings in Nepali fall back to Mukta via the stack above. */
+  h1,
+  h2,
+  h3 {
+    @apply font-heading text-brick;
+  }
+}
