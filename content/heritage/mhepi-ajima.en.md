@@ -66,11 +66,11 @@ gallery:
 
 <!-- DRAFT. Confirmed facts come from inscriptions and notice boards photographed on site (cited by original filename in raw-data "Mhepi Ajima/Photo/"). Everything else is placeholder text until the ward provides the data. -->
 
-## History
+## History {#history}
 
 [PLACEHOLDER: history of the temple — origin, founding, major events.]
 
-### What the inscriptions record
+### What the inscriptions record {#inscriptions}
 
 <!-- 20261104_084315.heic -->
 - **Nepal Sambat 1120, Pohelathwa 12 (VS 2056, Magh 4)**: Shri Amrit Man Shrestha and Prithvi Kumari Shrestha, residents of Mhepi, offered a **two-tiered brass roof** to Shri Shri Shri Yogambar Jnaneshwari Mhepi Ajima in memory of their ancestors, on the auspicious day of their Janku ceremony.
@@ -87,7 +87,7 @@ gallery:
 <!-- 20261104_084559.heic (marble plaque, first panel) -->
 - **The bhajan house**: a bhajan house was built in the Mhepi temple complex in **VS 2029**. When it fell into disrepair and rainwater began to disturb the daily bhajan-kirtan, the bhajan mandal decided on **VS 2068 Kartik 30** to rebuild it with the support of devotees. The renovation was completed under the bhajan mandal's chair, Shri Ashtalal Maharjan; the commemorative plaque is dated **VS 2069 Jestha 6**.
 
-## Legends & Beliefs
+## Legends & Beliefs {#legends}
 
 [PLACEHOLDER: legends and beliefs about Mhepi Ajima.]
 
@@ -104,15 +104,15 @@ The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Ma
 > जय जय अम्बे, जय जय काली
 > जय भुवनेश्वरी श्यामा
 
-## Festivals & Jatras
+## Festivals & Jatras {#festivals}
 
 [PLACEHOLDER: festivals and jatras celebrated at the temple.]
 
-## Architecture
+## Architecture {#architecture}
 
 [PLACEHOLDER: architecture of the temple — style, materials, dating.]
 
-## Present Day
+## Present Day {#present-day}
 
 <!-- 20261104_090938.heic; 20261104_090028.heic; 20261104_084559.heic -->
 The temple is looked after by the **Mhepi Conservation and Management Committee** (म्हेयपि संरक्षण तथा व्यवस्थापन समिति).
@@ -124,7 +124,7 @@ The temple is looked after by the **Mhepi Conservation and Management Committee*
 
 [PLACEHOLDER: more about the temple today.]
 
-## How to Visit
+## How to Visit {#how-to-visit}
 
 - **Where:** Naya Bazar, KMC Ward No. 16. [PLACEHOLDER: directions and nearest landmark]
 - **Hours:** [PLACEHOLDER: opening hours]

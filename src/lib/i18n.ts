@@ -18,3 +18,17 @@ export function isLocale(value: string): value is Locale {
 export function getDictionary(lang: Locale): Dictionary {
   return dictionaries[lang];
 }
+
+/** ["A", "B", "C"] → "A, B and C" (or "A, B र C"). */
+export function joinList(items: string[], and: string): string {
+  if (items.length <= 1) return items.join("");
+  return `${items.slice(0, -1).join(", ")} ${and} ${items.at(-1)}`;
+}
+
+/** Section links shared by the header nav and the footer. They point at sections of the home page. */
+export function getNavItems(lang: Locale, dict: Dictionary) {
+  const sections = ["overview", "about", "heritages", "gallery", "contact"] as const;
+  return sections.map((id) => ({ href: `/${lang}/#${id}`, label: dict.nav[id] }));
+}
+
+export type NavItem = ReturnType<typeof getNavItems>[number];

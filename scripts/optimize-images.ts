@@ -57,6 +57,37 @@ async function optimize(image: ManifestImage): Promise<void> {
   }
 }
 
+/**
+ * The ward logo arrives as a square screenshot with a grey background. Cut out
+ * the round emblem (circle given in the manifest), make the outside transparent
+ * and save PNGs at several sizes: public/images/logo/ward-logo-<size>.png
+ */
+async function optimizeLogo(): Promise<void> {
+  const { source, circle, sizes } = manifest.logo;
+  const { cx, cy, r } = circle;
+  const side = Math.round(r * 2);
+  const left = Math.max(0, Math.round(cx - r));
+  const top = Math.max(0, Math.round(cy - r));
+
+  const cropped = await sharp(path.join(RAW_DATA_DIR, source))
+    .extract({ left, top, width: side, height: side })
+    .toBuffer();
+  const mask = Buffer.from(
+    `<svg width="${side}" height="${side}"><circle cx="${cx - left}" cy="${cy - top}" r="${r}" fill="#fff"/></svg>`,
+  );
+  const round = await sharp(cropped)
+    .composite([{ input: mask, blend: "dest-in" }]) // keep only pixels inside the circle
+    .png()
+    .toBuffer();
+
+  const dir = path.join(OUT_DIR, "logo");
+  await fs.mkdir(dir, { recursive: true });
+  for (const size of sizes) {
+    await sharp(round).resize(size, size).png({ palette: true, compressionLevel: 9 }).toFile(path.join(dir, `ward-logo-${size}.png`));
+  }
+  console.log(`logo: ${sizes.join(", ")} px`);
+}
+
 async function main(): Promise<void> {
   try {
     await fs.access(RAW_DATA_DIR);
@@ -64,6 +95,8 @@ async function main(): Promise<void> {
     console.error(`Raw data not found at "${RAW_DATA_DIR}". Set RAW_DATA_DIR to the folder holding the Drive download.`);
     process.exit(1);
   }
+
+  await optimizeLogo();
 
   const images: ManifestImage[] = manifest.images;
   for (const [i, image] of images.entries()) {

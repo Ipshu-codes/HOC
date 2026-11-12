@@ -79,13 +79,17 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 4. Ward information (for `ward.json`, header, footer, contact page)
 
-- [ ] **Ward logo** (sketch shows a logo circle; no image file provided)
-- [ ] **Ward office address**
-- [ ] **Phone**
-- [ ] **Email**
+- [x] **Ward logo**: `wardlogo.png` added to raw data (the KMC emblem); cropped to a circle in `public/images/logo/`
+  - [ ] Confirm the ward has no logo of its own and the KMC emblem is the right one to use
+- [x] **Ward office address**: Balaju, Kathmandu (given by the ward team, 12 Nov 2026)
+  - [ ] A more precise address or landmark for the Contact section and the map
+- [x] **Phone**: 01-4981653
+- [x] **Email**: ward16@kathmandu.gov.np
 - [ ] **Office hours**
 - [ ] **Ward facts** for the About section: area, population, tole names, etc.
-- [ ] **Ward chair / officials**, if they are to appear on the site
+- [x] **Ward chairperson**: Rojina Shrestha (in `ward.json`; not yet shown on the site)
+  - [ ] Check the Nepali spelling रोजिना श्रेष्ठ (written by Claude)
+- [ ] **Official portal URL**: the ward team named "Kathmandu Metropolitan City Ward No. 16" as the official portal but gave no web address
 - [ ] **Web3Forms recipient email** (Phase 9)
 
 ## 5. Nepali text needing native-speaker review
@@ -95,3 +99,4 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - `content/heritage/mhepi-ajima.ne.md`: the whole file apart from quoted inscriptions and the bhajan
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
+- `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude

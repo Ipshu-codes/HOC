@@ -280,5 +280,18 @@
       "name": "cover",
       "source": "Guru Nanak Mantha/Photo/20261103_134731.heic"
     }
-  ]
+  ],
+  "logo": {
+    "source": "wardlogo.png",
+    "circle": {
+      "cx": 154.5,
+      "cy": 147.5,
+      "r": 148
+    },
+    "sizes": [
+      64,
+      128,
+      256
+    ]
+  }
 }

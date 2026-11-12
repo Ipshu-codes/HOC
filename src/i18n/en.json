@@ -1,9 +1,41 @@
 {
   "site": {
     "title": "Ward No. 16 Heritage",
-    "ward": "Ward No. 16",
-    "city": "Kathmandu Metropolitan City",
-    "description": "Discover the heritage of Ward No. 16, Kathmandu Metropolitan City: Mhepi Ajima and Nanak Math."
+    "headerTitle": "WARD NO. 16",
+    "headerSubtitle": "Kathmandu Metropolitan City",
+    "otherLanguageLine": "वडा नं. १६, काठमाडौं महानगरपालिका",
+    "otherLanguage": "ne",
+    "description": "Discover the heritage of Ward No. 16, Kathmandu Metropolitan City: {sites}.",
+    "and": "and"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "homeLink": "Ward No. 16 Heritage — home"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "overview": "Overview",
+    "about": "About",
+    "heritages": "Heritages",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu"
+  },
+  "language": {
+    "label": "Choose language",
+    "en": "English",
+    "ne": "नेपाली"
+  },
+  "footer": {
+    "office": "Ward Office",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "quickLinks": "Quick links",
+    "heritages": "Heritage sites",
+    "copyright": "© Ward No. 16, KMC"
   },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."

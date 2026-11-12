@@ -1,20 +1,26 @@
 /**
  * Refuses to let unfinished content reach production.
  *
- *   npm run check-content
+ *   npm run check-content                  strict: used by `npm run build`
+ *   npm run check-content -- --allow-drafts  used by `npm run build:preview`
  *
- * Fails (exit code 1) if any file in content/ contains "[PLACEHOLDER" or
- * "[TODO", or a heritage file has `draft: true` in its frontmatter.
- * It runs automatically before `npm run build` (the "prebuild" script), so a
- * production build stops here while dummy text exists. `npm run dev` is not
- * affected: drafts show a red "Draft content" banner there instead.
+ * Strict mode fails (exit code 1) if any file in content/ contains
+ * "[PLACEHOLDER" or "[TODO", or a heritage file has `draft: true`.
+ * With --allow-drafts, files with `draft: true` are skipped (the preview build
+ * leaves those sites out entirely), but every other file must still be clean.
+ *
+ * Both modes also check that every h2/h3 heading has a stable id
+ * ("## इतिहास {#history}") and that the English and Nepali versions of a site
+ * use the same ids, so anchor links work in both languages.
  */
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 
 const CONTENT_DIR = "content";
+const HERITAGE_DIR = path.join(CONTENT_DIR, "heritage");
 const MARKERS = ["[PLACEHOLDER", "[TODO"];
+const allowDrafts = process.argv.includes("--allow-drafts");
 
 interface Problem {
   file: string;
@@ -29,36 +35,75 @@ function listFiles(dir: string): string[] {
   });
 }
 
-function checkFile(file: string): Problem[] {
-  const text = fs.readFileSync(file, "utf8");
+function isDraft(file: string): boolean {
+  return file.endsWith(".md") && matter(fs.readFileSync(file, "utf8")).data.draft === true;
+}
+
+function checkMarkers(file: string): Problem[] {
   const problems: Problem[] = [];
-
-  text.split(/\r?\n/).forEach((line, i) => {
-    for (const marker of MARKERS) {
-      if (line.includes(marker)) {
-        problems.push({ file, line: i + 1, message: `contains ${marker}…]: ${line.trim().slice(0, 100)}` });
+  fs.readFileSync(file, "utf8")
+    .split(/\r?\n/)
+    .forEach((line, i) => {
+      for (const marker of MARKERS) {
+        if (line.includes(marker)) {
+          problems.push({ file, line: i + 1, message: `contains ${marker}…]: ${line.trim().slice(0, 100)}` });
+        }
       }
-    }
-  });
+    });
+  if (isDraft(file)) problems.push({ file, message: "has draft: true" });
+  return problems;
+}
 
-  if (file.endsWith(".md") && matter(text).data.draft === true) {
-    problems.push({ file, message: "has draft: true" });
+/** Ids of h2/h3 headings, in order; reports headings without an id. */
+function headingIds(file: string, problems: Problem[]): string[] {
+  const ids: string[] = [];
+  fs.readFileSync(file, "utf8")
+    .split(/\r?\n/)
+    .forEach((line, i) => {
+      if (!/^#{2,3} /.test(line)) return;
+      const match = line.match(/\{#([a-z0-9-]+)\}\s*$/);
+      if (match) ids.push(match[1]);
+      else problems.push({ file, line: i + 1, message: `heading has no stable id like {#history}: ${line.trim()}` });
+    });
+  return ids;
+}
+
+function checkHeadingIds(): Problem[] {
+  const problems: Problem[] = [];
+  const slugs = new Set(fs.readdirSync(HERITAGE_DIR).map((name) => name.split(".")[0]));
+  for (const slug of slugs) {
+    const en = path.join(HERITAGE_DIR, `${slug}.en.md`);
+    const ne = path.join(HERITAGE_DIR, `${slug}.ne.md`);
+    const enIds = headingIds(en, problems);
+    const neIds = headingIds(ne, problems);
+    if (enIds.join() !== neIds.join()) {
+      problems.push({ file: ne, message: `heading ids differ from ${en}:\n    en: ${enIds.join(", ")}\n    ne: ${neIds.join(", ")}` });
+    }
   }
   return problems;
 }
 
-const problems = listFiles(CONTENT_DIR)
-  .filter((file) => /\.(md|json)$/.test(file))
-  .flatMap(checkFile);
+const files = listFiles(CONTENT_DIR).filter((file) => /\.(md|json)$/.test(file));
+const skipped = allowDrafts ? files.filter(isDraft) : [];
+const problems = [
+  ...files.filter((file) => !skipped.includes(file)).flatMap(checkMarkers),
+  ...checkHeadingIds(),
+];
+
+for (const file of skipped) console.log(`  skipped draft: ${file} (left out of this build)`);
 
 if (problems.length > 0) {
-  const files = new Set(problems.map((p) => p.file));
-  console.error(`\n✖ check-content: ${problems.length} problem(s) in ${files.size} file(s) — not ready to publish.\n`);
+  const count = new Set(problems.map((p) => p.file)).size;
+  console.error(`\n✖ check-content: ${problems.length} problem(s) in ${count} file(s) — not ready to publish.\n`);
   for (const p of problems) {
     console.error(`  ${p.file}${p.line ? `:${p.line}` : ""}  ${p.message}`);
   }
-  console.error("\nReplace the placeholder/TODO text and remove `draft: true` before building for production.\n");
+  console.error(
+    allowDrafts
+      ? "\nFix the problems above (draft files are already skipped).\n"
+      : "\nReplace the placeholder/TODO text and remove `draft: true` before building for production,\nor use `npm run build:preview` to build without the draft sites.\n",
+  );
   process.exit(1);
 }
 
-console.log("✔ check-content: no placeholders, TODOs or drafts in content/.");
+console.log(`✔ check-content${allowDrafts ? " (drafts skipped)" : ""}: content is ready to publish.`);

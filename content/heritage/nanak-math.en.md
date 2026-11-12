@@ -99,7 +99,7 @@ gallery:
 
 <!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->
 
-## History
+## History {#history}
 
 <!-- DOCX paras 2–3; signboard 20261103_145350.heic -->
 Prachin Udasin Bishnumati Nanak Math stands on the bank of the Bishnumati in Naya Bazar, Balaju. It is known by many names — Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban, Sangat Ban and Sadhukuti — and above all as the place of the **living bhu-samadhi of Mahayogi Shri Brahmaharidas Maharaj**.
@@ -112,7 +112,7 @@ In this tradition a guru takes a celibate disciple, teaches him the daily rites 
 <!-- DOCX para 4 -->
 Under the math's rules, the outgoing mahant recommends his successor to the Guthi Sansthan, which approves the appointment, and responsibility is handed over with a bhandara for the sadhus, as instructed by Brahmaharidas Maharaj.
 
-### Mahayogi Shri Brahmaharidas Maharaj
+### Mahayogi Shri Brahmaharidas Maharaj {#brahmaharidas}
 
 <!-- Plaque 20261103_135817.heic; DOCX para 4 -->
 - **Born:** VS 1432, Baishakh Purnima
@@ -131,7 +131,7 @@ As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at
 | Living bhu-samadhi | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya |
 | Guru | Mahayogi Shri Brahmaharidas Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj |
 
-### The line of mahants
+### The line of mahants {#mahants}
 
 <!-- DOCX para 3 and list -->
 The math traces its tradition from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad down to Brahmaharidas Maharaj. The present mahant, **Shri Naval Kishor Das Ji Maharaj**, is the 23rd in the line:
@@ -163,7 +163,7 @@ The math traces its tradition from Lord Shri Ram, Mother Janaki, Hanumanji, Brah
 <!-- DOCX para 4 -->
 Nem Muni Das Maharaj made his disciple Shri Naval Kishor Das mahant according to the math's tradition.
 
-## Legends & Beliefs
+## Legends & Beliefs {#legends}
 
 <!-- DOCX paras 3–4 -->
 - **Nandi Ban and Nandeshwar Mahadev** — In ancient times Nandi performed penance here, received the darshan of Lord Shiva, and asked for the boon of becoming his vahana (mount). An ancient stone image of Nandi still stands here, and the place is called Nandeshwar Mahadev.
@@ -179,7 +179,7 @@ Sadhus from Nepal, India and abroad who come to Kathmandu for darshan of Pashupa
 <!-- DOCX para 4 -->
 The math's gurus brought the Guru Granth Sahib here for study; before that, and still today, the Vedas, Puranas, Upanishads, Ramayana and Bhagavat were kept, worshipped and read in daily satsang.
 
-## Festivals & Jatras
+## Festivals & Jatras {#festivals}
 
 <!-- DOCX "वार्षिक कार्यक्रमहरू" -->
 The math's annual programme:
@@ -194,11 +194,11 @@ The math's annual programme:
 - **Full moon at the start of Sorha Shraddha** — dhwajarohan: the flag is changed and a bhandara is held
 
 <!-- DOCX "परम्परा" list items 2–11 -->
-### Daily worship
+### Daily worship {#daily-worship}
 
 Every day the math performs puja, readings and morning and evening aarti for the Vishnu Panchayatan deities and the sacred texts, with bhog and prasad; worship and care of the cows; puja at the samadhi temple; abhishek at the Hanuman temple and on the Shivalinga; service to Nandeshwar Mahadev; puja of the Vishnu paduka beneath the peepal tree; water abhishek for Tulsi Maharani; abhishek of the shaligram; and tending of the akhanda dhuni.
 
-## Architecture
+## Architecture {#architecture}
 
 <!-- DOCX heritage list (items 1–16) + "Additional info" -->
 The math lists these archaeological, historical and ancient structures and heritage within its grounds:
@@ -221,7 +221,7 @@ The math lists these archaeological, historical and ancient structures and herit
 16. The **living bhu-samadhi temple**, built in VS 1664, of the three samadhi-siddha saints — Mahayogi Shri Brahmaharidas Maharaj and his disciples Yathiramdas Maharaj and Gothalramdas Maharaj
 
 <!-- DOCX inventory ("जिन्सी सामग्रीहरू") -->
-### Treasures of the math
+### Treasures of the math {#treasures}
 
 The math's inventory of 69 kinds of objects includes:
 
@@ -233,7 +233,7 @@ The math's inventory of 69 kinds of objects includes:
 
 The math intends to collect these historic but worn objects and arrange them as a **museum**.
 
-## Present Day
+## Present Day {#present-day}
 
 <!-- DOCX paras 3–4 -->
 The math is run and managed by its mahant, Shri Naval Kishor Das Ji Maharaj. Daily life includes puja, abhishek, kirtan and bhajan; periodic mahayoga sadhana, katha, pravachan and satsang; morning and evening aarti; and service to cows, guests and visiting saints. The sadhus living here practise mahayoga, contemplating the soul and the Supreme.
@@ -242,7 +242,7 @@ Paddy, wheat, maize, greens and vegetables grown on the math's land are used to 
 
 A new yajnashala is under construction, and the Brahma Kunda awaits reconstruction.
 
-## How to Visit
+## How to Visit {#how-to-visit}
 
 <!-- DOCX title + signboards 20261103_133906.heic, 20261103_145350.heic -->
 - **Where:** Naya Bazar, near Bishnumati Bridge, on the bank of the Bishnumati, Balaju — KMC Ward 16. Look for the signboard reading "प्राचिन उदासिन नानक मठ" above the entrance gate; stone steps lead up from the gate.

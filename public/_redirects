@@ -1,0 +1,3 @@
+# Cloudflare Pages redirects (static export has no server).
+# out/index.html also redirects with <meta http-equiv="refresh"> as a fallback.
+/  /en/  302

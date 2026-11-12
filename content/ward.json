@@ -1,0 +1,14 @@
+{
+  "name": { "en": "Ward No. 16", "ne": "वडा नं. १६" },
+  "city": { "en": "Kathmandu Metropolitan City", "ne": "काठमाडौं महानगरपालिका" },
+  "office": {
+    "address": { "en": "Balaju, Kathmandu", "ne": "बालाजु, काठमाडौं" },
+    "phone": "01-4981653",
+    "email": "ward16@kathmandu.gov.np"
+  },
+  "chairperson": { "en": "Rojina Shrestha", "ne": "रोजिना श्रेष्ठ" },
+  "logo": {
+    "src": "/images/logo/ward-logo-128.png",
+    "alt": { "en": "Emblem of Kathmandu Metropolitan City", "ne": "काठमाडौं महानगरपालिकाको लोगो" }
+  }
+}

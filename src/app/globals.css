@@ -31,6 +31,21 @@
 }
 
 @layer base {
+  html {
+    /* Leave room for the sticky nav bar when jumping to #overview, #history, … */
+    scroll-padding-top: 4.5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-crimson;
+  }
+
   body {
     @apply bg-cream font-sans text-ink antialiased;
   }

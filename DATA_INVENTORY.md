@@ -161,7 +161,12 @@ There are 44 photos, taken on 4 Nov 2026 with two phones and no GPS data. 22 wer
 
 `ward 16 puspa sir.m4a` is 6 min 24 s, probably an interview with a ward official. **It has not been transcribed.**
 
-There is **no written ward information** in the raw data: no office address, phone, email, opening hours, population, area, logo, or ward boundary (GeoJSON). As a result, `content/ward.json` has not been created yet. See MISSING_INFO.
+**Added later (12 Nov 2026):**
+
+- `HOC/wardlogo.png` (307×297 PNG): the red Kathmandu Metropolitan City emblem on a light-grey square. It is cropped to its circle by `npm run optimize-images` → `public/images/logo/ward-logo-{64,128,256}.png`.
+- Ward contact details, given by the ward team in chat (not a raw-data file): office location Balaju, Kathmandu; phone 01-4981653; email ward16@kathmandu.gov.np; chairperson Rojina Shrestha; official portal "Kathmandu Metropolitan City Ward No. 16" (no URL given). These are stored in `content/ward.json`.
+
+Still missing: office hours, population, area and the ward boundary (GeoJSON). See MISSING_INFO.
 
 ---
 
