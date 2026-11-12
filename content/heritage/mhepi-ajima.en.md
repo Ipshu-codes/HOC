@@ -72,26 +72,26 @@ gallery:
 
 ### What the inscriptions record {#inscriptions}
 
-<!-- 20261104_084315.heic -->
+<!-- source: mhepi-inscriptions | 20261104_084315.heic -->
 - **Nepal Sambat 1120, Pohelathwa 12 (VS 2056, Magh 4)**: Shri Amrit Man Shrestha and Prithvi Kumari Shrestha, residents of Mhepi, offered a **two-tiered brass roof** to Shri Shri Shri Yogambar Jnaneshwari Mhepi Ajima in memory of their ancestors, on the auspicious day of their Janku ceremony.
 
-<!-- 20261104_083749.heic -->
+<!-- source: mhepi-inscriptions | 20261104_083749.heic -->
 - **Nepal Sambat 1120, Gunlathwa Navami, Tuesday (VS 2057, Shrawan)**: in memory of the late Mathuradas Shrestha and the late Vishnu Devi Shrestha, the family of Rajendra Das Shrestha laid white stone (marble) in the temple of Shri Yogambar Jnaneshwari.
 
-<!-- 20261104_084318.heic -->
+<!-- source: mhepi-inscriptions | 20261104_084318.heic -->
 - **Nepal Sambat 1121, Thinla Dwadashi**: in memory of the late Gyanmaya Shakya, Buddharatna Shakya and Gyandevi Shakya, Shri Chaitya Ratna Shakya and Sanu Chhori Shakya offered metal-sheet work for the middle part of the main temple of Shri Yogambar Mhepi Ajima.
 
-<!-- 20261104_083919.heic -->
+<!-- source: mhepi-inscriptions | 20261104_083919.heic -->
 - **Nepal Sambat 1134, Thilla Dwadashi (VS 2070, Mangsir 29)**: Tirtharam Timila and Manik Laxmi Timila of Balaju offered metal-sheet work on both sides of Mhepi Ajima.
 
-<!-- 20261104_084559.heic (marble plaque, first panel) -->
+<!-- source: mhepi-inscriptions | 20261104_084559.heic (marble plaque, first panel) -->
 - **The bhajan house**: a bhajan house was built in the Mhepi temple complex in **VS 2029**. When it fell into disrepair and rainwater began to disturb the daily bhajan-kirtan, the bhajan mandal decided on **VS 2068 Kartik 30** to rebuild it with the support of devotees. The renovation was completed under the bhajan mandal's chair, Shri Ashtalal Maharjan; the commemorative plaque is dated **VS 2069 Jestha 6**.
 
 ## Legends & Beliefs {#legends}
 
 [PLACEHOLDER: legends and beliefs about Mhepi Ajima.]
 
-<!-- 20261104_083803.heic -->
+<!-- source: mhepi-inscriptions | 20261104_083803.heic -->
 The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Management Committee (dated 2078/5/6, Gunla Punhi), invokes the goddess by several names:
 
 > जय योगाम्बर
@@ -114,7 +114,7 @@ The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Ma
 
 ## Present Day {#present-day}
 
-<!-- 20261104_090938.heic; 20261104_090028.heic; 20261104_084559.heic -->
+<!-- source: mhepi-inscriptions, mhepi-notices | 20261104_090938.heic; 20261104_090028.heic; 20261104_084559.heic -->
 The temple is looked after by the **Mhepi Conservation and Management Committee** (म्हेयपि संरक्षण तथा व्यवस्थापन समिति).
 
 - **Sattals (rest houses)** in the temple grounds can be booked in advance through the committee for weddings, bratabandha, puja, feasts and picnics.

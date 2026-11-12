@@ -12,6 +12,8 @@
 - `npm run build:preview` builds without draft sites. Every page, link, gallery, map marker and chatbot answer must get sites from `getHeritageList()` / `getHeritageSlugs()` (src/lib/content.ts); scripts/verify-output.ts (after both builds) fails if a draft slug or name, or any [PLACEHOLDER/[TODO text, appears anywhere in out/.
 - Every h2/h3 in content needs a stable English id, same in EN and NE: `## इतिहास {#history}` (enforced by check-content and the remark plugin).
 - Client components import Locale/LOCALES from @/types/locale, never @/types/heritage (that pulls zod and site slugs into the browser bundle).
+- Cite sources in content with `<!-- source: key1, key2 | reviewer detail -->`; keys and their plain-language names live in content/sources.json and feed each page’s Sources section (an unknown key fails the build).
+- Detail pages render optional parts only when there is data: map button needs coordinates, "Other heritage" needs another visible site, quick facts skip empty fields, the photo credit needs `photos.team` in content/credits.json.
 - Ward details (address, phone, email, logo) live in content/ward.json — never hard-code them in components.
 - Raw data is in ward16-heritageraw-data/HOC/ (git-ignored, ~1.5 GB). Web images are built from it by `npm run optimize-images` using scripts/image-manifest.json; alt text lives in content frontmatter.
 - Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.

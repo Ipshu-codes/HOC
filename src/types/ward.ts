@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-/** A string given in both languages. */
-const localized = z.object({ en: z.string().min(1), ne: z.string().min(1) });
+import { localized } from "@/types/common";
 
 /** content/ward.json — ward office details shown in the header, footer and contact sections. */
 export const wardSchema = z.object({

@@ -82,6 +82,31 @@
     "openInOsm": "OpenStreetMap मा हेर्नुहोस्",
     "opensInNewTab": "(नयाँ ट्याबमा खुल्छ)"
   },
+  "heritage": {
+    "backToAll": "सबै सम्पदा स्थल",
+    "quickFacts": "मुख्य जानकारी",
+    "location": "ठाउँ",
+    "established": "स्थापना",
+    "tradition": "देवता / परम्परा",
+    "festivals": "चाडपर्व",
+    "hours": "खुल्ने समय",
+    "entry": "प्रवेश",
+    "onThisPage": "यस पृष्ठमा",
+    "photos": "तस्बिरहरू",
+    "seeAllPhotos": "सबै तस्बिर हेर्नुहोस्",
+    "viewOnMap": "थ्रीडी नक्सामा हेर्नुहोस्",
+    "otherHeritage": {
+      "one": "अर्को सम्पदा स्थल",
+      "other": "अन्य सम्पदा स्थलहरू"
+    },
+    "sources": "स्रोतहरू",
+    "sourcesIntro": "यस पृष्ठको जानकारी निम्न स्रोतबाट लिइएको हो:",
+    "sourcesNote": "साइनबोर्ड, पाटी र अभिलेखहरू २०२६ नोभेम्बरमा स्थलमा खिचिएका तस्बिरबाट पढिएका हुन्।"
+  },
+  "credits": {
+    "photos": "तस्बिर: {team}, {year}",
+    "teamPlaceholder": "[PLACEHOLDER: टोलीको नाम]"
+  },
   "draft": {
     "banner": "मस्यौदा सामग्री — यस पृष्ठमा प्लेसहोल्डर पाठ छ, प्रकाशन गर्न मिल्दैन।"
   }

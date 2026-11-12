@@ -59,9 +59,17 @@ export interface TocEntry {
   depth: 2 | 3;
 }
 
+export interface SourceCitation {
+  key: string;
+  /** Plain-language name in the page language, e.g. "Signboards and plaques at Nanak Math". */
+  label: string;
+}
+
 export interface Heritage extends HeritageFrontmatter {
   lang: Locale;
   /** Markdown body rendered to HTML; h2/h3 carry ids for the table of contents. */
   html: string;
   toc: TocEntry[];
+  /** Sources cited in the content (source: comments), in order of first use. */
+  sources: SourceCitation[];
 }

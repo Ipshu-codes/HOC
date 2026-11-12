@@ -57,3 +57,50 @@
     @apply font-heading text-brick;
   }
 }
+
+/* Body text of the heritage detail pages (HTML rendered from content/heritage/*.md). */
+@layer components {
+  .heritage-prose {
+    @apply max-w-3xl text-lg leading-relaxed;
+
+    & h2 {
+      @apply mt-14 mb-4 border-b-2 border-gold/50 pb-2 text-3xl font-bold first:mt-0;
+    }
+    & h3 {
+      @apply mt-8 mb-3 text-2xl font-bold;
+    }
+    & p {
+      @apply my-4;
+    }
+    & ul {
+      @apply my-4 list-disc space-y-1.5 pl-6;
+    }
+    & ol {
+      @apply my-4 list-decimal space-y-1 pl-7;
+    }
+    & li::marker {
+      @apply text-crimson;
+    }
+    & strong {
+      @apply font-bold text-brick;
+    }
+    & blockquote {
+      @apply my-6 rounded-r-xl border-l-4 border-crimson bg-sand px-5 py-4 font-medium;
+    }
+    /* Keep the line breaks of verses such as the temple bhajan. */
+    & blockquote p {
+      @apply whitespace-pre-line;
+    }
+    /* Wide tables scroll sideways on phones instead of widening the page. */
+    & table {
+      @apply my-6 block max-w-full overflow-x-auto text-base;
+    }
+    & th,
+    & td {
+      @apply border border-gold/50 px-3 py-2 text-left align-top;
+    }
+    & thead th {
+      @apply bg-sand font-bold text-brick;
+    }
+  }
+}

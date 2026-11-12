@@ -15,10 +15,12 @@ import {
   heritageFrontmatterSchema,
   type Heritage,
   type HeritageSlug,
+  type SourceCitation,
   type Locale,
   type TocEntry,
 } from "@/types/heritage";
 import { homeSchema, type HomeConfig } from "@/types/home";
+import { creditsSchema, sourcesSchema, type Credits, type SourceRegistry } from "@/types/site";
 import { wardSchema, type Ward } from "@/types/ward";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
@@ -32,6 +34,16 @@ const markdownToHtml = unified()
   .use(remarkRehype) // HTML comments in markdown (source notes) are dropped here
   .use(rehypeStringify);
 
+/** HTML → plain text: drop tags, decode the entities the markdown renderer emits (e.g. "&#x26;" for "&"). */
+function htmlToText(html: string): string {
+  const named: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+  return html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&(amp|lt|gt|quot|apos);/g, (_, name: string) => named[name]);
+}
+
 /** Reads h2/h3 headings with their ids for the table of contents. */
 function extractToc(html: string): TocEntry[] {
   const toc: TocEntry[] = [];
@@ -39,7 +51,7 @@ function extractToc(html: string): TocEntry[] {
     toc.push({
       depth: Number(match[1]) as 2 | 3,
       id: match[2],
-      text: match[3].replace(/<[^>]+>/g, ""),
+      text: htmlToText(match[3]),
     });
   }
   return toc;
@@ -58,7 +70,26 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
   }
 
   const html = String(markdownToHtml.processSync(content));
-  return { ...parsed.data, lang, html, toc: extractToc(html) };
+  return { ...parsed.data, lang, html, toc: extractToc(html), sources: extractSources(content, lang, file) };
+}
+
+/**
+ * Sources cited in the markdown, in order of first appearance, with their
+ * plain-language names. Content cites them in HTML comments:
+ *   <!-- source: nanak-account, nanak-signboards | DOCX para 3; signboard 2026…heic -->
+ * Everything after "|" is detail for reviewers and is never shown on the page.
+ */
+function extractSources(markdown: string, lang: Locale, file: string): SourceCitation[] {
+  const registry = getSourceRegistry();
+  const keys = new Set<string>();
+  for (const match of markdown.matchAll(/<!--\s*source:\s*([^|]+?)\s*(?:\||-->)/g)) {
+    for (const key of match[1].split(",").map((k) => k.trim())) keys.add(key);
+  }
+  return [...keys].map((key) => {
+    const names = registry[key];
+    if (!names) throw new Error(`${file}: unknown source "${key}" — add it to content/sources.json`);
+    return { key, label: names[lang] };
+  });
 }
 
 /**
@@ -100,6 +131,14 @@ export function getWard(): Ward {
 
 export function getHomeConfig(): HomeConfig {
   return readJson("home.json", homeSchema);
+}
+
+export function getSourceRegistry(): SourceRegistry {
+  return readJson("sources.json", sourcesSchema);
+}
+
+export function getCredits(): Credits {
+  return readJson("credits.json", creditsSchema);
 }
 
 /** "01-4981653" → "tel:+97714981653" (Nepal country code, leading 0 dropped). */

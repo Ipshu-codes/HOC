@@ -26,6 +26,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   // Built from the visible sites, so a draft site's name never reaches a preview build.
   const sites = getHeritageList(lang).map((h) => (lang === "ne" ? h.nameNe : h.name));
   return {
+    // Absolute base for Open Graph image URLs. Set SITE_URL in the Cloudflare Pages build settings (see DEPLOY.md).
+    metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
     title: { default: dict.site.title, template: `%s · ${dict.site.title}` },
     description: dict.site.description.replace("{sites}", joinList(sites, dict.site.and)),
     icons: { icon: "/images/logo/ward-logo-64.png", apple: "/images/logo/ward-logo-256.png" },

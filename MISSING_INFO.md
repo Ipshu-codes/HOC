@@ -69,8 +69,9 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Coordinates** (`coordinates: null` in all four files): no photo has GPS data. Get lat/lng from a site visit or by placing a pin on OpenStreetMap. Needed for Phase 7.
 - [ ] **Ward 16 boundary GeoJSON**: not in the raw data. Needed for Phase 7. It might be available from KMC or OSM.
 - [ ] **Photo credits**: photographers are unknown.
+  - [ ] **Team name** for the credit line "Photos: [TEAM NAME], 2026". Set it as `photos.team` in `content/credits.json`. While it is `null`, the line shows a placeholder in dev and is left out of builds.
   - The `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so they were taken by someone outside the team.
-  - Of these, `bhandara.webp` is used on the site.
+  - [ ] Of these, `bhandara.webp` is used on the site. The team credit line would wrongly cover it. Either credit its photographer separately or remove it from the gallery.
 - [ ] **Consent for people in photos**:
   - Used on the site: `akhanda-dhuni.webp`, `sadhus-at-veranda.webp`, `bhandara.webp` and Mhepi's `tree-lined-stairway.webp` (visitors).
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
@@ -79,8 +80,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 3b. Home page
 
-- [ ] **Hero photo**: the options are in `docs/screenshots/phase-4/hero-options/`. Option 1 (`courtyard-view`) is in use until one is chosen; the choice is set by `heroCandidates` in `content/home.json`.
-- [ ] **Hero option 2** (`carved-windows`) shows two identifiable people at the windows. It needs their consent if chosen.
+- [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used and has been removed from `heroCandidates`.
 - [ ] **Chairperson's name** is in `content/ward.json` but deliberately not shown anywhere until confirmed.
 
 ## 4. Ward information (for `ward.json`, header, footer, contact page)

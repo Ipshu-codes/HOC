@@ -82,6 +82,31 @@
     "openInOsm": "Open in OpenStreetMap",
     "opensInNewTab": "(opens in a new tab)"
   },
+  "heritage": {
+    "backToAll": "All heritage sites",
+    "quickFacts": "Quick facts",
+    "location": "Location",
+    "established": "Established",
+    "tradition": "Deity / tradition",
+    "festivals": "Festivals",
+    "hours": "Opening hours",
+    "entry": "Entry",
+    "onThisPage": "On this page",
+    "photos": "Photos",
+    "seeAllPhotos": "See all photos",
+    "viewOnMap": "View on 3D Map",
+    "otherHeritage": {
+      "one": "Other heritage site",
+      "other": "Other heritage sites"
+    },
+    "sources": "Sources",
+    "sourcesIntro": "The information on this page comes from:",
+    "sourcesNote": "Signboards, plaques and inscriptions were read from photographs taken at the site in November 2026."
+  },
+  "credits": {
+    "photos": "Photos: {team}, {year}",
+    "teamPlaceholder": "[PLACEHOLDER: team name]"
+  },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."
   }
