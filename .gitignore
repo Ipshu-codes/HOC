@@ -1,0 +1,4 @@
+# Raw Drive download (~1.5 GB) — kept locally, never committed or deployed
+ward16-heritageraw-data/
+raw-data/
+*.zip
