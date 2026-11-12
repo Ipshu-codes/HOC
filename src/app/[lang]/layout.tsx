@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { mukta, playfair } from "@/app/fonts";
+import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
 import { getHeritageList, getWard } from "@/lib/content";
+import { getChatEntries } from "@/lib/faq";
 import { getDictionary, getNavItems, isLocale, joinList } from "@/lib/i18n";
 import { LOCALES } from "@/types/heritage";
+import type { Locale } from "@/types/locale";
 import "@/app/globals.css";
 
 // This is the root layout (it renders <html>), placed under [lang] so that
@@ -35,6 +38,11 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   };
 }
 
+/** The chatbot's "no answer" message, with the ward office phone and email filled in. */
+function chatFallback(lang: Locale, phone: string, email: string): string {
+  return getDictionary(lang).chat.fallback.replace("{phone}", phone).replace("{email}", email);
+}
+
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
@@ -58,6 +66,17 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         </main>
         <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />
         <MapButton lang={lang} label={dict.map.floatingButton} />
+        {/* FAQ entries for visible sites only; answers in both languages (the bot replies in the visitor's language). */}
+        <Chatbot
+          lang={lang}
+          entries={getChatEntries()}
+          labels={dict.chat}
+          fallback={{
+            en: chatFallback("en", ward.office.phone, ward.office.email),
+            ne: chatFallback("ne", ward.office.phone, ward.office.email),
+          }}
+          readMore={{ en: getDictionary("en").chat.readMore, ne: getDictionary("ne").chat.readMore }}
+        />
       </body>
     </html>
   );

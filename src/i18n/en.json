@@ -148,6 +148,20 @@
       "closePopup": "Close"
     }
   },
+  "chat": {
+    "bubble": "How can I help?",
+    "title": "Ward 16 heritage guide",
+    "close": "Close chat",
+    "greeting": "Namaste! Ask me about the heritage sites of Ward No. 16 — in English or Nepali — or pick a question below.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "inputLabel": "Your question",
+    "suggestions": "Suggested questions",
+    "readMore": "Read more →",
+    "you": "You",
+    "bot": "Guide",
+    "fallback": "Sorry, I don't have an answer for that yet. Please contact the Ward No. 16 office: phone {phone}, email {email}."
+  },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."
   }

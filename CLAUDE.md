@@ -19,6 +19,8 @@
 - Map (src/components/MapView.tsx): never start camera animations before the first "idle" after terrain loads (the camera ends up inside the terrain and the map goes blank), and never bind popups with marker.setPopup() (MapLibre closes them when its terrain-occlusion test misfires).
 - Links to the home page use prefetch={false}, so other pages do not preload the home hero image.
 - Pin new npm packages to a release at least two weeks old (--save-exact).
+- Chatbot answers live only in content/faq.json (EN + NE, tagged by site so drafts drop out). Answers may use {sites} {address} {phone} {email} {team}; links are language-less paths whose #anchors are checked at build. The chat must make no network requests: no prefetch on its links.
+- useEffect bodies must be blocks, never `() => el.method()`: some browsers return Promises from DOM methods (e.g. scrollIntoView) and React then crashes.
 - Ward details (address, phone, email, logo) live in content/ward.json — never hard-code them in components.
 - Raw data is in ward16-heritageraw-data/HOC/ (git-ignored, ~1.5 GB). Web images are built from it by `npm run optimize-images` using scripts/image-manifest.json; alt text lives in content frontmatter.
 - Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.
