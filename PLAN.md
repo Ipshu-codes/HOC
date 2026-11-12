@@ -5,6 +5,8 @@
 > **stop and wait for my review** before starting the next phase. Never invent historical facts —
 > all heritage content must come from `raw-data/`. If information is missing, list it in
 > `MISSING_INFO.md` and use a clear placeholder like `[TODO: founding year]`.
+> Our team knows **JavaScript, TypeScript, React, Next.js and PostgreSQL** — keep the code
+> idiomatic and readable for that skill set, and explain anything new (MapLibre, Fuse.js) in comments.
 
 ---
 
@@ -49,20 +51,23 @@ two heritage sites:
 
 | Need | Tool |
 |---|---|
-| Framework | **Astro** (static site) |
-| Styling | **Tailwind CSS** |
-| Interactive parts | **React** islands (chatbot, gallery lightbox, map) |
-| 3D map | **MapLibre GL JS** + **OpenFreeMap** vector tiles (no key) + **AWS Terrain Tiles** (Terrarium DEM, open data) for 3D terrain, with 3D building extrusions |
+| Framework | **Next.js (App Router) + TypeScript**, built as a **static export** (`output: 'export'`) |
+| UI | **React** components, **Tailwind CSS** |
+| Content | Markdown files in `content/`, parsed with **gray-matter** + **remark/rehype** at build time |
+| Bilingual routing | `app/[lang]/…` with `generateStaticParams` for `en` and `ne` |
+| 3D map | **MapLibre GL JS** (client component, loaded with `next/dynamic`, `ssr: false`) + **OpenFreeMap** vector tiles (no key) + **AWS Terrain Tiles** (Terrarium DEM, open data) for 3D terrain, with 3D building extrusions |
 | Chatbot | Runs **entirely in the browser**: **Fuse.js** fuzzy search over `faq.json` + heritage content. No server, no API. |
-| Gallery lightbox | **PhotoSwipe** (or a small custom component) |
-| Contact form | **Web3Forms** (free) — access key in `.env`, with a `mailto:` fallback |
-| Images | Astro's built-in `<Image>` (sharp) → WebP, responsive sizes |
-| Fonts | **Google Fonts**: *Mukta* (Nepali + English body), *Cinzel* or *Playfair Display* (English headings) |
-| Content editing (later) | **Decap CMS** (free, git-based) — optional, Phase 9 |
-| Hosting | **Cloudflare Pages** (free) — fallback: GitHub Pages |
+| Gallery lightbox | **yet-another-react-lightbox** (free, MIT) |
+| Images | Pre-optimized to WebP with a **sharp** script (`scripts/optimize-images.ts`); `next/image` with `unoptimized: true` (required for static export) |
+| Fonts | `next/font/google`: *Mukta* (Nepali + English body), *Playfair Display* (English headings) |
+| Contact form | **Web3Forms** (free) — key in `.env.local`, with a `mailto:` fallback |
+| Database (optional, Phase 10) | **Supabase free tier (PostgreSQL)** — only for storing contact messages and unanswered chatbot questions |
+| Content editing (optional) | **Decap CMS** (free, git-based) |
+| Hosting | **Cloudflare Pages** (free) — deploy the static `out/` folder. Fallback: GitHub Pages |
 | Domain | Free `*.pages.dev` subdomain; later a free `.com.np` / `.org.np` (Mercantile) or `.gov.np` via the municipality |
 
-Do **not** add any service that needs a credit card.
+Do **not** add any service that needs a credit card. Do **not** use Next.js features that need a
+running server (API routes, server actions, middleware, ISR) — the site must work as a static export.
 
 ---
 
@@ -84,7 +89,7 @@ Rules:
 - Section dividers: a subtle traditional Newari woodcarving / dhaka-style SVG pattern in gold or brick.
 - Rounded corners `rounded-xl`, soft shadows, generous spacing.
 - Mobile-first. Nav becomes a hamburger menu under 768px.
-- Put the colors in `tailwind.config` as named colors so they are used everywhere consistently.
+- Put the colors in the Tailwind theme as named colors so they are used everywhere consistently.
 
 ---
 
@@ -95,38 +100,40 @@ ward16-heritage/
 ├── CLAUDE.md
 ├── PLAN.md
 ├── MISSING_INFO.md
-├── raw-data/                  # original Drive download — never edit, never deploy
+├── raw-data/                     # original Drive download — never edit, never deploy
+├── content/
+│   ├── heritage/
+│   │   ├── mhepi-ajima.en.md
+│   │   ├── mhepi-ajima.ne.md
+│   │   ├── nanak-math.en.md
+│   │   └── nanak-math.ne.md
+│   ├── ward.json                 # ward info, office contact, opening hours
+│   └── faq.json                  # chatbot Q&A (EN + NE)
 ├── public/
-│   ├── images/
-│   │   ├── logo/
-│   │   ├── mhepi-ajima/
-│   │   └── nanak-math/
+│   ├── images/{logo,mhepi-ajima,nanak-math}/
 │   └── favicon.svg
+├── scripts/optimize-images.ts
 └── src/
-    ├── content/
-    │   ├── heritage/
-    │   │   ├── mhepi-ajima.en.md
-    │   │   ├── mhepi-ajima.ne.md
-    │   │   ├── nanak-math.en.md
-    │   │   └── nanak-math.ne.md
-    │   ├── ward.json          # ward info, office contact, opening hours
-    │   └── faq.json           # chatbot Q&A (EN + NE)
-    ├── i18n/
-    │   ├── en.json
-    │   └── ne.json
+    ├── app/
+    │   ├── layout.tsx
+    │   ├── page.tsx              # redirects to /en
+    │   ├── not-found.tsx
+    │   └── [lang]/
+    │       ├── layout.tsx
+    │       ├── page.tsx          # home
+    │       ├── heritage/[slug]/page.tsx
+    │       ├── gallery/page.tsx
+    │       ├── map/page.tsx
+    │       └── contact/page.tsx
     ├── components/
-    │   ├── Header.astro  Nav.astro  Footer.astro  Hero.astro
-    │   ├── HeritageCard.astro  SectionDivider.astro
-    │   ├── Chatbot.tsx  MapView.tsx  Gallery.tsx
-    │   └── LanguageToggle.astro
-    ├── layouts/BaseLayout.astro
-    └── pages/
-        ├── index.astro
-        ├── heritage/[slug].astro
-        ├── gallery.astro
-        ├── map.astro
-        ├── contact.astro
-        └── ne/…               # Nepali versions of the same routes
+    │   ├── Header.tsx  Nav.tsx  Footer.tsx  Hero.tsx
+    │   ├── HeritageCard.tsx  SectionDivider.tsx  LanguageToggle.tsx
+    │   ├── Chatbot.tsx  MapView.tsx  Gallery.tsx   # "use client"
+    ├── lib/
+    │   ├── content.ts            # read + parse markdown
+    │   └── i18n.ts               # dictionaries
+    ├── i18n/{en,ne}.json
+    └── types/heritage.ts
 ```
 
 ---
@@ -136,7 +143,7 @@ ward16-heritage/
 ### Phase 1 — Organize the data ⭐ most important
 1. Read **everything** in `raw-data/` (text, docx, pdf, images, spreadsheets).
 2. Write `DATA_INVENTORY.md`: what exists for each site, file by file.
-3. Create the content files in `src/content/heritage/` with this frontmatter:
+3. Create the content files in `content/heritage/` with this frontmatter:
    ```yaml
    name: "Mhepi Ajima"
    nameNe: "म्हेपी अजिमा"
@@ -161,17 +168,22 @@ ward16-heritage/
 🛑 Stop for review — I will verify facts before design work begins.
 
 ### Phase 2 — Project setup
-1. Scaffold Astro + Tailwind + React integration. Init git with a `.gitignore` (include `node_modules`, `.env`, `dist`, `raw-data/` if it contains large files).
-2. Add the design tokens from Section 4 to Tailwind config, load Google Fonts.
-3. Write `CLAUDE.md` (see Section 8).
+1. `npx create-next-app@latest` with TypeScript, Tailwind, ESLint, App Router, `src/` directory.
+2. In `next.config`: `output: 'export'`, `images: { unoptimized: true }`, `trailingSlash: true`.
+3. Add the design tokens from Section 4 to the Tailwind theme; load fonts with `next/font/google`.
+4. Add `src/types/heritage.ts` and `src/lib/content.ts` (typed loader for the markdown files).
+5. Add `scripts/optimize-images.ts` (sharp → WebP, 640/1280/1920 widths).
+6. Init git with a `.gitignore` (include `node_modules`, `.env*`, `out`, `.next`).
+7. Write `CLAUDE.md` (see Section 8).
 
-✅ `npm run dev` works and shows a blank page with the cream background.
+✅ `npm run dev` works; `npm run build` produces an `out/` folder.
 
 ### Phase 3 — Base layout
 1. `Header`: logo circle on the left, title "WARD NO. 16" + "Kathmandu Metropolitan City" (and Nepali: "वडा नं. १६, काठमाडौं महानगरपालिका").
 2. Sticky `Nav`: Overview · About · Heritages · Gallery · Contact + EN/ने toggle. Hamburger on mobile.
 3. `Footer` (brick red): ward office address, phone, email, quick links, "© Ward No. 16, KMC".
-4. Match the layout in `raw-data/sketch.jpg`.
+4. `app/[lang]/layout.tsx` sets `<html lang>` and loads the right dictionary.
+5. Match the layout in `raw-data/sketch.jpg`.
 
 ✅ Looks right at 375px, 768px and 1440px widths.
 
@@ -187,35 +199,36 @@ Sections in order:
 Nav links scroll smoothly to these sections on the home page.
 
 ### Phase 5 — Heritage detail pages
-`/heritage/[slug]` generated from the content files:
+`app/[lang]/heritage/[slug]/page.tsx` with `generateStaticParams` for both sites × both languages:
 - Cover image banner with name in English + Nepali
 - Quick-facts box (location, established, tradition, festivals, hours)
 - Body sections from Phase 1 with a sticky table of contents on desktop
-- Photo strip, "View on 3D Map" button (opens `/map?site=<slug>`)
+- Photo strip, "View on 3D Map" button (opens `/[lang]/map?site=<slug>`)
 - "Other heritage" card at the bottom linking to the other site
+- `generateMetadata` for title, description and Open Graph image
 
 ### Phase 6 — Gallery
-- `/gallery` with filter tabs: All · Mhepi Ajima · Nanak Math
-- Masonry/grid layout, lazy-loaded WebP images, lightbox with captions and keyboard navigation
+- `/[lang]/gallery` with filter tabs: All · Mhepi Ajima · Nanak Math
+- Responsive grid, lazy-loaded WebP images, lightbox with captions and keyboard navigation
 
 ### Phase 7 — 3D Map
-1. Floating **"🗺 3D Map"** button, bottom-right on every page (as in the sketch) → `/map`.
-2. `/map`: full-screen MapLibre map
+1. Floating **"🗺 3D Map"** button, bottom-right on every page (as in the sketch) → `/[lang]/map`.
+2. `MapView.tsx` (client component, imported with `next/dynamic` and `ssr: false`):
    - Style: OpenFreeMap (`https://tiles.openfreemap.org/styles/liberty`)
    - 3D terrain: AWS Terrain Tiles, Terrarium encoding
      (`https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png`)
    - 3D building extrusions, pitch ~60°, slow rotate-on-load animation
    - Ward 16 boundary outline if a GeoJSON exists in `raw-data/` (otherwise list it in MISSING_INFO)
    - Custom red markers for both sites → popup with photo, name, summary, "Read more" link
-   - `?site=<slug>` flies the camera to that site
+   - `?site=<slug>` flies the camera to that site (read with `useSearchParams` inside a `<Suspense>`)
    - Side panel listing both sites; clicking flies to them
    - Navigation + fullscreen controls; works with touch on mobile
 3. Show proper attribution (OpenFreeMap / OpenStreetMap contributors).
 
 ### Phase 8 — Chatbot (free, no API)
 1. Floating button bottom-left with a speech bubble: **"How can I help?"** / **"म कसरी मद्दत गर्न सक्छु?"**
-2. Opens a small chat panel (red header, cream body).
-3. Build `src/content/faq.json` from the heritage content: at least **30 Q&A pairs** in both languages, e.g.
+2. Opens a small chat panel (red header, cream body). Client component, mounted in the `[lang]` layout.
+3. Build `content/faq.json` from the heritage content: at least **30 Q&A pairs** in both languages, e.g.
    ```json
    { "id": "nanak-built", "q_en": ["When was Nanak Math built?", "age of nanak math"],
      "q_ne": ["नानक मठ कहिले बनेको हो?"], "a_en": "…", "a_ne": "…",
@@ -229,22 +242,41 @@ Nav links scroll smoothly to these sections on the home page.
 
 ✅ Works offline after page load; no network requests when chatting.
 
-### Phase 9 — Bilingual, contact form, polish
-1. EN/NE toggle: all UI strings from `src/i18n/`, Nepali routes under `/ne/`. Mark any machine-generated Nepali in `MISSING_INFO.md` for native-speaker review.
-2. Contact page: Web3Forms form (name, email, message), honeypot spam field, success message; Web3Forms access key from `.env` (`PUBLIC_WEB3FORMS_KEY`); `mailto:` fallback.
-3. SEO: titles, meta descriptions, Open Graph images, `sitemap.xml`, `robots.txt`.
+### Phase 9 — Contact form, polish
+1. Make sure every UI string comes from `src/i18n/`; mark any machine-generated Nepali in `MISSING_INFO.md` for native-speaker review.
+2. Contact page: Web3Forms form (name, email, message), honeypot spam field, success message; key from `NEXT_PUBLIC_WEB3FORMS_KEY`; `mailto:` fallback.
+3. SEO: metadata on every page, Open Graph images, `app/sitemap.ts`, `app/robots.ts`.
 4. Accessibility: alt text, focus rings, keyboard nav for chatbot/lightbox/map panel, `lang` attributes.
-5. Performance: Lighthouse ≥ 90 on all four scores; compress images; lazy-load map and chatbot.
-6. 404 page in the red theme.
-7. (Optional) Decap CMS at `/admin` so the ward office can edit text and photos later.
+5. Performance: Lighthouse ≥ 90 on all four scores; lazy-load map and chatbot.
+6. `not-found.tsx` in the red theme.
 
-### Phase 10 — Deploy (free)
+### Phase 10 — Optional: PostgreSQL with Supabase (free tier)
+Only do this phase if I ask for it.
+1. Create tables:
+   ```sql
+   create table contact_messages (
+     id bigint generated always as identity primary key,
+     name text not null, email text not null, message text not null,
+     created_at timestamptz default now()
+   );
+   create table chatbot_unanswered (
+     id bigint generated always as identity primary key,
+     question text not null, lang text not null,
+     created_at timestamptz default now()
+   );
+   ```
+2. Row Level Security: allow **insert only** for the `anon` role; no select/update/delete for anon.
+3. Insert from the browser with `@supabase/supabase-js` (keys in `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`), so the site stays a static export.
+4. Chatbot: log questions with no match to `chatbot_unanswered` so we can add them to `faq.json` later.
+5. Note in `DEPLOY.md`: free Supabase projects pause after a period of inactivity and must be resumed from the dashboard.
+
+### Phase 11 — Deploy (free)
 1. Write `DEPLOY.md` with step-by-step instructions:
    - Push to a GitHub repository
-   - Cloudflare Pages → connect repo → build command `npm run build`, output `dist`
-   - Add `PUBLIC_WEB3FORMS_KEY` as an environment variable
+   - Cloudflare Pages → connect repo → framework preset "Next.js (Static HTML Export)", build command `npm run build`, output directory `out`
+   - Add the `NEXT_PUBLIC_*` environment variables
    - Optional: connect a free `.com.np` domain
-2. Run `npm run build` locally and fix all errors and warnings before I deploy.
+2. Run `npm run build` locally and fix all errors, type errors and lint warnings before I deploy.
 
 ---
 
@@ -258,7 +290,7 @@ Nav links scroll smoothly to these sections on the home page.
 - [ ] Mobile-friendly at 375px
 - [ ] Lighthouse ≥ 90
 - [ ] Zero paid services, zero billing API keys
-- [ ] Builds cleanly and deploys to Cloudflare Pages
+- [ ] `npm run build` passes with no TypeScript errors and deploys to Cloudflare Pages
 
 ---
 
@@ -267,12 +299,13 @@ Nav links scroll smoothly to these sections on the home page.
 ```markdown
 # Ward 16 Heritage Website
 - Sites: Mhepi Ajima, Nanak Math — Ward No. 16, Kathmandu Metropolitan City
-- Stack: Astro + Tailwind + React islands. Hosting: Cloudflare Pages.
+- Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'). Hosting: Cloudflare Pages.
+- No server features: no API routes, server actions, middleware or ISR.
 - Everything must be FREE. No paid services, no API keys needing billing.
 - Theme: red. Use only the named Tailwind colors: crimson, brick, vermilion, gold, cream, sand, ink.
 - Layout follows raw-data/sketch.jpg.
-- Content lives ONLY in src/content/. Never invent historical facts; use [TODO: …] and log in MISSING_INFO.md.
-- Bilingual EN/NE. UI strings in src/i18n/. Font: Mukta for Devanagari.
+- Content lives ONLY in content/. Never invent historical facts; use [TODO: …] and log in MISSING_INFO.md.
+- Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.
+- Strict TypeScript, no `any`. Client components only where needed (map, chatbot, gallery, nav toggle).
 - Mobile-first, accessible, every image has alt text.
 - Work one phase of PLAN.md at a time; commit and stop for review after each.
-```

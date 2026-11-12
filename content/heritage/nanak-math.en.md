@@ -4,7 +4,7 @@ nameNe: "नानक मठ"
 slug: "nanak-math"
 summary: "An ancient Udasin math on the bank of the Bishnumati in Naya Bazar, Balaju, revered as the living bhu-samadhi site of Mahayogi Shri Brahmaharidas Maharaj and home to an unbroken Nepali guru–disciple mahant tradition."
 location: "Bishnumati riverbank, Naya Bazar (near Bishnumati Bridge), Balaju — Kathmandu Metropolitan City Ward No. 16"
-coordinates: null # [TODO: coordinates] — not present in raw data (photos carry no GPS)
+coordinates: null
 established: "Ancient, by tradition; the living bhu-samadhi temple dates to VS 1664"
 deity_or_tradition: "Udasin; Nepali guru–disciple mahant tradition. Vishnu Panchayatan, Hanuman, Nandeshwar Mahadev (Shiva), Tulsi and Gau Mata are worshipped."
 festivals:
@@ -12,29 +12,22 @@ festivals:
     month: "Baishakh"
     description: "Annual puja at the samadhi temple, on the anniversary of the living bhu-samadhi."
   - name: "Basanta Panchami"
-    month: "[TODO: month]"
     description: "Tithi (remembrance day) of Krishna Das Maharaj."
   - name: "Kojagrat Purnima"
-    month: "[TODO: month]"
     description: "Tithi of Mangal Das Maharaj."
   - name: "Teej (dar khane din)"
-    month: "[TODO: month]"
     description: "Tithi of Buddhi Das Maharaj, observed on the day of the Teej feast."
   - name: "Asar Shashthi"
     month: "Asar"
     description: "Tithi of Munindranand Maharaj."
   - name: "Vijaya Dashami"
-    month: "[TODO: month]"
     description: "Birthday of Nem Muni Maharaj."
   - name: "Sharadiya Navaratri"
-    month: "[TODO: month]"
     description: "Durga puja and worship of nine girls and one boy (nau kanya ra ek kumar puja)."
   - name: "Dhwajarohan"
-    month: "[TODO: month]"
     description: "On the full moon when the Sorha Shraddha begin, the flag is changed and a bhandara (communal feast) is held."
 visiting:
   hours: "7:00 am – 6:00 pm"
-  entry: "[TODO: entry fee]"
   tips: "The temple is open to all visitors for darshan, worship and seva. Cows at the gaushala may be offered green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt — never stale, rotten or leftover food."
 cover: "/images/nanak-math/cover.webp"
 gallery:
@@ -104,7 +97,7 @@ gallery:
     alt: "Three sadhus standing in front of the math's veranda"
 ---
 
-<!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English is a translation of the Nepali sources by Claude — needs review. -->
+<!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->
 
 ## History
 
@@ -112,7 +105,9 @@ gallery:
 Prachin Udasin Bishnumati Nanak Math stands on the bank of the Bishnumati in Naya Bazar, Balaju. It is known by many names — Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban, Sangat Ban and Sadhukuti — and above all as the place of the **living bhu-samadhi of Mahayogi Shri Brahmaharidas Maharaj**.
 
 <!-- DOCX para 3 -->
-According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today. A guru takes a celibate disciple, teaches him the daily rites of the ashram and the worship of the Vishnu Panchayatan, and trains him in the tradition's spiritual practices. Once the disciple is accomplished, sadhus of many sects, mahants, the head of the Guthi Sansthan, local scholars and devotees are invited and he is declared mahant.
+According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today. The math's written account describes its guru gaddi as a thousand years old, while the signboards at the math speak of a guru–disciple tradition that has continued without a break for 5,000 years.
+
+In this tradition a guru takes a celibate disciple, teaches him the daily rites of the ashram and the worship of the Vishnu Panchayatan, and trains him in the tradition's spiritual practices. Once the disciple is accomplished, sadhus of many sects, mahants, the head of the Guthi Sansthan, local scholars and devotees are invited and he is declared mahant.
 
 <!-- DOCX para 4 -->
 Under the math's rules, the outgoing mahant recommends his successor to the Guthi Sansthan, which approves the appointment, and responsibility is handed over with a bhandara for the sadhus, as instructed by Brahmaharidas Maharaj.
@@ -219,7 +214,7 @@ The math lists these archaeological, historical and ancient structures and herit
 9. Residence and kitchen for visiting sadhus, saints and mahants
 10. A public toilet
 11. The **Brahma Kunda** (in need of reconstruction)
-12. The **guru gaddi** of the Nepali guru–disciple mahant tradition, described as a thousand years old
+12. The **guru gaddi** of the Nepali guru–disciple mahant tradition — a thousand years old according to the math's written account, while its signboards speak of a tradition of 5,000 years
 13. A green garden (hariyali ban batika)
 14. A **hall** for religious satsang programmes
 15. A **yajnashala** under construction (in the upper part of the grounds)
@@ -252,7 +247,4 @@ A new yajnashala is under construction, and the Brahma Kunda awaits reconstructi
 <!-- DOCX title + signboards 20261103_133906.heic, 20261103_145350.heic -->
 - **Where:** Naya Bazar, near Bishnumati Bridge, on the bank of the Bishnumati, Balaju — KMC Ward 16. Look for the signboard reading "प्राचिन उदासिन नानक मठ" above the entrance gate; stone steps lead up from the gate.
 - **Hours:** 7:00 am – 6:00 pm, open to all for darshan, seva and worship.
-- **Entry fee:** [TODO: entry fee]
-- **Photography:** [TODO: photography rules]
-- **Etiquette:** [TODO: dress code / footwear rules]
 - **Gaushala:** visitors may offer cows green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt. Stale, rotten or insect-infested food must not be given.

@@ -161,7 +161,7 @@ There are 44 photos, taken on 4 Nov 2026 with two phones and no GPS data. 22 wer
 
 `ward 16 puspa sir.m4a` is 6 min 24 s, probably an interview with a ward official. **It has not been transcribed.**
 
-There is **no written ward information** in the raw data: no office address, phone, email, opening hours, population, area, logo, or ward boundary (GeoJSON). As a result, `src/content/ward.json` has not been created yet. See MISSING_INFO.
+There is **no written ward information** in the raw data: no office address, phone, email, opening hours, population, area, logo, or ward boundary (GeoJSON). As a result, `content/ward.json` has not been created yet. See MISSING_INFO.
 
 ---
 
@@ -172,8 +172,8 @@ Every photo is grouped by subject below. "Web file(s)" shows the WebP file made 
 Web images were processed as follows:
 
 - auto-rotated
-- resized to a 1600 px long edge (2000 px for `cover.webp`)
-- saved as WebP at quality 78
+- resized to three long-edge widths: `<name>-640.webp`, `<name>.webp` (1280 px) and `<name>-1920.webp`, by `npm run optimize-images` from `scripts/image-manifest.json`
+- saved as WebP at quality 75
 - stripped of all metadata
 
 The alt text (EN + NE) is in each content file's `gallery` frontmatter.

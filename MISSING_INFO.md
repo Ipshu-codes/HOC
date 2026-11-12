@@ -2,9 +2,13 @@
 
 Everything here is either missing from the raw data or needs a human to check it.
 
-In the content files, gaps are marked `[TODO: …]`. Claude's own transcriptions and translations are marked in HTML comments or in italics.
+**Current status (12 Nov 2026):**
 
-## 0. Highest priority: untranscribed audio
+- **Mhepi Ajima is a draft** (`draft: true`). Only facts from inscriptions and notice boards are kept; every other section is `[PLACEHOLDER: …]` text until the ward sends the data. The sattal fees and committee phone were removed from the page until confirmed.
+- **Nanak Math is publishable.** Facts that are still unknown (entry fee, photography rules, etiquette, most festival months) are simply left off the page rather than shown as TODOs. They stay listed in §2 so they can be added later.
+- `npm run build` refuses to run while any content file has `draft: true`, `[PLACEHOLDER` or `[TODO` (`npm run check-content`).
+
+## 0. Untranscribed audio (Whisper skipped — ward will supply Mhepi data)
 
 Most of the missing Mhepi Ajima content, and all ward information, is probably in these recordings. They have **not** been transcribed.
 
@@ -28,13 +32,13 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Legends & beliefs**: what the goddess is known for, why she is called "Yogambar Jnaneshwari"
 - [ ] **Festivals & jatras**: names, months, descriptions (the `festivals` list is all TODO)
 - [ ] **Tradition / community**: which community worships here (the donor names are Shrestha, Shakya, Timila and Maharjan)
-- [ ] **Architecture**: dating and style. The current text only describes what the photos show.
+- [ ] **Architecture**: style, materials and dating (section is a placeholder; the earlier photo-based description was removed)
 - [ ] **Opening hours**: the committee notice board says 8–11 am, but this may be office or booking hours
 - [ ] **Entry fee**
 - [ ] **Photography rules**, dress and footwear etiquette
 - [ ] **Directions / nearest landmark**: the only written location is "नयाँ बजार, का.म.न.पा. वडा नं. १६"
-- [ ] **Committee phone**: read as ४३५९८९० from a weathered notice board; must be checked
-- [ ] **Sattal fees**: read from the notice board (Rs 1,000–5,000 + Rs 300); confirm the current rates
+- [ ] **Committee phone** (removed from page): read as ४३५९८९० from a weathered notice board; must be checked
+- [ ] **Sattal fees** (removed from page): read from the notice board (Rs 1,000–5,000 + Rs 300); confirm the current rates
 - [ ] **Bhajan line 2**: is it "जय गुह्येश्वरी आमा"? The letter was hard to read.
 - [ ] **Official spelling of the name**: the sources use म्हेपी, म्हेंपी, म्हैपी, म्ह्यपी, म्हयपि and म्हेयपि. The site uses **म्हेपी अजिमा** (from PLAN.md). Confirm, and confirm the English spelling "Mhepi Ajima".
 - [ ] **Translations of the three Nepal Bhasa (Newari) inscriptions** (NS 1120 marble, NS 1121 brass, NS 1134 brass): Claude's rendering needs a Nepal Bhasa reader
@@ -44,11 +48,11 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 2. Nanak Math
 
-- [ ] **Entry fee**
-- [ ] **Photography rules** and dress/footwear etiquette
-- [ ] **Festival months**: the docx gives the festival names but not months, except Akshaya Tritiya (Baishakh, from the plaques) and Asar Shashthi. Months are left as `[TODO: month]` for Basanta Panchami, Kojagrat Purnima, Teej, Vijaya Dashami, Navaratri and the Sorha Shraddha full moon.
+- [ ] **Entry fee** (not shown on the page until known)
+- [ ] **Photography rules** and dress/footwear etiquette (not shown on the page until known)
+- [ ] **Festival months**: the docx gives the festival names but not months, except Akshaya Tritiya (Baishakh, from the plaques) and Asar Shashthi. The `month` field is omitted for Basanta Panchami, Kojagrat Purnima, Teej, Vijaya Dashami, Navaratri and the Sorha Shraddha full moon.
 - [ ] **Why it is called "Nanak" Math**: the sources never explain the name. They mention only that the gurus brought the Guru Granth Sahib for study.
-- [ ] **Conflicting age of the guru gaddi**: the docx says **1,000 years** old; both signboards say **5,000 years** ("बिगत ५००० बर्ष देखि"). The content uses the docx wording. Which is correct?
+- [x] **Conflicting age of the guru gaddi**: the docx says **1,000 years**; both signboards say **5,000 years** ("बिगत ५००० बर्ष देखि"). Resolved by attributing both on the page (History and Architecture sections, EN + NE).
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
 - [ ] **Identify photographed features** (the alt text is descriptive only):
@@ -88,6 +92,6 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
-- `src/content/heritage/mhepi-ajima.ne.md`: the whole file apart from quoted inscriptions and the bhajan
-- `src/content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
+- `content/heritage/mhepi-ajima.ne.md`: the whole file apart from quoted inscriptions and the bhajan
+- `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
