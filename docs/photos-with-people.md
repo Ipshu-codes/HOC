@@ -1,10 +1,10 @@
 # Photos with identifiable people
 
-These are the published photos that show a person's face, checked on 12 Nov 2026. Each one is listed in `content/photo-consent.json` with status `"pending"`, so it is still shown on the site.
+These are the published photos that show a person's face, checked on 12 Nov 2026. Each one is listed in `content/photo-consent.json`. All nine were set to `"approved"` on 12 Nov 2026.
 
 **To remove a photo:** change its status to `"removed"`. That one change hides it everywhere: the gallery, the detail page's photo strip and the home page. **To keep it:** change the status to `"approved"`.
 
-## Marked (status `pending`)
+## Marked (status `approved`)
 
 | File | What it shows |
 |---|---|

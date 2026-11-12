@@ -22,6 +22,8 @@ export const heritageFrontmatterSchema = z.object({
   location: z.string().min(1),
   /** [lat, lng]; null until confirmed (see MISSING_INFO.md). */
   coordinates: z.tuple([z.number(), z.number()]).nullable(),
+  /** true when the point is only approximately right (the map says so). */
+  coordinatesApproximate: z.boolean().default(false),
   established: z.string().min(1),
   deity_or_tradition: z.string().min(1),
   festivals: z.array(
@@ -63,6 +65,8 @@ export interface SourceCitation {
   key: string;
   /** Plain-language name in the page language, e.g. "Signboards and plaques at Nanak Math". */
   label: string;
+  /** Link for published (web) sources. */
+  url?: string;
 }
 
 export interface Heritage extends HeritageFrontmatter {

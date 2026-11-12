@@ -109,7 +109,7 @@ function extractSources(markdown: string, lang: Locale, file: string): SourceCit
   return [...keys].map((key) => {
     const names = registry[key];
     if (!names) throw new Error(`${file}: unknown source "${key}" — add it to content/sources.json`);
-    return { key, label: names[lang] };
+    return { key, label: names[lang], url: names.url };
   });
 }
 

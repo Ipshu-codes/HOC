@@ -51,8 +51,12 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Entry fee** (not shown on the page until known)
 - [ ] **Photography rules** and dress/footwear etiquette (not shown on the page until known)
 - [ ] **Festival months**: the docx gives the festival names but not months, except Akshaya Tritiya (Baishakh, from the plaques) and Asar Shashthi. The `month` field is omitted for Basanta Panchami, Kojagrat Purnima, Teej, Vijaya Dashami, Navaratri and the Sorha Shraddha full moon.
-- [ ] **Why it is called "Nanak" Math**: the sources never explain the name. They mention only that the gurus brought the Guru Granth Sahib for study.
-- [x] **Conflicting age of the guru gaddi**: the docx says **1,000 years**; both signboards say **5,000 years** ("बिगत ५००० बर्ष देखि"). Resolved by attributing both on the page (History and Architecture sections, EN + NE).
+- [ ] **Have a local source confirm the Guru Nanak connection.** The History section ("The name and the age of the math") says the name is *believed* to come from Guru Nanak Dev, citing two web articles:
+  - Hindustan Times, 2014 (reprinted on barusahib.org): visit in 1516, on the third udasi, first night on the Bishnumati bank. **Note:** this article is about a Guru Nanak shrine in **Thapathali**, not the Balaju math.
+  - Spotlight, 2019: he stayed in Balaju and meditated at the site now known as Nanak Math, next to the Bishnumati bridge. It gives no year.
+  - Neither article states outright that the math is *named* after him.
+  - The math's own written account and signboards do not mention Guru Nanak's visit.
+- [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; the web articles date Guru Nanak's visit to **1516**. All three are shown side by side, each attributed, in History (EN + NE). The Architecture section also mentions the first two.
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
 - [ ] **Identify photographed features** (the alt text is descriptive only):
@@ -68,12 +72,13 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 - **Coordinates** (given by the ward team on 12 Nov 2026, checked against OpenStreetMap):
   - [x] **Mhepi Ajima**: 27.7172, 85.3082. OSM reverse-geocodes this to Naya Bazar, Kathmandu-16 ✓. It is in the content (shown on the map in dev; the site is still a draft).
-  - [ ] **Nanak Math: the given point 27.73678, 85.28086 is wrong.** OSM reverse-geocodes it to "शिव को मन्दिर, Nagarjun-01, Nagarjun Municipality", a different Shiva temple in another municipality about 2.5 km west of Ward 16. It is **not used**; `coordinates` stays `null`, so Nanak Math has no map marker and no "View on 3D Map" button. Please send a corrected point. The sources place it in Naya Bazar by the Bishnumati bridge; OSM's Naya Bazar (Kathmandu-16) is around 27.7216, 85.3075.
+  - [x] **Nanak Math**: 27.7257, 85.3064 (from gurdwara-sahib.pages.dev). OSM reverse-geocodes it to an amenity named **"Gurunayak Math"**, Naya Bazar, Kathmandu-16 ✓. It is marked approximate (`coordinatesApproximate: true`). The first point offered, 27.73678, 85.28086, landed on a Shiva temple in Nagarjun Municipality and was rejected.
+  - [ ] Confirm the exact point on a site visit, then remove `coordinatesApproximate`.
   - [x] **Ward office**: about 27.7290, 85.3016 (Balaju, Kathmandu-16 on OSM). It is marked approximate in `content/ward.json` and on the map. An exact point would allow a small embedded map in the home Contact section.
 - [ ] **Ward 16 boundary GeoJSON**: not in the raw data, so the map has no ward outline. It might be available from KMC or OSM.
 - [x] **Photo credit line**: "Photos: Samyojan, 2026" / "तस्बिर: संयोजन, २०२६" (`content/credits.json`). It is shown on the detail pages, the gallery page and inside the lightbox.
 - [ ] **Bhandara photo**: the `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so someone outside the team took them. `bhandara.webp` (from `IMG-20261104-WA0022.jpg`) was **removed from the site** in Phase 6; the original stays in raw-data. **Re-add only with the photographer's permission and a "Photo courtesy of …" credit.** No other WhatsApp photo is published.
-- [ ] **Consent decisions for people in photos**: see `docs/photos-with-people.md`. All nine are still `"pending"` in `content/photo-consent.json` because no decisions have been received yet. **The strict `npm run build` now fails while any photo is `"pending"`.** Set each to `"approved"` (kept) or `"removed"` (hidden everywhere). `build:preview` still allows `"pending"`.
+- [x] **Consent decisions for people in photos**: all nine photos in `docs/photos-with-people.md` were set to `"approved"` in `content/photo-consent.json` on 12 Nov 2026 ("use photos with people"). Changing one to `"removed"` still hides it everywhere. The strict build fails if any photo is ever `"pending"` again.
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
 - [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
 - [ ] **Video**: none is used yet. Decide whether to include a short clip; the files are 6–297 MB and would need compressing.

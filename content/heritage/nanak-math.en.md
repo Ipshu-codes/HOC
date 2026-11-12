@@ -4,7 +4,8 @@ nameNe: "नानक मठ"
 slug: "nanak-math"
 summary: "An ancient Udasin math on the bank of the Bishnumati in Naya Bazar, Balaju, revered as the living bhu-samadhi site of Mahayogi Shri Brahmaharidas Maharaj and home to an unbroken Nepali guru–disciple mahant tradition."
 location: "Bishnumati riverbank, Naya Bazar (near Bishnumati Bridge), Balaju — Kathmandu Metropolitan City Ward No. 16"
-coordinates: null
+coordinates: [27.7257, 85.3064]
+coordinatesApproximate: true
 established: "Ancient, by tradition; the living bhu-samadhi temple dates to VS 1664"
 deity_or_tradition: "Udasin; Nepali guru–disciple mahant tradition. Vishnu Panchayatan, Hanuman, Nandeshwar Mahadev (Shiva), Tulsi and Gau Mata are worshipped."
 festivals:
@@ -103,12 +104,24 @@ gallery:
 Prachin Udasin Bishnumati Nanak Math stands on the bank of the Bishnumati in Naya Bazar, Balaju. It is known by many names — Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban, Sangat Ban and Sadhukuti — and above all as the place of the **living bhu-samadhi of Mahayogi Shri Brahmaharidas Maharaj**.
 
 <!-- source: nanak-account | DOCX para 3 -->
-According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today. The math's written account describes its guru gaddi as a thousand years old, while the signboards at the math speak of a guru–disciple tradition that has continued without a break for 5,000 years.
+According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today.
 
 In this tradition a guru takes a celibate disciple, teaches him the daily rites of the ashram and the worship of the Vishnu Panchayatan, and trains him in the tradition's spiritual practices. Once the disciple is accomplished, sadhus of many sects, mahants, the head of the Guthi Sansthan, local scholars and devotees are invited and he is declared mahant.
 
 <!-- source: nanak-account | DOCX para 4 -->
 Under the math's rules, the outgoing mahant recommends his successor to the Guthi Sansthan, which approves the appointment, and responsibility is handed over with a bhandara for the sadhus, as instructed by Brahmaharidas Maharaj.
+
+### The name and the age of the math {#name-and-age}
+
+<!-- source: web-hindustan-times-2014, web-spotlight-2019 | HT/barusahib: 1516, third udasi, first night in Nepal on the Bishnumati bank (article is about a shrine in Thapathali); Spotlight: third udasi, stayed in Balaju, meditated at the site now called Nanak Math next to Bishnumati bridge. Neither states the naming explicitly. -->
+The math's own written account and signboards do not explain the name "Nanak". It is believed to come from Guru Nanak Dev, whom published articles connect with this place. According to them, he came to Nepal on his third udasi, a long journey of travel and teaching. A 2014 Hindustan Times report dates his visit to Kathmandu to 1516 and says he spent his first night in Nepal on the bank of the Bishnumati. A 2019 article in Spotlight magazine says he stayed in Balaju and meditated at the place now known as Nanak Math, next to the Bishnumati bridge. No local source has yet confirmed this connection.
+
+<!-- source: nanak-account, nanak-signboards, web-hindustan-times-2014 | ages side by side, each attributed -->
+The sources give different accounts of the math's age:
+
+- **The math's written account:** its guru gaddi is a thousand years old.
+- **The signboards at the math:** a guru–disciple tradition that has continued without a break for 5,000 years.
+- **Published articles:** Guru Nanak Dev's visit to Kathmandu in 1516.
 
 ### Mahayogi Shri Brahmaharidas Maharaj {#brahmaharidas}
 

@@ -5,8 +5,13 @@ import { localized } from "@/types/common";
 /**
  * content/sources.json — plain-language names of the sources behind the content.
  * Content files cite them in comments: <!-- source: nanak-account, nanak-signboards | details -->
+ * Web sources also carry a url.
  */
-export const sourcesSchema = z.record(z.string().regex(/^[a-z0-9-]+$/), localized);
+export const sourcesSchema = z.record(
+  z.string().regex(/^[a-z0-9-]+$/),
+  // url: for published (web) sources, shown as a link in the page’s Sources section.
+  localized.extend({ url: z.url().optional() }),
+);
 export type SourceRegistry = z.infer<typeof sourcesSchema>;
 
 /** content/credits.json — photo credit line. `team: null` until the team name is confirmed. */

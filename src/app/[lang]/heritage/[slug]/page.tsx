@@ -153,7 +153,15 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
             <p className="mt-3">{t.sourcesIntro}</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               {heritage.sources.map((source) => (
-                <li key={source.key}>{source.label}</li>
+                <li key={source.key}>
+                  {source.url ? (
+                    <a href={source.url} className="text-crimson underline underline-offset-4 hover:text-brick">
+                      {source.label}
+                    </a>
+                  ) : (
+                    source.label
+                  )}
+                </li>
               ))}
             </ul>
             <p className="mt-3 text-sm text-ink/80">{t.sourcesNote}</p>

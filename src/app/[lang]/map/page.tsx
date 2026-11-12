@@ -34,6 +34,7 @@ function mapPlaces(lang: Locale): MapPlace[] {
         summary: heritage.summary,
         href: `/${lang}/heritage/${heritage.slug}/`,
         photo: cover ? { src: cover.src.replace(/\.webp$/, "-640.webp"), alt: cover.alt } : undefined,
+        approximate: heritage.coordinatesApproximate,
       },
     ];
   });
