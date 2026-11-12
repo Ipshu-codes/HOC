@@ -91,8 +91,6 @@ gallery:
     alt: "Hall with benches and a painted frieze of deities along the wall"
   - src: "/images/nanak-math/paddy-field.webp"
     alt: "Ripening paddy field beside the math, with houses beyond"
-  - src: "/images/nanak-math/bhandara.webp"
-    alt: "Sadhus seated in rows for a shared meal (bhandara)"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
     alt: "Three sadhus standing in front of the math's veranda"
 ---

@@ -17,3 +17,19 @@ export const creditsSchema = z.object({
   }),
 });
 export type Credits = z.infer<typeof creditsSchema>;
+
+/**
+ * content/photo-consent.json — photos that show identifiable people (see
+ * docs/photos-with-people.md). "pending" and "approved" photos are shown;
+ * "removed" hides the photo everywhere with this one change.
+ */
+export const photoConsentSchema = z.object({
+  photos: z.record(
+    z.string().startsWith("/images/"),
+    z.object({
+      status: z.enum(["pending", "approved", "removed"]),
+      note: z.string().min(1),
+    }),
+  ),
+});
+export type PhotoConsent = z.infer<typeof photoConsentSchema>;

@@ -107,6 +107,26 @@
     "photos": "तस्बिर: {team}, {year}",
     "teamPlaceholder": "[PLACEHOLDER: टोलीको नाम]"
   },
+  "gallery": {
+    "title": "तस्बिरहरू",
+    "intro": "{sites} का तस्बिरहरू। ठूलो गरी हेर्न तस्बिर छान्नुहोस्।",
+    "filterLabel": "तस्बिर देखाउनुहोस्",
+    "all": "सबै",
+    "count": {
+      "one": "{n} तस्बिर",
+      "other": "{n} तस्बिरहरू"
+    },
+    "lightbox": {
+      "Previous": "अघिल्लो तस्बिर",
+      "Next": "अर्को तस्बिर",
+      "Close": "बन्द गर्नुहोस्",
+      "Lightbox": "तस्बिर दर्शक",
+      "Carousel": "तस्बिरहरू",
+      "Slide": "तस्बिर",
+      "Photo gallery": "तस्बिर संग्रह",
+      "{index} of {total}": "{total} मध्ये {index}"
+    }
+  },
   "draft": {
     "banner": "मस्यौदा सामग्री — यस पृष्ठमा प्लेसहोल्डर पाठ छ, प्रकाशन गर्न मिल्दैन।"
   }

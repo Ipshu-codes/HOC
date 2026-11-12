@@ -34,6 +34,16 @@
   html {
     /* Leave room for the sticky nav bar when jumping to #overview, #history, … */
     scroll-padding-top: 4.5rem;
+    /* Larger base size for readability (Mukta, especially Devanagari, runs small).
+       Everything in rem scales with it: 17px on phones, 18px from 768px. Percentages
+       keep the visitor's own browser font-size setting in effect. */
+    font-size: 106.25%;
+  }
+
+  @media (min-width: 48rem) {
+    html {
+      font-size: 112.5%;
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {

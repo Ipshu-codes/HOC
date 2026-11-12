@@ -68,12 +68,10 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 - [ ] **Coordinates** (`coordinates: null` in all four files): no photo has GPS data. Get lat/lng from a site visit or by placing a pin on OpenStreetMap. Needed for Phase 7.
 - [ ] **Ward 16 boundary GeoJSON**: not in the raw data. Needed for Phase 7. It might be available from KMC or OSM.
-- [ ] **Photo credits**: photographers are unknown.
-  - [ ] **Team name** for the credit line "Photos: [TEAM NAME], 2026". Set it as `photos.team` in `content/credits.json`. While it is `null`, the line shows a placeholder in dev and is left out of builds.
-  - The `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so they were taken by someone outside the team.
-  - [ ] Of these, `bhandara.webp` is used on the site. The team credit line would wrongly cover it. Either credit its photographer separately or remove it from the gallery.
-- [ ] **Consent for people in photos**:
-  - Used on the site: `akhanda-dhuni.webp`, `sadhus-at-veranda.webp`, `bhandara.webp` and Mhepi's `tree-lined-stairway.webp` (visitors).
+- [x] **Photo credit line**: "Photos: Samyojan, 2026" (`content/credits.json`). It is shown on the detail pages, the gallery page and inside the lightbox.
+  - [ ] Should the Nepali pages spell the team name in Devanagari? They currently show "तस्बिर: Samyojan, 2026".
+- [ ] **Bhandara photo**: the `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so someone outside the team took them. `bhandara.webp` (from `IMG-20261104-WA0022.jpg`) was **removed from the site** in Phase 6; the original stays in raw-data. **Re-add only with the photographer's permission and a "Photo courtesy of …" credit.** No other WhatsApp photo is published.
+- [ ] **Consent for people in photos**: see `docs/photos-with-people.md`. Nine published photos are marked `"pending"` in `content/photo-consent.json`. Changing a photo to `"removed"` hides it everywhere; changing it to `"approved"` keeps it.
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
 - [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
 - [ ] **Video**: none is used yet. Decide whether to include a short clip; the files are 6–297 MB and would need compressing.

@@ -257,7 +257,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 | Wooden paduka on red velvet | 20261104_100736.heic, 20261104_100744.heic, IMG_20261104_100819.jpg | wooden-paduka.webp |
 | Brick hut among trees | 20261104_101558.heic | — |
 | Gaushala poster | 20261104_101942.heic, IMG_20261104_101952.jpg | gaushala-poster.webp |
-| Bhandara: sadhus eating in rows | IMG-20261104-WA0022.jpg | bhandara.webp |
+| Bhandara: sadhus eating in rows | IMG-20261104-WA0022.jpg | — (removed in Phase 6: WhatsApp photo, photographer unknown) |
 | Group of sadhus | IMG-20261104-WA0033.jpg, IMG-20261104-WA0072.jpg | — |
 | Sadhu meditating by a rock | IMG-20261104-WA0067.jpg | — |
 | Crowd of devotees and sadhus | IMG-20261104-WA0074.jpg | — |

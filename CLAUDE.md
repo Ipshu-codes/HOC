@@ -14,6 +14,8 @@
 - Client components import Locale/LOCALES from @/types/locale, never @/types/heritage (that pulls zod and site slugs into the browser bundle).
 - Cite sources in content with `<!-- source: key1, key2 | reviewer detail -->`; keys and their plain-language names live in content/sources.json and feed each page’s Sources section (an unknown key fails the build).
 - Detail pages render optional parts only when there is data: map button needs coordinates, "Other heritage" needs another visible site, quick facts skip empty fields, the photo credit needs `photos.team` in content/credits.json.
+- Photos showing identifiable people are listed in content/photo-consent.json (pending/approved/removed) and docs/photos-with-people.md; "removed" hides a photo everywhere. Check every newly added photo for faces.
+- Published images must carry no metadata; verify-output fails on EXIF/XMP/text chunks. Only add images through `npm run optimize-images`.
 - Ward details (address, phone, email, logo) live in content/ward.json — never hard-code them in components.
 - Raw data is in ward16-heritageraw-data/HOC/ (git-ignored, ~1.5 GB). Web images are built from it by `npm run optimize-images` using scripts/image-manifest.json; alt text lives in content frontmatter.
 - Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.

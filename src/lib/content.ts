@@ -20,7 +20,14 @@ import {
   type TocEntry,
 } from "@/types/heritage";
 import { homeSchema, type HomeConfig } from "@/types/home";
-import { creditsSchema, sourcesSchema, type Credits, type SourceRegistry } from "@/types/site";
+import {
+  creditsSchema,
+  photoConsentSchema,
+  sourcesSchema,
+  type Credits,
+  type PhotoConsent,
+  type SourceRegistry,
+} from "@/types/site";
 import { wardSchema, type Ward } from "@/types/ward";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
@@ -69,8 +76,22 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
     throw new Error(`${file}: slug "${parsed.data.slug}" does not match the filename`);
   }
 
+  // Photos marked "removed" in content/photo-consent.json disappear from every page.
+  const consent = getPhotoConsent().photos;
+  const gallery = parsed.data.gallery.filter((image) => consent[image.src]?.status !== "removed");
+  if (consent[parsed.data.cover]?.status === "removed") {
+    throw new Error(`${file}: the cover photo ${parsed.data.cover} is marked "removed" — choose another cover`);
+  }
+
   const html = String(markdownToHtml.processSync(content));
-  return { ...parsed.data, lang, html, toc: extractToc(html), sources: extractSources(content, lang, file) };
+  return {
+    ...parsed.data,
+    gallery,
+    lang,
+    html,
+    toc: extractToc(html),
+    sources: extractSources(content, lang, file),
+  };
 }
 
 /**
@@ -139,6 +160,10 @@ export function getSourceRegistry(): SourceRegistry {
 
 export function getCredits(): Credits {
   return readJson("credits.json", creditsSchema);
+}
+
+export function getPhotoConsent(): PhotoConsent {
+  return readJson("photo-consent.json", photoConsentSchema);
 }
 
 /** "01-4981653" → "tel:+97714981653" (Nepal country code, leading 0 dropped). */

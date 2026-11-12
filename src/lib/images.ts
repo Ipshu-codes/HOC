@@ -54,3 +54,23 @@ export function coverImage(heritage: Heritage): SiteImage {
   if (!image) throw new Error(`${heritage.slug}: cover ${heritage.cover} is not in its gallery`);
   return image;
 }
+
+/** One photo for the gallery page: a 640 px thumbnail, and the larger files for the lightbox only. */
+export interface GalleryPhoto {
+  site: HeritageSlug;
+  alt: string;
+  thumb: { src: string; width: number; height: number };
+  /** 640 / 1280 / 1920 px versions, given to the lightbox so the large files load only when opened. */
+  full: { src: string; width: number; height: number }[];
+}
+
+export function galleryPhotos(heritages: Heritage[]): GalleryPhoto[] {
+  return heritages.flatMap((heritage) =>
+    heritage.gallery.map((image) => {
+      const variants = [image.src.replace(/\.webp$/, "-640.webp"), image.src, image.src.replace(/\.webp$/, "-1920.webp")]
+        .filter((file) => fs.existsSync(path.join(PUBLIC_DIR, file)))
+        .map((file) => ({ src: file, ...sizeOf(file) }));
+      return { site: heritage.slug, alt: image.alt, thumb: variants[0], full: variants };
+    }),
+  );
+}

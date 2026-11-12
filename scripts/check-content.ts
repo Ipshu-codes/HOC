@@ -83,11 +83,27 @@ function checkHeadingIds(): Problem[] {
   return problems;
 }
 
+/** Every photo listed in content/photo-consent.json must be a gallery photo, or a typo would hide nothing. */
+function checkPhotoConsent(): Problem[] {
+  const file = path.join(CONTENT_DIR, "photo-consent.json");
+  const consent = JSON.parse(fs.readFileSync(file, "utf8")) as { photos: Record<string, unknown> };
+  const gallerySrcs = new Set(
+    fs
+      .readdirSync(HERITAGE_DIR)
+      .flatMap((name) => matter(fs.readFileSync(path.join(HERITAGE_DIR, name), "utf8")).data.gallery ?? [])
+      .map((image: { src: string }) => image.src),
+  );
+  return Object.keys(consent.photos)
+    .filter((src) => !gallerySrcs.has(src))
+    .map((src) => ({ file, message: `lists ${src}, which is not in any gallery` }));
+}
+
 const files = listFiles(CONTENT_DIR).filter((file) => /\.(md|json)$/.test(file));
 const skipped = allowDrafts ? files.filter(isDraft) : [];
 const problems = [
   ...files.filter((file) => !skipped.includes(file)).flatMap(checkMarkers),
   ...checkHeadingIds(),
+  ...checkPhotoConsent(),
 ];
 
 for (const file of skipped) console.log(`  skipped draft: ${file} (left out of this build)`);

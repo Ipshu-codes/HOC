@@ -91,8 +91,6 @@ gallery:
     alt: "बेन्चहरू र भित्तामा देवताका चित्रको पट्टी भएको हल"
   - src: "/images/nanak-math/paddy-field.webp"
     alt: "मठछेउ पाक्न लागेको धानखेत, पर घरहरू"
-  - src: "/images/nanak-math/bhandara.webp"
-    alt: "भण्डारामा लहरै बसेर भोजन गर्दै साधुसन्त"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
     alt: "मठको दलानअगाडि उभिएका तीन साधु"
 ---

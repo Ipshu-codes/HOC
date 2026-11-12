@@ -107,6 +107,26 @@
     "photos": "Photos: {team}, {year}",
     "teamPlaceholder": "[PLACEHOLDER: team name]"
   },
+  "gallery": {
+    "title": "Gallery",
+    "intro": "Photos from {sites}. Select a photo to see it larger.",
+    "filterLabel": "Show photos from",
+    "all": "All",
+    "count": {
+      "one": "{n} photo",
+      "other": "{n} photos"
+    },
+    "lightbox": {
+      "Previous": "Previous photo",
+      "Next": "Next photo",
+      "Close": "Close",
+      "Lightbox": "Photo viewer",
+      "Carousel": "Photos",
+      "Slide": "Photo",
+      "Photo gallery": "Photo gallery",
+      "{index} of {total}": "{index} of {total}"
+    }
+  },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."
   }
