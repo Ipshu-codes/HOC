@@ -23,8 +23,10 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
     <>
       <header className="border-b-2 border-gold/60 bg-cream">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 md:gap-5 md:py-5">
+          {/* prefetch off: prefetching the home page would preload its hero photo on every page */}
           <Link
             href={`/${lang}/`}
+            prefetch={false}
             aria-label={dict.a11y.homeLink}
             className="shrink-0 rounded-full ring-2 ring-crimson ring-offset-2 ring-offset-cream"
           >

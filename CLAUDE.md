@@ -16,6 +16,9 @@
 - Detail pages render optional parts only when there is data: map button needs coordinates, "Other heritage" needs another visible site, quick facts skip empty fields, the photo credit needs `photos.team` in content/credits.json.
 - Photos showing identifiable people are listed in content/photo-consent.json (pending/approved/removed) and docs/photos-with-people.md; "removed" hides a photo everywhere. Check every newly added photo for faces.
 - Published images must carry no metadata; verify-output fails on EXIF/XMP/text chunks. Only add images through `npm run optimize-images`.
+- Map (src/components/MapView.tsx): never start camera animations before the first "idle" after terrain loads (the camera ends up inside the terrain and the map goes blank), and never bind popups with marker.setPopup() (MapLibre closes them when its terrain-occlusion test misfires).
+- Links to the home page use prefetch={false}, so other pages do not preload the home hero image.
+- Pin new npm packages to a release at least two weeks old (--save-exact).
 - Ward details (address, phone, email, logo) live in content/ward.json — never hard-code them in components.
 - Raw data is in ward16-heritageraw-data/HOC/ (git-ignored, ~1.5 GB). Web images are built from it by `npm run optimize-images` using scripts/image-manifest.json; alt text lives in content frontmatter.
 - Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.

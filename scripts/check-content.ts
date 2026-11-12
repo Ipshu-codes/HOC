@@ -83,19 +83,31 @@ function checkHeadingIds(): Problem[] {
   return problems;
 }
 
-/** Every photo listed in content/photo-consent.json must be a gallery photo, or a typo would hide nothing. */
+/**
+ * content/photo-consent.json: every listed photo must be a gallery photo (or a typo would hide
+ * nothing), and in the strict build every decision must be made: "approved" or "removed".
+ * "pending" is allowed only in build:preview (--allow-drafts).
+ */
 function checkPhotoConsent(): Problem[] {
   const file = path.join(CONTENT_DIR, "photo-consent.json");
-  const consent = JSON.parse(fs.readFileSync(file, "utf8")) as { photos: Record<string, unknown> };
+  const consent = JSON.parse(fs.readFileSync(file, "utf8")) as { photos: Record<string, { status: string }> };
   const gallerySrcs = new Set(
     fs
       .readdirSync(HERITAGE_DIR)
       .flatMap((name) => matter(fs.readFileSync(path.join(HERITAGE_DIR, name), "utf8")).data.gallery ?? [])
       .map((image: { src: string }) => image.src),
   );
-  return Object.keys(consent.photos)
+  const problems: Problem[] = Object.keys(consent.photos)
     .filter((src) => !gallerySrcs.has(src))
     .map((src) => ({ file, message: `lists ${src}, which is not in any gallery` }));
+  if (!allowDrafts) {
+    for (const [src, { status }] of Object.entries(consent.photos)) {
+      if (status === "pending") {
+        problems.push({ file, message: `${src} is still "pending" — set "approved" or "removed" (docs/photos-with-people.md)` });
+      }
+    }
+  }
+  return problems;
 }
 
 const files = listFiles(CONTENT_DIR).filter((file) => /\.(md|json)$/.test(file));

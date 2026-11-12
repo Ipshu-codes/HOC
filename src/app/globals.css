@@ -114,3 +114,42 @@
     }
   }
 }
+
+/* 3D map markers and popups (src/components/MapView.tsx). MapLibre places these DOM elements itself. */
+@layer components {
+  /* MapLibre positions the marker element with an inline transform, so the pin shape
+     (a rotated teardrop) is drawn on a pseudo-element instead of the element itself. */
+  .map-marker {
+    @apply relative size-8 cursor-pointer rounded-full bg-transparent;
+  }
+  .map-marker::before {
+    @apply absolute inset-0.5 rounded-full rounded-br-none border-[3px] border-white bg-crimson shadow-lg;
+    content: "";
+    transform: rotate(45deg);
+  }
+  .map-marker:focus-visible {
+    @apply outline-4 outline-offset-2 outline-ink;
+  }
+  .map-marker-office::before {
+    @apply bg-brick;
+  }
+  .map-popup {
+    @apply font-sans text-base text-ink;
+
+    & img {
+      @apply mb-2 aspect-video w-full rounded-lg object-cover;
+    }
+    & p {
+      @apply my-1;
+    }
+  }
+  .map-popup-title {
+    @apply font-heading text-lg font-bold text-brick;
+  }
+  .map-popup-note {
+    @apply text-sm text-crimson;
+  }
+  .map-popup-link {
+    @apply mt-2 inline-block font-bold text-crimson underline underline-offset-4 hover:text-brick;
+  }
+}

@@ -5,7 +5,7 @@ slug: "mhepi-ajima"
 draft: true
 summary: "The temple of Yogambar Jnaneshwari Mhepi Ajima in Naya Bazar, Ward 16, cared for by the Mhepi Conservation and Management Committee."
 location: "Naya Bazar, Kathmandu Metropolitan City Ward No. 16"
-coordinates: null
+coordinates: [27.7172, 85.3082]
 established: "[PLACEHOLDER: founding year]"
 deity_or_tradition: "Yogambar Jnaneshwari Mhepi Ajima (as named in the temple inscriptions)"
 festivals:

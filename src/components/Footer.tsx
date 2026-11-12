@@ -60,7 +60,7 @@ export default function Footer({ lang, dict, ward, navItems, heritages }: Footer
           <ul className="space-y-1">
             {navItems.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className={linkClass}>
+                <Link href={item.href} prefetch={false} className={linkClass}>
                   {item.label}
                 </Link>
               </li>
@@ -82,7 +82,8 @@ export default function Footer({ lang, dict, ward, navItems, heritages }: Footer
         </nav>
       </div>
 
-      <div className="border-t border-cream/20 px-4 py-4 text-center text-sm">{dict.footer.copyright}</div>
+      {/* Extra bottom padding so the floating buttons never cover the copyright line. */}
+      <div className="border-t border-cream/20 px-4 pt-4 pb-24 text-center text-sm md:pb-4">{dict.footer.copyright}</div>
     </footer>
   );
 }

@@ -32,6 +32,8 @@ export default function Nav({ lang, labels, languageLabels, items }: NavProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // Nav links all point at home-page sections. prefetch={false}: prefetching the home page
+  // would make the browser preload its hero photo on every page.
   const linkClass =
     "block rounded-md px-3 py-2 font-medium text-cream hover:bg-crimson hover:text-white focus-visible:bg-crimson focus-visible:outline-cream";
 
@@ -55,7 +57,7 @@ export default function Nav({ lang, labels, languageLabels, items }: NavProps) {
         <ul className="hidden items-center gap-1 md:flex">
           {items.map((item) => (
             <li key={item.href}>
-              <Link href={item.href} className={linkClass}>
+              <Link href={item.href} prefetch={false} className={linkClass}>
                 {item.label}
               </Link>
             </li>
@@ -69,7 +71,7 @@ export default function Nav({ lang, labels, languageLabels, items }: NavProps) {
       <ul id={menuId} hidden={!open} className="space-y-1 border-t border-cream/20 px-4 pt-2 pb-4 md:hidden">
         {items.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} className={linkClass} onClick={() => setOpen(false)}>
+            <Link href={item.href} prefetch={false} className={linkClass} onClick={() => setOpen(false)}>
               {item.label}
             </Link>
           </li>

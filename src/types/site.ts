@@ -12,7 +12,8 @@ export type SourceRegistry = z.infer<typeof sourcesSchema>;
 /** content/credits.json — photo credit line. `team: null` until the team name is confirmed. */
 export const creditsSchema = z.object({
   photos: z.object({
-    team: z.string().min(1).nullable(),
+    /** The team name in each language, e.g. { en: "Samyojan", ne: "संयोजन" }. */
+    team: localized.nullable(),
     year: z.number().int(),
   }),
 });

@@ -1,6 +1,9 @@
 {
   "photos": {
-    "team": "Samyojan",
+    "team": {
+      "en": "Samyojan",
+      "ne": "संयोजन"
+    },
     "year": 2026
   }
 }

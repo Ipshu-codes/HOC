@@ -10,6 +10,10 @@ export const wardSchema = z.object({
     address: localized,
     phone: z.string().min(1),
     email: z.email(),
+    /** [lat, lng] of the ward office, for the map. */
+    coordinates: z.tuple([z.number(), z.number()]).nullable(),
+    /** true when the point is only the general area (shown as such on the map). */
+    coordinatesApproximate: z.boolean().default(false),
   }),
   chairperson: localized,
   logo: z.object({

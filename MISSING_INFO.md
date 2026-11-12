@@ -66,12 +66,14 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 3. Both sites
 
-- [ ] **Coordinates** (`coordinates: null` in all four files): no photo has GPS data. Get lat/lng from a site visit or by placing a pin on OpenStreetMap. Needed for Phase 7.
-- [ ] **Ward 16 boundary GeoJSON**: not in the raw data. Needed for Phase 7. It might be available from KMC or OSM.
-- [x] **Photo credit line**: "Photos: Samyojan, 2026" (`content/credits.json`). It is shown on the detail pages, the gallery page and inside the lightbox.
-  - [ ] Should the Nepali pages spell the team name in Devanagari? They currently show "तस्बिर: Samyojan, 2026".
+- **Coordinates** (given by the ward team on 12 Nov 2026, checked against OpenStreetMap):
+  - [x] **Mhepi Ajima**: 27.7172, 85.3082. OSM reverse-geocodes this to Naya Bazar, Kathmandu-16 ✓. It is in the content (shown on the map in dev; the site is still a draft).
+  - [ ] **Nanak Math: the given point 27.73678, 85.28086 is wrong.** OSM reverse-geocodes it to "शिव को मन्दिर, Nagarjun-01, Nagarjun Municipality", a different Shiva temple in another municipality about 2.5 km west of Ward 16. It is **not used**; `coordinates` stays `null`, so Nanak Math has no map marker and no "View on 3D Map" button. Please send a corrected point. The sources place it in Naya Bazar by the Bishnumati bridge; OSM's Naya Bazar (Kathmandu-16) is around 27.7216, 85.3075.
+  - [x] **Ward office**: about 27.7290, 85.3016 (Balaju, Kathmandu-16 on OSM). It is marked approximate in `content/ward.json` and on the map. An exact point would allow a small embedded map in the home Contact section.
+- [ ] **Ward 16 boundary GeoJSON**: not in the raw data, so the map has no ward outline. It might be available from KMC or OSM.
+- [x] **Photo credit line**: "Photos: Samyojan, 2026" / "तस्बिर: संयोजन, २०२६" (`content/credits.json`). It is shown on the detail pages, the gallery page and inside the lightbox.
 - [ ] **Bhandara photo**: the `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so someone outside the team took them. `bhandara.webp` (from `IMG-20261104-WA0022.jpg`) was **removed from the site** in Phase 6; the original stays in raw-data. **Re-add only with the photographer's permission and a "Photo courtesy of …" credit.** No other WhatsApp photo is published.
-- [ ] **Consent for people in photos**: see `docs/photos-with-people.md`. Nine published photos are marked `"pending"` in `content/photo-consent.json`. Changing a photo to `"removed"` hides it everywhere; changing it to `"approved"` keeps it.
+- [ ] **Consent decisions for people in photos**: see `docs/photos-with-people.md`. All nine are still `"pending"` in `content/photo-consent.json` because no decisions have been received yet. **The strict `npm run build` now fails while any photo is `"pending"`.** Set each to `"approved"` (kept) or `"removed"` (hidden everywhere). `build:preview` still allows `"pending"`.
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
 - [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
 - [ ] **Video**: none is used yet. Decide whether to include a short clip; the files are 6–297 MB and would need compressing.

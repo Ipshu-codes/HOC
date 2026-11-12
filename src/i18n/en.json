@@ -127,6 +127,27 @@
       "{index} of {total}": "{index} of {total}"
     }
   },
+  "map": {
+    "title": "3D Map",
+    "intro": "Explore Ward No. 16 in 3D. Drag to move, right-drag or two-finger drag to tilt and turn, and select a place to see it up close.",
+    "floatingButton": "3D Map",
+    "placesHeading": "Places",
+    "wardOffice": "Ward Office",
+    "approximate": "Approximate location",
+    "readMore": "Read more",
+    "showOnMap": "Show {name} on the map",
+    "loading": "Loading map…",
+    "noWebGL": "Your browser cannot display the 3D map. You can still read about each place on its page.",
+    "mapLabel": "3D map of Ward No. 16",
+    "controls": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "resetBearing": "Reset rotation to north",
+      "fullscreenEnter": "Show map full screen",
+      "fullscreenExit": "Exit full screen",
+      "closePopup": "Close"
+    }
+  },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."
   }

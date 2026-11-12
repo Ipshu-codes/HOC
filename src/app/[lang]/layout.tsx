@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { mukta, playfair } from "@/app/fonts";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import MapButton from "@/components/MapButton";
 import { getHeritageList, getWard } from "@/lib/content";
 import { getDictionary, getNavItems, isLocale, joinList } from "@/lib/i18n";
 import { LOCALES } from "@/types/heritage";
@@ -56,6 +57,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
           {children}
         </main>
         <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />
+        <MapButton lang={lang} label={dict.map.floatingButton} />
       </body>
     </html>
   );

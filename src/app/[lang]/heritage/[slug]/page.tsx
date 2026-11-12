@@ -87,6 +87,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
         <div className="mx-auto w-full max-w-6xl px-4 pt-20 pb-8 md:pb-12">
           <Link
             href={`/${lang}/#heritages`}
+            prefetch={false}
             className="text-sm font-medium text-cream underline-offset-4 hover:underline focus-visible:outline-cream"
           >
             <span aria-hidden="true">← </span>
@@ -135,7 +136,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
               ))}
             </ul>
             <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2">
-              <PhotoCredit credits={credits} dict={dict} />
+              <PhotoCredit credits={credits} dict={dict} lang={lang} />
               <Link
                 href={`/${lang}/gallery/?site=${heritage.slug}`}
                 className="font-bold text-crimson underline underline-offset-4 hover:text-brick"
