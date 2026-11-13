@@ -1,6 +1,6 @@
 # MISSING_INFO.md — gaps to fill before launch
 
-Everything here is either missing from the raw data or needs a human to check it.
+Everything here is either missing from the raw data or needs a human to check it. Feature ideas live in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 **Current status (13 Nov 2026):**
 
@@ -34,7 +34,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 ## 1. Mhepi Ajima
 
 - [x] **History, legends, festivals, tradition, architecture, present day**: from the chief priest's interview (13 Nov 2026). Every claim is attributed to him ("according to the priest") and cited by paragraph.
-- [ ] **Confirm the chief priest agrees to be named.** His credit is one setting: `content/credits.json` → `people` → `mhepi-priest` ("the temple's chief priest, Bhushan Ratna Bajracharya"). The History section and the Sources entry use it through `{person:mhepi-priest}`. If he prefers not to be named, change the text there to "the temple's chief priest" / "मन्दिरका मूल पुरोहित"; nothing else needs to change. **Don't push or deploy until he has agreed** (13 Nov 2026).
+- [x] **The chief priest agreed to be named** (confirmed by the ward team, 13 Nov 2026). His credit is one setting: `content/credits.json` → `people` → `mhepi-priest` ("the temple's chief priest, Bhushan Ratna Bajracharya"). The History section and the Sources entry use it through `{person:mhepi-priest}`. If he prefers not to be named, change the text there to "the temple's chief priest" / "मन्दिरका मूल पुरोहित"; nothing else needs to change.
 - [x] **Main deity**: the chief priest's interview confirms **Yogambar Jnaneshwari** as the main deity (popularly called Mhepi Ajima), matching the temple's inscriptions. Resolved by the interview, 13 Nov 2026.
 - [x] **Founding year**: not recorded. Quick facts say so and give what is known (tradition traces it to the Swayambhu Purana; most images placed before VS 2030).
 - [ ] **Jatra length (conflict in the interview)**: the priest says a five-day mela runs "from Chaitra Shukla Chaturdashi … until Baishakh trayodashi", which is more than five days. Until confirmed, the page and the chatbot (EN + NE) say only "the yearly jatra", starting on Chaitra Shukla Chaturdashi, with no duration or end date (Phase 9 review).
@@ -92,13 +92,13 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - [x] **Nanak Math**: 27.7257, 85.3064 (from gurdwara-sahib.pages.dev). OSM reverse-geocodes it to an amenity named **"Gurunayak Math"**, Naya Bazar, Kathmandu-16 ✓. It is marked approximate (`coordinatesApproximate: true`). The first point offered, 27.73678, 85.28086, landed on a Shiva temple in Nagarjun Municipality and was rejected.
   - [ ] Confirm the exact point on a site visit, then remove `coordinatesApproximate`.
   - [x] **Ward office**: about 27.7290, 85.3016 (Balaju, Kathmandu-16 on OSM). It is marked approximate in `content/ward.json` and on the map. An exact point would allow a small embedded map in the home Contact section.
-- [ ] **Ward 16 boundary GeoJSON**: not in the raw data, so the map has no ward outline. It might be available from KMC or OSM.
+- **Ward boundary on the map:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) (Later). The boundary data is still not in the raw data.
 - [x] **Photo credit line**: "Photos: Samyojan, 2026" / "तस्बिर: संयोजन, २०२६" (`content/credits.json`). It is shown on the detail pages, the gallery page and inside the lightbox.
 - [ ] **Bhandara photo**: the `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so someone outside the team took them. `bhandara.webp` (from `IMG-20261104-WA0022.jpg`) was **removed from the site** in Phase 6; the original stays in raw-data. **Re-add only with the photographer's permission and a "Photo courtesy of …" credit.** No other WhatsApp photo is published.
 - [x] **Consent decisions for people in photos**: all nine photos in `docs/photos-with-people.md` were set to `"approved"` in `content/photo-consent.json` on 12 Nov 2026 ("use photos with people"). Changing one to `"removed"` still hides it everywhere. The strict build fails if any photo is ever `"pending"` again.
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
 - [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
-- [ ] **Video**: none is used yet. Decide whether to include a short clip; the files are 6–297 MB and would need compressing.
+- **Video:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("YouTube videos", Soon after launch).
 
 ## 3b. Home page
 
@@ -154,6 +154,6 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - [ ] **Better coordinates.** Nanak Math and the ward office are marked approximate; the Mhepi Ajima point (27.727614400718654, 85.30859929776761) was given by the ward team on 13 Nov 2026 and is not marked approximate. Walking paths end at these points, so they are only as good as the coordinates.
 - [ ] **Verify the walking route on foot.** Walk Mhepi Ajima → Nanak Math (and on to the ward office if it is added) with the map open on a phone. Check that the stops are in a sensible order, the path shown is walkable (once real paths are fetched), and the distances and times are about right. Note anything unsafe or confusing (busy crossings, steps, closed lanes).
 - [x] **Route needs two published sites.** Mhepi Ajima was published on 13 Nov 2026, so the route now appears with both stops (checked in the strict build).
-- [ ] **Categories.** The sites have no category field. The map's filters use only what exists (heritage site / ward office) and the filter buttons hide when a single category is present. Add a `category` field to the content schema only once the ward agrees on real categories (e.g. temple, math, kuthi).
+- **Map categories:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("More ward heritage sites", Later).
 - [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, filters, legend, route, detail panel) were written by the developer and need a native-speaker review.
-- [ ] **Audio stories** (later): need community recordings with written consent, then a place for them in the content schema and the detail panel.
+- **Audio stories:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("Phase 9B: Spatial Memory Archive", Before launch).
