@@ -51,12 +51,15 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Entry fee** (not shown on the page until known)
 - [ ] **Photography rules** and dress/footwear etiquette (not shown on the page until known)
 - [ ] **Festival months**: the docx gives the festival names but not months, except Akshaya Tritiya (Baishakh, from the plaques) and Asar Shashthi. The `month` field is omitted for Basanta Panchami, Kojagrat Purnima, Teej, Vijaya Dashami, Navaratri and the Sorha Shraddha full moon.
-- [ ] **Have a local source confirm the Guru Nanak connection.** The History section ("The name and the age of the math") says the name is *believed* to come from Guru Nanak Dev, citing two web articles:
-  - Hindustan Times, 2014 (reprinted on barusahib.org): visit in 1516, on the third udasi, first night on the Bishnumati bank. **Note:** this article is about a Guru Nanak shrine in **Thapathali**, not the Balaju math.
-  - Spotlight, 2019: he stayed in Balaju and meditated at the site now known as Nanak Math, next to the Bishnumati bridge. It gives no year.
-  - Neither article states outright that the math is *named* after him.
-  - The math's own written account and signboards do not mention Guru Nanak's visit.
-- [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; the web articles date Guru Nanak's visit to **1516**. All three are shown side by side, each attributed, in History (EN + NE). The Architecture section also mentions the first two.
+- [ ] **Have a local source confirm the Guru Nanak connection.** The History section ("The name and the age of the math") says Sikh tradition *associates* the math with Guru Nanak Dev, who is *believed* to have visited and meditated here. It cites three web sources:
+  - **Spotlight, 2019:** he came on his third udasi; the math is next to the Bishnumati bridge, Balaju. It gives no year.
+  - **Nepali Times, 2014 ("Little Punjab"):** he meditated for more than a year at the site now known as Nanak Math, Balaju. It gives no year.
+  - **Wikipedia, "Sikhism in Nepal":** "It is believed that Guru Nanak visited the math in 1516". Its only citation for the year is a 2013 SikhNet news item.
+  - None of the sources says the math is *named* after him, so the page doesn't say so either.
+  - The math's own written account and signboards do not mention Guru Nanak.
+  - The Hindustan Times / barusahib.org article was dropped (13 Nov 2026) because it is about a different shrine, in Thapathali.
+- [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; published accounts of Sikh tradition place Guru Nanak's believed visit **around 1516**. All three are shown side by side, each attributed, in History (EN + NE) and in the chatbot. The Architecture section also mentions the first two.
+- [ ] **Alternative name "Siddheshwar Mahadev"**: mentioned by the ward team on 13 Nov 2026, but the message with the six steps for it never arrived. Step 1, a search of raw-data, found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The web sources above don't mention it either. Not added to the site yet.
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
 - [ ] **Identify photographed features** (the alt text is descriptive only):

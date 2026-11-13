@@ -113,15 +113,15 @@ Under the math's rules, the outgoing mahant recommends his successor to the Guth
 
 ### The name and the age of the math {#name-and-age}
 
-<!-- source: web-hindustan-times-2014, web-spotlight-2019 | HT/barusahib: 1516, third udasi, first night in Nepal on the Bishnumati bank (article is about a shrine in Thapathali); Spotlight: third udasi, stayed in Balaju, meditated at the site now called Nanak Math next to Bishnumati bridge. Neither states the naming explicitly. -->
-The math's own written account and signboards do not explain the name "Nanak". It is believed to come from Guru Nanak Dev, whom published articles connect with this place. According to them, he came to Nepal on his third udasi, a long journey of travel and teaching. A 2014 Hindustan Times report dates his visit to Kathmandu to 1516 and says he spent his first night in Nepal on the bank of the Bishnumati. A 2019 article in Spotlight magazine says he stayed in Balaju and meditated at the place now known as Nanak Math, next to the Bishnumati bridge. No local source has yet confirmed this connection.
+<!-- source: web-spotlight-2019, web-nepali-times-2014, web-wikipedia-sikhism-nepal | Spotlight: third udasi; math next to Bishnumati bridge, Balaju. Nepali Times: meditated >1 year at the site now known as Nanak Math, Balaju (no year). Wikipedia: "It is believed that Guru Nanak visited the math in 1516" (cites SikhNet, 2013). None says the math is named after him. -->
+The math's own written account and signboards do not explain the name "Nanak". Sikh tradition associates the math with Guru Nanak Dev, who is believed to have visited this place and meditated here. A 2019 article in Spotlight magazine says he came to Nepal on his third udasi, a long journey of travel and teaching, and places the math beside the Bishnumati bridge in Balaju. A 2014 Nepali Times article says he spent more than a year meditating at the site now known as Nanak Math. According to some accounts, cited in Wikipedia's article on Sikhism in Nepal, his visit took place around 1516. No local source has yet confirmed this association.
 
-<!-- source: nanak-account, nanak-signboards, web-hindustan-times-2014 | ages side by side, each attributed -->
+<!-- source: nanak-account, nanak-signboards, web-wikipedia-sikhism-nepal | ages side by side, each attributed -->
 The sources give different accounts of the math's age:
 
 - **The math's written account:** its guru gaddi is a thousand years old.
 - **The signboards at the math:** a guru–disciple tradition that has continued without a break for 5,000 years.
-- **Published articles:** Guru Nanak Dev's visit to Kathmandu in 1516.
+- **Published accounts of Sikh tradition:** Guru Nanak Dev's believed visit, around 1516.
 
 ### Mahayogi Shri Brahmaharidas Maharaj {#brahmaharidas}
 
