@@ -8,6 +8,7 @@ import MapSidebar from "@/components/map/MapSidebar";
 import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
 import RouteNav from "@/components/map/RouteNav";
 import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
+import { isMobile } from "@/lib/breakpoints";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
@@ -18,9 +19,6 @@ export interface MapPreview {
   width: number;
   height: number;
 }
-
-/** Phones (under 768 px) get the tap-to-load button; larger screens always load the map. */
-const PHONE_QUERY = "(max-width: 47.99rem)";
 
 /**
  * True when the visitor came here from another page of this site: a client-side
@@ -64,8 +62,6 @@ export function MapExplorerFromUrl(props: Omit<MapExplorerProps, "requestedId">)
 /** Lower-cases and normalises text so "Nanak Math" and "nanak math" match; Nepali is unaffected. */
 const normalise = (text: string) => text.normalize("NFC").toLocaleLowerCase().trim();
 
-const isPhone = () => window.matchMedia("(max-width: 1023px)").matches;
-
 /**
  * The heritage map page: sidebar (search, filters, places, walking route, legend), the 3D map,
  * and a detail panel. This component owns all the state; MapView only draws it.
@@ -77,15 +73,16 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   const [selectedId, setSelectedId] = useState<string | null>(
     places.some((place) => place.id === requestedId) ? requestedId : null,
   );
-  // The map (~800 KB of JavaScript plus ~3.5 MB of tiles) is the heaviest thing on the site. On phones a
-  // direct visit first shows a still picture and a "Show 3D map" button; null = not decided yet
-  // (the prerendered HTML and the first render show the picture). Choosing a place loads it too.
+  // The map (~800 KB of JavaScript plus ~3.5 MB of tiles) is the heaviest thing on the site. On mobile
+  // screens (MOBILE_QUERY: under 1024 px, where the map sits above the list) a direct visit first shows
+  // a still picture and a "Show 3D map" button; null = not decided yet (the prerendered HTML and the
+  // first render show the picture). Choosing a place loads it too.
   const [mapOn, setMapOn] = useState<boolean | null>(null);
 
   // Decided once, right after the first paint (window is not available while prerendering).
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
-      setMapOn(!window.matchMedia(PHONE_QUERY).matches || cameFromThisSite());
+      setMapOn(!isMobile() || cameFromThisSite());
     });
     return () => cancelAnimationFrame(frame);
   }, []);
@@ -119,7 +116,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
 
   /** On phones the map sits above the controls: bring it back into view after a choice. */
   const showMap = useCallback(() => {
-    if (isPhone()) mapWrapRef.current?.scrollIntoView({ block: "start" });
+    if (isMobile()) mapWrapRef.current?.scrollIntoView({ block: "start" });
   }, []);
 
   const select = useCallback(

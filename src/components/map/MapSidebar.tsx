@@ -3,7 +3,7 @@
 import MapLegend from "@/components/map/MapLegend";
 import RouteNav from "@/components/map/RouteNav";
 import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
-import { fill } from "@/lib/format";
+import { fill, formatNumber } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
@@ -39,7 +39,7 @@ export default function MapSidebar(props: MapSidebarProps) {
   const t = labels;
   const allKinds = [...new Set(places.map((place) => place.kind))];
   const filtersActive = query.trim() !== "" || kinds.size > 0;
-  const countText = fill(results.length === 1 ? t.search.count.one : t.search.count.other, { n: results.length });
+  const countText = fill(results.length === 1 ? t.search.count.one : t.search.count.other, { n: results.length }, lang);
 
   return (
     <div className={`space-y-5 ${props.className ?? ""}`}>
@@ -181,7 +181,7 @@ export default function MapSidebar(props: MapSidebarProps) {
                         current ? "bg-white text-crimson" : "bg-ink text-white"
                       }`}
                     >
-                      {done ? "✓" : index + 1}
+                      {done ? "✓" : formatNumber(index + 1, lang)}
                     </span>
                     <span>
                       <span className="block font-bold">{place.name}</span>
