@@ -6,8 +6,8 @@ Captured on 13 Nov 2026 in Microsoft Edge from `npm run build:preview`. The Mhep
 |---|---|
 | `chat-en-375.jpg`, `chat-ne-375.jpg` | Phone: a question tapped in the Nanak Math topic, with the answer, "Read more →", 3 related questions, "← Back", "Topics" and "My question isn't here" |
 | `chat-not-here-en-375.jpg`, `chat-not-here-ne-375.jpg`, `chat-not-here-en-1440.jpg`, `chat-not-here-ne-1440.jpg` | The "My question isn't here" reply: the explanation, tappable phone and email links (Devanagari digits on Nepali pages) and a single "← Back to topics" button |
-| `nani-button-en-375.jpg`, `nani-button-ne-375.jpg`, `nani-button-ne-1440.jpg` | The floating Nani button. On phones the speech bubble sits above Nani, clear of the 3D Map button (checked at 320 and 375 px in both languages). |
-| `nani-chat-en-375.jpg`, `nani-chat-ne-375.jpg`, `nani-chat-ne-1440.jpg` | The chat with Nani: her picture and name in the header, and a small static avatar beside each of her messages |
+| `nani-big-en-375.jpg`, `nani-big-ne-375.jpg`, `nani-big-ne-768.jpg`, `nani-big-en-1440.jpg`, `nani-big-ne-1440.jpg` | Big Nani standing bottom-left: 130 px tall on phones (bubble above her), 260 px from 768 px (bubble beside her face). She doesn't overlap the 3D Map button at 320, 375, 768 or 1440 px. |
+| `nani-big-chat-en-375.jpg`, `nani-big-chat-ne-375.jpg`, `nani-big-chat-en-1440.jpg`, `nani-big-chat-ne-1440.jpg` | The chat open: above Nani on phones, beside her on wider screens. Her face and name are in the header, with a small static avatar beside each of her messages. |
 | `chat-en-1440.jpg`, `chat-ne-1440.jpg` | Desktop: the transcript after browsing several topics |
 
 How it works: there is no typing. The flow is topic list → question list → answer.

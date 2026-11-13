@@ -149,7 +149,8 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
     <section
       role="dialog"
       aria-label={labels.dialogLabel}
-      className="fixed bottom-24 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:left-6"
+      // Phones: above the 130 px Nani. From 768 px: beside the 260 px Nani, so she stays in view.
+      className="fixed bottom-40 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-12rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:bottom-6 md:left-[calc(2rem+207px)] md:max-h-[min(38rem,calc(100dvh-8rem))]"
     >
       <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />

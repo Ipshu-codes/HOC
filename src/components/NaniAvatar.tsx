@@ -1,5 +1,5 @@
-/** Display sizes of Nani's picture (CSS px); each has a 2x file for high-density screens. */
-type NaniSize = 28 | 40 | 64;
+/** Display sizes of the round face picture (CSS px); each has a 2x file. The floating button uses the big cut-out figure instead. */
+type NaniSize = 28 | 40;
 
 interface NaniAvatarProps {
   size: NaniSize;
@@ -11,7 +11,7 @@ interface NaniAvatarProps {
 }
 
 /**
- * Nani, the chatbot guide. Files come from scripts/optimize-images.ts
+ * Nani's face, for the chat header and message avatars. Files come from scripts/optimize-images.ts
  * (public/images/nani/nani-<size>.webp, a face crop of the original illustration).
  */
 export default function NaniAvatar({ size, alt, animated = false, className = "" }: NaniAvatarProps) {

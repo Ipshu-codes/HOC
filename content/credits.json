@@ -7,7 +7,10 @@
     "year": 2026
   },
   "nani": {
-    "creator": null,
-    "source": "Nani.jpeg (raw-data, added 13 Nov 2026)"
+    "creator": {
+      "en": "Gemini (AI-generated image)",
+      "ne": "जेमिनी (एआई-निर्मित चित्र)"
+    },
+    "source": "Nani.jpeg (raw-data, added 13 Nov 2026); generated with Google Gemini, per the ward team"
   }
 }

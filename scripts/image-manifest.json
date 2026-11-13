@@ -290,9 +290,17 @@
       28,
       40,
       56,
-      64,
-      80,
-      128
-    ]
+      80
+    ],
+    "figure": {
+      "heights": [
+        130,
+        260,
+        520
+      ],
+      "tolerance": 34,
+      "pocketTolerance": 24,
+      "minPocket": 400
+    }
   }
 }

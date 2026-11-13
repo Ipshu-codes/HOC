@@ -120,15 +120,17 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - The `alt` text in all `gallery` entries of the `.ne.md` files
 - `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude
 - `src/i18n/ne.json` → `chat.didntFindAnswer`: the chatbot's "मेरो प्रश्न यहाँ छैन" reply (wording given by the ward team on 13 Nov 2026), plus `chat.backToTopics` and the other chat labels. Phone numbers in Nepali chat replies are shown in Devanagari digits (०१-४९८१६५३).
-- `src/i18n/ne.json` → Nani: `chat.bubble`, `chat.greeting` and `chat.dialogLabel`/`naniAlt` (wording given by the ward team, 13 Nov 2026); `credits.naniCharacter` ("नानी पात्र: …", by Claude).
+- `src/i18n/ne.json` → Nani: `chat.bubble`, `chat.greeting` and `chat.dialogLabel`/`naniAlt` (wording given by the ward team, 13 Nov 2026); `credits.naniCharacter` ("नानी पात्र: …", by Claude); `content/credits.json` → `nani.creator.ne` ("जेमिनी (एआई-निर्मित चित्र)", by Claude).
 - `src/i18n/ne.json` → `home.aboutIntro`: the Nepali About text is **Claude's translation** of the English paragraph given by the ward team on 13 Nov 2026.
 - `content/faq.json`: all Nepali questions (`q_ne`) and answers (`a_ne`) were written by Claude from the page content. Also check that the Nepali question variants match how people would actually ask.
 
 ## 6. Chatbot
 
-- [ ] **Nani's creator** for the About credit "Nani character by …". Set `nani.creator` (EN + NE) in `content/credits.json`. Until then the line shows a placeholder in dev and is left out of builds.
+- [x] **Nani's creator**: made with Google Gemini (ward team, 13 Nov 2026). The About credit reads "Nani character by Gemini (AI-generated image)" / "नानी पात्र: जेमिनी (एआई-निर्मित चित्र)" (`content/credits.json`).
+  - [ ] Confirm that wording, or whether to say just "Gemini".
 - [ ] **Nani animation**: `Nani.jpeg` is a single still JPEG (848×1264, one frame), so no animated WebP or MP4/WebM loop could be made from it. The floating button uses the still picture with a gentle CSS bob-and-tilt instead, which is static under reduced motion. If an animated original exists, add it to raw-data and convert it (target < 300 KB, plus a still frame).
-- [ ] Nani appears to be an illustration of a child. Confirm the artwork may be used on a public government website.
+- [ ] Nani is an AI-generated illustration of a child. Confirm the ward is happy to publish it on a public government website, and that Gemini's terms allow this use.
+- **Size (13 Nov 2026):** Nani is a large half-body cut-out (background removed by `npm run optimize-images`). She is 130 px tall on phones and 260 px from 768 px, standing bottom-left. The panel opens beside her (wider screens) or above her (phones).
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.

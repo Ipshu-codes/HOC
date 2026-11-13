@@ -183,3 +183,30 @@
     animation: none;
   }
 }
+
+/* The big floating Nani: a slower, smaller sway than the face avatar, rocking from her base. */
+@keyframes nani-sway {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-4px) rotate(-1.2deg);
+  }
+  60% {
+    transform: translateY(-1px) rotate(1deg);
+  }
+}
+
+@layer components {
+  .nani-figure-animated {
+    animation: nani-sway 5s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nani-figure-animated {
+    animation: none;
+  }
+}

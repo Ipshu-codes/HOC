@@ -3,7 +3,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import type { ChatPanelProps } from "@/components/ChatPanel";
-import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
 
 // The chat window is a separate chunk: it is not needed to show the page,
@@ -42,16 +41,28 @@ export default function Chatbot(props: ChatbotProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        className="group fixed bottom-4 left-4 z-30 flex items-end gap-2 text-left md:bottom-6 md:left-6"
-        style={{ marginBottom: "env(safe-area-inset-bottom)" }}
+        // Nani stands on the bottom edge of the screen: 130 px tall on phones, 260 px from 768 px.
+        className="group fixed bottom-0 left-2 z-30 block text-left md:left-4"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <span className="rounded-full bg-white p-0.5 shadow-lg ring-2 ring-crimson group-hover:ring-brick">
-          <NaniAvatar size={64} alt="" animated className="size-16" />
-        </span>
+        {/* Half-body cut-out (scripts/optimize-images.ts). Low fetch priority so it never
+            delays the page's main photo; the files are 7–54 KB. */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+        <img
+          src="/images/nani/nani-figure-260.webp"
+          srcSet="/images/nani/nani-figure-130.webp 104w, /images/nani/nani-figure-260.webp 207w, /images/nani/nani-figure-520.webp 414w"
+          sizes="(min-width: 48rem) 207px, 104px"
+          width={207}
+          height={260}
+          alt=""
+          fetchPriority="low"
+          decoding="async"
+          className="nani-figure-animated h-[130px] w-auto drop-shadow-lg md:h-[260px]"
+        />
         {/* Phones: the bubble sits above Nani, so it never runs into the 3D Map button.
-            Wider screens: beside her. Hidden while the chat is open, so it never covers the panel. */}
+            Wider screens: beside her face. Hidden while the chat is open, so it never covers the panel. */}
         <span
-          className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl rounded-bl-sm bg-crimson px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick sm:static sm:mb-3 sm:w-auto sm:max-w-64 sm:rounded-bl-2xl ${
+          className={`absolute bottom-full left-0 mb-1 w-52 rounded-2xl rounded-bl-sm bg-crimson px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick md:bottom-auto md:left-full md:top-8 md:mb-0 md:ml-1 md:w-60 md:rounded-bl-2xl md:rounded-tl-sm md:text-base ${
             open ? "hidden" : ""
           }`}
         >
