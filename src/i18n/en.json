@@ -58,7 +58,7 @@
       "other": "Read on to learn how to visit them, or find them on the 3D map."
     },
     "aboutTitle": "About Ward No. 16",
-    "aboutIntro": "Ward No. 16 is a ward of Kathmandu Metropolitan City. Its ward office is in {address}.",
+    "aboutIntro": "Ward No. 16 is one of the 32 administrative wards of Kathmandu Metropolitan City, located in Kathmandu, Nepal. The ward encompasses the Balaju area and its surrounding localities, reflecting a rich blend of urban development, community life, and cultural heritage. It is home to historically and culturally significant sites such as {sites}, which preserve important religious traditions, local stories, and cultural practices. Beyond its historical significance, Ward No. 16 represents a living community where heritage, identity, and modern urban life coexist.",
     "aboutMunicipality": "Municipality",
     "aboutWard": "Ward",
     "aboutOffice": "Ward office",
@@ -66,7 +66,6 @@
       "one": "Heritage site on this website",
       "other": "Heritage sites on this website"
     },
-    "aboutPlaceholder": "[PLACEHOLDER: more about Ward No. 16 — localities, population, area and history — once a source provides them. Shown in development only.]",
     "heritagesTitle": {
       "one": "Heritage site",
       "other": "Heritage sites"
@@ -105,7 +104,9 @@
   },
   "credits": {
     "photos": "Photos: {team}, {year}",
-    "teamPlaceholder": "[PLACEHOLDER: team name]"
+    "teamPlaceholder": "[PLACEHOLDER: team name]",
+    "naniCharacter": "Nani character by {creator}",
+    "creatorPlaceholder": "[PLACEHOLDER: creator]"
   },
   "gallery": {
     "title": "Gallery",
@@ -148,11 +149,11 @@
     }
   },
   "chat": {
-    "bubble": "How can I help?",
-    "title": "Ward 16 heritage guide",
-    "close": "Close chat",
+    "bubble": "Namaste! I'm Nani. How can I help?",
+    "title": "Nani",
+    "close": "Close chat with Nani",
     "startOver": "Start over",
-    "greeting": "Namaste! What would you like to know about? Choose a topic.",
+    "greeting": "Namaste! I'm Nani, your guide to the heritage of Ward No. 16. Pick a topic below.",
     "topicPrompt": "Here are the questions about {topic}:",
     "topicsPrompt": "Choose a topic:",
     "back": "← Back",
@@ -163,10 +164,12 @@
     "didntFindAnswer": "Sorry, I can't help with that.\nI can only answer questions about the heritage sites of Ward No. 16 and this website. Your question may be outside what I cover, or we may not have that information yet.\nFor anything else, please contact the Ward 16 office:",
     "readMore": "Read more →",
     "you": "You",
-    "bot": "Guide",
+    "bot": "Nani",
     "backToTopics": "← Back to topics",
     "phoneLabel": "Phone",
-    "emailLabel": "Email"
+    "emailLabel": "Email",
+    "dialogLabel": "Nani, the Ward 16 heritage guide",
+    "naniAlt": "Nani, the Ward 16 heritage guide"
   },
   "contactPage": {
     "title": "Contact",

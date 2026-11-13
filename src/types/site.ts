@@ -21,6 +21,12 @@ export const creditsSchema = z.object({
     team: localized.nullable(),
     year: z.number().int(),
   }),
+  /** The chatbot character. `creator: null` until confirmed: the About credit is then left out of builds. */
+  nani: z.object({
+    creator: localized.nullable(),
+    /** Where the artwork came from (for the team; not shown on the site). */
+    source: z.string().min(1),
+  }),
 });
 export type Credits = z.infer<typeof creditsSchema>;
 

@@ -3,6 +3,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import type { ChatPanelProps } from "@/components/ChatPanel";
+import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
 
 // The chat window is a separate chunk: it is not needed to show the page,
@@ -33,22 +34,29 @@ export default function Chatbot(props: ChatbotProps) {
 
   return (
     <>
+      {/* Nani with her speech bubble. The button's accessible name is the bubble text, which
+          names Nani, so the picture itself is alt="" (it would only repeat the name). */}
       <button
         ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        // On phones the label may wrap to two lines (max-w-44) so it never runs into the 3D map button.
-        className="fixed bottom-4 left-4 z-30 flex max-w-44 items-center gap-2 rounded-full bg-crimson py-2 pr-4 pl-2 text-left text-sm leading-tight font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick sm:max-w-none sm:text-base md:bottom-6 md:left-6"
+        className="group fixed bottom-4 left-4 z-30 flex items-end gap-2 text-left md:bottom-6 md:left-6"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
-        <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-crimson">
-          <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
-            <path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-          </svg>
+        <span className="rounded-full bg-white p-0.5 shadow-lg ring-2 ring-crimson group-hover:ring-brick">
+          <NaniAvatar size={64} alt="" animated className="size-16" />
         </span>
-        {props.labels.bubble}
+        {/* Phones: the bubble sits above Nani, so it never runs into the 3D Map button.
+            Wider screens: beside her. Hidden while the chat is open, so it never covers the panel. */}
+        <span
+          className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl rounded-bl-sm bg-crimson px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick sm:static sm:mb-3 sm:w-auto sm:max-w-64 sm:rounded-bl-2xl ${
+            open ? "hidden" : ""
+          }`}
+        >
+          {props.labels.bubble}
+        </span>
       </button>
 
       {open && (

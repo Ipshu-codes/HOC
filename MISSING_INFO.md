@@ -104,7 +104,8 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Phone**: 01-4981653
 - [x] **Email**: ward16@kathmandu.gov.np
 - [ ] **Office hours**
-- [ ] **Ward facts** for the About section: area, population, tole names, etc. The home page About section currently has only the municipality, ward number, office location and the list of sites. A dev-only `[PLACEHOLDER]` box (`home.aboutPlaceholder` in `src/i18n/*.json`) marks the gap. Production builds never render it, and `verify-output` would fail if they did.
+- [x] **About text**: a paragraph given by the ward team on 13 Nov 2026 replaces the About intro (EN; the NE is a translation). It is not from raw-data. The site names in it come from the visible-site list, so a draft site is never named.
+- [ ] **More ward facts** for the About section: area, population, tole names, etc. The home page About section currently has only the municipality, ward number, office location and the list of sites. A dev-only `[PLACEHOLDER]` box (`home.aboutPlaceholder` in `src/i18n/*.json`) marks the gap. Production builds never render it, and `verify-output` would fail if they did.
 - [x] **Ward chairperson**: Rojina Shrestha (in `ward.json`; not yet shown on the site)
   - [ ] Check the Nepali spelling रोजिना श्रेष्ठ (written by Claude)
 - [ ] **Official portal URL**: the ward team named "Kathmandu Metropolitan City Ward No. 16" as the official portal but gave no web address
@@ -119,9 +120,15 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - The `alt` text in all `gallery` entries of the `.ne.md` files
 - `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude
 - `src/i18n/ne.json` → `chat.didntFindAnswer`: the chatbot's "मेरो प्रश्न यहाँ छैन" reply (wording given by the ward team on 13 Nov 2026), plus `chat.backToTopics` and the other chat labels. Phone numbers in Nepali chat replies are shown in Devanagari digits (०१-४९८१६५३).
+- `src/i18n/ne.json` → Nani: `chat.bubble`, `chat.greeting` and `chat.dialogLabel`/`naniAlt` (wording given by the ward team, 13 Nov 2026); `credits.naniCharacter` ("नानी पात्र: …", by Claude).
+- `src/i18n/ne.json` → `home.aboutIntro`: the Nepali About text is **Claude's translation** of the English paragraph given by the ward team on 13 Nov 2026.
 - `content/faq.json`: all Nepali questions (`q_ne`) and answers (`a_ne`) were written by Claude from the page content. Also check that the Nepali question variants match how people would actually ask.
 
 ## 6. Chatbot
+
+- [ ] **Nani's creator** for the About credit "Nani character by …". Set `nani.creator` (EN + NE) in `content/credits.json`. Until then the line shows a placeholder in dev and is left out of builds.
+- [ ] **Nani animation**: `Nani.jpeg` is a single still JPEG (848×1264, one frame), so no animated WebP or MP4/WebM loop could be made from it. The floating button uses the still picture with a gentle CSS bob-and-tilt instead, which is static under reduced motion. If an animated original exists, add it to raw-data and convert it (target < 300 KB, plus a still frame).
+- [ ] Nani appears to be an illustration of a child. Confirm the artwork may be used on a public government website.
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.

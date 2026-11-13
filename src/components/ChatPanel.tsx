@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
 import type { ChatData, ChatEntry, ChatTopic } from "@/types/faq";
 
@@ -147,10 +148,11 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
   return (
     <section
       role="dialog"
-      aria-label={labels.title}
+      aria-label={labels.dialogLabel}
       className="fixed bottom-24 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:left-6"
     >
-      <header className="flex items-center gap-2 bg-crimson px-4 py-3 text-white">
+      <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
+        <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />
         <h2 className="flex-1 font-sans text-lg font-bold text-white">{labels.title}</h2>
         <button
           type="button"
@@ -174,7 +176,9 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
       {/* aria-live: screen readers announce each new message. */}
       <div aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
         {messages.map((message, index) => (
-          <div key={index} className={message.from === "user" ? "flex justify-end" : "flex justify-start"}>
+          <div key={index} className={message.from === "user" ? "flex justify-end" : "flex items-end justify-start gap-2"}>
+            {/* Small static Nani beside her messages. alt="": the sr-only "Nani:" prefix below already names her. */}
+            {message.from === "bot" && <NaniAvatar size={28} alt="" className="size-7" />}
             <div
               className={`max-w-[85%] rounded-xl px-3 py-2 whitespace-pre-line ${
                 message.from === "user" ? "bg-brick text-white" : "bg-white text-ink shadow-sm ring-1 ring-gold/40"

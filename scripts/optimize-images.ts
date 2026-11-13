@@ -88,6 +88,25 @@ async function optimizeLogo(): Promise<void> {
   console.log(`logo: ${sizes.join(", ")} px`);
 }
 
+/**
+ * Nani, the chatbot guide: a square crop around the face of the original
+ * illustration, saved as small WebP files (shown round with CSS) at 1x and 2x
+ * of the sizes used: 28 px message avatar, 40 px header, 64 px floating button.
+ * → public/images/nani/nani-<size>.webp (metadata stripped, as for all images)
+ */
+async function optimizeNani(): Promise<void> {
+  const { source, crop, sizes } = manifest.nani;
+  const dir = path.join(OUT_DIR, "nani");
+  await fs.mkdir(dir, { recursive: true });
+  const face = await sharp(path.join(RAW_DATA_DIR, source))
+    .extract({ left: crop.left, top: crop.top, width: crop.size, height: crop.size })
+    .toBuffer();
+  for (const size of sizes) {
+    await sharp(face).resize(size, size).webp({ quality: 82 }).toFile(path.join(dir, `nani-${size}.webp`));
+  }
+  console.log(`nani: ${sizes.join(", ")} px`);
+}
+
 async function main(): Promise<void> {
   try {
     await fs.access(RAW_DATA_DIR);
@@ -97,6 +116,7 @@ async function main(): Promise<void> {
   }
 
   await optimizeLogo();
+  await optimizeNani();
 
   const images: ManifestImage[] = manifest.images;
   for (const [i, image] of images.entries()) {
