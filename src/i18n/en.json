@@ -130,7 +130,7 @@
   },
   "map": {
     "title": "3D Map",
-    "intro": "Explore Ward No. 16 in 3D. Drag to move, right-drag or two-finger drag to tilt and turn, and select a place to see it up close.",
+    "intro": "Explore Ward No. 16 in 3D. Select a place to read its story and see its photos, or follow the walking route from stop to stop. Drag to move, right-drag or two-finger drag to tilt and turn.",
     "floatingButton": "3D Map",
     "placesHeading": "Places",
     "wardOffice": "Ward Office",
@@ -140,6 +140,7 @@
     "noWebGL": "Your browser cannot display the 3D map. You can still read about each place on its page.",
     "mapLabel": "3D map of Ward No. 16",
     "showMap": "Show 3D map",
+    "showOnMap": "Show {name} on map",
     "showMapNote": "The 3D map downloads about 4 MB of map data.",
     "previewAlt": "Still picture of the map of Ward No. 16 with the places marked",
     "controls": {
@@ -148,7 +149,77 @@
       "resetBearing": "Reset rotation to north",
       "fullscreenEnter": "Show map full screen",
       "fullscreenExit": "Exit full screen",
-      "closePopup": "Close"
+      "closePopup": "Close",
+      "resetView": "Reset map view",
+      "locate": "Show my location",
+      "locateUnavailable": "Your location is not available"
+    },
+    "kinds": {
+      "heritage": "Heritage site",
+      "office": "Ward office"
+    },
+    "search": {
+      "label": "Search places",
+      "placeholder": "Search by name (English or नेपाली)",
+      "clear": "Clear search",
+      "noResults": "No places match your search.",
+      "count": {
+        "one": "{n} place",
+        "other": "{n} places"
+      }
+    },
+    "filters": {
+      "label": "Category",
+      "all": "All",
+      "clear": "Clear search and filters"
+    },
+    "legend": {
+      "heading": "Legend",
+      "selected": "Selected place",
+      "routeStop": "Walking route stop (the number is the order)",
+      "routeLine": "Walking route",
+      "routeStraight": "Straight line between stops (walking path not mapped yet)"
+    },
+    "detail": {
+      "label": "Details of {name}",
+      "close": "Close and return to the map",
+      "viewStory": "View full story",
+      "openPage": "Open the full page",
+      "photos": "Photos",
+      "seeAllPhotos": "See all photos",
+      "sources": "Sources",
+      "sourcesIntro": "The information comes from:",
+      "contact": "Contact",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "route": {
+      "heading": "Walking route",
+      "stops": "Stops",
+      "start": "Start the walk",
+      "exit": "End the walk",
+      "stopOf": "Stop {n} of {total}",
+      "overviewState": "Route overview",
+      "previous": "Previous stop",
+      "next": "Next stop",
+      "overview": "Route overview",
+      "startPoint": "Start",
+      "lastStop": "Last stop",
+      "remaining": {
+        "one": "{n} stop remaining",
+        "other": "{n} stops remaining"
+      },
+      "finished": "No stops remaining",
+      "toNext": "To the next stop:",
+      "straightLine": "{distance} in a straight line",
+      "walkingDistance": "{distance} on foot (about {minutes} min)",
+      "note": "The walking path has not been mapped yet, so the line is straight and distances are straight-line distances, not walking distances.",
+      "source": "Walking paths: {source}"
+    },
+    "units": {
+      "m": "m",
+      "km": "km"
     }
   },
   "chat": {

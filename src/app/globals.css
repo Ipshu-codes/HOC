@@ -154,6 +154,46 @@
   }
 }
 
+/* Heritage map additions (src/components/map/*, MapView.tsx): marker states, popup extras, detail panel. */
+@layer components {
+  /* Selected place: larger pin with a gold border and a dark ring, so it is clear which one is open. */
+  .map-marker-selected {
+    z-index: 2;
+  }
+  .map-marker-selected::before {
+    @apply border-gold bg-brick;
+    transform: rotate(45deg) scale(1.3);
+    box-shadow: 0 0 0 3px var(--color-ink), 0 6px 14px rgb(0 0 0 / 0.4);
+  }
+  /* Walking-route stops carry their order number (set as data-step by MapView). */
+  .map-marker[data-step]::after {
+    @apply absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full border border-white bg-ink text-xs font-bold text-white;
+    content: attr(data-step);
+  }
+  .map-marker-hidden {
+    display: none;
+  }
+  .map-popup-names {
+    @apply my-1;
+  }
+  .map-popup-kind {
+    @apply inline-block rounded-full bg-sand px-2 py-0.5 text-xs font-bold text-brick;
+  }
+  .map-popup-summary {
+    @apply line-clamp-3 text-sm;
+  }
+  .map-popup-btn {
+    @apply mt-2 w-full rounded-lg bg-crimson px-3 py-2 text-center font-bold text-white hover:bg-brick;
+  }
+  /* Custom "reset view" button inside MapLibre's control group. */
+  .map-ctrl-btn {
+    @apply flex size-8 items-center justify-center text-lg leading-none text-ink;
+  }
+  .map-ctrl-btn:focus-visible {
+    @apply outline-2 outline-crimson;
+  }
+}
+
 /* Nani (chatbot guide): a gentle bob-and-tilt on the floating button. Static for reduced motion. */
 @keyframes nani-bob {
   0%,
