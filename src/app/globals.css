@@ -192,7 +192,27 @@
   .map-ctrl-btn:focus-visible {
     @apply outline-2 outline-crimson;
   }
-}
+  /* Detail panel body: slightly tighter than the full page. */
+  .map-detail-prose {
+    @apply text-base;
+
+    & h3 {
+      @apply mt-4 mb-1 font-heading text-lg font-bold text-brick;
+    }
+    & p {
+      @apply my-2;
+    }
+    & ul,
+    & ol {
+      @apply my-2 list-disc pl-5;
+    }
+    & table {
+      @apply my-2 block max-w-full overflow-x-auto text-sm;
+    }
+    & img {
+      @apply max-w-full;
+    }
+  }}
 
 /* Nani (chatbot guide): a gentle bob-and-tilt on the floating button. Static for reduced motion. */
 @keyframes nani-bob {

@@ -227,14 +227,13 @@ export default function MapView({
     const markers = markersRef.current;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const focusPlace = places.find((place) => place.id === focusId);
-    // Start on the requested place, or midway between all places (zoomed out a little when there
-    // are several) so every marker is in view, also on phones and during the slow turn.
+    // Start on the requested place, or midway between all places; with several places the zoom is
+    // fitted below to this map's size, so every marker is in view on phones too.
     const startCenter: [number, number] = focusPlace
       ? toLngLat(focusPlace.coordinates)
       : places.length > 0
         ? midpoint(places.map((place) => toLngLat(place.coordinates)))
         : FALLBACK_CENTER;
-    const startView = { ...START_VIEW, zoom: focusPlace || places.length < 2 ? START_VIEW.zoom : 15.4 };
 
     let map: maplibregl.Map;
     try {
@@ -242,7 +241,7 @@ export default function MapView({
         container,
         style: STYLE_URL,
         center: startCenter,
-        ...startView, // tilted so terrain and 3D buildings are visible
+        ...START_VIEW, // tilted so terrain and 3D buildings are visible
         maxPitch: 75,
         attributionControl: { compact: false, customAttribution: TERRAIN_ATTRIBUTION },
         // Translated labels for the canvas and the built-in buttons (screen readers read these).
@@ -264,6 +263,20 @@ export default function MapView({
     }
     mapRef.current = map;
 
+    // Fit every place into this map's size (top-down fit, then a little extra room for the tilt and
+    // the slow turn). jumpTo before anything has loaded only places the camera, like the options
+    // above; it is not an animation, so the "wait for terrain" rule below still holds.
+    if (!focusPlace && places.length > 1) {
+      const bounds = new maplibregl.LngLatBounds();
+      for (const place of places) bounds.extend(toLngLat(place.coordinates));
+      const fit = map.cameraForBounds(bounds, { padding: 60, bearing: START_VIEW.bearing });
+      if (fit?.zoom !== undefined) {
+        map.jumpTo({ center: fit.center, zoom: Math.min(fit.zoom - 0.6, START_VIEW.zoom), pitch: START_VIEW.pitch, bearing: START_VIEW.bearing });
+      }
+    }
+    // "Reset view" returns here.
+    const startView = { center: map.getCenter(), zoom: map.getZoom(), pitch: START_VIEW.pitch, bearing: START_VIEW.bearing };
+
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
     // Asks the browser for permission only when the visitor presses the button.
     map.addControl(
@@ -279,7 +292,7 @@ export default function MapView({
         if (!readyRef.current) return;
         for (const popup of popups.values()) popup.remove();
         onResetViewRef.current();
-        const target = { center: startCenter, ...startView };
+        const target = startView;
         if (reduceMotion) map.jumpTo(target);
         else map.flyTo({ ...target, duration: 2000, essential: true });
       }),
