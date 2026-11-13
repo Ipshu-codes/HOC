@@ -6,9 +6,9 @@ import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
-import { getHeritageList, getHomeConfig, getWard } from "@/lib/content";
+import { getHeritageList, getHomeConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
-import { getDictionary, getNavItems, isLocale, joinList } from "@/lib/i18n";
+import { getDictionary, getNavItems, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
 import { findSiteImage } from "@/lib/images";
 import { SITE_URL } from "@/lib/site-url";
 import { LOCALES } from "@/types/heritage";
@@ -79,9 +79,12 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         <Chatbot
           data={getChatData(lang)}
           labels={dict.chat}
-          contactText={dict.chat.didntFindAnswer
-            .replace("{phone}", ward.office.phone)
-            .replace("{email}", ward.office.email)}
+          contact={{
+            // Devanagari digits on Nepali pages ("०१-४९८१६५३"); the tel: link keeps Latin digits.
+            phone: lang === "ne" ? toDevanagariDigits(ward.office.phone) : ward.office.phone,
+            phoneHref: phoneHref(ward.office.phone),
+            email: ward.office.email,
+          }}
         />
       </body>
     </html>

@@ -159,11 +159,14 @@
     "topics": "Topics",
     "relatedHeading": "Related questions",
     "optionsLabel": "Choose an option",
-    "didntFind": "Didn't find your question?",
-    "didntFindAnswer": "Please contact the Ward No. 16 office. Phone: {phone}. Email: {email}.",
+    "didntFind": "My question isn't here",
+    "didntFindAnswer": "Sorry, I can't help with that.\nI can only answer questions about the heritage sites of Ward No. 16 and this website. Your question may be outside what I cover, or we may not have that information yet.\nFor anything else, please contact the Ward 16 office:",
     "readMore": "Read more →",
     "you": "You",
-    "bot": "Guide"
+    "bot": "Guide",
+    "backToTopics": "← Back to topics",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email"
   },
   "contactPage": {
     "title": "Contact",

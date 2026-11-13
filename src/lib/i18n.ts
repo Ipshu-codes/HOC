@@ -50,3 +50,8 @@ export function siteNameList(heritages: Heritage[], lang: Locale, dict: Dictiona
     dict.site.and,
   );
 }
+
+/** "01-4981653" → "०१-४९८१६५३" (for display on Nepali pages; keep Latin digits in tel: links). */
+export function toDevanagariDigits(text: string): string {
+  return text.replace(/[0-9]/g, (digit) => String.fromCharCode(0x0966 + Number(digit)));
+}

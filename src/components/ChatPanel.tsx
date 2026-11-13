@@ -15,8 +15,8 @@ import type { ChatData, ChatEntry, ChatTopic } from "@/types/faq";
 export interface ChatPanelProps {
   data: ChatData;
   labels: Dictionary["chat"];
-  /** "Please contact the Ward No. 16 office. Phone: …" with the phone and email filled in. */
-  contactText: string;
+  /** Ward office contact for the "My question isn't here" reply (phone shown in the page's digits). */
+  contact: { phone: string; phoneHref: string; email: string };
   onClose: () => void;
 }
 
@@ -24,9 +24,15 @@ interface Message {
   from: "user" | "bot";
   text: string;
   link?: string;
+  /** Show the ward office phone and email links under the text. */
+  contact?: boolean;
 }
 
-type View = { kind: "topics" } | { kind: "topic"; topicId: string } | { kind: "answer"; entryId: string };
+type View =
+  | { kind: "topics" }
+  | { kind: "topic"; topicId: string }
+  | { kind: "answer"; entryId: string }
+  | { kind: "not-here" };
 
 const MAX_RELATED = 3;
 
@@ -38,7 +44,7 @@ function relatedTo(entry: ChatEntry, entries: ChatEntry[]): ChatEntry[] {
   return [...new Map([...sameTopic, ...sameSite].map((e) => [e.id, e])).values()].slice(0, MAX_RELATED);
 }
 
-export default function ChatPanel({ data, labels, contactText, onClose }: ChatPanelProps) {
+export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelProps) {
   const greeting: Message = { from: "bot", text: labels.greeting };
   const [messages, setMessages] = useState<Message[]>([greeting]);
   const [view, setView] = useState<View>({ kind: "topics" });
@@ -86,8 +92,9 @@ export default function ChatPanel({ data, labels, contactText, onClose }: ChatPa
     setView({ kind: "topics" });
   }
 
-  function didntFind() {
-    say({ from: "user", text: labels.didntFind }, { from: "bot", text: contactText });
+  function notHere() {
+    say({ from: "user", text: labels.didntFind }, { from: "bot", text: labels.didntFindAnswer, contact: true });
+    setView({ kind: "not-here" });
   }
 
   function startOver() {
@@ -109,6 +116,9 @@ export default function ChatPanel({ data, labels, contactText, onClose }: ChatPa
         .map((entry) => ({ key: entry.id, label: entry.question, onClick: () => chooseQuestion(entry) })),
       { key: "topics", label: labels.topics, onClick: showTopics, style: "nav" },
     ];
+  } else if (view.kind === "not-here") {
+    // After the "My question isn't here" reply the only way on is back to the topics.
+    options = [{ key: "back-to-topics", label: labels.backToTopics, onClick: showTopics, style: "nav" }];
   } else {
     const entry = data.entries.find((e) => e.id === view.entryId);
     const backTopic = lastTopic;
@@ -124,7 +134,10 @@ export default function ChatPanel({ data, labels, contactText, onClose }: ChatPa
       { key: "topics", label: labels.topics, onClick: showTopics, style: "nav" },
     ];
   }
-  options.push({ key: "didnt-find", label: labels.didntFind, onClick: didntFind, style: "nav" });
+  // "My question isn't here" closes every list (except its own reply, which only offers the way back).
+  if (view.kind !== "not-here") {
+    options.push({ key: "not-here", label: labels.didntFind, onClick: notHere, style: "nav" });
+  }
 
   const optionClass = (style?: "nav") =>
     style === "nav"
@@ -163,12 +176,28 @@ export default function ChatPanel({ data, labels, contactText, onClose }: ChatPa
         {messages.map((message, index) => (
           <div key={index} className={message.from === "user" ? "flex justify-end" : "flex justify-start"}>
             <div
-              className={`max-w-[85%] rounded-xl px-3 py-2 ${
+              className={`max-w-[85%] rounded-xl px-3 py-2 whitespace-pre-line ${
                 message.from === "user" ? "bg-brick text-white" : "bg-white text-ink shadow-sm ring-1 ring-gold/40"
               }`}
             >
               <span className="sr-only">{message.from === "user" ? labels.you : labels.bot}: </span>
               {message.text}
+              {message.contact && (
+                <span className="mt-2 block space-y-1 whitespace-normal">
+                  <span className="block">
+                    {labels.phoneLabel}:{" "}
+                    <a href={contact.phoneHref} className="font-bold text-crimson underline underline-offset-4">
+                      {contact.phone}
+                    </a>
+                  </span>
+                  <span className="block">
+                    {labels.emailLabel}:{" "}
+                    <a href={`mailto:${contact.email}`} className="font-bold break-all text-crimson underline underline-offset-4">
+                      {contact.email}
+                    </a>
+                  </span>
+                </span>
+              )}
               {message.link && (
                 // prefetch off: the chat must make no network requests while it is used.
                 <Link
