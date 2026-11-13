@@ -5,7 +5,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { ChatPanelProps } from "@/components/ChatPanel";
 import type { Dictionary } from "@/lib/i18n";
 
-// The chat window (and Fuse.js) is a separate chunk: it is not needed to show the page,
+// The chat window is a separate chunk: it is not needed to show the page,
 // so it is fetched while the browser is idle and is already loaded when someone opens it.
 const loadPanel = () => import("@/components/ChatPanel");
 const ChatPanel = lazy(loadPanel);

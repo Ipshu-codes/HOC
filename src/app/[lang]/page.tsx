@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -22,6 +23,13 @@ function galleryPreview(preferred: string[], heritages: Heritage[]): SiteImage[]
     .map((src) => findSiteImage(src, heritages))
     .filter((image): image is SiteImage => image !== null)
     .slice(0, GALLERY_PREVIEW_COUNT);
+}
+
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  // Title, description and share image come from the layout; add the language alternates.
+  return { alternates: { languages: { en: "/en/", ne: "/ne/" } } };
 }
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {

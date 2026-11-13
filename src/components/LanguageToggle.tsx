@@ -28,7 +28,6 @@ export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
               href={href}
               lang={locale}
               hrefLang={locale}
-              aria-label={labels[locale]}
               aria-current={current ? "true" : undefined}
               className={
                 current
@@ -36,7 +35,10 @@ export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
                   : "block rounded-full px-3 py-1 text-sm font-medium text-cream hover:bg-crimson focus-visible:outline-cream"
               }
             >
+              {/* Visible "EN" / "ने" plus the full name for screen readers ("EN English"):
+                  the accessible name must contain the visible text. */}
               {SHORT_LABEL[locale]}
+              <span className="sr-only"> {labels[locale]}</span>
             </Link>
           </li>
         );

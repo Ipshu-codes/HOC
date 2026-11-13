@@ -43,7 +43,6 @@ export default function MapExplorer({ places, labels, requestedId = null }: MapE
               <button
                 type="button"
                 aria-pressed={focusId === place.id}
-                aria-label={labels.showOnMap.replace("{name}", place.name)}
                 onClick={() => setFocusId(place.id)}
                 className={`flex w-full items-center gap-3 rounded-xl p-3 text-left shadow-sm ring-1 ${
                   focusId === place.id ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"

@@ -6,11 +6,12 @@ import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
-import { getHeritageList, getWard } from "@/lib/content";
-import { getChatEntries } from "@/lib/faq";
+import { getHeritageList, getHomeConfig, getWard } from "@/lib/content";
+import { getChatData } from "@/lib/faq";
 import { getDictionary, getNavItems, isLocale, joinList } from "@/lib/i18n";
+import { findSiteImage } from "@/lib/images";
+import { SITE_URL } from "@/lib/site-url";
 import { LOCALES } from "@/types/heritage";
-import type { Locale } from "@/types/locale";
 import "@/app/globals.css";
 
 // This is the root layout (it renders <html>), placed under [lang] so that
@@ -29,18 +30,26 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   const dict = getDictionary(lang);
   // Built from the visible sites, so a draft site's name never reaches a preview build.
   const sites = getHeritageList(lang).map((h) => (lang === "ne" ? h.nameNe : h.name));
+  const description = dict.site.description.replace("{sites}", joinList(sites, dict.site.and));
+  // Default share image for pages without their own: the home page hero (largest file).
+  const hero = getHomeConfig()
+    .heroCandidates.map((src) => findSiteImage(src, getHeritageList(lang)))
+    .find((image) => image !== null);
   return {
     // Absolute base for Open Graph image URLs. Set SITE_URL in the Cloudflare Pages build settings (see DEPLOY.md).
-    metadataBase: new URL(process.env.SITE_URL ?? "http://localhost:3000"),
+    metadataBase: new URL(SITE_URL),
     title: { default: dict.site.title, template: `%s · ${dict.site.title}` },
-    description: dict.site.description.replace("{sites}", joinList(sites, dict.site.and)),
+    description,
     icons: { icon: "/images/logo/ward-logo-64.png", apple: "/images/logo/ward-logo-256.png" },
+    openGraph: {
+      type: "website",
+      siteName: dict.site.title,
+      locale: lang === "ne" ? "ne_NP" : "en_US",
+      title: dict.site.title,
+      description,
+      images: hero ? [{ url: hero.src.replace(/\.webp$/, "-1920.webp"), alt: hero.alt }] : [],
+    },
   };
-}
-
-/** The chatbot's "no answer" message, with the ward office phone and email filled in. */
-function chatFallback(lang: Locale, phone: string, email: string): string {
-  return getDictionary(lang).chat.fallback.replace("{phone}", phone).replace("{email}", email);
 }
 
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
@@ -66,16 +75,13 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         </main>
         <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />
         <MapButton lang={lang} label={dict.map.floatingButton} />
-        {/* FAQ entries for visible sites only; answers in both languages (the bot replies in the visitor's language). */}
+        {/* Topics and answers for visible sites only, in the page language. */}
         <Chatbot
-          lang={lang}
-          entries={getChatEntries()}
+          data={getChatData(lang)}
           labels={dict.chat}
-          fallback={{
-            en: chatFallback("en", ward.office.phone, ward.office.email),
-            ne: chatFallback("ne", ward.office.phone, ward.office.email),
-          }}
-          readMore={{ en: getDictionary("en").chat.readMore, ne: getDictionary("ne").chat.readMore }}
+          contactText={dict.chat.didntFindAnswer
+            .replace("{phone}", ward.office.phone)
+            .replace("{email}", ward.office.email)}
         />
       </body>
     </html>

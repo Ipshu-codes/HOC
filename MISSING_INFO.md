@@ -59,7 +59,11 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - The math's own written account and signboards do not mention Guru Nanak.
   - The Hindustan Times / barusahib.org article was dropped (13 Nov 2026) because it is about a different shrine, in Thapathali.
 - [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; published accounts of Sikh tradition place Guru Nanak's believed visit **around 1516**. All three are shown side by side, each attributed, in History (EN + NE) and in the chatbot. The Architecture section also mentions the first two.
-- [ ] **Alternative name "Siddheshwar Mahadev"**: mentioned by the ward team on 13 Nov 2026, but the message with the six steps for it never arrived. Step 1, a search of raw-data, found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The web sources above don't mention it either. Not added to the site yet.
+- [ ] **Alternative name "Siddheshwar Mahadev"**: given by the ward team (13 Nov 2026). It is shown **only** in the chatbot's topic label, "Nanak Math (Siddheshwar Mahadev)" / "नानक मठ (सिद्धेश्वर महादेव)", as instructed.
+  - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
+  - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere else on the site.
+  - [ ] Check the Nepali spelling सिद्धेश्वर महादेव (written by Claude).
+  - The earlier message with "six steps" for this name never arrived.
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
 - [ ] **Identify photographed features** (the alt text is descriptive only):
@@ -120,3 +124,5 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.
+- **Tap-only (13 Nov 2026):** visitors choose a topic, then a question; there is no typing. Three general entries ("Where can I see photos?", "Is this website in Nepali?", "Who took the photos?") have no topic (`"topic": null`). They appear only as related questions under other answers.
+  - [ ] Should they get a topic of their own?

@@ -38,6 +38,9 @@ export function GalleryFromUrl(props: Omit<GalleryProps, "requestedSite">) {
   return <Gallery {...props} requestedSite={searchParams.get("site")} />;
 }
 
+/** Thumbnails in the first rows (up to 4 columns × 2 rows) are not lazy-loaded. */
+const EAGER_THUMBS = 8;
+
 export default function Gallery({ lang, photos, sites, credit, labels, requestedSite = null }: GalleryProps) {
   const pathname = usePathname();
   const showFilter = sites.length > 1;
@@ -111,7 +114,10 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
                 width={photo.thumb.width}
                 height={photo.thumb.height}
                 alt=""
-                loading="lazy"
+                // The first rows are visible right away (and the first photo is the page’s largest
+                // paint), so they load immediately; the rest load as they scroll into view.
+                loading={index < EAGER_THUMBS ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 className="aspect-square w-full rounded-xl object-cover shadow-sm transition group-hover:opacity-90"
               />

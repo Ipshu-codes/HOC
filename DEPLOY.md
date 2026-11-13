@@ -6,6 +6,8 @@ The full step-by-step deployment guide is written in Phase 11. This file collect
 
 - **Build command:** `npm run build`. This is the strict build: it refuses to run while any content is a draft or contains `[PLACEHOLDER`/`[TODO`. `npm run build:preview` builds without the draft sites and is only for previews.
 - **Output directory:** `out`
+- **Environment variable `NEXT_PUBLIC_WEB3FORMS_KEY`:** the access key for the contact form, from https://web3forms.com (free, no card). The address that receives the messages is set in the Web3Forms dashboard for that key, ideally ward16@kathmandu.gov.np. Web3Forms keys are public by design, since they only allow sending to the configured address. Without the key, the contact page shows the email address instead of the form.
+- **Files Cloudflare reads from `out/`:** `_redirects` (`/` → `/en/`) and `_headers` (long caching for `_next/static`, a week for `/images`, basic security headers).
 - **Environment variable `SITE_URL`:** the site's public address, e.g. `https://<project>.pages.dev`. Open Graph (link preview) images use it as their base URL. Without it they point at `http://localhost:3000`.
 
 ## To confirm on the first Cloudflare preview deploy

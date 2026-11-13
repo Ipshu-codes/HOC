@@ -134,7 +134,7 @@ The sources give different accounts of the math's age:
 As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at this math from 1450 onwards, lived on air alone until the age of 232, and guided three disciples to samadhi. Taking two of them — **Shri Gothalramdas Ji** and **Shri Yathiramdas Ji** — with him, he entered living bhu-samadhi in VS 1664 in the presence of sadhus and devotees. His third disciple, **Shri Hareram Das Ji Maharaj**, was taught mahayoga and instructed to carry the tradition forward. This account was told by Guru Buddhidas Maharaj to Nem Muni Das Maharaj.
 
 <!-- source: nanak-signboards | Plaque 20261103_135842.heic -->
-| | Mahayogi Shri Yathiramdas Ji Maharaj | Mahayogi Shri Gothalramdas Ji Maharaj |
+| Detail | Mahayogi Shri Yathiramdas Ji Maharaj | Mahayogi Shri Gothalramdas Ji Maharaj |
 |---|---|---|
 | Born | VS 1511, Shivaratri | VS 1517, Janai Purnima |
 | Mother | Revati Upadhyay | Harimaya Upreti |
