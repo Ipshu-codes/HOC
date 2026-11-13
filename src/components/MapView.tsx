@@ -30,7 +30,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 
 import type { MapPlace, MapRoute } from "@/components/map/types";
-import { fill } from "@/lib/format";
+import { isMobile } from "@/lib/breakpoints";
+import { fill, formatNumber } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
@@ -417,17 +418,17 @@ export default function MapView({
       element.classList.toggle("map-marker-hidden", !visibleIds.has(id));
       const index = route ? route.stops.indexOf(id) : -1;
       if (index >= 0 && route) {
-        element.setAttribute("data-step", String(index + 1));
+        element.setAttribute("data-step", formatNumber(index + 1, lang));
         element.setAttribute(
           "aria-label",
-          `${place?.name ?? ""} — ${fill(labels.route.stopOf, { n: index + 1, total: route.stops.length })}`,
+          `${place?.name ?? ""} — ${fill(labels.route.stopOf, { n: index + 1, total: route.stops.length }, lang)}`,
         );
       } else {
         element.removeAttribute("data-step");
         element.setAttribute("aria-label", place?.name ?? "");
       }
     }
-  }, [focusId, visibleIds, route, places, labels]);
+  }, [focusId, visibleIds, route, places, labels, lang]);
 
   // Draw the route line; the leg to walk next is highlighted, finished legs are greyed.
   useEffect(() => {
@@ -458,7 +459,7 @@ export default function MapView({
       return;
     }
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 1023px)").matches;
+    const mobile = isMobile();
     // offset: where the place sits relative to the centre of the view.
     //  - popup open: below centre, leaving room for the popup above the pin;
     //  - panel open on a phone: above centre, because the panel covers the bottom of the screen;

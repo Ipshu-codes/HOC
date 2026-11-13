@@ -44,11 +44,11 @@ export default function RouteNav({ route, places, step, labels, lang, onPrevious
     <div className={`rounded-xl bg-white p-3 text-ink shadow-md ring-1 ring-gold/50 ${compact ? "" : "mt-3"}`}>
       <p aria-live="polite" className="text-sm">
         <span className="font-bold text-brick">
-          {current ? fill(t.stopOf, { n: step + 1, total }) : t.overviewState}
+          {current ? fill(t.stopOf, { n: step + 1, total }, lang) : t.overviewState}
         </span>
         {current && <span> · {current.name}</span>}
         <span className="block text-ink/80">
-          {remaining > 0 ? fill(remaining === 1 ? t.remaining.one : t.remaining.other, { n: remaining }) : t.finished}
+          {remaining > 0 ? fill(remaining === 1 ? t.remaining.one : t.remaining.other, { n: remaining }, lang) : t.finished}
         </span>
         {legText && nextName && (
           <span className="block text-ink/80">

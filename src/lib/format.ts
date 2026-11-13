@@ -1,9 +1,21 @@
 // Small helpers shared by the map components. No server-only imports: client components use this file.
 import type { Locale } from "@/types/locale";
 
-/** "Stop {n} of {total}" + { n: 2, total: 5 } → "Stop 2 of 5". */
-export function fill(template: string, values: Record<string, string | number>): string {
-  return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
+/** 3 → "3" on English pages, "३" on Nepali pages (Devanagari digits, as elsewhere on the site). */
+export function formatNumber(n: number, lang: Locale): string {
+  return new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(n);
+}
+
+/**
+ * "Stop {n} of {total}" + { n: 2, total: 5 } → "Stop 2 of 5".
+ * Pass `lang` when a value is a number, so Nepali pages show "पडाव २ / ५", not "पडाव 2 / 5".
+ */
+export function fill(template: string, values: Record<string, string | number>, lang?: Locale): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => {
+    if (!(key in values)) return match;
+    const value = values[key];
+    return typeof value === "number" && lang ? formatNumber(value, lang) : String(value);
+  });
 }
 
 /** Great-circle distance in metres between two [lat, lng] points (haversine formula). */
