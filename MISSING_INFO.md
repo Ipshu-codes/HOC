@@ -120,3 +120,13 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.
+
+## 3. Heritage map and walking route (added with the map enhancement)
+
+- [ ] **Confirm the stop order** in `content/routes.json` (`mhepi-ajima` → `nanak-math`). It was set by the developer, not taken from the ward; swap it if the walk should run the other way.
+- [ ] **Walking paths and distances.** `routes.json` has `"walking": null`, so the map shows a dashed straight line and straight-line distances only (≈ 960 m between the two sites). Run `npm run fetch-route` on a machine with internet, check the paths on the map, and commit `content/routes.json`.
+- [ ] **Better coordinates.** Nanak Math and the ward office are marked approximate; the Mhepi Ajima point is not marked approximate but has no recorded source. Walking paths end at these points, so they are only as good as the coordinates.
+- [ ] **Route needs two published sites.** While Mhepi Ajima is a draft, production builds show no route (one stop is not a route). The route appears by itself once Mhepi Ajima is published.
+- [ ] **Categories.** The sites have no category field. The map's filters use only what exists (heritage site / ward office) and the filter buttons hide when a single category is present. Add a `category` field to the content schema only once the ward agrees on real categories (e.g. temple, math, kuthi).
+- [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, filters, legend, route, detail panel) were written by the developer and need a native-speaker review.
+- [ ] **Audio stories** (later): need community recordings with written consent, then a place for them in the content schema and the detail panel.

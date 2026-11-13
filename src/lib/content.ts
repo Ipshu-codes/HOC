@@ -28,6 +28,7 @@ import {
   type PhotoConsent,
   type SourceRegistry,
 } from "@/types/site";
+import { routesFileSchema, type RouteDefinition } from "@/types/route";
 import { wardSchema, type Ward } from "@/types/ward";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
@@ -148,6 +149,11 @@ function readJson<T>(name: string, schema: z.ZodType<T>): T {
 
 export function getWard(): Ward {
   return readJson("ward.json", wardSchema);
+}
+
+/** Predefined walking routes (content/routes.json). Stops that are not published are dropped later, in lib/map-data.ts. */
+export function getRoutes(): RouteDefinition[] {
+  return readJson("routes.json", routesFileSchema).routes;
 }
 
 export function getHomeConfig(): HomeConfig {

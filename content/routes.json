@@ -1,0 +1,17 @@
+{
+  "routes": [
+    {
+      "id": "ward-16-heritage-walk",
+      "name": {
+        "en": "Ward 16 Heritage Walk",
+        "ne": "वडा नं. १६ सम्पदा पदयात्रा"
+      },
+      "intro": {
+        "en": "A suggested walking route through the heritage sites of Ward No. 16.",
+        "ne": "वडा नं. १६ का सम्पदा स्थलहरू हुँदै सुझाइएको पैदल यात्रा मार्ग।"
+      },
+      "stops": ["mhepi-ajima", "nanak-math"],
+      "walking": null
+    }
+  ]
+}
