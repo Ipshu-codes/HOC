@@ -77,6 +77,13 @@ function hasWebGL(): boolean {
 
 const toLngLat = ([lat, lng]: [number, number]): [number, number] => [lng, lat];
 
+/** Centre of the box around the given [lng, lat] points. */
+function midpoint(points: [number, number][]): [number, number] {
+  const lngs = points.map(([lng]) => lng);
+  const lats = points.map(([, lat]) => lat);
+  return [(Math.min(...lngs) + Math.max(...lngs)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2];
+}
+
 /** Popup content built with DOM methods (textContent), so no text from content is parsed as HTML. */
 function popupContent(place: MapPlace, labels: Dictionary["map"], lang: Locale, onOpen: () => void): HTMLElement {
   const root = document.createElement("div");

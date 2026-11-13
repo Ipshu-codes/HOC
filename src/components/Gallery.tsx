@@ -27,7 +27,7 @@ interface GalleryProps {
 /**
  * Photo grid with an optional site filter and a lightbox.
  *
- * The grid shows only the 640 px thumbnails (lazy-loaded). The 1280/1920 px
+ * The grid shows only the 480/640 px thumbnails (lazy-loaded). The 960/1280/1920 px
  * files are listed in the lightbox slides, so the browser fetches them only
  * when a photo is opened. The lightbox library (yet-another-react-lightbox)
  * handles arrow keys, Escape and swipe gestures.
@@ -37,6 +37,9 @@ export function GalleryFromUrl(props: Omit<GalleryProps, "requestedSite">) {
   const searchParams = useSearchParams();
   return <Gallery {...props} requestedSite={searchParams.get("site")} />;
 }
+
+/** Thumbnails in the first rows (2 columns × 2 rows on phones) are not lazy-loaded; more would compete with the first photo on slow connections. */
+const EAGER_THUMBS = 4;
 
 export default function Gallery({ lang, photos, sites, credit, labels, requestedSite = null }: GalleryProps) {
   const pathname = usePathname();
@@ -108,10 +111,15 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
               {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
               <img
                 src={photo.thumb.src}
+                srcSet={photo.thumb.srcSet}
+                sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw"
                 width={photo.thumb.width}
                 height={photo.thumb.height}
                 alt=""
-                loading="lazy"
+                // The first rows are visible right away (and the first photo is the page’s largest
+                // paint), so they load immediately; the rest load as they scroll into view.
+                loading={index < EAGER_THUMBS ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 className="aspect-square w-full rounded-xl object-cover shadow-sm transition group-hover:opacity-90"
               />

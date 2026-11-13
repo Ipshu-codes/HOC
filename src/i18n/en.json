@@ -58,7 +58,7 @@
       "other": "Read on to learn how to visit them, or find them on the 3D map."
     },
     "aboutTitle": "About Ward No. 16",
-    "aboutIntro": "Ward No. 16 is a ward of Kathmandu Metropolitan City. Its ward office is in {address}.",
+    "aboutIntro": "Ward No. 16 is one of the 32 administrative wards of Kathmandu Metropolitan City, located in Kathmandu, Nepal. The ward encompasses the Balaju area and its surrounding localities, reflecting a rich blend of urban development, community life, and cultural heritage. It is home to historically and culturally significant sites such as {sites}, which preserve important religious traditions, local stories, and cultural practices. Beyond its historical significance, Ward No. 16 represents a living community where heritage, identity, and modern urban life coexist.",
     "aboutMunicipality": "Municipality",
     "aboutWard": "Ward",
     "aboutOffice": "Ward office",
@@ -66,7 +66,6 @@
       "one": "Heritage site on this website",
       "other": "Heritage sites on this website"
     },
-    "aboutPlaceholder": "[PLACEHOLDER: more about Ward No. 16 — localities, population, area and history — once a source provides them. Shown in development only.]",
     "heritagesTitle": {
       "one": "Heritage site",
       "other": "Heritage sites"
@@ -105,7 +104,9 @@
   },
   "credits": {
     "photos": "Photos: {team}, {year}",
-    "teamPlaceholder": "[PLACEHOLDER: team name]"
+    "teamPlaceholder": "[PLACEHOLDER: team name]",
+    "naniCharacter": "Nani character by {creator}",
+    "creatorPlaceholder": "[PLACEHOLDER: creator]"
   },
   "gallery": {
     "title": "Gallery",
@@ -135,10 +136,13 @@
     "wardOffice": "Ward Office",
     "approximate": "Approximate location",
     "readMore": "Read more",
-    "showOnMap": "Show {name} on the map",
     "loading": "Loading map…",
     "noWebGL": "Your browser cannot display the 3D map. You can still read about each place on its page.",
     "mapLabel": "3D map of Ward No. 16",
+    "showMap": "Show 3D map",
+    "showOnMap": "Show {name} on map",
+    "showMapNote": "The 3D map downloads about 4 MB of map data.",
+    "previewAlt": "Still picture of the map of Ward No. 16 with the places marked",
     "controls": {
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
@@ -219,18 +223,54 @@
     }
   },
   "chat": {
-    "bubble": "How can I help?",
-    "title": "Ward 16 heritage guide",
-    "close": "Close chat",
-    "greeting": "Namaste! Ask me about the heritage sites of Ward No. 16 — in English or Nepali — or pick a question below.",
-    "placeholder": "Type your question…",
-    "send": "Send",
-    "inputLabel": "Your question",
-    "suggestions": "Suggested questions",
+    "bubble": "Namaste! I'm Nani. How can I help?",
+    "title": "Nani",
+    "close": "Close chat with Nani",
+    "startOver": "Start over",
+    "greeting": "Namaste! I'm Nani, your guide to the heritage of Ward No. 16. Tap a question or pick a topic below.",
+    "topicPrompt": "Here are the questions about {topic}:",
+    "topicsPrompt": "Choose a topic:",
+    "back": "← Back",
+    "topics": "Topics",
+    "relatedHeading": "Related questions",
+    "optionsLabel": "Choose an option",
+    "didntFind": "My question isn't here",
+    "didntFindAnswer": "Sorry, I can't help with that.\nI can only answer questions about the heritage sites of Ward No. 16 and this website. Your question may be outside what I cover, or we may not have that information yet.\nFor anything else, please contact the Ward 16 office:",
     "readMore": "Read more →",
     "you": "You",
-    "bot": "Guide",
-    "fallback": "Sorry, I don't have an answer for that yet. Please contact the Ward No. 16 office: phone {phone}, email {email}."
+    "bot": "Nani",
+    "backToTopics": "← Back to topics",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "dialogLabel": "Nani, the Ward 16 heritage guide",
+    "naniAlt": "Nani, the Ward 16 heritage guide",
+    "quickQuestions": "Popular questions",
+    "viewOnMap": "View on 3D Map",
+    "openOsm": "Open in OpenStreetMap (directions)",
+    "approximateNote": "The location on the map is approximate.",
+    "newTab": "(opens in a new tab)"
+  },
+  "contactPage": {
+    "title": "Contact",
+    "intro": "Send a message to the Ward No. 16 office about the heritage sites or this website.",
+    "name": "Your name",
+    "email": "Your email",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending…",
+    "success": "Thank you! Your message has been sent to the Ward No. 16 office.",
+    "error": "Sorry, the message could not be sent. Please try again, or email us directly.",
+    "required": "Required",
+    "emailInstead": "Prefer email? Write to {email}.",
+    "formUnavailable": "The contact form is not available at the moment. Please email the ward office at {email} or call {phone}.",
+    "mailSubject": "Ward 16 heritage website",
+    "officeHeading": "Ward Office",
+    "sendMessageLink": "Send a message"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "Sorry, we could not find that page. It may have moved, or the address may be mistyped.",
+    "home": "Go to the English home page"
   },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."

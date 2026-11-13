@@ -6,67 +6,122 @@ import { z } from "zod";
 
 import { getCredits, getHeritageList, getWard } from "@/lib/content";
 import { getDictionary, siteNameList } from "@/lib/i18n";
-import { faqSchema, type ChatEntry } from "@/types/faq";
+import { faqSchema, type ChatData, type ChatLink } from "@/types/faq";
+import type { Heritage } from "@/types/heritage";
 import { LOCALES, type Locale } from "@/types/locale";
 
 const FAQ_FILE = path.join(process.cwd(), "content", "faq.json");
 
+type HeritagesByLang = Record<Locale, ReturnType<typeof getHeritageList>>;
+
 /**
- * The chatbot's entries for this build: entries of draft sites are dropped (in
- * production), placeholders are filled, and every link to a section of a heritage
- * page is checked against that page's headings in both languages (a broken anchor
- * fails the build).
+ * The chatbot's topics and entries for one language on this build:
+ * - "Visiting {site}" / "About {site}" topics for every visible site, then the
+ *   fixed topics; topics left with no questions are dropped;
+ * - entries of draft sites are dropped (in production), the rest sorted by
+ *   topic and priority;
+ * - placeholders are filled in;
+ * - every link to a section of a heritage page is checked against that page's
+ *   headings in both languages (a broken anchor fails the build).
  */
-export function getChatEntries(): ChatEntry[] {
+export function getChatData(lang: Locale): ChatData {
   const parsed = faqSchema.safeParse(JSON.parse(fs.readFileSync(FAQ_FILE, "utf8")));
   if (!parsed.success) throw new Error(`Invalid ${FAQ_FILE}:\n${z.prettifyError(parsed.error)}`);
+  const faq = parsed.data;
 
+  const dict = getDictionary(lang);
   const ward = getWard();
   const credits = getCredits();
-  const heritagesByLang = Object.fromEntries(LOCALES.map((lang) => [lang, getHeritageList(lang)])) as Record<
-    Locale,
-    ReturnType<typeof getHeritageList>
-  >;
-  const visibleSlugs = new Set(heritagesByLang.en.map((h) => h.slug));
+  const heritagesByLang = Object.fromEntries(LOCALES.map((l) => [l, getHeritageList(l)])) as HeritagesByLang;
+  const heritages = heritagesByLang[lang];
+  const visibleSlugs = new Set<string>(heritages.map((h) => h.slug));
+  const visible = (site: string | null) => site === null || visibleSlugs.has(site);
+  const siteName = (heritage: Heritage) => (lang === "ne" ? heritage.nameNe : heritage.name);
 
-  const fill = (text: string, lang: Locale) =>
+  const fill = (text: string) =>
     text
-      .replaceAll("{sites}", siteNameList(heritagesByLang[lang], lang, getDictionary(lang)))
+      .replaceAll("{sites}", siteNameList(heritages, lang, dict))
       .replaceAll("{address}", ward.office.address[lang])
       .replaceAll("{phone}", ward.office.phone)
       .replaceAll("{email}", ward.office.email)
       .replaceAll("{team}", credits.photos.team?.[lang] ?? "");
 
-  return parsed.data.entries
-    .filter((entry) => entry.site === null || visibleSlugs.has(entry.site))
+  // Topic order: each site's own topics (in site order), then the fixed ones.
+  const allTopics = [
+    ...heritages.flatMap((heritage) =>
+      faq.siteTopics.map(({ kind, label }) => ({
+        id: `${heritage.slug}-${kind}`,
+        label: label[lang].replace("{site}", siteName(heritage)),
+      })),
+    ),
+    ...faq.topics.map((topic) => ({ id: topic.id, label: topic.label[lang] })),
+  ];
+  const topicIdOf = (site: string | null, topic: string | null) =>
+    topic === null ? null : faq.siteTopics.some((t) => t.kind === topic) ? `${site}-${topic}` : topic;
+  const topicOrder = (id: string | null) => (id === null ? allTopics.length : allTopics.findIndex((t) => t.id === id));
+
+  const entries = faq.entries
+    .filter((entry) => visible(entry.site))
     .map((entry) => {
       if (entry.link) checkLink(entry.id, entry.link, visibleSlugs, heritagesByLang);
+      const links: ChatLink[] = [];
+      let note: string | null = null;
+      const heritage = heritages.find((h) => h.slug === entry.site);
+      if (entry.directions && heritage?.coordinates) {
+        const [lat, lon] = heritage.coordinates;
+        links.push(
+          {
+            href: `/${lang}/map/?site=${heritage.slug}`,
+            label: dict.chat.viewOnMap,
+            external: false,
+          },
+          {
+            // OpenStreetMap's route planner with only the destination filled in; the visitor adds their start.
+            href: `https://www.openstreetmap.org/directions?route=%3B${lat}%2C${lon}#map=18/${lat}/${lon}`,
+            label: dict.chat.openOsm,
+            external: true,
+          },
+        );
+        if (heritage.coordinatesApproximate) note = dict.chat.approximateNote;
+      }
+      if (entry.link)
+        links.push({
+          href: `/${lang}${entry.link}`,
+          label: dict.chat.readMore,
+          external: false,
+        });
+      const topic = topicIdOf(entry.site, entry.topic);
       return {
         id: entry.id,
+        topic,
         site: entry.site,
-        suggest: entry.suggest,
-        q: { en: entry.q_en, ne: entry.q_ne },
-        a: { en: fill(entry.a_en, "en"), ne: fill(entry.a_ne, "ne") },
-        link: entry.link ? { en: `/en${entry.link}`, ne: `/ne${entry.link}` } : null,
+        question: lang === "ne" ? entry.q_ne : entry.q_en,
+        answer: fill(lang === "ne" ? entry.a_ne : entry.a_en),
+        note,
+        links,
       };
     });
+  const priority = new Map(faq.entries.map((entry) => [entry.id, entry.priority]));
+  entries.sort(
+    (a, b) => topicOrder(a.topic) - topicOrder(b.topic) || (priority.get(a.id) ?? 0) - (priority.get(b.id) ?? 0),
+  );
+
+  const topics = allTopics.filter((topic) => entries.some((entry) => entry.topic === topic.id));
+  const suggestions = faq.suggestions.filter((id) => entries.some((entry) => entry.id === id));
+
+  return { topics, entries, suggestions };
 }
 
 /** /heritage/<slug>/#<id> must point at a visible site and an id that exists in both languages. */
-function checkLink(
-  id: string,
-  link: string,
-  visibleSlugs: Set<string>,
-  heritagesByLang: Record<Locale, ReturnType<typeof getHeritageList>>,
-) {
+function checkLink(id: string, link: string, visibleSlugs: Set<string>, heritagesByLang: HeritagesByLang) {
   const match = link.match(/^\/heritage\/([a-z0-9-]+)\/(?:#([a-z0-9-]+))?$/);
   if (!match) return;
   const [, slug, anchor] = match;
   if (!visibleSlugs.has(slug)) throw new Error(`faq.json "${id}": links to ${slug}, which is not on this build`);
   if (!anchor) return;
-  for (const lang of LOCALES) {
-    const heritage = heritagesByLang[lang].find((h) => h.slug === slug);
+  for (const l of LOCALES) {
+    const heritage = heritagesByLang[l].find((h) => h.slug === slug);
     const ids = new Set([...(heritage?.toc.map((t) => t.id) ?? []), "photos", "sources"]);
-    if (!ids.has(anchor)) throw new Error(`faq.json "${id}": #${anchor} does not exist on the ${lang} ${slug} page`);
+    if (!ids.has(anchor)) throw new Error(`faq.json "${id}": #${anchor} does not exist on the ${l} ${slug} page`);
   }
 }

@@ -18,7 +18,7 @@ export default function MapButton({ lang, label }: MapButtonProps) {
   return (
     <Link
       href={`/${lang}/map/`}
-      className="fixed right-4 bottom-4 z-30 flex items-center gap-2 rounded-full bg-crimson px-5 py-3 font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick md:right-6 md:bottom-6"
+      className="map-fab fixed right-4 bottom-4 z-30 flex items-center gap-2 rounded-full bg-crimson px-5 py-3 font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick md:right-6 md:bottom-6"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
       <span aria-hidden="true">🗺</span>

@@ -11,6 +11,33 @@ import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
+/** Still picture shown on phones until the visitor asks for the 3D map (built by optimize-images). */
+export interface MapPreview {
+  src: string;
+  srcSet: string;
+  width: number;
+  height: number;
+}
+
+/** Phones (under 768 px) get the tap-to-load button; larger screens always load the map. */
+const PHONE_QUERY = "(max-width: 47.99rem)";
+
+/**
+ * True when the visitor came here from another page of this site: a client-side
+ * navigation (the document was first loaded at another path, e.g. the floating
+ * 3D Map button, "View on 3D Map" or a chatbot link) or a full page load from one of
+ * our pages (same-origin referrer). Then they asked for the map, so it loads at once.
+ */
+function cameFromThisSite(): boolean {
+  const [entry] = performance.getEntriesByType("navigation");
+  if (entry && new URL(entry.name).pathname !== window.location.pathname) return true;
+  try {
+    return document.referrer !== "" && new URL(document.referrer).origin === window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 // MapLibre uses window/WebGL, so it is loaded only in the browser (never prerendered),
 // and only on this page: its ~800 KB of JavaScript is not part of any other page.
 const MapView = dynamic(() => import("@/components/MapView"), {

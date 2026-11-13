@@ -1,5 +1,11 @@
 {
+  "fullBleed": ["nanak-math/courtyard-view", "nanak-math/samadhi-temple", "mhepi-ajima/temple-front", "map/preview"],
   "images": [
+    {
+      "site": "map",
+      "name": "preview",
+      "source": "map-preview/map-preview.png"
+    },
     {
       "site": "mhepi-ajima",
       "name": "temple-front",
@@ -278,5 +284,30 @@
       128,
       256
     ]
+  },
+  "nani": {
+    "source": "Nani.jpeg",
+    "crop": {
+      "left": 134,
+      "top": 170,
+      "size": 580
+    },
+    "sizes": [
+      28,
+      40,
+      56,
+      80,
+      112
+    ],
+    "figure": {
+      "heights": [
+        130,
+        260,
+        520
+      ],
+      "tolerance": 34,
+      "pocketTolerance": 24,
+      "minPocket": 400
+    }
   }
 }

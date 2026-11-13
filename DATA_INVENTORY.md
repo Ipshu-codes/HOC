@@ -166,6 +166,8 @@ There are 44 photos, taken on 4 Nov 2026 with two phones and no GPS data. 22 wer
 - `HOC/wardlogo.png` (307×297 PNG): the red Kathmandu Metropolitan City emblem on a light-grey square. It is cropped to its circle by `npm run optimize-images` → `public/images/logo/ward-logo-{64,128,256}.png`.
 - Ward contact details, given by the ward team in chat (not a raw-data file): office location Balaju, Kathmandu; phone 01-4981653; email ward16@kathmandu.gov.np; chairperson Rojina Shrestha; official portal "Kathmandu Metropolitan City Ward No. 16" (no URL given). These are stored in `content/ward.json`.
 
+- `HOC/Nani.jpeg` (848×1264 JPEG, one frame, no metadata): an illustration of a smiling girl with two braids tied in blue and yellow ribbons, wearing a patterned red-and-blue top. It is used for **Nani**, the chatbot guide. A face crop is made by `npm run optimize-images` → `public/images/nani/nani-{28,40,56,64,80,128}.webp`.
+
 Still missing: office hours, population, area and the ward boundary (GeoJSON). See MISSING_INFO.
 
 ---

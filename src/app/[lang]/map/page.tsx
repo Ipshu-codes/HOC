@@ -6,6 +6,8 @@ import MapExplorer, { MapExplorerFromUrl } from "@/components/MapExplorer";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { getMapData } from "@/lib/map-data";
 
+const MAP_PREVIEW = "/images/map/preview.webp";
+
 export async function generateMetadata({ params }: PageProps<"/[lang]/map">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};

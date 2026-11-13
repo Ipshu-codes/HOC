@@ -13,3 +13,14 @@ export function photoCreditText(credits: Credits, dict: Dictionary, lang: Locale
   const yearText = year.toLocaleString(lang === "ne" ? "ne-NP" : "en", { useGrouping: false });
   return dict.credits.photos.replace("{team}", team?.[lang] ?? dict.credits.teamPlaceholder).replace("{year}", yearText);
 }
+
+/**
+ * "Nani character by <creator>" for the About section. While the creator is not
+ * set (content/credits.json), a placeholder in `npm run dev` and nothing (null)
+ * in production builds.
+ */
+export function naniCreditText(credits: Credits, dict: Dictionary, lang: Locale): string | null {
+  const creator = credits.nani.creator?.[lang];
+  if (!creator && process.env.NODE_ENV === "production") return null;
+  return dict.credits.naniCharacter.replace("{creator}", creator ?? dict.credits.creatorPlaceholder);
+}

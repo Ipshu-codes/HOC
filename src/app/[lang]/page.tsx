@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,7 +8,8 @@ import Hero from "@/components/Hero";
 import HomeSection from "@/components/HomeSection";
 import ResponsiveImage from "@/components/ResponsiveImage";
 import SectionDivider from "@/components/SectionDivider";
-import { getHeritageList, getHomeConfig, getWard } from "@/lib/content";
+import { getCredits, getHeritageList, getHomeConfig, getWard } from "@/lib/content";
+import { naniCreditText } from "@/lib/credits";
 import { byCount, getDictionary, isLocale, siteNameList } from "@/lib/i18n";
 import { coverImage, findSiteImage, type SiteImage } from "@/lib/images";
 import type { Heritage } from "@/types/heritage";
@@ -22,6 +24,13 @@ function galleryPreview(preferred: string[], heritages: Heritage[]): SiteImage[]
     .map((src) => findSiteImage(src, heritages))
     .filter((image): image is SiteImage => image !== null)
     .slice(0, GALLERY_PREVIEW_COUNT);
+}
+
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
+  // Title, description and share image come from the layout; add the language alternates.
+  return { alternates: { languages: { en: "/en/", ne: "/ne/" } } };
 }
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
@@ -43,7 +52,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     home.heroCandidates.map((src) => findSiteImage(src, heritages)).find((image) => image !== null) ??
     coverImage(heritages[0]);
   const preview = galleryPreview(home.galleryPreview, heritages);
-  const showDevPlaceholder = process.env.NODE_ENV !== "production";
+  const credits = getCredits();
+  // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
+  const naniCredit = naniCreditText(credits, dict, lang);
 
   return (
     <>
@@ -65,7 +76,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       <SectionDivider />
 
       <HomeSection id="about" title={dict.home.aboutTitle} tone="sand">
-        <p className="max-w-3xl text-lg">{dict.home.aboutIntro.replace("{address}", ward.office.address[lang])}</p>
+        {/* Text from the ward team; {sites} keeps draft sites out of production builds. */}
+        <p className="max-w-3xl text-lg">{fill(dict.home.aboutIntro)}</p>
         <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { term: dict.home.aboutMunicipality, value: ward.city[lang] },
@@ -79,10 +91,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             </div>
           ))}
         </dl>
-        {/* Dev only: no source yet for more ward facts (see MISSING_INFO.md). Never rendered in a production build. */}
-        {showDevPlaceholder && (
-          <p className="mt-6 max-w-3xl rounded-xl border-2 border-dashed border-crimson p-4 text-crimson">
-            {dict.home.aboutPlaceholder}
+        {naniCredit && (
+          <p className={`mt-6 text-sm ${credits.nani.creator ? "text-ink/80" : "font-bold text-crimson"}`}>
+            {naniCredit}
           </p>
         )}
       </HomeSection>
