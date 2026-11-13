@@ -59,9 +59,9 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - The math's own written account and signboards do not mention Guru Nanak.
   - The Hindustan Times / barusahib.org article was dropped (13 Nov 2026) because it is about a different shrine, in Thapathali.
 - [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; published accounts of Sikh tradition place Guru Nanak's believed visit **around 1516**. All three are shown side by side, each attributed, in History (EN + NE) and in the chatbot. The Architecture section also mentions the first two.
-- [ ] **Alternative name "Siddheshwar Mahadev"**: given by the ward team (13 Nov 2026). It is shown **only** in the chatbot's topic label, "Nanak Math (Siddheshwar Mahadev)" / "नानक मठ (सिद्धेश्वर महादेव)", as instructed.
+- [ ] **Alternative name "Siddheshwar Mahadev" — needs a source.** Given by the ward team (13 Nov 2026) but not confirmed. It was removed from the chatbot topic label in the Phase 9 review and is **not shown anywhere** on the site.
   - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
-  - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere else on the site.
+  - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere on the site.
   - [ ] Check the Nepali spelling सिद्धेश्वर महादेव (written by Claude).
   - The earlier message with "six steps" for this name never arrived.
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
@@ -78,7 +78,8 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 ## 3. Both sites
 
 - **Coordinates** (given by the ward team on 12 Nov 2026, checked against OpenStreetMap):
-  - [x] **Mhepi Ajima**: 27.7172, 85.3082. OSM reverse-geocodes this to Naya Bazar, Kathmandu-16 ✓. It is in the content (shown on the map in dev; the site is still a draft).
+  - [x] **Mhepi Ajima**: 27.727614400718654, 85.30859929776761 (given by the ward team, 13 Nov 2026; replaces 27.7172, 85.3082). The point is where OpenStreetMap labels "Mhepi" on the base map. Not marked approximate. Shown on the map in dev only while the site is a draft.
+    - [ ] When Mhepi leaves draft, retake the map preview picture (`map/preview` in `scripts/image-manifest.json`, see DEPLOY.md) so its marker appears in it.
   - [x] **Nanak Math**: 27.7257, 85.3064 (from gurdwara-sahib.pages.dev). OSM reverse-geocodes it to an amenity named **"Gurunayak Math"**, Naya Bazar, Kathmandu-16 ✓. It is marked approximate (`coordinatesApproximate: true`). The first point offered, 27.73678, 85.28086, landed on a Shiva temple in Nagarjun Municipality and was rejected.
   - [ ] Confirm the exact point on a site visit, then remove `coordinatesApproximate`.
   - [x] **Ward office**: about 27.7290, 85.3016 (Balaju, Kathmandu-16 on OSM). It is marked approximate in `content/ward.json` and on the map. An exact point would allow a small embedded map in the home Contact section.
@@ -123,6 +124,8 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - `src/i18n/ne.json` → Nani: `chat.bubble`, `chat.greeting` and `chat.dialogLabel`/`naniAlt` (wording given by the ward team, 13 Nov 2026); `credits.naniCharacter` ("नानी पात्र: …", by Claude); `content/credits.json` → `nani.creator.ne` ("जेमिनी (एआई-निर्मित चित्र)", by Claude).
 - `src/i18n/ne.json` → `home.aboutIntro`: the Nepali About text is **Claude's translation** of the English paragraph given by the ward team on 13 Nov 2026.
 - `content/faq.json`: all Nepali questions (`q_ne`) and answers (`a_ne`) were written by Claude from the page content. Also check that the Nepali question variants match how people would actually ask.
+  - **New in the Phase 9 chatbot restructure (13 Nov 2026):** topic labels "{site} घुम्न जाँदा", "{site}को बारेमा", "वडा कार्यालयमा सम्पर्क", "यो वेबसाइटको बारेमा" (wording given by the ward team); all the short questions (e.g. "नानक मठ कहाँ छ?", "त्यहाँ कसरी पुग्ने?", "कति बजे खुल्छ?", "प्रवेश शुल्क लाग्छ?", "फोटो खिच्न मिल्छ?", "जानुअघि के थाहा पाउनुपर्छ?", "यो कति पुरानो हो?", "गुरु नानकसँग यसको के सम्बन्ध छ?", "यहाँ कुन कुन चाड मनाइन्छ?", "त्यहाँ के के हेर्न सकिन्छ?"); the new answers `nanak-what`, `nanak-see`, `nanak-tips` and all `mhepi-*` visit/about answers; the "no information yet" reply "यो जानकारी हामीसँग अहिलेसम्म छैन…".
+  - `src/i18n/ne.json` → `chat.greeting` (new ending "तलको प्रश्न थिच्नुहोस् वा विषय छान्नुहोस्।"), `chat.quickQuestions`, `chat.viewOnMap`, `chat.openOsm`, `chat.approximateNote`, `chat.newTab`; `map.showMap`, `map.showMapNote`, `map.previewAlt` — all by Claude.
 
 ## 6. Chatbot
 
@@ -130,9 +133,10 @@ These files contain Nepali written by Claude, not taken from a source. A native 
   - [ ] Confirm that wording, or whether to say just "Gemini".
 - [ ] **Nani animation**: `Nani.jpeg` is a single still JPEG (848×1264, one frame), so no animated WebP or MP4/WebM loop could be made from it. The floating button uses the still picture with a gentle CSS bob-and-tilt instead, which is static under reduced motion. If an animated original exists, add it to raw-data and convert it (target < 300 KB, plus a still frame).
 - [ ] Nani is an AI-generated illustration of a child. Confirm the ward is happy to publish it on a public government website, and that Gemini's terms allow this use.
-- **Size (13 Nov 2026):** Nani is a large half-body cut-out (background removed by `npm run optimize-images`). She is 130 px tall on phones and 260 px from 768 px, standing bottom-left. The panel opens beside her (wider screens) or above her (phones).
+- **Size (13 Nov 2026):** Nani is a large half-body cut-out (background removed by `npm run optimize-images`), 130 px tall on phones and 260 px from 768 px, standing bottom-left — **only on the home page once the hero has scrolled away**. On the hero and on every other page she is a 56 px round face, because at 1440 px the big figure covered the hero buttons, the detail page's table of contents, the first gallery photos, the contact form and the map (Phase 9 review, option 2).
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.
-- **Tap-only (13 Nov 2026):** visitors choose a topic, then a question; there is no typing. Three general entries ("Where can I see photos?", "Is this website in Nepali?", "Who took the photos?") have no topic (`"topic": null`). They appear only as related questions under other answers.
-  - [ ] Should they get a topic of their own?
+- **Tap-only (13 Nov 2026):** visitors choose a topic, then a question; there is no typing.
+- **Structure (Phase 9 review, 13 Nov 2026):** for each visible site "Visiting {site}" and "About {site}", then "Contact the ward office" and "About this website". Questions in a topic are ordered by `priority`. Four quick questions open the chat ("Where is Nanak Math?", "How do I get there?", "What is Nanak Math?", "How old is it?"). "How do I get there?" adds "View on 3D Map" and an OpenStreetMap directions link built from the site's coordinates, with an "approximate" note when the coordinates are approximate. Mhepi's entries follow the same structure and appear when it leaves draft.
+  - [ ] **Mhepi answers without data**: opening hours, entry fee, photography, festivals and step-by-step directions say "we don't have this information yet". Update them in `content/faq.json` once known.

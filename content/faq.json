@@ -1,135 +1,73 @@
 {
-  "topics": [
+  "siteTopics": [
     {
-      "id": "nanak-math",
-      "site": "nanak-math",
+      "kind": "visit",
       "label": {
-        "en": "Nanak Math (Siddheshwar Mahadev)",
-        "ne": "नानक मठ (सिद्धेश्वर महादेव)"
+        "en": "Visiting {site}",
+        "ne": "{site} घुम्न जाँदा"
       }
     },
     {
-      "id": "mhepi-ajima",
-      "site": "mhepi-ajima",
+      "kind": "about",
       "label": {
-        "en": "Mhepi Ajima",
-        "ne": "म्हेपी अजिमा"
-      }
-    },
-    {
-      "id": "getting-there",
-      "site": null,
-      "label": {
-        "en": "Getting there",
-        "ne": "त्यहाँ कसरी पुग्ने"
-      }
-    },
-    {
-      "id": "contact",
-      "site": null,
-      "label": {
-        "en": "Contact the ward office",
-        "ne": "वडा कार्यालयसँग सम्पर्क"
+        "en": "About {site}",
+        "ne": "{site}को बारेमा"
       }
     }
   ],
+  "topics": [
+    {
+      "id": "contact",
+      "label": {
+        "en": "Contact the ward office",
+        "ne": "वडा कार्यालयमा सम्पर्क"
+      }
+    },
+    {
+      "id": "website",
+      "label": {
+        "en": "About this website",
+        "ne": "यो वेबसाइटको बारेमा"
+      }
+    }
+  ],
+  "suggestions": [
+    "nanak-where",
+    "nanak-reach",
+    "nanak-what",
+    "nanak-age"
+  ],
   "entries": [
-    {
-      "id": "sites",
-      "site": null,
-      "topic": "getting-there",
-      "q_en": "Which heritage sites are on this website?",
-      "q_ne": "यस वेबसाइटमा कुन कुन सम्पदा छन्?",
-      "a_en": "This website covers {sites} in Ward No. 16, Kathmandu Metropolitan City, with their history, festivals, photos and visiting details.",
-      "a_ne": "यस वेबसाइटमा काठमाडौं महानगरपालिका वडा नं. १६ का {sites} को इतिहास, चाडपर्व, तस्बिर र भ्रमण जानकारी छ।",
-      "link": "/#heritages"
-    },
-    {
-      "id": "ward-contact",
-      "site": null,
-      "topic": "contact",
-      "q_en": "How can I contact the ward office?",
-      "q_ne": "वडा कार्यालयको सम्पर्क कसरी गर्ने?",
-      "a_en": "Ward No. 16 office, {address}. Phone: {phone}. Email: {email}.",
-      "a_ne": "वडा नं. १६ कार्यालय, {address}। फोन: {phone}। इमेल: {email}।",
-      "link": "/#contact"
-    },
-    {
-      "id": "ward-office-location",
-      "site": null,
-      "topic": "contact",
-      "q_en": "Where is the Ward 16 office?",
-      "q_ne": "वडा १६ को कार्यालय कहाँ छ?",
-      "a_en": "The Ward No. 16 office is in {address}. The 3D map shows its approximate location.",
-      "a_ne": "वडा नं. १६ को कार्यालय {address} मा छ। थ्रीडी नक्सामा यसको अनुमानित स्थान देखिन्छ।",
-      "link": "/map/?site=ward-office"
-    },
-    {
-      "id": "map",
-      "site": null,
-      "topic": "getting-there",
-      "q_en": "Is there a map?",
-      "q_ne": "नक्सा छ?",
-      "a_en": "Yes. The 3D map shows the heritage sites and the ward office on a tilted map with terrain and buildings. Select a place in the list to fly to it.",
-      "a_ne": "छ। थ्रीडी नक्सामा सम्पदा स्थल र वडा कार्यालय भू-बनोट र भवनसहित देखिन्छन्। सूचीमा ठाउँ छानेर त्यहाँ पुग्न सकिन्छ।",
-      "link": "/map/"
-    },
-    {
-      "id": "gallery",
-      "site": null,
-      "topic": null,
-      "q_en": "Where can I see photos?",
-      "q_ne": "तस्बिर कहाँ हेर्ने?",
-      "a_en": "The gallery has photos of {sites}, taken in November 2026. Select a photo to see it larger.",
-      "a_ne": "तस्बिर पृष्ठमा २०२६ नोभेम्बरमा खिचिएका {sites} का तस्बिरहरू छन्। ठूलो गरी हेर्न तस्बिर छान्नुहोस्।",
-      "link": "/gallery/"
-    },
-    {
-      "id": "language",
-      "site": null,
-      "topic": null,
-      "q_en": "Is this website in Nepali?",
-      "q_ne": "अंग्रेजीमा पढ्न मिल्छ?",
-      "a_en": "Yes. Use the EN | ने switch at the top of every page to read the same page in English or Nepali. You can also ask me questions in either language.",
-      "a_ne": "मिल्छ। प्रत्येक पृष्ठको माथि रहेको EN | ने बटनले त्यही पृष्ठ अंग्रेजी वा नेपालीमा पढ्न सकिन्छ। मलाई दुवै भाषामा प्रश्न सोध्न सक्नुहुन्छ।",
-      "link": null
-    },
-    {
-      "id": "photo-credits",
-      "site": null,
-      "topic": null,
-      "q_en": "Who took the photos?",
-      "q_ne": "तस्बिर कसले खिचेको?",
-      "a_en": "The photos were taken by {team} in 2026.",
-      "a_ne": "तस्बिरहरू {team} ले २०२६ मा खिचेका हुन्।",
-      "link": "/gallery/"
-    },
     {
       "id": "nanak-where",
       "site": "nanak-math",
-      "topic": "getting-there",
+      "topic": "visit",
+      "priority": 1,
       "q_en": "Where is Nanak Math?",
       "q_ne": "नानक मठ कहाँ छ?",
-      "a_en": "Nanak Math is on the bank of the Bishnumati in Naya Bazar, near Bishnumati Bridge, Balaju, in Ward No. 16 of Kathmandu Metropolitan City.",
-      "a_ne": "नानक मठ काठमाडौं महानगरपालिका वडा नं. १६, बालाजुको नयाँ बजारमा विष्णुमती पुल नजिक विष्णुमती किनारमा छ।",
+      "a_en": "Nanak Math is on the bank of the Bishnumati in Naya Bazar, next to the Bishnumati bridge, in the Balaju area of Ward No. 16, Kathmandu Metropolitan City.",
+      "a_ne": "नानक मठ काठमाडौं महानगरपालिका वडा नं. १६, बालाजु क्षेत्रको नयाँ बजारमा विष्णुमती पुलछेउ विष्णुमती किनारमा छ।",
       "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-reach",
       "site": "nanak-math",
-      "topic": "getting-there",
-      "q_en": "How do I get to Nanak Math?",
-      "q_ne": "नानक मठ कसरी पुग्ने?",
-      "a_en": "Go to Naya Bazar near Bishnumati Bridge. Look for the signboard reading “प्राचिन उदासिन नानक मठ” above the entrance gate; stone steps lead up from the gate.",
-      "a_ne": "विष्णुमती पुल नजिक नयाँ बजार पुग्नुहोस्। प्रवेशद्वारमाथि “प्राचिन उदासिन नानक मठ” लेखिएको साइनबोर्ड छ; ढोकाबाट ढुङ्गे सिँढी उक्लिनुपर्छ।",
+      "topic": "visit",
+      "priority": 2,
+      "directions": true,
+      "q_en": "How do I get there?",
+      "q_ne": "त्यहाँ कसरी पुग्ने?",
+      "a_en": "Go to Naya Bazar, next to the Bishnumati bridge in the Balaju area. Look for the signboard reading “प्राचिन उदासिन नानक मठ” above the entrance gate; stone steps lead up from the gate.",
+      "a_ne": "बालाजु क्षेत्रको नयाँ बजारमा विष्णुमती पुलछेउ पुग्नुहोस्। प्रवेशद्वारमाथि “प्राचिन उदासिन नानक मठ” लेखिएको साइनबोर्ड छ; ढोकाबाट ढुङ्गे सिँढी उक्लिनुपर्छ।",
       "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-hours",
       "site": "nanak-math",
-      "topic": "getting-there",
-      "q_en": "What are the opening hours of Nanak Math?",
-      "q_ne": "नानक मठ कति बजे खुल्छ?",
+      "topic": "visit",
+      "priority": 3,
+      "q_en": "When is it open?",
+      "q_ne": "कति बजे खुल्छ?",
       "a_en": "Nanak Math is open from 7:00 am to 6:00 pm, to everyone, for darshan, seva and worship.",
       "a_ne": "नानक मठ बिहान ७ बजेदेखि बेलुका ६ बजेसम्म दर्शन, सेवा र पूजाका लागि सबैका लागि खुला रहन्छ।",
       "link": "/heritage/nanak-math/#how-to-visit"
@@ -137,29 +75,65 @@
     {
       "id": "nanak-entry-fee",
       "site": "nanak-math",
-      "topic": "getting-there",
-      "q_en": "Is there an entry fee at Nanak Math?",
-      "q_ne": "नानक मठमा प्रवेश शुल्क लाग्छ?",
-      "a_en": "We don't have confirmed information about an entry fee yet. Please ask the ward office: phone {phone}.",
-      "a_ne": "प्रवेश शुल्कबारे पुष्टि भएको जानकारी अहिलेसम्म छैन। कृपया वडा कार्यालयमा सोध्नुहोस्: फोन {phone}।",
+      "topic": "visit",
+      "priority": 4,
+      "q_en": "Is there an entry fee?",
+      "q_ne": "प्रवेश शुल्क लाग्छ?",
+      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
       "link": "/#contact"
     },
     {
       "id": "nanak-photography",
       "site": "nanak-math",
-      "topic": "getting-there",
-      "q_en": "Can I take photos at Nanak Math?",
-      "q_ne": "नानक मठमा फोटो खिच्न मिल्छ?",
-      "a_en": "We don't have confirmed photography rules yet. Please ask at the math before taking photos, especially of the shrines and of people.",
-      "a_ne": "फोटो खिच्नेबारे पुष्टि भएको नियम अहिलेसम्म छैन। फोटो खिच्नुअघि, विशेषगरी देवस्थल र मानिसहरूको, मठमा सोध्नुहोस्।",
-      "link": null
+      "topic": "visit",
+      "priority": 5,
+      "q_en": "Can I take photos?",
+      "q_ne": "फोटो खिच्न मिल्छ?",
+      "a_en": "We don't have this information yet. Please ask at the math before taking photos, especially of the shrines and of people, or contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। फोटो खिच्नुअघि, विशेषगरी देवस्थल र मानिसहरूको, मठमा सोध्नुहोस् वा वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "nanak-tips",
+      "site": "nanak-math",
+      "topic": "visit",
+      "priority": 6,
+      "q_en": "Any tips before visiting?",
+      "q_ne": "जानुअघि के थाहा पाउनुपर्छ?",
+      "a_en": "The math is open to everyone from 7:00 am to 6:00 pm for darshan, seva and worship. The entrance is the gate below the signboard, with stone steps up. If you want to feed the cows at the gaushala, bring green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt; never stale, rotten or leftover food.",
+      "a_ne": "मठ बिहान ७ बजेदेखि बेलुका ६ बजेसम्म दर्शन, सेवा र पूजाका लागि सबैका लागि खुला छ। प्रवेशद्वार साइनबोर्डमुनिको ढोका हो, जहाँबाट ढुङ्गे सिँढी उक्लिनुपर्छ। गौशालाका गाईलाई खुवाउन चाहनुहुन्छ भने हरियो घाँसपात, पराल, मकैको पिठो, चोकर, दुटो, पिना, शख्खर वा नुन लानुहोस्; जुठो, सडेको वा कुहिएको कुरा नदिनुहोस्।",
+      "link": "/heritage/nanak-math/#how-to-visit"
+    },
+    {
+      "id": "nanak-gaushala",
+      "site": "nanak-math",
+      "topic": "visit",
+      "priority": 7,
+      "q_en": "Can I feed the cows?",
+      "q_ne": "गाईलाई खुवाउन मिल्छ?",
+      "a_en": "Yes. The math's gaushala welcomes green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt. Never give stale, rotten or leftover food.",
+      "a_ne": "मिल्छ। मठको गौशालाका गाईलाई हरियो घाँसपात, पराल, मकैको पिठो, चोकर, दुटो, पिना, शख्खर र नुन खुवाउन सकिन्छ। जुठो, सडेको वा कुहिएको कुरा खुवाउनु हुँदैन।",
+      "link": "/heritage/nanak-math/#how-to-visit"
+    },
+    {
+      "id": "nanak-what",
+      "site": "nanak-math",
+      "topic": "about",
+      "priority": 1,
+      "q_en": "What is Nanak Math?",
+      "q_ne": "नानक मठ के हो?",
+      "a_en": "Nanak Math is an ancient Udasin math on the bank of the Bishnumati in Naya Bazar, Balaju. It is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi, and it has always been run by mahants of the Nepali guru–disciple tradition.",
+      "a_ne": "नानक मठ बालाजुको नयाँ बजारमा विष्णुमती किनारमा रहेको प्राचीन उदासीन मठ हो। यो महायोगी श्री ब्रह्महरिदास महाराजले जीवित भू-समाधि लिनुभएको स्थलका रूपमा परिचित छ, र यसलाई सधैँ नेपाली गुरु शिष्य परम्पराका महन्तहरूले चलाउँदै आएका छन्।",
+      "link": "/heritage/nanak-math/#history"
     },
     {
       "id": "nanak-age",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "How old is Nanak Math?",
-      "q_ne": "नानक मठ कति पुरानो हो?",
+      "topic": "about",
+      "priority": 2,
+      "q_en": "How old is it?",
+      "q_ne": "यो कति पुरानो हो?",
       "a_en": "The sources differ. The math’s written account says its guru gaddi is a thousand years old; its signboards speak of a 5,000-year tradition; published accounts of Sikh tradition place Guru Nanak Dev’s believed visit around 1516. The living bhu-samadhi temple dates to VS 1664.",
       "a_ne": "स्रोतहरूमा फरक फरक विवरण छन्। मठको लिखित विवरणअनुसार गुरुगद्दी एक हजार वर्ष पुरानो छ; साइनबोर्डमा ५००० वर्षदेखिको परम्परा भनिएको छ; सिख परम्पराका प्रकाशित विवरणअनुसार गुरु नानक देवको भ्रमण सन् १५१६ तिर भएको मानिन्छ। जीवित भू-समाधि मन्दिर वि.सं. १६६४ को हो।",
       "link": "/heritage/nanak-math/#name-and-age"
@@ -167,17 +141,41 @@
     {
       "id": "nanak-name",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "Why is it called Nanak Math?",
-      "q_ne": "यसलाई नानक मठ किन भनिन्छ?",
+      "topic": "about",
+      "priority": 3,
+      "q_en": "What is its link to Guru Nanak?",
+      "q_ne": "गुरु नानकसँग यसको के सम्बन्ध छ?",
       "a_en": "Sikh tradition associates the math with Guru Nanak Dev, who is believed to have visited and meditated here (around 1516, according to some accounts). The math’s own written account does not explain the name, and no local source has confirmed this association yet.",
       "a_ne": "सिख परम्पराले यस मठलाई गुरु नानक देवसँग जोड्छ; उहाँ यहाँ आउनुभएको र ध्यान गर्नुभएको मानिन्छ (केही विवरणअनुसार सन् १५१६ तिर)। मठको आफ्नै लिखित विवरणले नामको व्याख्या गर्दैन, र कुनै स्थानीय स्रोतले यो सम्बन्ध अझै पुष्टि गरेको छैन।",
       "link": "/heritage/nanak-math/#name-and-age"
     },
     {
+      "id": "nanak-festivals",
+      "site": "nanak-math",
+      "topic": "about",
+      "priority": 4,
+      "q_en": "What festivals are held there?",
+      "q_ne": "यहाँ कुन कुन चाड मनाइन्छ?",
+      "a_en": "The math's annual programme includes Akshaya Tritiya, Basanta Panchami, Kojagrat Purnima, Teej, Asar Shashthi, Vijaya Dashami, Sharadiya Navaratri and the flag-changing (dhwajarohan) with a bhandara at the start of Sorha Shraddha.",
+      "a_ne": "मठको वार्षिक कार्यक्रममा अक्षय तृतीया, बसन्त पञ्चमी, कोजाग्रत पूर्णिमा, तीज, असारको षष्ठी, विजया दशमी, शारदीय नवरात्र र सोह्र श्राद्ध लाग्ने पूर्णिमाको ध्वजारोहण र भण्डारा पर्छन्।",
+      "link": "/heritage/nanak-math/#festivals"
+    },
+    {
+      "id": "nanak-see",
+      "site": "nanak-math",
+      "topic": "about",
+      "priority": 5,
+      "q_en": "What can I see there?",
+      "q_ne": "त्यहाँ के के हेर्न सकिन्छ?",
+      "a_en": "The living bhu-samadhi temple, the Vishnu Panchayatan temple, the Hanuman temple beneath the ancient peepal tree, the akhanda dhuni (a sacred fire said to have burned for about 700 years), the Tulsi Math, the stone Nandi of Nandeshwar Mahadev, the Vishnu paduka and the gaushala.",
+      "a_ne": "जीवित भू-समाधि मन्दिर, विष्णु पञ्चायतन मन्दिर, प्राचीन पिपलमुनिको हनुमान मन्दिर, अखण्ड धुनी (करिब ७०० वर्षदेखि बलिरहेको मानिने पवित्र आगो), तुलसी मठ, नन्दीश्वर महादेवको ढुङ्गे नन्दी, विष्णुपादुका र गौशाला।",
+      "link": "/heritage/nanak-math/#architecture"
+    },
+    {
       "id": "nanak-samadhi",
       "site": "nanak-math",
-      "topic": "nanak-math",
+      "topic": "about",
+      "priority": 6,
       "q_en": "What is the living bhu-samadhi?",
       "q_ne": "जीवित भू-समाधि भनेको के हो?",
       "a_en": "Nanak Math is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi in VS 1664, together with his disciples Gothalramdas and Yathiramdas. The samadhi temple built in VS 1664 marks the spot.",
@@ -187,7 +185,8 @@
     {
       "id": "nanak-brahmaharidas",
       "site": "nanak-math",
-      "topic": "nanak-math",
+      "topic": "about",
+      "priority": 7,
       "q_en": "Who was Brahmaharidas Maharaj?",
       "q_ne": "ब्रह्महरिदास महाराज को हुनुहुन्थ्यो?",
       "a_en": "Mahayogi Shri Brahmaharidas Maharaj was born in VS 1432 on Baishakh Purnima. His guru was Jagatguru Shri Narharyanandacharya. According to the math, he lived on air alone until the age of 232 and entered living bhu-samadhi here in VS 1664.",
@@ -197,9 +196,10 @@
     {
       "id": "nanak-mahant",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "Who is the current mahant of Nanak Math?",
-      "q_ne": "नानक मठका हालका महन्त को हुनुहुन्छ?",
+      "topic": "about",
+      "priority": 8,
+      "q_en": "Who runs it today?",
+      "q_ne": "अहिले यसलाई कसले चलाउँछ?",
       "a_en": "The math is run by its mahant, Shri Naval Kishor Das Ji Maharaj, the 23rd in the line of mahants.",
       "a_ne": "मठको सञ्चालन तेइसौँ महन्त श्री नवल किशोर दासजी महाराजले गर्नुहुन्छ।",
       "link": "/heritage/nanak-math/#mahants"
@@ -207,7 +207,8 @@
     {
       "id": "nanak-dhuni",
       "site": "nanak-math",
-      "topic": "nanak-math",
+      "topic": "about",
+      "priority": 9,
       "q_en": "What is the akhanda dhuni?",
       "q_ne": "अखण्ड धुनी के हो?",
       "a_en": "The akhanda dhuni is a sacred fire said to have burned without a break for about 700 years. It is kept alive with dry, fallen wood from the trees in the math grounds.",
@@ -215,41 +216,23 @@
       "link": "/heritage/nanak-math/#architecture"
     },
     {
-      "id": "nanak-festivals",
-      "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What festivals are celebrated at Nanak Math?",
-      "q_ne": "नानक मठमा कुन कुन चाड मनाइन्छ?",
-      "a_en": "The math's annual programme includes Akshaya Tritiya, Basanta Panchami, Kojagrat Purnima, Teej, Asar Shashthi, Vijaya Dashami, Sharadiya Navaratri and the flag-changing (dhwajarohan) with a bhandara at the start of Sorha Shraddha.",
-      "a_ne": "मठको वार्षिक कार्यक्रममा अक्षय तृतीया, बसन्त पञ्चमी, कोजाग्रत पूर्णिमा, तीज, असारको षष्ठी, विजया दशमी, शारदीय नवरात्र र सोह्र श्राद्ध लाग्ने पूर्णिमाको ध्वजारोहण र भण्डारा पर्छन्।",
-      "link": "/heritage/nanak-math/#festivals"
-    },
-    {
       "id": "nanak-akshaya-tritiya",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What happens on Akshaya Tritiya at Nanak Math?",
+      "topic": "about",
+      "priority": 10,
+      "q_en": "What happens on Akshaya Tritiya?",
       "q_ne": "अक्षय तृतीयामा के हुन्छ?",
       "a_en": "On Akshaya Tritiya (Baishakh) an annual puja is held at the samadhi temple. The living bhu-samadhi took place on Baishakh Akshaya Tritiya in VS 1664.",
       "a_ne": "अक्षय तृतीया (वैशाख) मा समाधि मन्दिरमा वार्षिक पूजा हुन्छ। जीवित भू-समाधि वि.सं. १६६४ वैशाख अक्षय तृतीयामा भएको थियो।",
       "link": "/heritage/nanak-math/#festivals"
     },
     {
-      "id": "nanak-gaushala",
-      "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "Can I feed the cows at Nanak Math?",
-      "q_ne": "नानक मठका गाईलाई के खुवाउन मिल्छ?",
-      "a_en": "Yes. The math's gaushala welcomes green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt. Never give stale, rotten or leftover food.",
-      "a_ne": "मिल्छ। मठको गौशालाका गाईलाई हरियो घाँसपात, पराल, मकैको पिठो, चोकर, दुटो, पिना, शख्खर र नुन खुवाउन सकिन्छ। जुठो, सडेको वा कुहिएको कुरा खुवाउनु हुँदैन।",
-      "link": "/heritage/nanak-math/#how-to-visit"
-    },
-    {
       "id": "nanak-tradition",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What tradition does Nanak Math follow?",
-      "q_ne": "नानक मठ कुन परम्परा मान्छ?",
+      "topic": "about",
+      "priority": 11,
+      "q_en": "What tradition does it follow?",
+      "q_ne": "यो कुन परम्परा मान्छ?",
       "a_en": "Nanak Math is an Udasin math run in the Nepali guru–disciple (mahant) tradition. Vishnu Panchayatan, Hanuman, Nandeshwar Mahadev, Tulsi and Gau Mata are worshipped there.",
       "a_ne": "नानक मठ नेपाली गुरु शिष्य महन्त परम्पराअनुसार सञ्चालित उदासीन मठ हो। यहाँ विष्णु पञ्चायतन, हनुमानजी, नन्दीश्वर महादेव, तुलसी माता र गौ माताको पूजा हुन्छ।",
       "link": "/heritage/nanak-math/#history"
@@ -257,9 +240,10 @@
     {
       "id": "nanak-other-names",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What other names does Nanak Math have?",
-      "q_ne": "नानक मठका अरू नाम के के हुन्?",
+      "topic": "about",
+      "priority": 12,
+      "q_en": "What other names does it have?",
+      "q_ne": "यसका अरू नाम के के हुन्?",
       "a_en": "It is also known as Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban (Mahanta Math), Sangat Ban and Sadhukuti. Each name comes from a story or tradition of the place.",
       "a_ne": "यसलाई नन्दी वन, तपोवन, शङ्ख वन, शङ्खबारी, महन्त वन (महन्त मठ), संगत वन र साधुकुटी पनि भनिन्छ। हरेक नामको आफ्नै कथा वा परम्परा छ।",
       "link": "/heritage/nanak-math/#legends"
@@ -267,8 +251,9 @@
     {
       "id": "nanak-nandi",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What is the story of Nandi at Nanak Math?",
+      "topic": "about",
+      "priority": 13,
+      "q_en": "What is the story of Nandi?",
       "q_ne": "नन्दीको कथा के हो?",
       "a_en": "According to the math, Nandi did penance here, received Lord Shiva's darshan and asked to become his vahana. An ancient stone Nandi still stands here, and the place is called Nandeshwar Mahadev.",
       "a_ne": "मठका अनुसार नन्दीले यहाँ तपस्या गरी शिवजीको दर्शन पाए र वाहन हुन पाउँ भनी वरदान मागे। यहाँ अहिले पनि नन्दीको प्राचीन शिला मूर्ति छ र यो ठाउँ नन्दीश्वर महादेव कहलाउँछ।",
@@ -277,7 +262,8 @@
     {
       "id": "nanak-tulsi-math",
       "site": "nanak-math",
-      "topic": "nanak-math",
+      "topic": "about",
+      "priority": 14,
       "q_en": "What is the Tulsi Math?",
       "q_ne": "तुलसी मठ के हो?",
       "a_en": "The Tulsi Math is a shrine worshipped since ancient times, with Bhimsen on the east, Pashupatinath on the south, Narsingh Bhagwan on the west and Shiva–Parvati on the north, together with shaligram stones.",
@@ -285,19 +271,10 @@
       "link": "/heritage/nanak-math/#architecture"
     },
     {
-      "id": "nanak-treasures",
-      "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What treasures does Nanak Math have?",
-      "q_ne": "नानक मठमा के के पुराना सामग्री छन्?",
-      "a_en": "Among its objects are 55 shaligram stones, 7 sacred texts including the Guru Granth Sahib, a chamar given by the queen of Salyankot in VS 1843 and the iron chimta used by Brahmaharidas Maharaj. The math plans to arrange them as a museum.",
-      "a_ne": "यहाँका सामग्रीमा ५५ वटा शालिग्राम, गुरुग्रन्थ साहिबसहित ७ वटा ग्रन्थ, सल्यानकोटकी महारानीले वि.सं. १८४३ मा दान गरेको चवर र ब्रह्महरिदास महाराजले प्रयोग गरेको फलामको चिम्टा छन्। मठले यिनलाई संग्रहालयका रूपमा राख्ने योजना बनाएको छ।",
-      "link": "/heritage/nanak-math/#treasures"
-    },
-    {
       "id": "nanak-paduka",
       "site": "nanak-math",
-      "topic": "nanak-math",
+      "topic": "about",
+      "priority": 15,
       "q_en": "What is the Vishnu paduka?",
       "q_ne": "विष्णुपादुका के हो?",
       "a_en": "The Vishnu paduka are stone footprints beneath the peepal tree, said to be about 1,000 years old. Sadhus meditate there.",
@@ -305,11 +282,23 @@
       "link": "/heritage/nanak-math/#architecture"
     },
     {
+      "id": "nanak-treasures",
+      "site": "nanak-math",
+      "topic": "about",
+      "priority": 16,
+      "q_en": "What old objects does it keep?",
+      "q_ne": "यहाँ के के पुराना सामग्री छन्?",
+      "a_en": "Among its objects are 55 shaligram stones, 7 sacred texts including the Guru Granth Sahib, a chamar given by the queen of Salyankot in VS 1843 and the iron chimta used by Brahmaharidas Maharaj. The math plans to arrange them as a museum.",
+      "a_ne": "यहाँका सामग्रीमा ५५ वटा शालिग्राम, गुरुग्रन्थ साहिबसहित ७ वटा ग्रन्थ, सल्यानकोटकी महारानीले वि.सं. १८४३ मा दान गरेको चवर र ब्रह्महरिदास महाराजले प्रयोग गरेको फलामको चिम्टा छन्। मठले यिनलाई संग्रहालयका रूपमा राख्ने योजना बनाएको छ।",
+      "link": "/heritage/nanak-math/#treasures"
+    },
+    {
       "id": "nanak-guru-granth",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "Does Nanak Math have the Guru Granth Sahib?",
-      "q_ne": "नानक मठमा गुरुग्रन्थ साहिब छ?",
+      "topic": "about",
+      "priority": 17,
+      "q_en": "Does it have the Guru Granth Sahib?",
+      "q_ne": "यहाँ गुरुग्रन्थ साहिब छ?",
       "a_en": "Yes. The math's gurus brought the Guru Granth Sahib for study. It is kept with the Vedas, Puranas, Ramayana, Bhagavat and other texts, which are worshipped and read in daily satsang.",
       "a_ne": "छ। मठका गुरुहरूले अध्ययनका लागि गुरुग्रन्थ साहिब ल्याएका थिए। यो वेद, पुराण, रामायण, भागवत आदि ग्रन्थसँगै राखिन्छ, जसको पूजा र नित्य सत्संगमा पाठ हुन्छ।",
       "link": "/heritage/nanak-math/#legends"
@@ -317,9 +306,10 @@
     {
       "id": "nanak-daily",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "What daily worship happens at Nanak Math?",
-      "q_ne": "नानक मठमा नित्य पूजा के के हुन्छ?",
+      "topic": "about",
+      "priority": 18,
+      "q_en": "What worship happens every day?",
+      "q_ne": "दैनिक पूजा के के हुन्छ?",
       "a_en": "Every day there is puja, reading and morning and evening aarti for the Vishnu Panchayatan and the sacred texts, care of the cows, puja at the samadhi temple, abhishek of Hanuman and the Shivalinga, and tending of the akhanda dhuni.",
       "a_ne": "हरेक दिन विष्णु पञ्चायतन र ग्रन्थहरूको पूजा, पाठ र प्रातः सन्ध्या आरती, गौसेवा, समाधि मन्दिरमा पूजा, हनुमान र शिवलिङ्गको अभिषेक तथा अखण्ड धुनीको हेरचाह हुन्छ।",
       "link": "/heritage/nanak-math/#daily-worship"
@@ -327,9 +317,10 @@
     {
       "id": "nanak-sources",
       "site": "nanak-math",
-      "topic": "nanak-math",
-      "q_en": "Where does the Nanak Math information come from?",
-      "q_ne": "नानक मठको जानकारी कहाँबाट लिइएको हो?",
+      "topic": "about",
+      "priority": 19,
+      "q_en": "Where does this information come from?",
+      "q_ne": "यो जानकारी कहाँबाट लिइएको हो?",
       "a_en": "From the math’s own written account, its signboards and plaques (read from photos taken in November 2026), and published sources on its association with Guru Nanak Dev (Spotlight, Nepali Times and Wikipedia). Each page lists its sources at the end.",
       "a_ne": "मठको आफ्नै लिखित विवरण, २०२६ नोभेम्बरमा खिचिएका तस्बिरबाट पढिएका साइनबोर्ड र पाटी, र गुरु नानक देवसँगको सम्बन्धबारे प्रकाशित स्रोतहरू (स्पटलाइट, नेपाली टाइम्स र विकिपिडिया) बाट। प्रत्येक पृष्ठको अन्त्यमा स्रोतहरू दिइएका छन्।",
       "link": "/heritage/nanak-math/#sources"
@@ -337,19 +328,121 @@
     {
       "id": "mhepi-where",
       "site": "mhepi-ajima",
-      "topic": "getting-there",
+      "topic": "visit",
+      "priority": 1,
       "q_en": "Where is Mhepi Ajima?",
       "q_ne": "म्हेपी अजिमा कहाँ छ?",
       "a_en": "The temple of Yogambar Jnaneshwari Mhepi Ajima is in Naya Bazar, Ward No. 16 of Kathmandu Metropolitan City.",
       "a_ne": "योगाम्बर ज्ञानेश्वरी म्हेपी अजिमाको मन्दिर काठमाडौं महानगरपालिका वडा नं. १६, नयाँ बजारमा छ।",
-      "link": "/heritage/mhepi-ajima/"
+      "link": "/heritage/mhepi-ajima/#how-to-visit"
+    },
+    {
+      "id": "mhepi-reach",
+      "site": "mhepi-ajima",
+      "topic": "visit",
+      "priority": 2,
+      "directions": true,
+      "q_en": "How do I get there?",
+      "q_ne": "त्यहाँ कसरी पुग्ने?",
+      "a_en": "The temple is in Naya Bazar, Ward No. 16. We don't have step-by-step directions yet; the links below show it on the map.",
+      "a_ne": "मन्दिर वडा नं. १६, नयाँ बजारमा छ। विस्तृत बाटो हामीसँग अहिलेसम्म छैन; तलका लिङ्कले नक्सामा देखाउँछन्।",
+      "link": "/heritage/mhepi-ajima/#how-to-visit"
+    },
+    {
+      "id": "mhepi-hours",
+      "site": "mhepi-ajima",
+      "topic": "visit",
+      "priority": 3,
+      "q_en": "When is it open?",
+      "q_ne": "कति बजे खुल्छ?",
+      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "mhepi-entry-fee",
+      "site": "mhepi-ajima",
+      "topic": "visit",
+      "priority": 4,
+      "q_en": "Is there an entry fee?",
+      "q_ne": "प्रवेश शुल्क लाग्छ?",
+      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "mhepi-photography",
+      "site": "mhepi-ajima",
+      "topic": "visit",
+      "priority": 5,
+      "q_en": "Can I take photos?",
+      "q_ne": "फोटो खिच्न मिल्छ?",
+      "a_en": "We don't have this information yet. Please ask at the temple before taking photos, especially of the shrine and of people, or contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। फोटो खिच्नुअघि, विशेषगरी देवस्थल र मानिसहरूको, मन्दिरमा सोध्नुहोस् वा वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "mhepi-tips",
+      "site": "mhepi-ajima",
+      "topic": "visit",
+      "priority": 6,
+      "q_en": "Any tips before visiting?",
+      "q_ne": "जानुअघि के थाहा पाउनुपर्छ?",
+      "a_en": "The temple committee asks that no stalls be set up in front of the temple door. Sattals (rest houses) in the grounds can be booked in advance through the Mhepi Conservation and Management Committee.",
+      "a_ne": "मन्दिरको ढोका अगाडि पसल नराख्न मन्दिर समितिको अनुरोध छ। परिसरका सतलहरू म्हेयपि संरक्षण तथा व्यवस्थापन समितिमार्फत अग्रिम बुक गर्न सकिन्छ।",
+      "link": "/heritage/mhepi-ajima/#present-day"
+    },
+    {
+      "id": "mhepi-what",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 1,
+      "q_en": "What is Mhepi Ajima?",
+      "q_ne": "म्हेपी अजिमा के हो?",
+      "a_en": "Mhepi Ajima is the temple of the goddess Yogambar Jnaneshwari Mhepi Ajima in Naya Bazar, Ward No. 16. It is looked after by the Mhepi Conservation and Management Committee.",
+      "a_ne": "म्हेपी अजिमा वडा नं. १६, नयाँ बजारमा रहेको योगाम्बर ज्ञानेश्वरी म्हेपी अजिमाको मन्दिर हो। यसको हेरचाह म्हेयपि संरक्षण तथा व्यवस्थापन समितिले गर्छ।",
+      "link": "/heritage/mhepi-ajima/#history"
+    },
+    {
+      "id": "mhepi-age",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 2,
+      "q_en": "How old is it?",
+      "q_ne": "यो कति पुरानो हो?",
+      "a_en": "We don't know when the temple was founded yet. Its inscriptions record donations between Nepal Sambat 1120 and 1134 (about VS 2056–2070), and its bhajan house was built in VS 2029.",
+      "a_ne": "मन्दिर कहिले स्थापना भयो भन्ने हामीलाई अझै थाहा छैन। यहाँका अभिलेखमा नेपाल संवत् ११२० देखि ११३४ (करिब वि.सं. २०५६–२०७०) सम्मका दानको विवरण छ, र भजन घर वि.सं. २०२९ मा बनेको थियो।",
+      "link": "/heritage/mhepi-ajima/#inscriptions"
+    },
+    {
+      "id": "mhepi-festivals",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 4,
+      "q_en": "What festivals are held there?",
+      "q_ne": "यहाँ कुन कुन चाड मनाइन्छ?",
+      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
+      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "mhepi-see",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 5,
+      "q_en": "What can I see there?",
+      "q_ne": "त्यहाँ के के हेर्न सकिन्छ?",
+      "a_en": "The temple, with the two-tiered brass roof and metal-sheet work recorded in its inscriptions; the bhajan house; the Shantikar Dhyanagar meditation hall; and the sattals (rest houses). A fuller description is not available yet.",
+      "a_ne": "अभिलेखमा उल्लेख भएको पित्तलको दुईतह छाना र धातुको पाताको काम भएको मन्दिर, भजन घर, शान्तिकर ध्यानागार र सतलहरू। विस्तृत विवरण अहिलेसम्म उपलब्ध छैन।",
+      "link": "/heritage/mhepi-ajima/#inscriptions"
     },
     {
       "id": "mhepi-inscriptions",
       "site": "mhepi-ajima",
-      "topic": "mhepi-ajima",
-      "q_en": "What do the inscriptions at Mhepi Ajima record?",
-      "q_ne": "म्हेपी अजिमाका अभिलेखमा के लेखिएको छ?",
+      "topic": "about",
+      "priority": 6,
+      "q_en": "What do the inscriptions record?",
+      "q_ne": "अभिलेखमा के लेखिएको छ?",
       "a_en": "They record donations between Nepal Sambat 1120 and 1134, including a two-tiered brass roof offered in NS 1120 (VS 2056) and metal-sheet work on the main temple.",
       "a_ne": "तिनमा नेपाल संवत् ११२० देखि ११३४ सम्मका दानको विवरण छ, जसमा ने.सं. ११२० (वि.सं. २०५६) मा चढाइएको पित्तलको दुईतह छाना र मूल मन्दिरमा छाइएको धातुको पाता पर्छन्।",
       "link": "/heritage/mhepi-ajima/#inscriptions"
@@ -357,9 +450,10 @@
     {
       "id": "mhepi-bhajan-house",
       "site": "mhepi-ajima",
-      "topic": "mhepi-ajima",
-      "q_en": "When was the Mhepi bhajan house built?",
-      "q_ne": "म्हेपीको भजन घर कहिले बनेको हो?",
+      "topic": "about",
+      "priority": 7,
+      "q_en": "When was the bhajan house built?",
+      "q_ne": "भजन घर कहिले बनेको हो?",
       "a_en": "The bhajan house in the Mhepi temple complex was built in VS 2029 and rebuilt with devotees' support; the plaque marking the renovation is dated VS 2069 Jestha 6.",
       "a_ne": "म्हेपी मन्दिर परिसरको भजन घर वि.सं. २०२९ मा बनेको थियो र श्रद्धालुहरूको सहयोगमा जीर्णोद्धार गरियो; जीर्णोद्धारको शिलालेख वि.सं. २०६९ जेठ ६ को हो।",
       "link": "/heritage/mhepi-ajima/#inscriptions"
@@ -367,9 +461,10 @@
     {
       "id": "mhepi-committee",
       "site": "mhepi-ajima",
-      "topic": "mhepi-ajima",
-      "q_en": "Who looks after Mhepi Ajima?",
-      "q_ne": "म्हेपी अजिमाको हेरचाह कसले गर्छ?",
+      "topic": "about",
+      "priority": 8,
+      "q_en": "Who looks after it?",
+      "q_ne": "यसको हेरचाह कसले गर्छ?",
       "a_en": "The temple is looked after by the Mhepi Conservation and Management Committee.",
       "a_ne": "मन्दिरको हेरचाह म्हेयपि संरक्षण तथा व्यवस्थापन समितिले गर्छ।",
       "link": "/heritage/mhepi-ajima/#present-day"
@@ -377,12 +472,90 @@
     {
       "id": "mhepi-sattal",
       "site": "mhepi-ajima",
-      "topic": "mhepi-ajima",
-      "q_en": "Can I book a sattal at Mhepi Ajima?",
-      "q_ne": "म्हेपी अजिमामा सतल बुक गर्न मिल्छ?",
+      "topic": "about",
+      "priority": 9,
+      "q_en": "Can I book a sattal?",
+      "q_ne": "सतल बुक गर्न मिल्छ?",
       "a_en": "Yes. The sattals (rest houses) in the temple grounds can be booked in advance through the Mhepi Conservation and Management Committee for weddings, bratabandha, puja, feasts and picnics.",
       "a_ne": "मिल्छ। स्वयम्बर, व्रतबन्ध, पूजा, भोज र पिकनिकका लागि मन्दिर परिसरका सतलहरू म्हेयपि संरक्षण तथा व्यवस्थापन समितिमार्फत अग्रिम बुक गर्न सकिन्छ।",
       "link": "/heritage/mhepi-ajima/#present-day"
+    },
+    {
+      "id": "ward-contact",
+      "site": null,
+      "topic": "contact",
+      "priority": 1,
+      "q_en": "How can I contact the ward office?",
+      "q_ne": "वडा कार्यालयमा कसरी सम्पर्क गर्ने?",
+      "a_en": "Ward No. 16 office, {address}. Phone: {phone}. Email: {email}.",
+      "a_ne": "वडा नं. १६ कार्यालय, {address}। फोन: {phone}। इमेल: {email}।",
+      "link": "/#contact"
+    },
+    {
+      "id": "ward-office-location",
+      "site": null,
+      "topic": "contact",
+      "priority": 2,
+      "q_en": "Where is the ward office?",
+      "q_ne": "वडा कार्यालय कहाँ छ?",
+      "a_en": "The Ward No. 16 office is in {address}. The 3D map shows its approximate location.",
+      "a_ne": "वडा नं. १६ को कार्यालय {address} मा छ। थ्रीडी नक्सामा यसको अनुमानित स्थान देखिन्छ।",
+      "link": "/map/?site=ward-office"
+    },
+    {
+      "id": "sites",
+      "site": null,
+      "topic": "website",
+      "priority": 1,
+      "q_en": "Which sites are on this website?",
+      "q_ne": "यस वेबसाइटमा कुन कुन सम्पदा छन्?",
+      "a_en": "This website covers {sites} in Ward No. 16, Kathmandu Metropolitan City, with their history, festivals, photos and visiting details.",
+      "a_ne": "यस वेबसाइटमा काठमाडौं महानगरपालिका वडा नं. १६ का {sites} को इतिहास, चाडपर्व, तस्बिर र भ्रमण जानकारी छ।",
+      "link": "/#heritages"
+    },
+    {
+      "id": "map",
+      "site": null,
+      "topic": "website",
+      "priority": 2,
+      "q_en": "Is there a map?",
+      "q_ne": "नक्सा छ?",
+      "a_en": "Yes. The 3D map shows the heritage sites and the ward office on a tilted map with terrain and buildings. Select a place in the list to fly to it.",
+      "a_ne": "छ। थ्रीडी नक्सामा सम्पदा स्थल र वडा कार्यालय भू-बनोट र भवनसहित देखिन्छन्। सूचीमा ठाउँ छानेर त्यहाँ पुग्न सकिन्छ।",
+      "link": "/map/"
+    },
+    {
+      "id": "gallery",
+      "site": null,
+      "topic": "website",
+      "priority": 3,
+      "q_en": "Where can I see photos?",
+      "q_ne": "तस्बिर कहाँ हेर्ने?",
+      "a_en": "The gallery has photos of {sites}, taken in November 2026. Select a photo to see it larger.",
+      "a_ne": "तस्बिर पृष्ठमा २०२६ नोभेम्बरमा खिचिएका {sites} का तस्बिरहरू छन्। ठूलो गरी हेर्न तस्बिर छान्नुहोस्।",
+      "link": "/gallery/"
+    },
+    {
+      "id": "photo-credits",
+      "site": null,
+      "topic": "website",
+      "priority": 4,
+      "q_en": "Who took the photos?",
+      "q_ne": "तस्बिर कसले खिचेको?",
+      "a_en": "The photos were taken by {team} in 2026.",
+      "a_ne": "तस्बिरहरू {team} ले २०२६ मा खिचेका हुन्।",
+      "link": "/gallery/"
+    },
+    {
+      "id": "language",
+      "site": null,
+      "topic": "website",
+      "priority": 5,
+      "q_en": "Is it in Nepali too?",
+      "q_ne": "अंग्रेजीमा पनि छ?",
+      "a_en": "Yes. Use the EN | ने switch at the top of every page to read the same page in English or Nepali.",
+      "a_ne": "छ। प्रत्येक पृष्ठको माथि रहेको EN | ने बटनले त्यही पृष्ठ अंग्रेजी वा नेपालीमा पढ्न सकिन्छ।",
+      "link": null
     }
   ]
 }

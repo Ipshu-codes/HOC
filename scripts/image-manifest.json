@@ -1,5 +1,11 @@
 {
+  "fullBleed": ["nanak-math/courtyard-view", "nanak-math/samadhi-temple", "mhepi-ajima/temple-front", "map/preview"],
   "images": [
+    {
+      "site": "map",
+      "name": "preview",
+      "source": "map-preview/map-preview.png"
+    },
     {
       "site": "mhepi-ajima",
       "name": "temple-front",
@@ -290,7 +296,8 @@
       28,
       40,
       56,
-      80
+      80,
+      112
     ],
     "figure": {
       "heights": [

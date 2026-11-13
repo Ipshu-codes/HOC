@@ -10,7 +10,7 @@ interface ResponsiveImageProps {
 }
 
 /**
- * Plain <img> with a srcset of the 640/1280/1920 px WebP files made by
+ * Plain <img> with a srcset of the 640/960/1280/1920 px WebP files made by
  * scripts/optimize-images.ts. next/image cannot build a srcset in a static
  * export (it needs its image server), so we do it ourselves.
  */

@@ -61,7 +61,7 @@ two heritage sites:
 | Images | Pre-optimized to WebP with a **sharp** script (`scripts/optimize-images.ts`); `next/image` with `unoptimized: true` (required for static export) |
 | Fonts | `next/font/google`: *Mukta* (Nepali + English body), *Playfair Display* (English headings) |
 | Contact form | **Web3Forms** (free) — key in `.env.local`, with a `mailto:` fallback |
-| Database (optional, Phase 10) | **Supabase free tier (PostgreSQL)** — only for storing contact messages and unanswered chatbot questions |
+| Database (optional, Phase 10 — skipped) | ~~Supabase free tier (PostgreSQL)~~ — not used: Web3Forms handles the form, and the tap-only chatbot has no unanswered questions |
 | Content editing (optional) | **Decap CMS** (free, git-based) |
 | Hosting | **Cloudflare Pages** (free) — deploy the static `out/` folder. Fallback: GitHub Pages |
 | Domain | Free `*.pages.dev` subdomain; later a free `.com.np` / `.org.np` (Mercantile) or `.gov.np` via the municipality |
@@ -250,7 +250,9 @@ Nav links scroll smoothly to these sections on the home page.
 5. Performance: Lighthouse ≥ 90 on all four scores; lazy-load map and chatbot.
 6. `not-found.tsx` in the red theme.
 
-### Phase 10 — Optional: PostgreSQL with Supabase (free tier)
+### Phase 10 — Optional: PostgreSQL with Supabase (free tier) — ⏭ SKIPPED
+**Skipped (Phase 9 review, 13 Nov 2026).** Not needed: Web3Forms already delivers contact messages by email, and the tap-only chatbot has no free-typed questions, so there are no unanswered questions to log. The plan below is kept for reference only.
+
 Only do this phase if I ask for it.
 1. Create tables:
    ```sql

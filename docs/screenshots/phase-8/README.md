@@ -12,7 +12,7 @@ Captured on 13 Nov 2026 in Microsoft Edge from `npm run build:preview`. The Mhep
 
 How it works: there is no typing. The flow is topic list → question list → answer.
 
-- **Topics:** one per non-draft site, plus "Getting there" and "Contact the ward office". Nanak Math is labelled "Nanak Math (Siddheshwar Mahadev)" / "नानक मठ (सिद्धेश्वर महादेव)".
+- **Topics:** one per non-draft site, plus "Getting there" and "Contact the ward office". Nanak Math is labelled "Nanak Math (Siddheshwar Mahadev)" / "नानक मठ (सिद्धेश्वर महादेव)". *(Superseded in Phase 9: "Visiting {site}" / "About {site}" per site plus "Contact the ward office" and "About this website"; Siddheshwar Mahadev removed until it has a source. See `../phase-9/`.)*
 - **Transcript:** the tapped topic or question appears as the visitor's bubble and the answer as the guide's, so it still reads like a chat. "Start over" in the header clears it.
 - **"My question isn't here"** is the last option of every list. The bot explains what it covers and links the ward office phone and email; the only option after that is "← Back to topics".
 

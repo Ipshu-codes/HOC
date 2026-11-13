@@ -11,20 +11,23 @@ import { useEffect, useRef, useState } from "react";
 
 import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
-import type { ChatData, ChatEntry, ChatTopic } from "@/types/faq";
+import type { ChatData, ChatEntry, ChatLink, ChatTopic } from "@/types/faq";
 
 export interface ChatPanelProps {
   data: ChatData;
   labels: Dictionary["chat"];
   /** Ward office contact for the "My question isn't here" reply (phone shown in the page's digits). */
   contact: { phone: string; phoneHref: string; email: string };
+  /** Nani is shown as her small round face (e.g. over the home hero), not the big figure. */
+  compact?: boolean;
   onClose: () => void;
 }
 
 interface Message {
   from: "user" | "bot";
   text: string;
-  link?: string;
+  note?: string | null;
+  links?: ChatLink[];
   /** Show the ward office phone and email links under the text. */
   contact?: boolean;
 }
@@ -45,7 +48,7 @@ function relatedTo(entry: ChatEntry, entries: ChatEntry[]): ChatEntry[] {
   return [...new Map([...sameTopic, ...sameSite].map((e) => [e.id, e])).values()].slice(0, MAX_RELATED);
 }
 
-export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelProps) {
+export default function ChatPanel({ data, labels, contact, compact = false, onClose }: ChatPanelProps) {
   const greeting: Message = { from: "bot", text: labels.greeting };
   const [messages, setMessages] = useState<Message[]>([greeting]);
   const [view, setView] = useState<View>({ kind: "topics" });
@@ -82,7 +85,7 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
   }
 
   function chooseQuestion(entry: ChatEntry) {
-    say({ from: "user", text: entry.question }, { from: "bot", text: entry.answer, link: entry.link ?? undefined });
+    say({ from: "user", text: entry.question }, { from: "bot", text: entry.answer, note: entry.note, links: entry.links });
     const topic = data.topics.find((t) => t.id === entry.topic);
     if (topic) setLastTopic(topic);
     setView({ kind: "answer", entryId: entry.id });
@@ -108,7 +111,12 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
 
   // The options for the current step.
   let options: { key: string; label: string; onClick: () => void; style?: "nav" }[] = [];
+  /** Quick questions, shown as chips above the topics until the visitor's first step. */
+  let quick: ChatEntry[] = [];
   if (view.kind === "topics") {
+    if (messages.length === 1) {
+      quick = data.suggestions.flatMap((id) => data.entries.filter((entry) => entry.id === id));
+    }
     options = data.topics.map((topic) => ({ key: topic.id, label: topic.label, onClick: () => chooseTopic(topic) }));
   } else if (view.kind === "topic") {
     options = [
@@ -149,8 +157,13 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
     <section
       role="dialog"
       aria-label={labels.dialogLabel}
-      // Phones: above the 130 px Nani. From 768 px: beside the 260 px Nani, so she stays in view.
-      className="fixed bottom-40 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-12rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:bottom-6 md:left-[calc(2rem+207px)] md:max-h-[min(38rem,calc(100dvh-8rem))]"
+      // Big Nani: on phones above the 130 px figure; from 768 px beside the 260 px one, so she stays in view.
+      // Compact Nani: just above her round face.
+      className={`fixed left-4 z-40 flex w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 ${
+        compact
+          ? "bottom-24 max-h-[min(38rem,calc(100dvh-8rem))] md:bottom-28 md:left-6"
+          : "bottom-40 max-h-[min(38rem,calc(100dvh-12rem))] md:bottom-6 md:left-[calc(2rem+207px)] md:max-h-[min(38rem,calc(100dvh-8rem))]"
+      }`}
     >
       <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />
@@ -203,15 +216,29 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
                   </span>
                 </span>
               )}
-              {message.link && (
-                // prefetch off: the chat must make no network requests while it is used.
-                <Link
-                  href={message.link}
-                  prefetch={false}
-                  className="mt-1 block font-bold text-crimson underline underline-offset-4"
-                >
-                  {labels.readMore}
-                </Link>
+              {message.note && <span className="mt-1 block text-sm text-ink/80 italic">{message.note}</span>}
+              {message.links?.map((link) =>
+                link.external ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 block font-bold text-crimson underline underline-offset-4"
+                  >
+                    {link.label} <span className="sr-only">{labels.newTab}</span>
+                  </a>
+                ) : (
+                  // prefetch off: the chat must make no network requests while it is used.
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    prefetch={false}
+                    className="mt-1 block font-bold text-crimson underline underline-offset-4"
+                  >
+                    {link.label}
+                  </Link>
+                ),
               )}
             </div>
           </div>
@@ -220,6 +247,24 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
       </div>
 
       <div ref={optionsRef} className="max-h-[45%] overflow-y-auto border-t border-gold/40 bg-cream px-4 py-3">
+        {quick.length > 0 && (
+          <>
+            <p className="mb-2 text-sm font-bold text-brick">{labels.quickQuestions}</p>
+            <ul className="mb-3 flex flex-wrap gap-2">
+              {quick.map((entry) => (
+                <li key={entry.id}>
+                  <button
+                    type="button"
+                    onClick={() => chooseQuestion(entry)}
+                    className="rounded-full bg-crimson px-3 py-1.5 text-left text-sm font-bold text-white hover:bg-brick"
+                  >
+                    {entry.question}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <p className="sr-only">{labels.optionsLabel}</p>
         <ul className="flex flex-col items-start gap-2">
           {options.map((option) => (

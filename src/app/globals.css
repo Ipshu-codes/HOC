@@ -210,3 +210,11 @@
     animation: none;
   }
 }
+
+/* From 768 px to 1023 px the open chat panel (beside the big Nani) reaches the floating
+   3D Map button, so the button steps aside while the chat is open (Chatbot.tsx sets the attribute). */
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  html[data-chat-open] .map-fab {
+    display: none;
+  }
+}

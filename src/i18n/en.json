@@ -139,6 +139,9 @@
     "loading": "Loading map…",
     "noWebGL": "Your browser cannot display the 3D map. You can still read about each place on its page.",
     "mapLabel": "3D map of Ward No. 16",
+    "showMap": "Show 3D map",
+    "showMapNote": "The 3D map downloads about 4 MB of map data.",
+    "previewAlt": "Still picture of the map of Ward No. 16 with the places marked",
     "controls": {
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
@@ -153,7 +156,7 @@
     "title": "Nani",
     "close": "Close chat with Nani",
     "startOver": "Start over",
-    "greeting": "Namaste! I'm Nani, your guide to the heritage of Ward No. 16. Pick a topic below.",
+    "greeting": "Namaste! I'm Nani, your guide to the heritage of Ward No. 16. Tap a question or pick a topic below.",
     "topicPrompt": "Here are the questions about {topic}:",
     "topicsPrompt": "Choose a topic:",
     "back": "← Back",
@@ -169,7 +172,12 @@
     "phoneLabel": "Phone",
     "emailLabel": "Email",
     "dialogLabel": "Nani, the Ward 16 heritage guide",
-    "naniAlt": "Nani, the Ward 16 heritage guide"
+    "naniAlt": "Nani, the Ward 16 heritage guide",
+    "quickQuestions": "Popular questions",
+    "viewOnMap": "View on 3D Map",
+    "openOsm": "Open in OpenStreetMap (directions)",
+    "approximateNote": "The location on the map is approximate.",
+    "newTab": "(opens in a new tab)"
   },
   "contactPage": {
     "title": "Contact",

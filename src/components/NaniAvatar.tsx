@@ -1,5 +1,8 @@
-/** Display sizes of the round face picture (CSS px); each has a 2x file. The floating button uses the big cut-out figure instead. */
-type NaniSize = 28 | 40;
+/**
+ * Display sizes of the round face picture (CSS px); each has a 2x file. 56 is the compact
+ * floating button (e.g. over the home hero); otherwise the button shows the big cut-out figure.
+ */
+type NaniSize = 28 | 40 | 56;
 
 interface NaniAvatarProps {
   size: NaniSize;

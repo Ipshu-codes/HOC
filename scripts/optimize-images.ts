@@ -3,8 +3,9 @@
  *
  *   npm run optimize-images
  *
- * For every entry in scripts/image-manifest.json it writes three WebP files:
- *   <name>-640.webp, <name>.webp (1280 px, the default `src`), <name>-1920.webp
+ * For every entry in scripts/image-manifest.json it writes five WebP files:
+ *   <name>-480.webp, <name>-640.webp, <name>-960.webp, <name>.webp (1280 px, the default `src`), <name>-1920.webp
+ * (480 px: square thumbnails on phones; 960 px: full-width photos on phones, ~400 CSS px wide at 2–2.6x).
  * Widths are the long edge; small originals are never enlarged. All metadata
  * (EXIF, GPS) is stripped. Run it only after changing the manifest — the output
  * is committed, while raw-data is not (it is ~1.5 GB and git-ignored).
@@ -21,9 +22,17 @@ import manifest from "./image-manifest.json";
 const RAW_DATA_DIR = process.env.RAW_DATA_DIR ?? "ward16-heritageraw-data/HOC";
 const OUT_DIR = "public/images";
 const QUALITY = 75;
+/**
+ * Hero and cover photos (manifest `fullBleed`) fill the screen under a dark gradient,
+ * where stronger compression does not show; they are the largest image on their pages.
+ */
+const FULL_BLEED_QUALITY = 58;
+const fullBleed = new Set<string>(manifest.fullBleed);
 
 const VARIANTS = [
+  { suffix: "-480", width: 480 },
   { suffix: "-640", width: 640 },
+  { suffix: "-960", width: 960 },
   { suffix: "", width: 1280 },
   { suffix: "-1920", width: 1920 },
 ] as const;
@@ -48,11 +57,12 @@ async function optimize(image: ManifestImage): Promise<void> {
   const dir = path.join(OUT_DIR, image.site);
   await fs.mkdir(dir, { recursive: true });
 
+  const quality = fullBleed.has(`${image.site}/${image.name}`) ? FULL_BLEED_QUALITY : QUALITY;
   for (const { suffix, width } of VARIANTS) {
     await sharp(input)
       .rotate() // apply the EXIF orientation, then drop it
       .resize({ width, height: width, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: QUALITY })
+      .webp({ quality, effort: 6 })
       .toFile(path.join(dir, `${image.name}${suffix}.webp`));
   }
 }
@@ -91,7 +101,7 @@ async function optimizeLogo(): Promise<void> {
 /**
  * Nani, the chatbot guide: a square crop around the face of the original
  * illustration, saved as small WebP files (shown round with CSS) at 1x and 2x
- * of the sizes used: 28 px message avatar and 40 px header.
+ * of the sizes used: 28 px message avatar, 40 px header and the 56 px compact button.
  * → public/images/nani/nani-<size>.webp (metadata stripped, as for all images)
  */
 async function optimizeNani(): Promise<void> {

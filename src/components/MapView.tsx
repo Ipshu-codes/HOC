@@ -60,6 +60,13 @@ function hasWebGL(): boolean {
 
 const toLngLat = ([lat, lng]: [number, number]): [number, number] => [lng, lat];
 
+/** Centre of the box around the given [lng, lat] points. */
+function midpoint(points: [number, number][]): [number, number] {
+  const lngs = points.map(([lng]) => lng);
+  const lats = points.map(([, lat]) => lat);
+  return [(Math.min(...lngs) + Math.max(...lngs)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2];
+}
+
 /** Popup content built with DOM methods (textContent), so no text from content is parsed as HTML. */
 function popupContent(place: MapPlace, labels: Dictionary["map"]): HTMLElement {
   const root = document.createElement("div");
@@ -118,15 +125,21 @@ export default function MapView({ places, focusId, onSelect, labels }: MapViewPr
     const popups = popupsRef.current;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const focusPlace = places.find((place) => place.id === focusId);
-    const start = focusPlace ?? places.find((place) => place.kind === "office") ?? places[0];
+    // Start on the requested place, or midway between all places (zoomed out a little when there
+    // are several) so every marker is in view, also on phones and during the slow turn.
+    const start: [number, number] = focusPlace
+      ? toLngLat(focusPlace.coordinates)
+      : places.length > 0
+        ? midpoint(places.map((place) => toLngLat(place.coordinates)))
+        : FALLBACK_CENTER;
 
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
         container,
         style: STYLE_URL,
-        center: start ? toLngLat(start.coordinates) : FALLBACK_CENTER,
-        zoom: 16,
+        center: start,
+        zoom: focusPlace || places.length < 2 ? 16 : 15.4,
         pitch: 60, // tilt so terrain and 3D buildings are visible
         bearing: -20,
         maxPitch: 75,

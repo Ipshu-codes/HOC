@@ -6,7 +6,10 @@ import MapExplorer, { MapExplorerFromUrl } from "@/components/MapExplorer";
 import type { MapPlace } from "@/components/MapView";
 import { getHeritageList, getWard } from "@/lib/content";
 import { getDictionary, isLocale } from "@/lib/i18n";
+import { plainImage } from "@/lib/images";
 import type { Locale } from "@/types/locale";
+
+const MAP_PREVIEW = "/images/map/preview.webp";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/map">): Promise<Metadata> {
   const { lang } = await params;
@@ -60,7 +63,9 @@ export default async function MapPage({ params }: PageProps<"/[lang]/map">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const props = { places: mapPlaces(lang), labels: dict.map };
+  // Still picture for phones until the map is loaded: a screenshot of this map without draft
+  // sites (scripts/image-manifest.json, "map/preview").
+  const props = { places: mapPlaces(lang), labels: dict.map, preview: plainImage(MAP_PREVIEW) };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:py-10">
