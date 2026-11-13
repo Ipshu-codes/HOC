@@ -77,7 +77,6 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         <MapButton lang={lang} label={dict.map.floatingButton} />
         {/* Topics and answers for visible sites only, in the page language. */}
         <Chatbot
-          lang={lang}
           data={getChatData(lang)}
           labels={dict.chat}
           contact={{

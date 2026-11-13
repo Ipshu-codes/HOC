@@ -1,48 +1,47 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import type { ChatPanelProps } from "@/components/ChatPanel";
 import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
-import type { Locale } from "@/types/locale";
 
 // The chat window is a separate chunk: it is not needed to show the page,
 // so it is fetched while the browser is idle and is already loaded when someone opens it.
 const loadPanel = () => import("@/components/ChatPanel");
 const ChatPanel = lazy(loadPanel);
 
-type ChatbotProps = Omit<ChatPanelProps, "onClose"> & { labels: Dictionary["chat"]; lang: Locale };
+type ChatbotProps = Omit<ChatPanelProps, "onClose"> & { labels: Dictionary["chat"] };
 
-/** The home page hero (Hero.tsx); the big Nani figure would cover its buttons. */
-const HERO_SELECTOR = "[data-nani-compact]";
+/** Half-body cut-out (scripts/optimize-images.ts): 130 px tall below 768 px, 260 px from 768 px. */
+const FIGURE_SRCSET =
+  "/images/nani/nani-figure-130.webp 104w, /images/nani/nani-figure-260.webp 207w, /images/nani/nani-figure-520.webp 414w";
+const FIGURE_SIZES = "(min-width: 48rem) 207px, 104px";
 
 /**
  * Floating "How can I help?" button, bottom-left on every page as in the sketch.
  *
- * Nani is the big half-body figure only on the home page once its hero has scrolled away.
- * Everywhere else she is her round face: at 1440 px the big figure covered the detail
- * page's table of contents, the first gallery photos, the contact form and the map.
+ * Nani is her round face; hovering over her with a mouse shows the big half-body figure
+ * and her speech bubble. Touch screens have no hover (Tailwind's hover: variant only
+ * applies on devices that can hover), so phones always show the round face.
  */
-export default function Chatbot({ lang, ...props }: ChatbotProps) {
+export default function Chatbot(props: ChatbotProps) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const isHome = pathname === `/${lang}/`;
-  // Whether the hero of the home page at `path` is on screen (set by the observer below).
-  const [hero, setHero] = useState<{ path: string; onScreen: boolean } | null>(null);
-  // Until the observer has reported, assume the hero is in view (also in the prerendered HTML),
-  // so the big figure never flashes over it.
-  const compact = !isHome || hero?.path !== pathname || hero.onScreen;
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     // Also warm the cache with the small avatars the panel shows (the file its srcset picks
-    // for this screen), so opening and using the chat makes no network requests.
+    // for this screen), so opening and using the chat makes no network requests; and, on
+    // devices that can hover, with the big figure, so it appears at once on the first hover.
     const preload = () => {
       void loadPanel();
       const scale = window.devicePixelRatio > 1 ? 2 : 1;
       for (const size of [28, 40]) new Image().src = `/images/nani/nani-${size * scale}.webp`;
+      if (window.matchMedia("(hover: hover)").matches) {
+        const figure = new Image();
+        figure.sizes = FIGURE_SIZES;
+        figure.srcset = FIGURE_SRCSET;
+      }
     };
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(preload);
@@ -52,84 +51,53 @@ export default function Chatbot({ lang, ...props }: ChatbotProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  // On the home page, watch the hero (re-run on every navigation).
-  useEffect(() => {
-    const target = isHome ? document.querySelector(HERO_SELECTOR) : null;
-    if (!target) return;
-    const observer = new IntersectionObserver(
-      ([record]) => setHero({ path: pathname, onScreen: record.isIntersecting }),
-      // The top 72 px are under the sticky header. rootMargin takes px or % only ("rem" throws).
-      { rootMargin: "-72px 0px 0px 0px" },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [isHome, pathname]);
-
-  // Lets CSS hide the 3D Map button where the open panel would cover it (globals.css).
-  useEffect(() => {
-    if (open) document.documentElement.dataset.chatOpen = "";
-    else delete document.documentElement.dataset.chatOpen;
-  }, [open]);
-
   function close() {
     setOpen(false);
     buttonRef.current?.focus(); // give focus back to the button that opened the chat
   }
 
+  // While the chat is open, hovering does not bring up the big figure or the bubble.
+  const onHover = open ? "" : "group-hover:block";
+
   return (
     <>
-      {/* Nani with her speech bubble. The button's accessible name is the bubble text, which
-          names Nani, so the picture itself is alt="" (it would only repeat the name). */}
+      {/* The button's accessible name is the sr-only bubble text, which names Nani, so the
+          pictures are alt="" (they would only repeat the name). */}
       <button
         ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        // Big: Nani stands on the bottom edge of the screen, 130 px tall on phones, 260 px from 768 px.
-        // Compact: her round face in the corner.
-        className={`group fixed z-30 block text-left ${compact ? "bottom-4 left-4 md:bottom-6 md:left-6" : "bottom-0 left-2 md:left-4"}`}
-        style={{
-          paddingBottom: compact ? undefined : "env(safe-area-inset-bottom)",
-          marginBottom: compact ? "env(safe-area-inset-bottom)" : undefined,
-        }}
+        className="group fixed bottom-4 left-4 z-30 block text-left md:bottom-6 md:left-6"
+        style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
-        {compact ? (
-          <NaniAvatar
-            size={56}
-            alt=""
-            animated
-            className="size-14 shadow-lg ring-4 ring-crimson group-hover:ring-brick"
-          />
-        ) : (
-          <>
-            {/* Half-body cut-out (scripts/optimize-images.ts). Low fetch priority so it never
-                delays the page's main photo; the files are 7–54 KB. */}
-            {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-            <img
-              src="/images/nani/nani-figure-260.webp"
-              srcSet="/images/nani/nani-figure-130.webp 104w, /images/nani/nani-figure-260.webp 207w, /images/nani/nani-figure-520.webp 414w"
-              sizes="(min-width: 48rem) 207px, 104px"
-              width={207}
-              height={260}
-              alt=""
-              fetchPriority="low"
-              decoding="async"
-              className="nani-figure-animated h-[130px] w-auto drop-shadow-lg md:h-[260px]"
-            />
-          </>
-        )}
-        {/* Big: on phones the bubble sits above Nani, so it never runs into the 3D Map button;
-            wider screens: beside her face. Compact: screen readers only (it still names the
-            button). Hidden while the chat is open, so it never covers the panel. */}
+        {/* invisible (not hidden) on hover: the face keeps its box, so the pointer stays over the button. */}
+        <NaniAvatar
+          size={56}
+          alt=""
+          animated
+          className={`size-14 shadow-lg ring-4 ring-crimson ${open ? "" : "group-hover:invisible"}`}
+        />
+        {/* The big figure stands on the bottom edge of the screen, over the face. display:none until
+            hovered, so phones never download it. */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+        <img
+          src="/images/nani/nani-figure-260.webp"
+          srcSet={FIGURE_SRCSET}
+          sizes={FIGURE_SIZES}
+          width={207}
+          height={260}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className={`nani-figure-animated absolute -bottom-4 -left-2 hidden h-[130px] w-auto max-w-none drop-shadow-lg md:-bottom-6 md:-left-2 md:h-[260px] ${onHover}`}
+        />
+        <span className="sr-only">{props.labels.bubble}</span>
+        {/* The speech bubble, shown with the big figure: above her below 768 px, beside her face from 768 px. */}
         <span
-          className={
-            compact
-              ? "sr-only"
-              : `absolute bottom-full left-0 mb-1 w-52 rounded-2xl rounded-bl-sm bg-crimson px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick md:bottom-auto md:left-full md:top-8 md:mb-0 md:ml-1 md:w-60 md:rounded-bl-2xl md:rounded-tl-sm md:text-base ${
-                  open ? "hidden" : ""
-                }`
-          }
+          aria-hidden="true"
+          className={`absolute bottom-[7.5rem] left-0 hidden w-52 rounded-2xl rounded-bl-sm bg-brick px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white md:bottom-[8rem] md:left-[11.5rem] md:w-60 md:text-base ${onHover}`}
         >
           {props.labels.bubble}
         </span>
@@ -137,7 +105,7 @@ export default function Chatbot({ lang, ...props }: ChatbotProps) {
 
       {open && (
         <Suspense fallback={null}>
-          <ChatPanel {...props} compact={compact} onClose={close} />
+          <ChatPanel {...props} onClose={close} />
         </Suspense>
       )}
     </>

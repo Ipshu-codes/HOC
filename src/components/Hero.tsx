@@ -14,8 +14,7 @@ interface HeroProps {
 /** Full-width photo with a dark-red gradient, title, subtitle and two buttons. */
 export default function Hero({ image, title, subtitle, primary, secondary }: HeroProps) {
   return (
-    // data-nani-compact: while the hero is on screen Nani is her round face, so the big figure never covers these buttons (Chatbot.tsx).
-    <section data-nani-compact className="relative isolate flex min-h-[26rem] items-end overflow-hidden md:min-h-[34rem]">
+    <section className="relative isolate flex min-h-[26rem] items-end overflow-hidden md:min-h-[34rem]">
       <ResponsiveImage image={image} sizes="100vw" priority className="absolute inset-0 -z-10 size-full object-cover" />
       {/* Strong at the bottom where the text sits, so white text keeps AA contrast over any photo. */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-brick via-brick/75 to-brick/10" />

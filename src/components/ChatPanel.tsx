@@ -18,8 +18,6 @@ export interface ChatPanelProps {
   labels: Dictionary["chat"];
   /** Ward office contact for the "My question isn't here" reply (phone shown in the page's digits). */
   contact: { phone: string; phoneHref: string; email: string };
-  /** Nani is shown as her small round face (e.g. over the home hero), not the big figure. */
-  compact?: boolean;
   onClose: () => void;
 }
 
@@ -48,7 +46,7 @@ function relatedTo(entry: ChatEntry, entries: ChatEntry[]): ChatEntry[] {
   return [...new Map([...sameTopic, ...sameSite].map((e) => [e.id, e])).values()].slice(0, MAX_RELATED);
 }
 
-export default function ChatPanel({ data, labels, contact, compact = false, onClose }: ChatPanelProps) {
+export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelProps) {
   const greeting: Message = { from: "bot", text: labels.greeting };
   const [messages, setMessages] = useState<Message[]>([greeting]);
   const [view, setView] = useState<View>({ kind: "topics" });
@@ -157,13 +155,8 @@ export default function ChatPanel({ data, labels, contact, compact = false, onCl
     <section
       role="dialog"
       aria-label={labels.dialogLabel}
-      // Big Nani: on phones above the 130 px figure; from 768 px beside the 260 px one, so she stays in view.
-      // Compact Nani: just above her round face.
-      className={`fixed left-4 z-40 flex w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 ${
-        compact
-          ? "bottom-24 max-h-[min(38rem,calc(100dvh-8rem))] md:bottom-28 md:left-6"
-          : "bottom-40 max-h-[min(38rem,calc(100dvh-12rem))] md:bottom-6 md:left-[calc(2rem+207px)] md:max-h-[min(38rem,calc(100dvh-8rem))]"
-      }`}
+      // Just above Nani's round face (bottom-left).
+      className="fixed bottom-24 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:bottom-28 md:left-6"
     >
       <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />
