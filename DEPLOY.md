@@ -4,7 +4,7 @@ The full step-by-step deployment guide is written in Phase 11. This file collect
 
 ## Preview deploy now (Cloudflare Pages, free)
 
-While Mhepi Ajima is a draft, the strict `npm run build` stops on purpose, so the preview uses **`npm run build:preview`**. It builds the site without Mhepi and checks the output (`verify-output`). No credit card is needed at any step.
+Mhepi Ajima was published on 13 Nov 2026, so nothing is a draft any more and Cloudflare uses the strict **`npm run build`**. It checks the content first (`check-content`) and the output after (`verify-output`). (`npm run build:preview` is only needed again if a site is ever put back in draft.) No credit card is needed at any step.
 
 1. **Push the code to GitHub.** Cloudflare builds from the repository, not from this computer.
    ```
@@ -18,22 +18,22 @@ While Mhepi Ajima is a draft, the strict `npm run build` stops on purpose, so th
    - **Project name:** e.g. `ward16-heritage`. The site will be at `https://ward16-heritage.pages.dev`.
    - **Production branch:** `main`
    - **Framework preset:** `Next.js (Static HTML Export)`, or `None`; the two fields below are what matter.
-   - **Build command:** `npm run build:preview`
+   - **Build command:** `npm run build`
    - **Build output directory:** `out`
    - **Root directory:** leave empty.
 6. **Environment variables** (same screen, *Environment variables (advanced)*):
    - `SITE_URL` = `https://ward16-heritage.pages.dev` (use your project name; no trailing slash). It makes link previews (Open Graph images) point at the real site.
    - `NEXT_PUBLIC_WEB3FORMS_KEY` = the key from https://web3forms.com (optional now; without it the contact page shows the email address instead of the form).
    - Node.js: the repository's `.node-version` file asks for Node 22, so nothing to set. If the build log shows another version, add `NODE_VERSION` = `22`.
-7. **Save and Deploy.** The first build takes a few minutes. The log should end with `✔ verify-output: no placeholders; 1 draft site(s) fully excluded; … images free of metadata.` If you change an environment variable later, redeploy: **Deployments** → latest → **⋯** → **Retry deployment**.
+7. **Save and Deploy.** The first build takes a few minutes. The log should end with `✔ verify-output: no placeholders; 0 draft site(s) fully excluded; … images free of metadata.` If you change an environment variable later, redeploy: **Deployments** → latest → **⋯** → **Retry deployment**.
 8. **Check the preview** at `https://<project>.pages.dev`:
    - `/` redirects to `/en/`; the EN | ने switch works.
-   - Only Nanak Math appears (no Mhepi Ajima anywhere).
+   - Both Nanak Math and Mhepi Ajima appear, in English and Nepali, and the walking route on the map has both stops.
    - The section below (*Prefetch files on Windows builds*).
    - On a phone, open `/en/map/` directly: you should see the still picture with **Show 3D map**. Tap the floating **3D Map** button from another page: the map loads at once.
    - Run Lighthouse (Chrome DevTools → Lighthouse → Mobile) on the live URL; local scores on Windows are noisy (see below).
 
-Every later `git push` to `main` redeploys automatically. **When Mhepi Ajima is ready** (no `draft: true`, no `[PLACEHOLDER`), change the build command to `npm run build` under **Settings → Build → Build configuration**, so production uses the strict build.
+Every later `git push` to `main` redeploys automatically. If the project was already set up with `npm run build:preview`, change it to `npm run build` under **Settings → Build → Build configuration**.
 
 ## Lighthouse (Phase 9)
 
@@ -59,7 +59,7 @@ Before the Phase 9 image and map work: home 89, detail 80, gallery 82, map 69.
 
 ## Map preview picture
 
-Phones that open the 3D map page directly first see a still picture (`public/images/map/preview*.webp`) and a **Show 3D map** button, because the map downloads about 4 MB (≈1 MB of map code, ≈3.5 MB of map and terrain tiles). Visitors who arrive from a link on the site get the map at once. The picture is a screenshot of this map taken from a `build:preview` (so draft sites never appear in it), stored in raw-data as `map-preview/map-preview.png` and built by `npm run optimize-images` (`map/preview` in `scripts/image-manifest.json`). Retake it whenever the places on the map change (e.g. when Mhepi leaves draft), at 1100×1200 px with device scale 2, with the zoom/fullscreen buttons and Nani hidden and the attribution line kept.
+Phones that open the 3D map page directly first see a still picture (`public/images/map/preview*.webp`) and a **Show 3D map** button, because the map downloads about 4 MB (≈1 MB of map code, ≈3.5 MB of map and terrain tiles). Visitors who arrive from a link on the site get the map at once. The picture is a screenshot of this map taken from a production build (draft sites never appear in it); retaken on 13 Nov 2026 with Mhepi Ajima, Nanak Math and the ward office, stored in raw-data as `map-preview/map-preview.png` and built by `npm run optimize-images` (`map/preview` in `scripts/image-manifest.json`). Retake it whenever the places on the map change, at 1100×1200 px with device scale 2, with the zoom/fullscreen buttons and Nani hidden and the attribution line kept.
 
 ## Build settings (Cloudflare Pages)
 

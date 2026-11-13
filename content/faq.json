@@ -332,8 +332,8 @@
       "priority": 1,
       "q_en": "Where is Mhepi Ajima?",
       "q_ne": "म्हेपी अजिमा कहाँ छ?",
-      "a_en": "The temple of Yogambar Jnaneshwari Mhepi Ajima is in Naya Bazar, Ward No. 16 of Kathmandu Metropolitan City.",
-      "a_ne": "योगाम्बर ज्ञानेश्वरी म्हेपी अजिमाको मन्दिर काठमाडौं महानगरपालिका वडा नं. १६, नयाँ बजारमा छ।",
+      "a_en": "Mhepi Ajima stands on a small wooded hill in Naya Bazar, Ward No. 16, Kathmandu Metropolitan City.",
+      "a_ne": "म्हेपी अजिमा काठमाडौं महानगरपालिका वडा नं. १६, नयाँ बजारको सानो वनयुक्त थुम्कोमाथि छ।",
       "link": "/heritage/mhepi-ajima/#how-to-visit"
     },
     {
@@ -344,8 +344,8 @@
       "directions": true,
       "q_en": "How do I get there?",
       "q_ne": "त्यहाँ कसरी पुग्ने?",
-      "a_en": "The temple is in Naya Bazar, Ward No. 16. We don't have step-by-step directions yet; the links below show it on the map.",
-      "a_ne": "मन्दिर वडा नं. १६, नयाँ बजारमा छ। विस्तृत बाटो हामीसँग अहिलेसम्म छैन; तलका लिङ्कले नक्सामा देखाउँछन्।",
+      "a_en": "Go to Naya Bazar in Ward No. 16; the temple is on top of a small wooded hill. We don't have step-by-step directions yet; the links below show it on the map.",
+      "a_ne": "वडा नं. १६ को नयाँ बजार पुग्नुहोस्; मन्दिर सानो वनयुक्त थुम्कोमाथि छ। विस्तृत बाटो हामीसँग अहिलेसम्म छैन; तलका लिङ्कले नक्सामा देखाउँछन्।",
       "link": "/heritage/mhepi-ajima/#how-to-visit"
     },
     {
@@ -355,9 +355,9 @@
       "priority": 3,
       "q_en": "When is it open?",
       "q_ne": "कति बजे खुल्छ?",
-      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
-      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "a_en": "We don't have the temple's opening hours yet. The daily puja is held early, from 4:00 to 5:30 am. For more, please contact the ward office: phone {phone}.",
+      "a_ne": "मन्दिर खुल्ने समयको जानकारी हामीसँग अहिलेसम्म छैन। नित्य पूजा बिहान ४:०० देखि ५:३० सम्म हुन्छ। थप जानकारीका लागि वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
+      "link": "/heritage/mhepi-ajima/#how-to-visit"
     },
     {
       "id": "mhepi-entry-fee",
@@ -388,9 +388,9 @@
       "priority": 6,
       "q_en": "Any tips before visiting?",
       "q_ne": "जानुअघि के थाहा पाउनुपर्छ?",
-      "a_en": "The temple committee asks that no stalls be set up in front of the temple door. Sattals (rest houses) in the grounds can be booked in advance through the Mhepi Conservation and Management Committee.",
-      "a_ne": "मन्दिरको ढोका अगाडि पसल नराख्न मन्दिर समितिको अनुरोध छ। परिसरका सतलहरू म्हेयपि संरक्षण तथा व्यवस्थापन समितिमार्फत अग्रिम बुक गर्न सकिन्छ।",
-      "link": "/heritage/mhepi-ajima/#present-day"
+      "a_en": "The daily puja is from 4:00 to 5:30 am, before most visitors arrive. The temple is open to people of every faith. Please don't set up stalls in front of the temple door. Sattals (rest houses) can be booked through the Mhepi Conservation and Management Committee.",
+      "a_ne": "नित्य पूजा बिहान ४:०० देखि ५:३० सम्म हुन्छ। मन्दिर सबै धर्मावलम्बीका लागि खुला छ। मन्दिरको ढोका अगाडि पसल नराख्नुहोस्। सतलहरू म्हेयपि संरक्षण तथा व्यवस्थापन समितिमार्फत बुक गर्न सकिन्छ।",
+      "link": "/heritage/mhepi-ajima/#how-to-visit"
     },
     {
       "id": "mhepi-what",
@@ -399,8 +399,8 @@
       "priority": 1,
       "q_en": "What is Mhepi Ajima?",
       "q_ne": "म्हेपी अजिमा के हो?",
-      "a_en": "Mhepi Ajima is the temple of the goddess Yogambar Jnaneshwari Mhepi Ajima in Naya Bazar, Ward No. 16. It is looked after by the Mhepi Conservation and Management Committee.",
-      "a_ne": "म्हेपी अजिमा वडा नं. १६, नयाँ बजारमा रहेको योगाम्बर ज्ञानेश्वरी म्हेपी अजिमाको मन्दिर हो। यसको हेरचाह म्हेयपि संरक्षण तथा व्यवस्थापन समितिले गर्छ।",
+      "a_en": "Mhepi Ajima is the temple of the goddess Yogambar Jnaneshwari, on a small wooded hill in Naya Bazar. It is the northern seat among Kathmandu's Ashtamatrika goddesses, and Buddhists and Hindus both worship here.",
+      "a_ne": "म्हेपी अजिमा नयाँ बजारको सानो वनयुक्त थुम्कोमा रहेको योगाम्बर ज्ञानेश्वरी देवीको मन्दिर हो। यो काठमाडौँका अष्टमातृकामध्ये उत्तरतर्फको पीठ हो, र यहाँ बौद्ध र हिन्दु दुवै पूजा गर्छन्।",
       "link": "/heritage/mhepi-ajima/#history"
     },
     {
@@ -410,9 +410,9 @@
       "priority": 2,
       "q_en": "How old is it?",
       "q_ne": "यो कति पुरानो हो?",
-      "a_en": "We don't know when the temple was founded yet. Its inscriptions record donations between Nepal Sambat 1120 and 1134 (about VS 2056–2070), and its bhajan house was built in VS 2029.",
-      "a_ne": "मन्दिर कहिले स्थापना भयो भन्ने हामीलाई अझै थाहा छैन। यहाँका अभिलेखमा नेपाल संवत् ११२० देखि ११३४ (करिब वि.सं. २०५६–२०७०) सम्मका दानको विवरण छ, र भजन घर वि.सं. २०२९ मा बनेको थियो।",
-      "link": "/heritage/mhepi-ajima/#inscriptions"
+      "a_en": "Its founding date is not recorded. The temple's tradition traces it to the Swayambhu Purana. Most images in the grounds were placed before VS 2030, and the donor inscriptions date from NS 1120–1134 (about VS 2056–2070).",
+      "a_ne": "स्थापना मिति अभिलेखमा छैन। मन्दिरको परम्पराले यसको इतिहास स्वयम्भू पुराणसँग जोड्छ। परिसरका धेरैजसो मूर्ति वि.सं. २०३० अगाडि राखिएका हुन्, र दाता अभिलेखहरू ने.सं. ११२०–११३४ (करिब वि.सं. २०५६–२०७०) का हुन्।",
+      "link": "/heritage/mhepi-ajima/#history"
     },
     {
       "id": "mhepi-festivals",
@@ -421,9 +421,9 @@
       "priority": 4,
       "q_en": "What festivals are held there?",
       "q_ne": "यहाँ कुन कुन चाड मनाइन्छ?",
-      "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
-      "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "a_en": "The main puja is on Krishna Paksha Chaturdashi (Charhe). Every year, from Chaitra Shukla Chaturdashi, the goddesses' images are brought from Tanlachhi, worshipped through the night and on the full moon, then carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati. A five-day mela is held at the temple.",
+      "a_ne": "कृष्ण पक्ष चतुर्दशी (चह्रे) मा मुख्य पूजा हुन्छ। हरेक वर्ष चैत्र शुक्ल चतुर्दशीदेखि टाँलाछीबाट मूर्तिहरू ल्याई रातभरि र पूर्णिमामा पूजा गरिन्छ, अनि असन, इन्द्रचोक, ठहिटी, पक्नाजोल र क्षेत्रपाटी हुँदै घुमाइन्छ। मन्दिरमा पाँच दिन मेला लाग्छ।",
+      "link": "/heritage/mhepi-ajima/#festivals"
     },
     {
       "id": "mhepi-see",
@@ -432,15 +432,37 @@
       "priority": 5,
       "q_en": "What can I see there?",
       "q_ne": "त्यहाँ के के हेर्न सकिन्छ?",
-      "a_en": "The temple, with the two-tiered brass roof and metal-sheet work recorded in its inscriptions; the bhajan house; the Shantikar Dhyanagar meditation hall; and the sattals (rest houses). A fuller description is not available yet.",
-      "a_ne": "अभिलेखमा उल्लेख भएको पित्तलको दुईतह छाना र धातुको पाताको काम भएको मन्दिर, भजन घर, शान्तिकर ध्यानागार र सतलहरू। विस्तृत विवरण अहिलेसम्म उपलब्ध छैन।",
-      "link": "/heritage/mhepi-ajima/#inscriptions"
+      "a_en": "The goddess's seat on its wooded hill (stones and a peeth rather than an image); shrines of Mahadev, Vishnu, Krishna, the Buddha and Saraswati; a Narayan temple below the hill; the bhajan house; the Shantikar Dhyanagar meditation hall; and the sattals.",
+      "a_ne": "वनयुक्त थुम्कोमाथि देवीको पीठ (मूर्ति होइन, शिला र पीठ); महादेव, विष्णु, कृष्ण, बुद्ध र सरस्वती; थुम्कोमुनि नारायणको मन्दिर; भजन घर; शान्तिकर ध्यानागार; र सतलहरू।",
+      "link": "/heritage/mhepi-ajima/#architecture"
+    },
+    {
+      "id": "mhepi-name",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 3,
+      "q_en": "What does “Mhepi” mean?",
+      "q_ne": "म्हेपी भनेको के हो?",
+      "a_en": "According to the temple's chief priest, a holy man's son was buried here and the goddess's seat (peeth) was built above him. In Nepal Bhasa mha means body, so it was called Mhasa peeth, which in time became Mhepi.",
+      "a_ne": "मन्दिरका मूल पुरोहितका अनुसार एक गुरुको छोराको शरीर यहाँ गाडेर त्यसमाथि देवीको पीठ बनाइएको थियो। नेपाल भाषामा म्ह भनेको शरीर हो, त्यसैले यसलाई म्हसा पीठ भनियो, जुन पछि म्हेपी भयो।",
+      "link": "/heritage/mhepi-ajima/#name"
+    },
+    {
+      "id": "mhepi-machhindranath",
+      "site": "mhepi-ajima",
+      "topic": "about",
+      "priority": 6,
+      "q_en": "What is its link to Rato Machhindranath?",
+      "q_ne": "रातो मच्छिन्द्रनाथसँग यसको के सम्बन्ध छ?",
+      "a_en": "In the temple's story, the son a holy man gave to the goddess was reborn as Rato Machhindranath. When the Rato Machhindranath of Bungamati has to be rebuilt, its priests come here and take soil from the temple. Many families of Patan worship Mhepi Ajima as their lineage deity.",
+      "a_ne": "मन्दिरको कथाअनुसार एक गुरुले देवीलाई अर्पण गरेका छोरा पछि रातो मच्छिन्द्रनाथका रूपमा जन्मिए। बुङ्गमतीको रातो मच्छिन्द्रनाथ पुनर्निर्माण गर्नुपर्दा त्यहाँका पुजारीहरू यहाँ आएर माटो लैजान्छन्। पाटनका धेरै परिवारले म्हेपी अजिमालाई कुल देवताका रूपमा पुज्छन्।",
+      "link": "/heritage/mhepi-ajima/#legends"
     },
     {
       "id": "mhepi-inscriptions",
       "site": "mhepi-ajima",
       "topic": "about",
-      "priority": 6,
+      "priority": 7,
       "q_en": "What do the inscriptions record?",
       "q_ne": "अभिलेखमा के लेखिएको छ?",
       "a_en": "They record donations between Nepal Sambat 1120 and 1134, including a two-tiered brass roof offered in NS 1120 (VS 2056) and metal-sheet work on the main temple.",
@@ -451,7 +473,7 @@
       "id": "mhepi-bhajan-house",
       "site": "mhepi-ajima",
       "topic": "about",
-      "priority": 7,
+      "priority": 8,
       "q_en": "When was the bhajan house built?",
       "q_ne": "भजन घर कहिले बनेको हो?",
       "a_en": "The bhajan house in the Mhepi temple complex was built in VS 2029 and rebuilt with devotees' support; the plaque marking the renovation is dated VS 2069 Jestha 6.",
@@ -462,7 +484,7 @@
       "id": "mhepi-committee",
       "site": "mhepi-ajima",
       "topic": "about",
-      "priority": 8,
+      "priority": 9,
       "q_en": "Who looks after it?",
       "q_ne": "यसको हेरचाह कसले गर्छ?",
       "a_en": "The temple is looked after by the Mhepi Conservation and Management Committee.",
@@ -473,7 +495,7 @@
       "id": "mhepi-sattal",
       "site": "mhepi-ajima",
       "topic": "about",
-      "priority": 9,
+      "priority": 10,
       "q_en": "Can I book a sattal?",
       "q_ne": "सतल बुक गर्न मिल्छ?",
       "a_en": "Yes. The sattals (rest houses) in the temple grounds can be booked in advance through the Mhepi Conservation and Management Committee for weddings, bratabandha, puja, feasts and picnics.",

@@ -2,15 +2,21 @@
 
 Everything here is either missing from the raw data or needs a human to check it.
 
-**Current status (12 Nov 2026):**
+**Current status (13 Nov 2026):**
 
-- **Mhepi Ajima is a draft** (`draft: true`). Only facts from inscriptions and notice boards are kept; every other section is `[PLACEHOLDER: …]` text until the ward sends the data. The sattal fees and committee phone were removed from the page until confirmed.
+- **Mhepi Ajima is published** (13 Nov 2026). History, legends, festivals, architecture and present day now come from the ward's interview with the temple's chief priest (`Mhepi Ajima/mhepi_ajima.docx`), plus the inscriptions and notice boards. Facts still unknown (opening hours, entry fee, photography rules, directions) are left off the page and listed in §1. The sattal fees and committee phone are still off the page until confirmed.
 - **Nanak Math is publishable.** Facts that are still unknown (entry fee, photography rules, etiquette, most festival months) are simply left off the page rather than shown as TODOs. They stay listed in §2 so they can be added later.
 - `npm run build` refuses to run while any content file has `draft: true`, `[PLACEHOLDER` or `[TODO` (`npm run check-content`).
 
-## 0. Untranscribed audio (Whisper skipped — ward will supply Mhepi data)
+## 0. Untranscribed audio (Whisper skipped)
 
 Most of the missing Mhepi Ajima content, and all ward information, is probably in these recordings. They have **not** been transcribed.
+
+| File | Length | Likely contents |
+|---|---|---|
+- **Mhepi: written transcript received (13 Nov 2026).** `Mhepi Ajima/mhepi_ajima.docx` is the chief priest's interview, typed in the legacy **Preeti** font (Latin letters that only look Nepali in that font). Claude converted it to Unicode with a Preeti→Unicode mapping and saved the result next to it as `mhepi_ajima.unicode.txt` (raw-data, not committed). The page cites it by paragraph number in that file.
+  - [ ] A Nepali reader should check the converted text against the docx opened in the Preeti font, especially conjuncts (e.g. "बुङ्मती" in the transcript; the site writes बुङ्गमती) and one unclear phrase in the last paragraph ("सो फ्रस्टको पाउन सक्छन्", not used).
+  - The audio files below were not used; the transcript may be a summary of them.
 
 | File | Length | Likely contents |
 |---|---|---|
@@ -27,16 +33,18 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 1. Mhepi Ajima
 
-- [ ] **Founding year / age** (`established`)
-- [ ] **History**: origin, who built it, major events
-- [ ] **Legends & beliefs**: what the goddess is known for, why she is called "Yogambar Jnaneshwari"
-- [ ] **Festivals & jatras**: names, months, descriptions (the `festivals` list is all TODO)
-- [ ] **Tradition / community**: which community worships here (the donor names are Shrestha, Shakya, Timila and Maharjan)
-- [ ] **Architecture**: style, materials and dating (section is a placeholder; the earlier photo-based description was removed)
-- [ ] **Opening hours**: the committee notice board says 8–11 am, but this may be office or booking hours
+- [x] **History, legends, festivals, tradition, architecture, present day**: from the chief priest's interview (13 Nov 2026). Every claim is attributed to him ("according to the priest") and cited by paragraph.
+- [ ] **Confirm Bhushan Ratna Bajracharya agrees to be named** as the source (Sources section, History and the chatbot's "What does Mhepi mean?" mention the chief priest; the Sources section names him).
+- [x] **Founding year**: not recorded. Quick facts say so and give what is known (tradition traces it to the Swayambhu Purana; most images placed before VS 2030).
+- [ ] **Jatra dates**: the priest says a five-day mela runs "from Chaitra Shukla Chaturdashi … until Baishakh trayodashi", which is more than five days. The page says "a five-day mela" from Chaitra Shukla Chaturdashi and gives no end date. Confirm.
+- [ ] **Committee founding year**: the transcript says "सन् २०५४ साल"; 2054 can only be VS, so the page says VS 2054. Confirm.
+- [ ] **"About three years ago"** (Narayan temple below the hill): the page writes "about three years ago (as of 2026)". An exact year would be better.
+- [ ] **Shantashri / Shantikar Acharya**: the priest calls the monk Shantashri, then speaks of "Shantikar Acharya's son". The page treats them as the same person and avoids the second name. Confirm.
+- [ ] **Charhe**: is the main puja on *every* Krishna Paksha Chaturdashi, or on one in particular? The page does not say "every month".
+- [ ] **Opening hours**: still unknown. The page shows only the daily puja (4:00–5:30 am, from the interview). The committee notice board says 8–11 am, which may be office or booking hours.
 - [ ] **Entry fee**
 - [ ] **Photography rules**, dress and footwear etiquette
-- [ ] **Directions / nearest landmark**: the only written location is "नयाँ बजार, का.म.न.पा. वडा नं. १६"
+- [ ] **Directions / nearest landmark**: the page says "on a small wooded hill in Naya Bazar" (from the interview); step-by-step directions are still missing
 - [ ] **Committee phone** (removed from page): read as ४३५९८९० from a weathered notice board; must be checked
 - [ ] **Sattal fees** (removed from page): read from the notice board (Rs 1,000–5,000 + Rs 300); confirm the current rates
 - [ ] **Bhajan line 2**: is it "जय गुह्येश्वरी आमा"? The letter was hard to read.
@@ -116,7 +124,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
-- `content/heritage/mhepi-ajima.ne.md`: the whole file apart from quoted inscriptions and the bhajan
+- `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
 - `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude
@@ -143,7 +151,7 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - [ ] **Confirm the stop order** in `content/routes.json` (`mhepi-ajima` → `nanak-math`). It was set by the developer, not taken from the ward; swap it if the walk should run the other way.
 - [ ] **Walking paths and distances.** `routes.json` has `"walking": null`, so the map shows a dashed straight line and straight-line distances only (≈ 960 m between the two sites). Run `npm run fetch-route` on a machine with internet, check the paths on the map, and commit `content/routes.json`.
 - [ ] **Better coordinates.** Nanak Math and the ward office are marked approximate; the Mhepi Ajima point is not marked approximate but has no recorded source. Walking paths end at these points, so they are only as good as the coordinates.
-- [ ] **Route needs two published sites.** While Mhepi Ajima is a draft, production builds show no route (one stop is not a route). The route appears by itself once Mhepi Ajima is published.
+- [x] **Route needs two published sites.** Mhepi Ajima was published on 13 Nov 2026, so the route now appears with both stops (checked in the strict build).
 - [ ] **Categories.** The sites have no category field. The map's filters use only what exists (heritage site / ward office) and the filter buttons hide when a single category is present. Add a `category` field to the content schema only once the ward agrees on real categories (e.g. temple, math, kuthi).
 - [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, filters, legend, route, detail panel) were written by the developer and need a native-speaker review.
 - [ ] **Audio stories** (later): need community recordings with written consent, then a place for them in the content schema and the detail panel.

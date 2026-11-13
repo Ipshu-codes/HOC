@@ -34,7 +34,8 @@ export const heritageFrontmatterSchema = z.object({
     }),
   ),
   visiting: z.object({
-    hours: z.string().min(1),
+    /** Left out when not known (the quick facts skip it). */
+    hours: z.string().min(1).optional(),
     entry: z.string().min(1).optional(),
     tips: z.string().min(1).optional(),
   }),

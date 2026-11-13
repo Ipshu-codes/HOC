@@ -2,20 +2,19 @@
 name: "Mhepi Ajima"
 nameNe: "म्हेपी अजिमा"
 slug: "mhepi-ajima"
-draft: true
-summary: "The temple of Yogambar Jnaneshwari Mhepi Ajima in Naya Bazar, Ward 16, cared for by the Mhepi Conservation and Management Committee."
-location: "Naya Bazar, Kathmandu Metropolitan City Ward No. 16"
+summary: "The temple of Yogambar Jnaneshwari, known to all as Mhepi Ajima, on a small wooded hill in Naya Bazar: the northern seat among Kathmandu's Ashtamatrika goddesses, honoured by Buddhists and Hindus alike."
+location: "On a small wooded hill in Naya Bazar, Kathmandu Metropolitan City Ward No. 16"
 coordinates: [27.727614400718654, 85.30859929776761]
-established: "[PLACEHOLDER: founding year]"
-deity_or_tradition: "Yogambar Jnaneshwari Mhepi Ajima (as named in the temple inscriptions)"
+established: "Not recorded; the temple's tradition traces it to the Swayambhu Purana. Most images in the grounds date from before VS 2030."
+deity_or_tradition: "Yogambar Jnaneshwari, the principal seat (mool peeth) of the Ashtamatrikas, in the Vajrayana Buddhist tradition; worshipped by Buddhists and Hindus, and the lineage deity (kul devata) of many Bajracharya and Shakya families of Patan."
 festivals:
-  - name: "[PLACEHOLDER: festival name]"
-    month: "[PLACEHOLDER: month]"
-    description: "[PLACEHOLDER: short description of the festival]"
+  - name: "Charhe (Krishna Paksha Chaturdashi)"
+    description: "The main puja at the temple, on the fourteenth day of the dark fortnight."
+  - name: "Annual jatra and mela"
+    month: "Chaitra–Baishakh"
+    description: "From Chaitra Shukla Chaturdashi the goddesses' images are brought from their god-house at Tanlachhi, worshipped through the night and on the full moon, then carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati. A five-day mela is held at the temple."
 visiting:
-  hours: "[PLACEHOLDER: opening hours]"
-  entry: "[PLACEHOLDER: entry fee]"
-  tips: "Please do not set up stalls in front of the temple door. [PLACEHOLDER: more visiting tips]"
+  tips: "The daily puja is held early, from 4:00 to 5:30 am, so that it is over before visitors come for darshan. The temple is open to people of every faith. Please do not set up stalls in front of the temple door."
 cover: "/images/mhepi-ajima/temple-front.webp"
 gallery:
   - src: "/images/mhepi-ajima/temple-front.webp"
@@ -64,11 +63,22 @@ gallery:
     alt: "A large old tree spreading its branches over the temple grounds"
 ---
 
-<!-- DRAFT. Confirmed facts come from inscriptions and notice boards photographed on site (cited by original filename in raw-data "Mhepi Ajima/Photo/"). Everything else is placeholder text until the ward provides the data. -->
+<!-- Sources: an interview with the temple's chief priest, Bhushan Ratna Bajracharya (raw-data "Mhepi Ajima/mhepi_ajima.docx", typed in the Preeti font; cited by paragraph), and inscriptions and notice boards photographed on site (cited by original filename). English translated from the Nepali. -->
 
 ## History {#history}
 
-[PLACEHOLDER: history of the temple — origin, founding, major events.]
+<!-- source: mhepi-interview | paras 1–2 -->
+The temple's main deity is **Yogambar Jnaneshwari**, but most people know the temple simply as **Mhepi Ajima**. Its chief priest, Bhushan Ratna Bajracharya, continues the daily worship as his father and grandfather did before him.
+
+According to the priest, Mhepi lies to the **north** among the Ashtamatrikas, the eight mother goddesses around the city. He cites a vamshavali (chronicle) which records that the Ashtamatrikas were established in the shape of a sword (khadga) to protect Kantipur, today's Kathmandu. He adds that the history of the place is older still: the seat (peeth) of Yogambar Jnaneshwari is said to be based on the **Yogambar tantra** of the Vajrayana Buddhist tradition.
+
+<!-- source: mhepi-interview | para 9 -->
+No historical documents about the temple are known so far, although researchers and interested people have written articles about it.
+
+### How the name came about {#name}
+
+<!-- source: mhepi-interview | para 7 -->
+In the temple's story (see Legends & Beliefs), the body of a holy man's son was buried here and the peeth was built above it. In Nepal Bhasa *mha* means body, so a seat built over a body was called **Mhasa peeth**, a name that in time became **Mhepi**.
 
 ### What the inscriptions record {#inscriptions}
 
@@ -89,7 +99,18 @@ gallery:
 
 ## Legends & Beliefs {#legends}
 
-[PLACEHOLDER: legends and beliefs about Mhepi Ajima.]
+<!-- source: mhepi-interview | paras 3–6 -->
+The priest tells the temple's story through the Swayambhu Purana:
+
+- **Manjushri and the lake.** The Kathmandu Valley was once a lake, then called Nagdaha. Manjushri came from China to see the *jyotirupa*, a light on a lotus flower, cut the hill at Chobhar with his sword to drain the water, and made the valley fit to live in.
+- **Shantashri.** Hearing Kashyap Buddha preach about the light, King Prachanda Dev of Gaud left his kingdom, came to Nepal, took ordination from a Bajracharya guru and, as the monk **Shantashri**, cared for the light at Swayambhu. Fearing it could be destroyed, he covered it with a stupa. He worshipped it every day with the tantra of Yogambar Jnaneshwari, living at Shantipur, on the north side of Swayambhu.
+- **The son given to the goddess.** During his practice the goddess asked him for what he loved most, and he gave his only son. She said the boy was a form of a Bodhisattva: his body was to be laid in one place, while she took his soul. The soul was later born as the 555th son of King Yaksharaj Shashi and Queen Maya, and came to Nepal as **Rato Machhindranath**. The boy's body was buried here, and the peeth was established above it.
+
+<!-- source: mhepi-interview | para 8 -->
+Because of this link, when the Rato Machhindranath of Bungamati has to be rebuilt, its priests (panju) come here, perform puja and take soil from the temple. The priest remembers them coming after the earthquake of VS 1990, in VS 2054, 2056 and 2066, and, after the earthquake of VS 2072, in VS 2078. The ground is held so sacred that an image of a god is said to be complete only when soil from here is mixed in.
+
+<!-- source: mhepi-interview | paras 9–10 -->
+Buddhists and Hindus both worship here, and lamas of the Mahayana tradition from Tibet worship the goddess as a yogini. Because of her part in bringing Rato Machhindranath to Nepal, many Bajracharya, Shakya and other families of Patan worship her as their **kul devata** (lineage deity), more so than families in Kathmandu.
 
 <!-- source: mhepi-inscriptions | 20261104_083803.heic -->
 The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Management Committee (dated 2078/5/6, Gunla Punhi), invokes the goddess by several names:
@@ -106,11 +127,22 @@ The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Ma
 
 ## Festivals & Jatras {#festivals}
 
-[PLACEHOLDER: festivals and jatras celebrated at the temple.]
+<!-- source: mhepi-interview | paras 11–13 -->
+- **Charhe.** The main puja is held on Krishna Paksha Chaturdashi, the fourteenth day of the dark fortnight, which is called Charhe.
+- **The annual jatra.** The temple itself has no images, only stones (shila) and the peeth, consecrated through tantric practice. For the yearly worship, images were made later; they are kept as the Ashtamatrika goddesses in the god-house (dyochhen) at **Tanlachhi**.
+  - On **Chaitra Shukla Chaturdashi** the images are brought from Tanlachhi on a khat (palanquin) with due ritual, installed at the temple and worshipped through the night. A five-day mela follows.
+  - On the **full moon** the images stay at the temple for devotees. For about 15 years the Mhepi Conservation and Management Committee has held a programme that day and distributed prasad, to about 4,000–5,000 people judging by the prasad given out. The Metropolitan City, the ward and devotees help with the costs.
+  - The images are then taken back to Tanlachhi. The next day they are carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati, and the day after they are returned to the god-house with puja.
+- **The guthis.** The procession lets households worship the goddess at their own doors. Guthis (community trusts) shared the work: one carried the khat, one performed the puja, one played the music. Many of the old members have died and their families have moved away, so the jatra is quieter than it was, but the procession still goes on.
 
 ## Architecture {#architecture}
 
-[PLACEHOLDER: architecture of the temple — style, materials, dating.]
+<!-- source: mhepi-interview | paras 15, 17–18 -->
+The temple stands on a **small wooded hill** (thumko), a patch of forest in the middle of the city. At its centre is Jnaneshwari, the principal seat of the Ashtamatrikas, in the form of stones and the peeth rather than an image.
+
+The grounds also hold Mahadev, Vishnu, Krishna and the Buddha. According to the priest, most of these images were placed before VS 2030; an inscription dates the Saraswati image to around VS 2005. Below the hill, on the Gunal side, a Narayan temple was established on an empty site about three years ago (as of 2026), and devotees have placed a small Hanuman image.
+
+The donor inscriptions (above) record a **two-tiered brass roof** and metal-sheet work offered to the temple.
 
 ## Present Day {#present-day}
 
@@ -122,11 +154,15 @@ The temple is looked after by the **Mhepi Conservation and Management Committee*
 - The grounds include the *Shantikar Dhyanagar Dhyanashram* (शान्तिकर ध्यानागार ध्यानाश्रम), a meditation hall.
 - The committee asks that **no stalls** be set up in front of the temple door.
 
-[PLACEHOLDER: more about the temple today.]
+<!-- source: mhepi-interview | paras 1, 14–15 -->
+- The **Mhepi Conservation and Management Committee** was founded in **VS 2054**. It looks after the old images, the daily puja, the forest on the hill, security and cleaning, and runs on donations.
+- The daily puja starts at **4:00 am** and ends by **5:30 am**, earlier than at many temples, so that devotees coming for darshan are not disturbed.
+- The priest notes that, although the temple appears on online maps, few people know its history or what the name Mhepi means.
 
 ## How to Visit {#how-to-visit}
 
-- **Where:** Naya Bazar, KMC Ward No. 16. [PLACEHOLDER: directions and nearest landmark]
-- **Hours:** [PLACEHOLDER: opening hours]
-- **Entry fee:** [PLACEHOLDER: entry fee]
-- **Photography:** [PLACEHOLDER: photography rules]
+<!-- source: mhepi-interview | paras 1, 15, 18 -->
+- **Where:** on a small wooded hill in Naya Bazar, KMC Ward No. 16. See it on the 3D map.
+- **Daily puja:** 4:00–5:30 am.
+- **Who may come:** the temple is open to people of every faith.
+- Please do not set up stalls in front of the temple door.
