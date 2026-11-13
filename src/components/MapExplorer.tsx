@@ -2,10 +2,14 @@
 
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { MapPlace } from "@/components/MapView";
+import MapSidebar from "@/components/map/MapSidebar";
+import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
+import RouteNav from "@/components/map/RouteNav";
+import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
 import type { Dictionary } from "@/lib/i18n";
+import type { Locale } from "@/types/locale";
 
 /** Still picture shown on phones until the visitor asks for the 3D map (built by optimize-images). */
 export interface MapPreview {
@@ -43,8 +47,9 @@ const MapView = dynamic(() => import("@/components/MapView"), {
 
 interface MapExplorerProps {
   places: MapPlace[];
+  route: MapRoute | null;
   labels: Dictionary["map"];
-  preview: MapPreview | null;
+  lang: Locale;
   /** Place id requested in the URL (?site=…), see MapExplorerFromUrl. */
   requestedId?: string | null;
 }
@@ -55,92 +60,232 @@ export function MapExplorerFromUrl(props: Omit<MapExplorerProps, "requestedId">)
   return <MapExplorer {...props} requestedId={searchParams.get("site")} />;
 }
 
-/** Side panel listing the places + the map. Clicking a place flies the map to it (loading the map first if needed). */
-export default function MapExplorer({ places, labels, preview, requestedId = null }: MapExplorerProps) {
-  const [focusId, setFocusId] = useState<string | null>(
+/** Lower-cases and normalises text so "Nanak Math" and "nanak math" match; Nepali is unaffected. */
+const normalise = (text: string) => text.normalize("NFC").toLocaleLowerCase().trim();
+
+const isPhone = () => window.matchMedia("(max-width: 1023px)").matches;
+
+/**
+ * The heritage map page: sidebar (search, filters, places, walking route, legend), the 3D map,
+ * and a detail panel. This component owns all the state; MapView only draws it.
+ *   selectedId  which place is highlighted / flown to
+ *   detailOpen  whether its full story is open
+ *   routeActive + routeStep  the step-by-step walk (-1 = overview)
+ */
+export default function MapExplorer({ places, route, labels, lang, requestedId = null }: MapExplorerProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(
     places.some((place) => place.id === requestedId) ? requestedId : null,
   );
-  // The map (~800 KB of JavaScript plus tiles) is the heaviest thing on the site. On phones a
-  // direct visit first shows a still picture and a "Show 3D map" button; null = not decided yet
-  // (the prerendered HTML and the first render show the picture).
-  const [showMap, setShowMap] = useState<boolean | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [kinds, setKinds] = useState<ReadonlySet<PlaceKind>>(new Set());
+  const [routeActive, setRouteActive] = useState(false);
+  const [routeStep, setRouteStep] = useState(-1);
+  const [fitSignal, setFitSignal] = useState(0);
+  const mapWrapRef = useRef<HTMLDivElement>(null);
 
-  // Decided once, right after the first paint (window is not available while prerendering).
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setShowMap(!window.matchMedia(PHONE_QUERY).matches || cameFromThisSite());
-    });
-    return () => cancelAnimationFrame(frame);
+  // ---- search + filters (work on the same place data the markers use, in both languages) ----
+  const results = useMemo(() => {
+    const q = normalise(query);
+    return places.filter(
+      (place) =>
+        (kinds.size === 0 || kinds.has(place.kind)) &&
+        (q === "" || normalise(place.name).includes(q) || normalise(place.nameAlt).includes(q)),
+    );
+  }, [places, query, kinds]);
+
+  // Markers shown on the map: the search results, plus every route stop while walking the route.
+  const visibleIds = useMemo(() => {
+    const ids = new Set(results.map((place) => place.id));
+    if (routeActive && route) for (const id of route.stops) ids.add(id);
+    return ids;
+  }, [results, routeActive, route]);
+
+  const selectedPlace = places.find((place) => place.id === selectedId) ?? null;
+  const stops = useMemo(() => route?.stops ?? [], [route]);
+
+  /** On phones the map sits above the controls: bring it back into view after a choice. */
+  const showMap = useCallback(() => {
+    if (isPhone()) mapWrapRef.current?.scrollIntoView({ block: "start" });
   }, []);
 
-  function select(id: string) {
-    setFocusId(id);
-    setShowMap(true); // choosing a place in the list also loads the map
-  }
+  const select = useCallback(
+    (id: string) => {
+      setSelectedId(id);
+      if (routeActive) setRouteStep(stops.indexOf(id)); // -1 when it is not a stop → overview state
+    },
+    [routeActive, stops],
+  );
+
+  const selectFromList = useCallback(
+    (id: string) => {
+      select(id);
+      showMap();
+    },
+    [select, showMap],
+  );
+
+  const openDetail = useCallback(
+    (id: string) => {
+      select(id);
+      setDetailOpen(true);
+      showMap();
+    },
+    [select, showMap],
+  );
+
+  // ---- walking route ----
+  const goToStop = useCallback(
+    (index: number) => {
+      const id = stops[index];
+      if (!id) return;
+      setRouteActive(true);
+      setRouteStep(index);
+      setSelectedId(id);
+      showMap();
+    },
+    [stops, showMap],
+  );
+
+  const routeOverview = useCallback(() => {
+    setRouteStep(-1);
+    setSelectedId(null);
+    setDetailOpen(false);
+    setFitSignal((n) => n + 1);
+    showMap();
+  }, [showMap]);
+
+  const exitRoute = useCallback(() => {
+    setRouteActive(false);
+    setRouteStep(-1);
+  }, []);
+
+  const resetView = useCallback(() => {
+    setSelectedId(null);
+    setDetailOpen(false);
+    setRouteStep(-1);
+  }, []);
+
+  const toggleKind = useCallback((kind: PlaceKind) => {
+    setKinds((current) => {
+      const next = new Set(current);
+      if (next.has(kind)) next.delete(kind);
+      else next.add(kind);
+      return next;
+    });
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setQuery("");
+    setKinds(new Set());
+  }, []);
+
+  // Escape closes the detail panel.
+  useEffect(() => {
+    if (!detailOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDetailOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [detailOpen]);
+
+  const routeNav =
+    route && routeActive ? (
+      <RouteNav
+        route={route}
+        places={places}
+        step={routeStep}
+        labels={labels}
+        lang={lang}
+        compact
+        onPrevious={() => goToStop(routeStep - 1)}
+        onNext={() => goToStop(routeStep + 1)}
+        onOverview={routeOverview}
+      />
+    ) : null;
+
+  const showDetail = detailOpen && selectedPlace !== null;
 
   return (
-    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-6">
-      <nav aria-label={labels.placesHeading} className="order-2 lg:order-1">
-        <h2 className="mb-3 text-2xl font-bold">{labels.placesHeading}</h2>
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          {places.map((place) => (
-            <li key={place.id}>
-              <button
-                type="button"
-                aria-pressed={focusId === place.id}
-                onClick={() => select(place.id)}
-                className={`flex w-full items-center gap-3 rounded-xl p-3 text-left shadow-sm ring-1 ${
-                  focusId === place.id ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`size-4 shrink-0 rounded-full border-2 border-white ${
-                    place.kind === "office" ? "bg-brick" : "bg-crimson"
-                  } ${focusId === place.id ? "ring-2 ring-white" : ""}`}
-                />
-                <span>
-                  <span className="block font-bold">{place.name}</span>
-                  {place.approximate && <span className="block text-sm opacity-80">{labels.approximate}</span>}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <>
+      {route && !routeActive && (
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => goToStop(0)}
+            className="min-h-11 w-full rounded-lg bg-crimson px-4 py-2 font-bold text-white hover:bg-brick sm:w-auto"
+          >
+            {labels.route.start}
+          </button>
+        </div>
+      )}
 
-      <div className="relative order-1 h-[65vh] min-h-80 overflow-hidden rounded-xl bg-sand shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[75vh]">
-        {showMap ? (
-          <MapView places={places} focusId={focusId} onSelect={setFocusId} labels={labels} />
-        ) : (
-          <>
-            {preview && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={preview.src}
-                srcSet={preview.srcSet}
-                sizes="(min-width: 64rem) 75vw, 100vw"
-                width={preview.width}
-                height={preview.height}
-                alt={labels.previewAlt}
-                fetchPriority="high"
-                className="size-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/30 p-4 text-center">
-              <button
-                type="button"
-                onClick={() => setShowMap(true)}
-                className="rounded-full bg-crimson px-6 py-3 text-lg font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick"
-              >
-                <span aria-hidden="true">🗺 </span>
-                {labels.showMap}
-              </button>
-              <p className="rounded-md bg-cream/90 px-2 py-1 text-sm text-ink">{labels.showMapNote}</p>
-            </div>
-          </>
+      <div
+        className={`flex flex-col gap-4 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-6 ${
+          showDetail ? "2xl:grid-cols-[19rem_minmax(0,1fr)_25rem]" : ""
+        }`}
+      >
+        <MapSidebar
+          className="order-2 lg:order-1 lg:max-h-[75vh] lg:overflow-y-auto lg:pr-1"
+          places={places}
+          results={results}
+          selectedId={selectedId}
+          query={query}
+          kinds={kinds}
+          onQueryChange={setQuery}
+          onToggleKind={toggleKind}
+          onClearFilters={clearFilters}
+          onSelect={selectFromList}
+          route={route}
+          routeActive={routeActive}
+          routeStep={routeStep}
+          onExitRoute={exitRoute}
+          onRoutePrevious={() => goToStop(routeStep - 1)}
+          onRouteNext={() => goToStop(routeStep + 1)}
+          onRouteOverview={routeOverview}
+          onSelectStop={goToStop}
+          labels={labels}
+          lang={lang}
+        />
+
+        <div
+          ref={mapWrapRef}
+          className="relative order-1 h-[60dvh] min-h-80 scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[75vh]"
+        >
+          <MapView
+            places={places}
+            focusId={selectedId}
+            visibleIds={visibleIds}
+            route={route}
+            routeActive={routeActive}
+            routeStep={routeStep}
+            fitRouteSignal={fitSignal}
+            detailOpen={showDetail}
+            onSelect={select}
+            onOpenDetail={openDetail}
+            onResetView={resetView}
+            labels={labels}
+            lang={lang}
+          />
+          {/* Phones: step controls on the map while the detail sheet is closed (desktop has them in the sidebar). */}
+          {routeNav && !showDetail && <div className="absolute inset-x-2 bottom-2 lg:hidden">{routeNav}</div>}
+        </div>
+
+        {showDetail && selectedPlace && (
+          <div className="order-3 lg:col-start-2 2xl:col-start-3">
+            <PlaceDetailPanel
+              place={selectedPlace}
+              labels={labels}
+              lang={lang}
+              onClose={() => setDetailOpen(false)}
+              footer={routeNav}
+            />
+          </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

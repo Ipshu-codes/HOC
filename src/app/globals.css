@@ -154,67 +154,63 @@
   }
 }
 
-/* Nani (chatbot guide): a gentle bob-and-tilt on the floating button. Static for reduced motion. */
-@keyframes nani-bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3px) rotate(-4deg);
-  }
-  50% {
-    transform: translateY(0) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-2px) rotate(3deg);
-  }
-}
-
+/* Heritage map additions (src/components/map/*, MapView.tsx): marker states, popup extras, detail panel. */
 @layer components {
-  .nani-animated {
-    animation: nani-bob 4s ease-in-out infinite;
-    transform-origin: 50% 90%;
+  /* Selected place: larger pin with a gold border and a dark ring, so it is clear which one is open. */
+  .map-marker-selected {
+    z-index: 2;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nani-animated {
-    animation: none;
+  .map-marker-selected::before {
+    @apply border-gold bg-brick;
+    transform: rotate(45deg) scale(1.3);
+    box-shadow: 0 0 0 3px var(--color-ink), 0 6px 14px rgb(0 0 0 / 0.4);
   }
-}
-
-/* The big floating Nani: a slower, smaller sway than the face avatar, rocking from her base. */
-@keyframes nani-sway {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
+  /* Walking-route stops carry their order number (set as data-step by MapView). */
+  .map-marker[data-step]::after {
+    @apply absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full border border-white bg-ink text-xs font-bold text-white;
+    content: attr(data-step);
   }
-  30% {
-    transform: translateY(-4px) rotate(-1.2deg);
-  }
-  60% {
-    transform: translateY(-1px) rotate(1deg);
-  }
-}
-
-@layer components {
-  .nani-figure-animated {
-    animation: nani-sway 5s ease-in-out infinite;
-    transform-origin: 50% 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nani-figure-animated {
-    animation: none;
-  }
-}
-
-/* From 768 px to 1023 px the open chat panel (beside the big Nani) reaches the floating
-   3D Map button, so the button steps aside while the chat is open (Chatbot.tsx sets the attribute). */
-@media (min-width: 48rem) and (max-width: 63.99rem) {
-  html[data-chat-open] .map-fab {
+  .map-marker-hidden {
     display: none;
+  }
+  .map-popup-names {
+    @apply my-1;
+  }
+  .map-popup-kind {
+    @apply inline-block rounded-full bg-sand px-2 py-0.5 text-xs font-bold text-brick;
+  }
+  .map-popup-summary {
+    @apply line-clamp-3 text-sm;
+  }
+  .map-popup-btn {
+    @apply mt-2 w-full rounded-lg bg-crimson px-3 py-2 text-center font-bold text-white hover:bg-brick;
+  }
+  /* Custom "reset view" button inside MapLibre's control group. */
+  .map-ctrl-btn {
+    @apply flex size-8 items-center justify-center text-lg leading-none text-ink;
+  }
+  .map-ctrl-btn:focus-visible {
+    @apply outline-2 outline-crimson;
+  }
+  /* Detail panel body: slightly tighter than the full page. */
+  .map-detail-prose {
+    @apply text-base;
+
+    & h3 {
+      @apply mt-4 mb-1 font-heading text-lg font-bold text-brick;
+    }
+    & p {
+      @apply my-2;
+    }
+    & ul,
+    & ol {
+      @apply my-2 list-disc pl-5;
+    }
+    & table {
+      @apply my-2 block max-w-full overflow-x-auto text-sm;
+    }
+    & img {
+      @apply max-w-full;
+    }
   }
 }

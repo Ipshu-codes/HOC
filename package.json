@@ -12,7 +12,8 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "check-content": "tsx scripts/check-content.ts",
-    "optimize-images": "tsx scripts/optimize-images.ts"
+    "optimize-images": "tsx scripts/optimize-images.ts",
+    "fetch-route": "tsx scripts/fetch-walking-route.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
