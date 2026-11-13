@@ -12,6 +12,8 @@
 - `npm run build:preview` builds without draft sites. Every page, link, gallery, map marker and chatbot answer must get sites from `getHeritageList()` / `getHeritageSlugs()` (src/lib/content.ts); scripts/verify-output.ts (after both builds) fails if a draft slug or name, or any [PLACEHOLDER/[TODO text, appears anywhere in out/.
 - Every h2/h3 in content needs a stable English id, same in EN and NE: `## इतिहास {#history}` (enforced by check-content and the remark plugin).
 - Client components import Locale/LOCALES from @/types/locale, never @/types/heritage (that pulls zod and site slugs into the browser bundle).
+- People who gave information are credited in one place: content/credits.json → `people`. Content and sources.json write `{person:<id>}` (e.g. `{person:mhepi-priest}`); never type their names into content. An unknown id fails the build; an unfilled token fails verify-output.
+- Teamwork rules (branches, PRs, never commit to main, resolving globals.css conflicts by keeping both sides): CONTRIBUTING.md.
 - Cite sources in content with `<!-- source: key1, key2 | reviewer detail -->`; keys and their plain-language names live in content/sources.json and feed each page’s Sources section (an unknown key fails the build).
 - Detail pages render optional parts only when there is data: map button needs coordinates, "Other heritage" needs another visible site, quick facts skip empty fields, the photo credit needs `photos.team` in content/credits.json.
 - Photos showing identifiable people are listed in content/photo-consent.json (pending/approved/removed) and docs/photos-with-people.md; "removed" hides a photo everywhere. Check every newly added photo for faces.

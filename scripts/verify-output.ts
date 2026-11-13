@@ -5,8 +5,9 @@
  *    are already left out by src/lib/content.ts, but public/ is copied into out/
  *    as-is, so delete out/images/<draft-slug>/. Then fail if a draft site's slug
  *    or name still appears anywhere in out/.
- * 2. Placeholders: fail if "[PLACEHOLDER" or "[TODO" appears anywhere in out/
- *    (for example dev-only filler text that slipped into a production build).
+ * 2. Placeholders: fail if "[PLACEHOLDER", "[TODO" or an unfilled "{person:" credit token
+ *    (content/credits.json → people) appears anywhere in out/ (for example dev-only filler
+ *    text that slipped into a production build).
  * 3. Image metadata: fail if any published image still carries EXIF, XMP or text
  *    chunks (camera details, timestamps, possibly GPS).
  */
@@ -16,7 +17,7 @@ import matter from "gray-matter";
 
 const HERITAGE_DIR = path.join("content", "heritage");
 const OUT_DIR = "out";
-const MARKERS = ["[PLACEHOLDER", "[TODO"];
+const MARKERS = ["[PLACEHOLDER", "[TODO", "{person:"];
 const TEXT_FILE = /\.(html|txt|js|json|css|xml|webmanifest)$/;
 
 interface DraftSite {

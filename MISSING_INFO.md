@@ -34,10 +34,11 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 ## 1. Mhepi Ajima
 
 - [x] **History, legends, festivals, tradition, architecture, present day**: from the chief priest's interview (13 Nov 2026). Every claim is attributed to him ("according to the priest") and cited by paragraph.
-- [ ] **Confirm Bhushan Ratna Bajracharya agrees to be named** as the source (Sources section, History and the chatbot's "What does Mhepi mean?" mention the chief priest; the Sources section names him).
+- [ ] **Confirm the chief priest agrees to be named.** His credit is one setting: `content/credits.json` → `people` → `mhepi-priest` ("the temple's chief priest, Bhushan Ratna Bajracharya"). The History section and the Sources entry use it through `{person:mhepi-priest}`. If he prefers not to be named, change the text there to "the temple's chief priest" / "मन्दिरका मूल पुरोहित"; nothing else needs to change. **Don't push or deploy until he has agreed** (13 Nov 2026).
+- [x] **Main deity**: the chief priest's interview confirms **Yogambar Jnaneshwari** as the main deity (popularly called Mhepi Ajima), matching the temple's inscriptions. Resolved by the interview, 13 Nov 2026.
 - [x] **Founding year**: not recorded. Quick facts say so and give what is known (tradition traces it to the Swayambhu Purana; most images placed before VS 2030).
-- [ ] **Jatra dates**: the priest says a five-day mela runs "from Chaitra Shukla Chaturdashi … until Baishakh trayodashi", which is more than five days. The page says "a five-day mela" from Chaitra Shukla Chaturdashi and gives no end date. Confirm.
-- [ ] **Committee founding year**: the transcript says "सन् २०५४ साल"; 2054 can only be VS, so the page says VS 2054. Confirm.
+- [ ] **Jatra length (conflict in the interview)**: the priest says a five-day mela runs "from Chaitra Shukla Chaturdashi … until Baishakh trayodashi", which is more than five days. Until confirmed, the page and the chatbot (EN + NE) say only "the yearly jatra", starting on Chaitra Shukla Chaturdashi, with no duration or end date (Phase 9 review).
+- [x] **Committee founding year**: the transcript says "सन् २०५४ साल"; 2054 can only be VS. Shown as "VS 2054 (1997/98 AD)" / "वि.सं. २०५४ (सन् १९९७/९८)" (Phase 9 review).
 - [ ] **"About three years ago"** (Narayan temple below the hill): the page writes "about three years ago (as of 2026)". An exact year would be better.
 - [ ] **Shantashri / Shantikar Acharya**: the priest calls the monk Shantashri, then speaks of "Shantikar Acharya's son". The page treats them as the same person and avoids the second name. Confirm.
 - [ ] **Charhe**: is the main puja on *every* Krishna Paksha Chaturdashi, or on one in particular? The page does not say "every month".
@@ -150,7 +151,8 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 
 - [ ] **Confirm the stop order** in `content/routes.json` (`mhepi-ajima` → `nanak-math`). It was set by the developer, not taken from the ward; swap it if the walk should run the other way.
 - [ ] **Walking paths and distances.** `routes.json` has `"walking": null`, so the map shows a dashed straight line and straight-line distances only (≈ 960 m between the two sites). Run `npm run fetch-route` on a machine with internet, check the paths on the map, and commit `content/routes.json`.
-- [ ] **Better coordinates.** Nanak Math and the ward office are marked approximate; the Mhepi Ajima point is not marked approximate but has no recorded source. Walking paths end at these points, so they are only as good as the coordinates.
+- [ ] **Better coordinates.** Nanak Math and the ward office are marked approximate; the Mhepi Ajima point (27.727614400718654, 85.30859929776761) was given by the ward team on 13 Nov 2026 and is not marked approximate. Walking paths end at these points, so they are only as good as the coordinates.
+- [ ] **Verify the walking route on foot.** Walk Mhepi Ajima → Nanak Math (and on to the ward office if it is added) with the map open on a phone. Check that the stops are in a sensible order, the path shown is walkable (once real paths are fetched), and the distances and times are about right. Note anything unsafe or confusing (busy crossings, steps, closed lanes).
 - [x] **Route needs two published sites.** Mhepi Ajima was published on 13 Nov 2026, so the route now appears with both stops (checked in the strict build).
 - [ ] **Categories.** The sites have no category field. The map's filters use only what exists (heritage site / ward office) and the filter buttons hide when a single category is present. Add a `category` field to the content schema only once the ward agrees on real categories (e.g. temple, math, kuthi).
 - [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, filters, legend, route, detail panel) were written by the developer and need a native-speaker review.

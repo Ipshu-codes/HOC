@@ -12,5 +12,11 @@
       "ne": "जेमिनी (एआई-निर्मित चित्र)"
     },
     "source": "Nani.jpeg (raw-data, added 13 Nov 2026); generated with Google Gemini, per the ward team"
+  },
+  "people": {
+    "mhepi-priest": {
+      "en": "the temple's chief priest, Bhushan Ratna Bajracharya",
+      "ne": "मन्दिरका मूल पुरोहित भुषण रत्न बज्राचार्य"
+    }
   }
 }

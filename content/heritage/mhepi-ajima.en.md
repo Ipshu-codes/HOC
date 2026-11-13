@@ -10,9 +10,9 @@ deity_or_tradition: "Yogambar Jnaneshwari, the principal seat (mool peeth) of th
 festivals:
   - name: "Charhe (Krishna Paksha Chaturdashi)"
     description: "The main puja at the temple, on the fourteenth day of the dark fortnight."
-  - name: "Annual jatra and mela"
-    month: "Chaitra–Baishakh"
-    description: "From Chaitra Shukla Chaturdashi the goddesses' images are brought from their god-house at Tanlachhi, worshipped through the night and on the full moon, then carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati. A five-day mela is held at the temple."
+  - name: "The yearly jatra"
+    month: "Chaitra"
+    description: "The yearly jatra begins on Chaitra Shukla Chaturdashi: the goddesses' images are brought from their god-house at Tanlachhi, worshipped through the night and on the full moon, then carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati. A mela is held at the temple."
 visiting:
   tips: "The daily puja is held early, from 4:00 to 5:30 am, so that it is over before visitors come for darshan. The temple is open to people of every faith. Please do not set up stalls in front of the temple door."
 cover: "/images/mhepi-ajima/temple-front.webp"
@@ -63,12 +63,12 @@ gallery:
     alt: "A large old tree spreading its branches over the temple grounds"
 ---
 
-<!-- Sources: an interview with the temple's chief priest, Bhushan Ratna Bajracharya (raw-data "Mhepi Ajima/mhepi_ajima.docx", typed in the Preeti font; cited by paragraph), and inscriptions and notice boards photographed on site (cited by original filename). English translated from the Nepali. -->
+<!-- Sources: an interview with {person:mhepi-priest} (raw-data "Mhepi Ajima/mhepi_ajima.docx", typed in the Preeti font; cited by paragraph), and inscriptions and notice boards photographed on site (cited by original filename). English translated from the Nepali. -->
 
 ## History {#history}
 
 <!-- source: mhepi-interview | paras 1–2 -->
-The temple's main deity is **Yogambar Jnaneshwari**, but most people know the temple simply as **Mhepi Ajima**. Its chief priest, Bhushan Ratna Bajracharya, continues the daily worship as his father and grandfather did before him.
+The temple's main deity is **Yogambar Jnaneshwari**, but most people know the temple simply as **Mhepi Ajima**. The daily worship is carried on by {person:mhepi-priest}, as his father and grandfather did before him.
 
 According to the priest, Mhepi lies to the **north** among the Ashtamatrikas, the eight mother goddesses around the city. He cites a vamshavali (chronicle) which records that the Ashtamatrikas were established in the shape of a sword (khadga) to protect Kantipur, today's Kathmandu. He adds that the history of the place is older still: the seat (peeth) of Yogambar Jnaneshwari is said to be based on the **Yogambar tantra** of the Vajrayana Buddhist tradition.
 
@@ -129,8 +129,8 @@ The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Ma
 
 <!-- source: mhepi-interview | paras 11–13 -->
 - **Charhe.** The main puja is held on Krishna Paksha Chaturdashi, the fourteenth day of the dark fortnight, which is called Charhe.
-- **The annual jatra.** The temple itself has no images, only stones (shila) and the peeth, consecrated through tantric practice. For the yearly worship, images were made later; they are kept as the Ashtamatrika goddesses in the god-house (dyochhen) at **Tanlachhi**.
-  - On **Chaitra Shukla Chaturdashi** the images are brought from Tanlachhi on a khat (palanquin) with due ritual, installed at the temple and worshipped through the night. A five-day mela follows.
+- **The yearly jatra.** The temple itself has no images, only stones (shila) and the peeth, consecrated through tantric practice. For the yearly worship, images were made later; they are kept as the Ashtamatrika goddesses in the god-house (dyochhen) at **Tanlachhi**.
+  - On **Chaitra Shukla Chaturdashi** the images are brought from Tanlachhi on a khat (palanquin) with due ritual, installed at the temple and worshipped through the night, and a mela is held at the temple.
   - On the **full moon** the images stay at the temple for devotees. For about 15 years the Mhepi Conservation and Management Committee has held a programme that day and distributed prasad, to about 4,000–5,000 people judging by the prasad given out. The Metropolitan City, the ward and devotees help with the costs.
   - The images are then taken back to Tanlachhi. The next day they are carried around Asan, Indrachowk, Thahiti, Paknajol and Kshetrapati, and the day after they are returned to the god-house with puja.
 - **The guthis.** The procession lets households worship the goddess at their own doors. Guthis (community trusts) shared the work: one carried the khat, one performed the puja, one played the music. Many of the old members have died and their families have moved away, so the jatra is quieter than it was, but the procession still goes on.
@@ -155,7 +155,7 @@ The temple is looked after by the **Mhepi Conservation and Management Committee*
 - The committee asks that **no stalls** be set up in front of the temple door.
 
 <!-- source: mhepi-interview | paras 1, 14–15 -->
-- The **Mhepi Conservation and Management Committee** was founded in **VS 2054**. It looks after the old images, the daily puja, the forest on the hill, security and cleaning, and runs on donations.
+- The **Mhepi Conservation and Management Committee** was founded in **VS 2054 (1997/98 AD)**. It looks after the old images, the daily puja, the forest on the hill, security and cleaning, and runs on donations.
 - The daily puja starts at **4:00 am** and ends by **5:30 am**, earlier than at many temples, so that devotees coming for darshan are not disturbed.
 - The priest notes that, although the temple appears on online maps, few people know its history or what the name Mhepi means.
 

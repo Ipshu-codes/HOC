@@ -84,7 +84,7 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
     throw new Error(`${file}: the cover photo ${parsed.data.cover} is marked "removed" — choose another cover`);
   }
 
-  const html = String(markdownToHtml.processSync(content));
+  const html = String(markdownToHtml.processSync(fillPeople(content, lang, file)));
   return {
     ...parsed.data,
     gallery,
@@ -93,6 +93,19 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
     toc: extractToc(html),
     sources: extractSources(content, lang, file),
   };
+}
+
+/**
+ * Fills `{person:<id>}` with how that person is credited (content/credits.json → people), so
+ * whether someone is named is decided in one place. An unknown id fails the build.
+ */
+export function fillPeople(text: string, lang: Locale, where: string): string {
+  const people = getCredits().people;
+  return text.replace(/\{person:([a-z0-9-]+)\}/g, (_, id: string) => {
+    const person = people[id];
+    if (!person) throw new Error(`${where}: unknown person "${id}" — add it to content/credits.json → people`);
+    return person[lang];
+  });
 }
 
 /**
@@ -110,7 +123,7 @@ function extractSources(markdown: string, lang: Locale, file: string): SourceCit
   return [...keys].map((key) => {
     const names = registry[key];
     if (!names) throw new Error(`${file}: unknown source "${key}" — add it to content/sources.json`);
-    return { key, label: names[lang], url: names.url };
+    return { key, label: fillPeople(names[lang], lang, "content/sources.json"), url: names.url };
   });
 }
 

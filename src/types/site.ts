@@ -27,6 +27,12 @@ export const creditsSchema = z.object({
     /** Where the artwork came from (for the team; not shown on the site). */
     source: z.string().min(1),
   }),
+  /**
+   * How people who gave information are credited, in one place. Content and content/sources.json
+   * write `{person:<id>}`, filled in from here at build time (an unknown id fails the build).
+   * To stop naming someone, change their text here, e.g. to "the temple's chief priest".
+   */
+  people: z.record(z.string().regex(/^[a-z0-9-]+$/), localized),
 });
 export type Credits = z.infer<typeof creditsSchema>;
 
