@@ -2,38 +2,65 @@
 
 The full step-by-step deployment guide is written in Phase 11. This file collects deployment notes as they come up.
 
-## Preview deploy now (Cloudflare Pages, free)
+## Connect Cloudflare Pages (first time, free)
 
-Mhepi Ajima was published on 13 Nov 2026, so nothing is a draft any more and Cloudflare uses the strict **`npm run build`**. It checks the content first (`check-content`) and the output after (`verify-output`). (`npm run build:preview` is only needed again if a site is ever put back in draft.) No credit card is needed at any step.
+Cloudflare builds the site from GitHub: every push to `main` updates the live site, and every other branch and pull request gets its own **preview link**. Nothing is a draft any more, so Cloudflare runs the strict **`npm run build`**. It checks the content first (`check-content`) and the output after (`verify-output`), and a failing check stops the deploy. No credit card is needed at any step. Cloudflare's screens change from time to time, so a label may read slightly differently from what is written here.
 
-1. **Push the code to GitHub.** Cloudflare builds from the repository, not from this computer.
-   ```
-   git push origin main
-   ```
-   The repository is `https://github.com/Ipshu-codes/HOC`. Images in `public/images/` are committed; the raw data (`ward16-heritageraw-data/`) is not and is not needed for the build.
-2. **Sign in** at https://dash.cloudflare.com (create a free account with an email address if needed).
-3. In the left menu, open **Workers & Pages** → **Create** → choose the **Pages** tab → **Import an existing Git repository** (labels may differ slightly; pick *Pages*, not *Workers*).
-4. **Connect GitHub**: authorise the "Cloudflare Workers and Pages" GitHub app, ideally for the `HOC` repository only, then select `Ipshu-codes/HOC` → **Begin setup**.
-5. **Set up builds and deployments:**
-   - **Project name:** e.g. `ward16-heritage`. The site will be at `https://ward16-heritage.pages.dev`.
-   - **Production branch:** `main`
-   - **Framework preset:** `Next.js (Static HTML Export)`, or `None`; the two fields below are what matter.
-   - **Build command:** `npm run build`
-   - **Build output directory:** `out`
-   - **Root directory:** leave empty.
-6. **Environment variables** (same screen, *Environment variables (advanced)*):
-   - `SITE_URL` = `https://ward16-heritage.pages.dev` (use your project name; no trailing slash). It makes link previews (Open Graph images) point at the real site.
-   - `NEXT_PUBLIC_WEB3FORMS_KEY` = the key from https://web3forms.com (optional now; without it the contact page shows the email address instead of the form).
-   - Node.js: the repository's `.node-version` file asks for Node 22, so nothing to set. If the build log shows another version, add `NODE_VERSION` = `22`.
-7. **Save and Deploy.** The first build takes a few minutes. The log should end with `✔ verify-output: no placeholders; 0 draft site(s) fully excluded; … images free of metadata.` If you change an environment variable later, redeploy: **Deployments** → latest → **⋯** → **Retry deployment**.
-8. **Check the preview** at `https://<project>.pages.dev`:
-   - `/` redirects to `/en/`; the EN | ने switch works.
-   - Both Nanak Math and Mhepi Ajima appear, in English and Nepali, and the walking route on the map has both stops.
-   - The section below (*Prefetch files on Windows builds*).
-   - On a phone, open `/en/map/` directly: you should see the still picture with **Show 3D map**. Tap the floating **3D Map** button from another page: the map loads at once.
-   - Run Lighthouse (Chrome DevTools → Lighthouse → Mobile) on the live URL; local scores on Windows are noisy (see below).
+**A. Create the project**
 
-Every later `git push` to `main` redeploys automatically. If the project was already set up with `npm run build:preview`, change it to `npm run build` under **Settings → Build → Build configuration**.
+1. Go to https://dash.cloudflare.com and sign in. If you have no account, click **Sign up** and create a free one with an email address, then verify the email.
+2. In the left menu, click **Workers & Pages** (under *Compute*).
+3. Click **Create** (top right).
+4. Choose the **Pages** tab (not *Workers*), then click **Import an existing Git repository** → **Get started**.
+5. Click **Connect GitHub**. A GitHub window opens for the *Cloudflare Workers and Pages* app:
+   - choose the account that owns the repository (`Ipshu-codes`);
+   - choose **Only select repositories** → `HOC`;
+   - click **Install & Authorize**.
+6. Back in Cloudflare, select **`Ipshu-codes/HOC`** → **Begin setup**.
+
+**B. Build settings** (on the *Set up builds and deployments* screen)
+
+7. **Project name:** `ward16-heritage` (or another name). The live site will be `https://ward16-heritage.pages.dev`.
+8. **Production branch:** `main`.
+9. **Framework preset:** `Next.js (Static HTML Export)`. If it isn't listed, choose `None`; the next two fields are what matter.
+10. **Build command:** `npm run build`
+11. **Build output directory:** `out`
+12. **Root directory (advanced):** leave empty.
+
+**C. Environment variables** (same screen: open **Environment variables (advanced)** → **Add variable** for each)
+
+13. `SITE_URL` = `https://ward16-heritage.pages.dev`. Use your project name, with no trailing slash. Link previews (Open Graph images), the sitemap and robots.txt use it.
+14. `NODE_VERSION` = `22`. The repository's `.node-version` file already asks for Node 22; setting it here too makes it explicit.
+15. Optional: `NEXT_PUBLIC_WEB3FORMS_KEY` = the key from https://web3forms.com. Without it, the contact page shows the ward's email address instead of the form.
+
+**D. First deploy**
+
+16. Click **Save and Deploy**. The first build takes a few minutes. The log should end with:
+    `✔ verify-output: no placeholders; 0 draft site(s) fully excluded; … images free of metadata.`
+17. Click **Continue to project**. The site is live at `https://ward16-heritage.pages.dev`.
+
+**E. Preview deployments for every branch and pull request**
+
+18. In the project, open **Settings** → **Build** → **Branch control** (older screens: *Settings → Builds & deployments → Configure Production deployments / Preview deployments*). Set:
+    - **Production branch:** `main`, with **Automatic deployments** enabled;
+    - **Preview branch:** **All non-Production branches**.
+
+    Click **Save**.
+19. Open **Settings** → **Variables and Secrets**. Variables are set per environment (**Production** and **Preview**). Make sure `SITE_URL` and `NODE_VERSION` (and the Web3Forms key, if used) exist for **Preview** too, with the same values as Production, or preview builds will use the defaults.
+20. Each push to a branch other than `main` now builds a preview at a link of its own:
+    - `https://<branch>.ward16-heritage.pages.dev`, where `/` in the branch name becomes `-`. For example, `feat/swap-floating-buttons` → `https://feat-swap-floating-buttons.ward16-heritage.pages.dev`.
+    - A unique link for every commit, listed under **Deployments**.
+21. **Pull requests:** the Cloudflare app reports each preview build on the pull request in GitHub (a check, usually with a comment), with a **Preview URL** link. Open it to review the change before merging. Branches pushed before Cloudflare was connected get a preview only after their next push, which can be an empty commit (`git commit --allow-empty -m "Trigger preview" && git push`).
+
+**F. Later**
+
+- If you change an environment variable, redeploy for it to take effect: **Deployments** → the latest deployment → **⋯** → **Retry deployment**.
+- **Check the live site:**
+  - `/` redirects to `/en/`, and the EN | ने switch works.
+  - Both Nanak Math and Mhepi Ajima appear in English and Nepali, and the walking route on the map has both stops.
+  - The prefetch check below (*Prefetch files on Windows builds*).
+  - On a phone, opening `/en/map/` directly shows the still picture with **Show 3D map**, while tapping the floating **3D Map** button from another page loads the map at once.
+  - Run Lighthouse (Chrome DevTools → Lighthouse → Mobile) or https://pagespeed.web.dev on the live URL; local scores on Windows are noisy (see below).
 
 ## Lighthouse (Phase 9)
 
