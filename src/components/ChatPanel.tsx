@@ -155,8 +155,8 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
     <section
       role="dialog"
       aria-label={labels.dialogLabel}
-      // Just above Nani's round face (bottom-left).
-      className="fixed bottom-24 left-4 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:bottom-28 md:left-6"
+      // Just above Nani's round face (bottom-right); it grows up and to the left, into the page.
+      className="fixed right-[max(1rem,env(safe-area-inset-right))] bottom-24 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-28"
     >
       <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />

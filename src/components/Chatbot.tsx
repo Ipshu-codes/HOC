@@ -19,7 +19,9 @@ const FIGURE_SRCSET =
 const FIGURE_SIZES = "(min-width: 48rem) 207px, 104px";
 
 /**
- * Floating "How can I help?" button, bottom-left on every page as in the sketch.
+ * Floating "How can I help?" button, bottom-right on every page (swapped with the 3D Map button, which
+ * is bottom-left). Side offsets use max(gap, safe-area inset) so they stay clear of a notch if the page
+ * ever opts into viewport-fit=cover.
  *
  * Nani is her round face; hovering over her with a mouse shows the big half-body figure
  * and her speech bubble. Touch screens have no hover (Tailwind's hover: variant only
@@ -69,7 +71,7 @@ export default function Chatbot(props: ChatbotProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        className="group fixed bottom-4 left-4 z-30 block text-left md:bottom-6 md:left-6"
+        className="group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
         {/* invisible (not hidden) on hover: the face keeps its box, so the pointer stays over the button. */}
@@ -91,13 +93,13 @@ export default function Chatbot(props: ChatbotProps) {
           alt=""
           loading="lazy"
           decoding="async"
-          className={`nani-figure-animated absolute -bottom-4 -left-2 hidden h-[130px] w-auto max-w-none drop-shadow-lg md:-bottom-6 md:-left-2 md:h-[260px] ${onHover}`}
+          className={`nani-figure-animated absolute -right-2 -bottom-4 hidden h-[130px] w-auto max-w-none drop-shadow-lg md:-right-2 md:-bottom-6 md:h-[260px] ${onHover}`}
         />
         <span className="sr-only">{props.labels.bubble}</span>
-        {/* The speech bubble, shown with the big figure: above her below 768 px, beside her face from 768 px. */}
+        {/* The speech bubble, shown with the big figure: above her below 768 px, to the left of her face (into the page) from 768 px. */}
         <span
           aria-hidden="true"
-          className={`absolute bottom-[7.5rem] left-0 hidden w-52 rounded-2xl rounded-bl-sm bg-brick px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white md:bottom-[8rem] md:left-[11.5rem] md:w-60 md:text-base ${onHover}`}
+          className={`absolute right-0 bottom-[7.5rem] hidden w-52 rounded-2xl rounded-br-sm bg-brick px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white md:right-[11.5rem] md:bottom-[8rem] md:w-60 md:text-base ${onHover}`}
         >
           {props.labels.bubble}
         </span>

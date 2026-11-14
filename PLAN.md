@@ -284,7 +284,7 @@ Only do this phase if I ask for it.
 
 ## 7. Definition of done
 - [ ] All pages work in English and Nepali
-- [ ] Layout matches the sketch: logo, title, nav, chatbot bottom-left, 3D map button bottom-right
+- [ ] Layout matches the sketch: logo, title, nav, chatbot and 3D map button floating at the bottom (swapped on 14 Nov 2026: chatbot bottom-right, 3D map button bottom-left)
 - [ ] Red theme applied consistently, contrast passes WCAG AA
 - [ ] Every fact traces back to `raw-data/`; `MISSING_INFO.md` is up to date
 - [ ] 3D map shows both sites with working popups

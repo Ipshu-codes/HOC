@@ -10,7 +10,7 @@ interface MapButtonProps {
   label: string;
 }
 
-/** Floating "🗺 3D Map" button, bottom-right on every page as in the sketch (hidden on the map page itself). */
+/** Floating "🗺 3D Map" button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the map page itself). */
 export default function MapButton({ lang, label }: MapButtonProps) {
   const pathname = usePathname();
   if (pathname.startsWith(`/${lang}/map`)) return null;
@@ -18,7 +18,7 @@ export default function MapButton({ lang, label }: MapButtonProps) {
   return (
     <Link
       href={`/${lang}/map/`}
-      className="fixed right-4 bottom-4 z-30 flex items-center gap-2 rounded-full bg-crimson px-5 py-3 font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick md:right-6 md:bottom-6"
+      className="fixed bottom-4 left-[max(1rem,env(safe-area-inset-left))] z-30 flex items-center gap-2 rounded-full bg-crimson px-5 py-3 font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick md:bottom-6 md:left-[max(1.5rem,env(safe-area-inset-left))]"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
       <span aria-hidden="true">🗺</span>
