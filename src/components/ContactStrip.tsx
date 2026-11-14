@@ -13,13 +13,10 @@ interface ContactStripProps {
 }
 
 /**
- * Ward office contact details. There is no embedded map yet because the office
- * coordinates are unknown (see MISSING_INFO.md), so the address links to an
- * OpenStreetMap search instead.
+ * Ward office contact details. The address is plain text with a link to our own 3D map
+ * (only when the office has coordinates); the site never links to external map services.
  */
 export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
-  // Search with the English address: OpenStreetMap's search matches it more reliably.
-  const osmSearch = `https://www.openstreetmap.org/search?query=${encodeURIComponent(ward.office.address.en)}`;
   const linkClass = "font-medium text-crimson underline underline-offset-4 hover:text-brick";
 
   return (
@@ -30,13 +27,13 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
         <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
           <dt className="font-bold text-brick">{dict.footer.address}</dt>
           <dd className="mt-1">{ward.office.address[lang]}</dd>
-          <dd className="mt-2">
-            <a href={osmSearch} target="_blank" rel="noopener noreferrer" className={linkClass}>
-              {dict.home.openInOsm}
-              <span className="sr-only"> {dict.home.opensInNewTab}</span>
-              <span aria-hidden="true"> ↗</span>
-            </a>
-          </dd>
+          {ward.office.coordinates && (
+            <dd className="mt-2">
+              <Link href={`/${lang}/map/?site=ward-office`} className={linkClass}>
+                {dict.heritage.viewOnMap}
+              </Link>
+            </dd>
+          )}
         </div>
         <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
           <dt className="font-bold text-brick">{dict.footer.phone}</dt>

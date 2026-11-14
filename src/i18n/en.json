@@ -77,9 +77,7 @@
     "galleryIntro": "Photos from {sites}.",
     "seeAll": "See all photos",
     "contactTitle": "Contact",
-    "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office.",
-    "openInOsm": "Open in OpenStreetMap",
-    "opensInNewTab": "(opens in a new tab)"
+    "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office."
   },
   "heritage": {
     "backToAll": "All heritage sites",
@@ -246,7 +244,6 @@
     "naniAlt": "Nani, the Ward 16 heritage guide",
     "quickQuestions": "Popular questions",
     "viewOnMap": "View on 3D Map",
-    "openOsm": "Open in OpenStreetMap (directions)",
     "approximateNote": "The location on the map is approximate.",
     "newTab": "(opens in a new tab)"
   },
