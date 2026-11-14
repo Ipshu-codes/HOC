@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ContactForm from "@/components/ContactForm";
@@ -21,7 +22,6 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
   if (!isLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const ward = getWard();
-  const osmSearch = `https://www.openstreetmap.org/search?query=${encodeURIComponent(ward.office.address.en)}`;
   const linkClass = "font-medium text-crimson underline underline-offset-4 hover:text-brick";
 
   return (
@@ -45,13 +45,14 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
             <div>
               <dt className="text-sm font-bold text-crimson">{dict.footer.address}</dt>
               <dd>{ward.office.address[lang]}</dd>
-              <dd>
-                <a href={osmSearch} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                  {dict.home.openInOsm}
-                  <span className="sr-only"> {dict.home.opensInNewTab}</span>
-                  <span aria-hidden="true"> ↗</span>
-                </a>
-              </dd>
+              {/* Our own 3D map, never an external map service. */}
+              {ward.office.coordinates && (
+                <dd>
+                  <Link href={`/${lang}/map/?site=ward-office`} className={linkClass}>
+                    {dict.heritage.viewOnMap}
+                  </Link>
+                </dd>
+              )}
             </div>
             <div>
               <dt className="text-sm font-bold text-crimson">{dict.footer.phone}</dt>

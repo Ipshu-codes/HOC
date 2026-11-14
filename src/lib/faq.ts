@@ -68,20 +68,8 @@ export function getChatData(lang: Locale): ChatData {
       let note: string | null = null;
       const heritage = heritages.find((h) => h.slug === entry.site);
       if (entry.directions && heritage?.coordinates) {
-        const [lat, lon] = heritage.coordinates;
-        links.push(
-          {
-            href: `/${lang}/map/?site=${heritage.slug}`,
-            label: dict.chat.viewOnMap,
-            external: false,
-          },
-          {
-            // OpenStreetMap's route planner with only the destination filled in; the visitor adds their start.
-            href: `https://www.openstreetmap.org/directions?route=%3B${lat}%2C${lon}#map=18/${lat}/${lon}`,
-            label: dict.chat.openOsm,
-            external: true,
-          },
-        );
+        // Our own 3D map only; the site never links to external map services.
+        links.push({ href: `/${lang}/map/?site=${heritage.slug}`, label: dict.chat.viewOnMap, external: false });
         if (heritage.coordinatesApproximate) note = dict.chat.approximateNote;
       }
       if (entry.link)

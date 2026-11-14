@@ -17,8 +17,8 @@ export const SITE_TOPIC_KINDS = ["visit", "about"] as const;
  * - `priority` orders the questions within a topic (1 first).
  * - `site` ties an entry to a heritage site, so a draft site's answers are left
  *   out of production builds. `null` means general.
- * - `directions: true` adds "View on 3D Map" and "Open in OpenStreetMap" links built
- *   from the site's coordinates (marked approximate when the site's are).
+ * - `directions: true` adds a "View on 3D Map" link for the site when it has coordinates
+ *   (with the "approximate" note when the site's coordinates are). No external map links.
  * - `suggestions`: entry ids shown as quick questions when the chat opens.
  * - Answers may use {sites}, {address}, {phone}, {email} and {team}; they are filled
  *   in at build time from the visible sites, content/ward.json and content/credits.json.
