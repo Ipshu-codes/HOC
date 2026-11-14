@@ -106,10 +106,38 @@ export function getChatData(lang: Locale): ChatData {
     (a, b) => topicOrder(a.topic) - topicOrder(b.topic) || (priority.get(a.id) ?? 0) - (priority.get(b.id) ?? 0),
   );
 
-  const topics = allTopics.filter((topic) => entries.some((entry) => entry.topic === topic.id));
-  const suggestions = faq.suggestions.filter((id) => entries.some((entry) => entry.id === id));
+  // PREVIEW (branch preview/chatbot-tap): the first tap-only layout (commit f85bcc1, before the
+  // "Visiting / About" topics), built from today's content: one topic per site (its "about" questions),
+  // "Getting there" (every site's visiting questions, after "Which sites…" and "Is there a map?"), and
+  // "Contact the ward office". The other website questions appear only as related questions under
+  // answers, and there are no quick-question chips, as in f85bcc1.
+  const GETTING_THERE = "getting-there";
+  const GENERAL_GETTING_THERE = new Set(["sites", "map"]);
+  const regrouped = entries.map((entry) => {
+    const t = entry.topic;
+    const topic =
+      t === null
+        ? null
+        : t.endsWith("-about")
+          ? entry.site
+          : t.endsWith("-visit") || (t === "website" && GENERAL_GETTING_THERE.has(entry.id))
+            ? GETTING_THERE
+            : t === "website"
+              ? null
+              : t;
+    return { ...entry, topic };
+  });
+  const rank = (entry: { id: string; topic: string | null }) =>
+    entry.topic === GETTING_THERE && GENERAL_GETTING_THERE.has(entry.id) ? 0 : 1;
+  regrouped.sort((a, b) => rank(a) - rank(b)); // stable: the order within each topic is otherwise kept
+  const topics = [
+    ...heritages.map((heritage) => ({ id: heritage.slug, label: siteName(heritage) })),
+    ...faq.topics
+      .filter((topic) => topic.id === GETTING_THERE || topic.id === "contact")
+      .map((topic) => ({ id: topic.id, label: topic.label[lang] })),
+  ].filter((topic) => regrouped.some((entry) => entry.topic === topic.id));
 
-  return { topics, entries, suggestions };
+  return { topics, entries: regrouped, suggestions: [] };
 }
 
 /** /heritage/<slug>/#<id> must point at a visible site and an id that exists in both languages. */
