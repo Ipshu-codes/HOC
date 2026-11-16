@@ -119,6 +119,10 @@
 @layer components {
   /* MapLibre positions the marker element with an inline transform, so the pin shape
      (a rotated teardrop) is drawn on a pseudo-element instead of the element itself. */
+  .map-page p {
+    text-align: justify;
+  }
+
   .map-marker {
     @apply relative size-8 cursor-pointer rounded-full bg-transparent;
   }
