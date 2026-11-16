@@ -1,9 +1,7 @@
 "use client";
 
-import MapLegend from "@/components/map/MapLegend";
-import RouteNav from "@/components/map/RouteNav";
-import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
-import { fill, formatNumber } from "@/lib/format";
+import type { MapPlace, PlaceKind } from "@/components/map/types";
+import { fill } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
@@ -18,14 +16,6 @@ interface MapSidebarProps {
   onToggleKind: (kind: PlaceKind) => void;
   onClearFilters: () => void;
   onSelect: (id: string) => void;
-  route: MapRoute | null;
-  routeActive: boolean;
-  routeStep: number;
-  onExitRoute: () => void;
-  onRoutePrevious: () => void;
-  onRouteNext: () => void;
-  onRouteOverview: () => void;
-  onSelectStop: (index: number) => void;
   labels: Dictionary["map"];
   lang: Locale;
   className?: string;
@@ -33,9 +23,9 @@ interface MapSidebarProps {
 
 const CHIP = "min-h-11 rounded-full px-4 py-2 text-sm font-bold ring-1";
 
-/** Search, category filters, the list of places, the walking route and the legend. */
+/** Search, category filters and the list of places. */
 export default function MapSidebar(props: MapSidebarProps) {
-  const { places, results, selectedId, query, kinds, labels, lang, route, routeActive, routeStep } = props;
+  const { places, results, selectedId, query, kinds, labels, lang } = props;
   const t = labels;
   const allKinds = [...new Set(places.map((place) => place.kind))];
   const filtersActive = query.trim() !== "" || kinds.size > 0;
@@ -149,83 +139,6 @@ export default function MapSidebar(props: MapSidebarProps) {
         </ul>
       </section>
 
-      {/* ---- Walking route ---- */}
-      {route && (
-        <section aria-labelledby="map-route-title" className="rounded-xl bg-sand p-3 ring-1 ring-gold/50">
-          <h2 id="map-route-title" className="text-2xl font-bold">
-            {route.name}
-          </h2>
-          {route.intro && <p className="mt-1 text-sm">{route.intro}</p>}
-          <h3 className="mt-3 text-sm font-bold text-brick">{t.route.stops}</h3>
-          <ol className="mt-1 space-y-1">
-            {route.stops.map((id, index) => {
-              const place = places.find((p) => p.id === id);
-              if (!place) return null;
-              const current = routeActive && index === routeStep;
-              const done = routeActive && index < routeStep;
-              const status =
-                index === 0 ? t.route.startPoint : index === route.stops.length - 1 ? t.route.lastStop : null;
-              return (
-                <li key={id}>
-                  <button
-                    type="button"
-                    aria-current={current ? "step" : undefined}
-                    onClick={() => props.onSelectStop(index)}
-                    className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-2 py-1 text-left ${
-                      current ? "bg-crimson text-white" : done ? "bg-white/60 text-ink/70" : "bg-white text-ink hover:bg-cream"
-                    }`}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                        current ? "bg-white text-crimson" : "bg-ink text-white"
-                      }`}
-                    >
-                      {done ? "✓" : formatNumber(index + 1, lang)}
-                    </span>
-                    <span>
-                      <span className="block font-bold">{place.name}</span>
-                      {status && <span className="block text-xs opacity-80">{status}</span>}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-
-          {route.legs.some((leg) => !leg.walking) && <p className="mt-3 text-sm">{t.route.note}</p>}
-          {route.walkingSource && <p className="mt-1 text-xs">{fill(t.route.source, { source: route.walkingSource })}</p>}
-
-          {routeActive && (
-            <>
-              <RouteNav
-                route={route}
-                places={places}
-                step={routeStep}
-                labels={labels}
-                lang={lang}
-                onPrevious={props.onRoutePrevious}
-                onNext={props.onRouteNext}
-                onOverview={props.onRouteOverview}
-              />
-              <button
-                type="button"
-                onClick={props.onExitRoute}
-                className="mt-2 min-h-11 w-full rounded-lg px-3 py-2 font-bold text-brick underline underline-offset-4 hover:text-crimson"
-              >
-                {t.route.exit}
-              </button>
-            </>
-          )}
-        </section>
-      )}
-
-      <MapLegend
-        kinds={allKinds}
-        hasRoute={route !== null}
-        hasStraightLeg={route?.legs.some((leg) => !leg.walking) ?? false}
-        labels={labels}
-      />
     </div>
   );
 }

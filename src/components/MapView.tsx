@@ -44,12 +44,6 @@ interface MapViewProps {
   /** Places that pass the current search and filters; the others are hidden. */
   visibleIds: ReadonlySet<string>;
   route: MapRoute | null;
-  /** true while the visitor is walking the route step by step. */
-  routeActive: boolean;
-  /** Index of the current stop in route.stops; -1 = route overview. */
-  routeStep: number;
-  /** Increase to ask the map to zoom out to the whole route. */
-  fitRouteSignal: number;
   /** While the detail panel is open the popup is hidden and the camera leaves room for the panel. */
   detailOpen: boolean;
   onSelect: (id: string) => void;
@@ -188,9 +182,6 @@ export default function MapView({
   focusId,
   visibleIds,
   route,
-  routeActive,
-  routeStep,
-  fitRouteSignal,
   detailOpen,
   onSelect,
   onOpenDetail,
@@ -430,23 +421,23 @@ export default function MapView({
     }
   }, [focusId, visibleIds, route, places, labels, lang]);
 
-  // Draw the route line; the leg to walk next is highlighted, finished legs are greyed.
+  // Draw route legs in their default style.
   useEffect(() => {
     const map = mapRef.current;
     const source = map?.getSource(ROUTE_SOURCE) as maplibregl.GeoJSONSource | undefined;
     if (!map || !source || !styleReady) return;
     source.setData({
       type: "FeatureCollection",
-      features: (route?.legs ?? []).map((leg, i) => ({
+      features: (route?.legs ?? []).map((leg) => ({
         type: "Feature" as const,
         properties: {
           walking: leg.walking,
-          state: routeActive ? (i === routeStep ? "active" : i < routeStep ? "done" : "todo") : "todo",
+          state: "todo",
         },
         geometry: { type: "LineString" as const, coordinates: leg.path.map(toLngLat) },
       })),
     });
-  }, [route, routeActive, routeStep, styleReady]);
+  }, [route, styleReady]);
 
   // Fly to the focused place. With the detail panel closed, open its popup; with it open, no popup.
   useEffect(() => {
@@ -476,22 +467,6 @@ export default function MapView({
     else map.flyTo({ ...target, duration: changed ? 2500 : 900, essential: true });
     if (!detailOpen) popupsRef.current.get(place.id)?.addTo(map);
   }, [focusId, places, ready, detailOpen]);
-
-  // "Route overview": zoom out so every stop is in view.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready || !route || fitRouteSignal === 0) return;
-    const bounds = new maplibregl.LngLatBounds();
-    for (const id of route.stops) {
-      const place = places.find((p) => p.id === id);
-      if (place) bounds.extend(toLngLat(place.coordinates));
-    }
-    for (const popup of popupsRef.current.values()) popup.remove();
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    map.fitBounds(bounds, { padding: 90, maxZoom: 17, pitch: 45, bearing: 0, duration: reduceMotion ? 0 : 1800, essential: true });
-    // Only when the overview is requested (or the map becomes ready after a request).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fitRouteSignal, ready]);
 
   if (!supported) {
     return <p className="flex h-full items-center justify-center bg-sand p-6 text-center text-lg">{labels.noWebGL}</p>;
