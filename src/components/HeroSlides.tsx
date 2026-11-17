@@ -8,7 +8,7 @@ export interface HeroSlide {
   width: number;
   height: number;
   alt: string;
-  /** CSS object-position, e.g. "50% 30%": which part of a tall photo stays in the wide banner. */
+  /** Focal point as a CSS object-position, e.g. "center 30%": which part of a tall photo stays in the wide banner. */
   position?: string;
 }
 
@@ -40,6 +40,44 @@ function usePrefersReducedMotion(): boolean {
 }
 
 /**
+ * The Network Information API (Chrome, Edge, Android browsers; not Safari or Firefox). Not in
+ * TypeScript's DOM types, so the few fields we read are declared here.
+ */
+interface NetworkInformation extends EventTarget {
+  saveData?: boolean;
+  effectiveType?: string;
+}
+
+function connectionOf(): NetworkInformation | undefined {
+  return (navigator as Navigator & { connection?: NetworkInformation })
+    .connection;
+}
+
+/**
+ * True when the visitor has Data Saver on or the connection is 2G / slow 2G: then the hero shows
+ * the first photo only (no slideshow, no preloading). Browsers without the API count as false.
+ */
+function useSaveData(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const connection = connectionOf();
+      connection?.addEventListener("change", onChange);
+      return () => {
+        connection?.removeEventListener("change", onChange);
+      };
+    },
+    () => {
+      const connection = connectionOf();
+      return (
+        Boolean(connection?.saveData) ||
+        ["slow-2g", "2g"].includes(connection?.effectiveType ?? "")
+      );
+    },
+    () => false,
+  );
+}
+
+/**
  * The hero's photos, cross-fading one into the next. Only the first photo loads with the page
  * (it is the largest image, so it loads eagerly with high priority). Each following photo is
  * downloaded in the background while the current one shows, and appears only once it has
@@ -48,6 +86,9 @@ function usePrefersReducedMotion(): boolean {
  * Moving content needs a way to stop it (WCAG 2.2.2), so there is a pause/play button. For
  * visitors who prefer reduced motion the slideshow starts paused and switches without a fade.
  * Hidden photos are aria-hidden: a screen reader only meets the one on screen.
+ *
+ * Data use: only the NEXT photo is ever downloaded ahead, never several at once, and nothing ahead
+ * while paused. With Data Saver on or on 2G there is no slideshow at all: the first photo only.
  */
 export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
   const [active, setActive] = useState(0);
@@ -58,11 +99,13 @@ export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
   // Slides rendered so far (their <img> exists, so the browser downloads them) and slides fully loaded.
   const [mounted, setMounted] = useState<number[]>([0]);
   const [loaded, setLoaded] = useState<number[]>([]);
-  const count = slides.length;
+  const saveData = useSaveData();
+  // With Data Saver / 2G the hero is a single photo.
+  const count = saveData ? 1 : slides.length;
 
-  // Download the next photo in the background while this one shows.
+  // Download the next photo (only that one) in the background while this one shows; nothing while paused.
   useEffect(() => {
-    if (count < 2) return;
+    if (paused || count < 2) return;
     const next = (active + 1) % count;
     const id = window.setTimeout(() => {
       setMounted((list) => (list.includes(next) ? list : [...list, next]));
@@ -70,7 +113,7 @@ export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
     return () => {
       window.clearTimeout(id);
     };
-  }, [active, count]);
+  }, [active, paused, count]);
 
   // Move on every few seconds, but only to a photo that has finished loading, and not in a background tab.
   useEffect(() => {

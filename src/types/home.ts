@@ -9,8 +9,8 @@ export const homeSchema = z.object({
   /**
    * The hero slideshow, in order; photos of sites not on this build are skipped. The first visible
    * one loads with the page and is the default share image. A photo is a path, or { src, position }
-   * where position is a CSS object-position (e.g. "50% 30%") choosing which part of a tall photo
-   * stays in the wide banner.
+   * where position is its focal point as a CSS object-position (e.g. "center 30%"): which part of a
+   * tall photo stays in view in the wide banner. Without it the photo is centred.
    */
   heroSlides: z
     .array(
