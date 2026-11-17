@@ -73,8 +73,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             Nani's namaste sits beside the text there, raised to the heading (md:-mt-16), and below the text on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
           <div className="space-y-4 text-lg">
-            <p>{fill(byCount(dict.home.overviewIntro, count))}</p>
-            <p>{byCount(dict.home.overviewNext, count)}</p>
+            <p className="justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
+            <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
           </div>
           {overviewImage && (
             // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
@@ -99,7 +99,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         {/* Text from the ward team; {sites} keeps draft sites out of production builds. The ward
             illustration fills the space beside it from 768 px, and sits under it on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
-          <p className="text-lg">{fill(dict.home.aboutIntro)}</p>
+          <p className="justified text-lg">{fill(dict.home.aboutIntro)}</p>
           {illustration && (
             // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
             <img

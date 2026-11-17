@@ -301,3 +301,31 @@
     animation: none;
   }
 }
+
+/*
+ * Justified body text: running paragraphs only (heritage page text and its list descriptions, the
+ * Overview and About text, the map's place panel). Headings, lists, captions, buttons, nav, footer and
+ * the chatbot stay left-aligned. The last line of each paragraph stays left-aligned (text-align-last).
+ * English breaks long words with hyphens (<html lang="en">) so lines have no big gaps; browsers have
+ * no Nepali hyphenation, so Nepali text is justified without it.
+ *
+ * ONE SETTING — which version is live:
+ *   Version A, justified at all widths:  @media all {
+ *   Version B, justified from 768 px:    @media (width >= 48rem) {
+ */
+@media (width >= 48rem) {
+  .justified,
+  .heritage-prose > p,
+  .heritage-prose .item-desc,
+  .map-detail-prose > p {
+    text-align: justify;
+    text-justify: inter-word;
+    text-align-last: start;
+  }
+  :lang(en) .justified,
+  :lang(en) .heritage-prose > p,
+  :lang(en) .heritage-prose .item-desc,
+  :lang(en) .map-detail-prose > p {
+    hyphens: auto;
+  }
+}
