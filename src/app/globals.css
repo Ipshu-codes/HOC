@@ -112,6 +112,32 @@
     & thead th {
       @apply bg-sand font-bold text-brick;
     }
+    /* List items with a photo (content/section-photos.json, src/lib/rehype-section-photos.ts):
+       photo on top on phones; from 768 px photo and text side by side, alternating sides. */
+    /* The list number would line up with the bottom of the photo, so it moves to the start of the
+       item's text instead (the browser's own list counter, so numbering stays the same). */
+    & li.has-photo {
+      @apply my-6 list-none;
+    }
+    & li.has-photo .item-text::before {
+      @apply mr-1 text-crimson;
+      content: counter(list-item) ".";
+    }
+    & .item-row {
+      @apply flex flex-col gap-3 md:flex-row md:items-center md:gap-6;
+    }
+    & li.photo-right .item-row {
+      @apply md:flex-row-reverse;
+    }
+    & .item-photo {
+      @apply block shrink-0 md:w-2/5;
+    }
+    & .item-photo img {
+      @apply aspect-[4/3] w-full rounded-xl object-cover shadow-sm ring-1 ring-gold/40 transition hover:opacity-90;
+    }
+    & .item-text {
+      @apply min-w-0 flex-1;
+    }
   }
 }
 

@@ -21,7 +21,6 @@ export interface PlaceDetails {
   facts: { label: string; value: string }[];
   sections: PlaceSection[];
   photos: PlacePhoto[];
-  sources: { key: string; label: string; url?: string }[];
   galleryHref: string;
   credit: string | null;
 }

@@ -44,7 +44,6 @@ function buildDetails(heritage: Heritage, lang: Locale, dict: Dictionary): Place
     facts,
     sections: splitSections(heritage),
     photos,
-    sources: heritage.sources,
     galleryHref: `/${lang}/gallery/?site=${heritage.slug}`,
     credit: photoCreditText(getCredits(), dict, lang),
   };

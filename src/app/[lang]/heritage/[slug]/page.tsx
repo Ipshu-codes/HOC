@@ -73,7 +73,6 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
   const toc = [
     ...heritage.toc,
     { id: "photos", text: t.photos, depth: 2 as const },
-    { id: "sources", text: t.sources, depth: 2 as const },
   ];
 
   return (
@@ -145,13 +144,8 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
               </Link>
             </div>
           </section>
-
-          <section id="sources" aria-labelledby="sources-title" className="mt-14">
-            <h2 id="sources-title" className="text-3xl font-bold">
-              {t.sources}
-            </h2>
-            <p className="mt-3">{t.sourcesIntro}</p>
-          </section>
+          {/* No Sources section (removed 17 Nov 2026). Sources stay cited in the content's
+              <!-- source: --> comments, which the build still checks. */}
         </div>
       </div>
 

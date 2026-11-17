@@ -37,6 +37,17 @@ export const creditsSchema = z.object({
 export type Credits = z.infer<typeof creditsSchema>;
 
 /**
+ * content/section-photos.json — photos shown beside the items of a numbered list on a heritage page
+ * (site slug → section id → list item number → gallery photo), e.g. the "यहाँ भएका सम्पदाहरू" list.
+ * Each photo must be in that site's gallery; its alt text comes from the gallery in each language.
+ */
+export const sectionPhotosSchema = z.record(
+  z.string().regex(/^[a-z0-9-]+$/),
+  z.record(z.string().regex(/^[a-z0-9-]+$/), z.record(z.string().regex(/^[1-9]\d*$/), z.string().startsWith("/images/"))),
+);
+export type SectionPhotosConfig = z.infer<typeof sectionPhotosSchema>;
+
+/**
  * content/photo-consent.json — photos that show identifiable people (see
  * docs/photos-with-people.md). "pending" and "approved" photos are shown;
  * "removed" hides the photo everywhere with this one change.

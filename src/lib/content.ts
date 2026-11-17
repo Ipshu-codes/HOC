@@ -23,24 +23,31 @@ import { homeSchema, type HomeConfig } from "@/types/home";
 import {
   creditsSchema,
   photoConsentSchema,
+  sectionPhotosSchema,
   sourcesSchema,
   type Credits,
   type PhotoConsent,
+  type SectionPhotosConfig,
   type SourceRegistry,
 } from "@/types/site";
 import { routesFileSchema, type RouteDefinition } from "@/types/route";
 import { wardSchema, type Ward } from "@/types/ward";
+import { plainImage } from "@/lib/images";
+import rehypeSectionPhotos, { type SectionPhotos } from "@/lib/rehype-section-photos";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
 // Content files live outside src/ (see PLAN.md §5) and are read at build time only.
 const HERITAGE_DIR = path.join(process.cwd(), "content", "heritage");
 
-const markdownToHtml = unified()
-  .use(remarkParse)
-  .use(remarkGfm) // tables in the Nanak Math page
-  .use(remarkHeadingIds) // "## इतिहास {#history}" → <h2 id="history">
-  .use(remarkRehype) // HTML comments in markdown (source notes) are dropped here
-  .use(rehypeStringify);
+/** Markdown → HTML for one page; `photos` places photos beside list items (content/section-photos.json). */
+const markdownToHtml = (photos: SectionPhotos) =>
+  unified()
+    .use(remarkParse)
+    .use(remarkGfm) // tables in the Nanak Math page
+    .use(remarkHeadingIds) // "## इतिहास {#history}" → <h2 id="history">
+    .use(remarkRehype) // HTML comments in markdown (source notes) are dropped here
+    .use(rehypeSectionPhotos, { photos })
+    .use(rehypeStringify);
 
 /** HTML → plain text: drop tags, decode the entities the markdown renderer emits (e.g. "&#x26;" for "&"). */
 function htmlToText(html: string): string {
@@ -84,7 +91,8 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
     throw new Error(`${file}: the cover photo ${parsed.data.cover} is marked "removed" — choose another cover`);
   }
 
-  const html = String(markdownToHtml.processSync(fillPeople(content, lang, file)));
+  const photos = sectionPhotosFor(slug, lang, gallery, parsed.data.gallery);
+  const html = String(markdownToHtml(photos).processSync(fillPeople(content, lang, file)));
   return {
     ...parsed.data,
     gallery,
@@ -93,6 +101,34 @@ export function getHeritage(slug: HeritageSlug, lang: Locale): Heritage {
     toc: extractToc(html),
     sources: extractSources(content, lang, file),
   };
+}
+
+/**
+ * The photos from content/section-photos.json for one page, with their image sizes and the alt text of
+ * this language's gallery. A photo marked "removed" (photo-consent.json) is left out; one that is not in
+ * the site's gallery at all fails the build.
+ */
+function sectionPhotosFor(
+  slug: HeritageSlug,
+  lang: Locale,
+  gallery: { src: string; alt: string }[],
+  fullGallery: { src: string }[],
+): SectionPhotos {
+  const photos: SectionPhotos = {};
+  for (const [section, items] of Object.entries(getSectionPhotos()[slug] ?? {})) {
+    photos[section] = {};
+    for (const [number, src] of Object.entries(items)) {
+      const entry = gallery.find((image) => image.src === src);
+      if (!entry) {
+        if (fullGallery.some((image) => image.src === src)) continue; // removed by photo consent
+        throw new Error(`content/section-photos.json: ${src} is not in the ${slug} gallery (${lang})`);
+      }
+      const image = plainImage(src);
+      if (!image) throw new Error(`content/section-photos.json: ${src} has not been built (npm run optimize-images)`);
+      photos[section][Number(number)] = { ...image, alt: entry.alt, href: `/${lang}/gallery/?site=${slug}` };
+    }
+  }
+  return photos;
 }
 
 /**
@@ -179,6 +215,10 @@ export function getSourceRegistry(): SourceRegistry {
 
 export function getCredits(): Credits {
   return readJson("credits.json", creditsSchema);
+}
+
+export function getSectionPhotos(): SectionPhotosConfig {
+  return readJson("section-photos.json", sectionPhotosSchema);
 }
 
 export function getPhotoConsent(): PhotoConsent {
