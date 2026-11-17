@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 export interface HeroSlide {
   src: string;
@@ -14,13 +14,15 @@ export interface HeroSlide {
 
 interface HeroSlidesProps {
   slides: HeroSlide[];
+  /** Time each photo stays (content/home.json → heroIntervalMs). */
+  intervalMs: number;
   labels: { pause: string; play: string };
 }
 
-/** Time each photo stays before the next fades in. */
-const INTERVAL_MS = 6000;
-/** Wait after a photo appears before downloading the next, so it never competes with the page's first load. */
-const PRELOAD_DELAY_MS = 1500;
+/** The first look-ahead download waits this long, so it never competes with the page's own first load. */
+const FIRST_PRELOAD_DELAY_MS = 1500;
+/** Later look-ahead downloads start once the fade (0.6 s, `duration-600` below) has finished. */
+const PRELOAD_DELAY_MS = 700;
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
@@ -78,10 +80,13 @@ function useSaveData(): boolean {
 }
 
 /**
- * The hero's photos, cross-fading one into the next. Only the first photo loads with the page
- * (it is the largest image, so it loads eagerly with high priority). Each following photo is
- * downloaded in the background while the current one shows, and appears only once it has
- * loaded, so a slow connection just shows each photo longer.
+ * The hero's photos, looping forever: after the last comes the first again. Only the first photo
+ * loads with the page (eagerly, high priority). Each following photo, including the first again
+ * after the last, is downloaded in the background while the current one shows, and appears only
+ * once it has loaded, so a slow connection just shows each photo longer.
+ *
+ * No blank frame: the new photo fades in ON TOP of the previous one, which stays fully visible
+ * underneath until the fade is over (z-order: shown photo, then previous, then the rest).
  *
  * Moving content needs a way to stop it (WCAG 2.2.2), so there is a pause/play button. For
  * visitors who prefer reduced motion the slideshow starts paused and switches without a fade.
@@ -90,8 +95,13 @@ function useSaveData(): boolean {
  * Data use: only the NEXT photo is ever downloaded ahead, never several at once, and nothing ahead
  * while paused. With Data Saver on or on 2G there is no slideshow at all: the first photo only.
  */
-export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
+export default function HeroSlides({
+  slides,
+  intervalMs,
+  labels,
+}: HeroSlidesProps) {
   const [active, setActive] = useState(0);
+  const [previous, setPrevious] = useState<number | null>(null);
   // null until the visitor presses pause/play; until then reduced-motion visitors start paused.
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
   const reducedMotion = usePrefersReducedMotion();
@@ -103,36 +113,63 @@ export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
   // With Data Saver / 2G the hero is a single photo.
   const count = saveData ? 1 : slides.length;
 
-  // Download the next photo (only that one) in the background while this one shows; nothing while paused.
+  // Download the next photo (only that one; after the last, the first) while this one shows. Nothing while paused.
   useEffect(() => {
     if (paused || count < 2) return;
     const next = (active + 1) % count;
-    const id = window.setTimeout(() => {
-      setMounted((list) => (list.includes(next) ? list : [...list, next]));
-    }, PRELOAD_DELAY_MS);
+    const id = window.setTimeout(
+      () => {
+        setMounted((list) => (list.includes(next) ? list : [...list, next]));
+      },
+      previous === null ? FIRST_PRELOAD_DELAY_MS : PRELOAD_DELAY_MS,
+    );
     return () => {
       window.clearTimeout(id);
     };
-  }, [active, paused, count]);
+  }, [active, previous, paused, count]);
 
-  // Move on every few seconds, but only to a photo that has finished loading, and not in a background tab.
+  // When the photo on screen appeared (or the slideshow was resumed): the interval counts from here,
+  // so the next photo's download finishing in between does not restart the clock.
+  const shownAt = useRef(0);
+  // Bumped to try again when a switch falls due while the tab is in the background.
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    shownAt.current = performance.now();
+  }, [active, paused]);
+
+  // Move on once the interval has passed since this photo appeared, but only to a photo that has
+  // finished loading (if it has not, this runs again when it loads), and not in a background tab.
   useEffect(() => {
     if (paused || count < 2) return;
-    const id = window.setInterval(() => {
-      if (document.hidden) return;
-      const next = (active + 1) % count;
-      if (loaded.includes(next)) setActive(next);
-    }, INTERVAL_MS);
+    const next = (active + 1) % count;
+    if (!loaded.includes(next)) return;
+    const wait = Math.max(
+      0,
+      intervalMs - (performance.now() - shownAt.current),
+    );
+    const id = window.setTimeout(() => {
+      if (document.hidden) {
+        shownAt.current = performance.now();
+        setRetry((n) => n + 1);
+        return;
+      }
+      setPrevious(active);
+      setActive(next);
+    }, wait);
     return () => {
-      window.clearInterval(id);
+      window.clearTimeout(id);
     };
-  }, [active, paused, loaded, count]);
+  }, [active, paused, loaded, count, intervalMs, retry]);
 
   return (
     <>
       {mounted.map((index) => {
         const slide = slides[index];
         const shown = index === active;
+        const underneath = index === previous;
+        const markLoaded = () => {
+          setLoaded((list) => (list.includes(index) ? list : [...list, index]));
+        };
         return (
           // eslint-disable-next-line @next/next/no-img-element -- static export: no image server (see ResponsiveImage)
           <img
@@ -147,15 +184,19 @@ export default function HeroSlides({ slides, labels }: HeroSlidesProps) {
             loading="eager"
             fetchPriority={index === 0 ? "high" : "low"}
             decoding="async"
-            onLoad={() => {
-              setLoaded((list) =>
-                list.includes(index) ? list : [...list, index],
-              );
+            onLoad={markLoaded}
+            // The first photo is in the page HTML and has often finished loading before React starts,
+            // so its load event is never seen: check it when the element is attached. Without this the
+            // loop would stop on the last slide, waiting for slide 1 to "load".
+            ref={(img) => {
+              if (img?.complete && img.naturalWidth > 0) markLoaded();
             }}
-            style={
-              slide.position ? { objectPosition: slide.position } : undefined
-            }
-            className={`absolute inset-0 -z-20 size-full object-cover transition-opacity duration-1000 motion-reduce:transition-none ${shown ? "opacity-100" : "opacity-0"}`}
+            style={{
+              objectPosition: slide.position,
+              // Below the gradient (-z-10): the shown photo on top, the one it replaces just under it.
+              zIndex: shown ? -20 : underneath ? -21 : -22,
+            }}
+            className={`absolute inset-0 size-full object-cover ${shown ? "opacity-100 transition-opacity duration-600 motion-reduce:transition-none" : underneath ? "opacity-100" : "opacity-0"}`}
           />
         );
       })}

@@ -1,4 +1,5 @@
 {
+  "heroIntervalMs": 3000,
   "heroSlides": [
     {
       "src": "/images/nanak-math/courtyard-view.webp",
@@ -23,6 +24,10 @@
     {
       "src": "/images/mhepi-ajima/temple-front.webp",
       "position": "center 30%"
+    },
+    {
+      "src": "/images/mhepi-ajima/inner-shrine.webp",
+      "position": "center 70%"
     },
     {
       "src": "/images/nanak-math/nandi-and-shivalinga.webp",

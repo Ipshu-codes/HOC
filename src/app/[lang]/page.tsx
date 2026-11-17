@@ -115,6 +115,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     <>
       <Hero
         slides={heroSlides}
+        intervalMs={home.heroIntervalMs}
         slideLabels={{
           pause: dict.home.slidesPause,
           play: dict.home.slidesPlay,
