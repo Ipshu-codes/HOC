@@ -124,7 +124,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
 - `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
-- `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) and `overviewImage.alt.ne` (Nani's namaste beside Overview): alt text written by Claude, 17 Nov 2026.
+- `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) , `overviewImage.alt.ne` (Nani's namaste beside Overview) and `wardMap.alt.ne` (the ward map under Overview): alt text written by Claude, 17 Nov 2026.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
   - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
