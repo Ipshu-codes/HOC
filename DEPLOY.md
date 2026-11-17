@@ -31,26 +31,25 @@ Cloudflare builds the site from GitHub: every push to `main` updates the live si
 
 13. `SITE_URL` = `https://ward16-heritage.pages.dev`. Use your project name, with no trailing slash. Link previews (Open Graph images), the sitemap and robots.txt use it.
 14. `NODE_VERSION` = `22`. The repository's `.node-version` file already asks for Node 22; setting it here too makes it explicit.
-15. Optional: `NEXT_PUBLIC_WEB3FORMS_KEY` = the key from https://web3forms.com. Without it, the contact page shows the ward's email address instead of the form.
 
 **D. First deploy**
 
-16. Click **Save and Deploy**. The first build takes a few minutes. The log should end with:
+15. Click **Save and Deploy**. The first build takes a few minutes. The log should end with:
     `✔ verify-output: no placeholders; 0 draft site(s) fully excluded; … images free of metadata.`
-17. Click **Continue to project**. The site is live at `https://ward16-heritage.pages.dev`.
+16. Click **Continue to project**. The site is live at `https://ward16-heritage.pages.dev`.
 
 **E. Preview deployments for every branch and pull request**
 
-18. In the project, open **Settings** → **Build** → **Branch control** (older screens: *Settings → Builds & deployments → Configure Production deployments / Preview deployments*). Set:
+17. In the project, open **Settings** → **Build** → **Branch control** (older screens: *Settings → Builds & deployments → Configure Production deployments / Preview deployments*). Set:
     - **Production branch:** `main`, with **Automatic deployments** enabled;
     - **Preview branch:** **All non-Production branches**.
 
     Click **Save**.
-19. Open **Settings** → **Variables and Secrets**. Variables are set per environment (**Production** and **Preview**). Make sure `SITE_URL` and `NODE_VERSION` (and the Web3Forms key, if used) exist for **Preview** too, with the same values as Production, or preview builds will use the defaults.
-20. Each push to a branch other than `main` now builds a preview at a link of its own:
+18. Open **Settings** → **Variables and Secrets**. Variables are set per environment (**Production** and **Preview**). Make sure `SITE_URL` and `NODE_VERSION` exist for **Preview** too, with the same values as Production, or preview builds will use the defaults.
+19. Each push to a branch other than `main` now builds a preview at a link of its own:
     - `https://<branch>.ward16-heritage.pages.dev`, where `/` in the branch name becomes `-`. For example, `feat/swap-floating-buttons` → `https://feat-swap-floating-buttons.ward16-heritage.pages.dev`.
     - A unique link for every commit, listed under **Deployments**.
-21. **Pull requests:** the Cloudflare app reports each preview build on the pull request in GitHub (a check, usually with a comment), with a **Preview URL** link. Open it to review the change before merging. Branches pushed before Cloudflare was connected get a preview only after their next push, which can be an empty commit (`git commit --allow-empty -m "Trigger preview" && git push`).
+20. **Pull requests:** the Cloudflare app reports each preview build on the pull request in GitHub (a check, usually with a comment), with a **Preview URL** link. Open it to review the change before merging. Branches pushed before Cloudflare was connected get a preview only after their next push, which can be an empty commit (`git commit --allow-empty -m "Trigger preview" && git push`).
 
 **F. Later**
 
@@ -92,7 +91,6 @@ Phones that open the 3D map page directly first see a still picture (`public/ima
 
 - **Build command:** `npm run build`. This is the strict build: it refuses to run while any content is a draft or contains `[PLACEHOLDER`/`[TODO`. `npm run build:preview` builds without the draft sites and is only for previews.
 - **Output directory:** `out`
-- **Environment variable `NEXT_PUBLIC_WEB3FORMS_KEY`:** the access key for the contact form, from https://web3forms.com (free, no card). The address that receives the messages is set in the Web3Forms dashboard for that key, ideally ward16@kathmandu.gov.np. Web3Forms keys are public by design, since they only allow sending to the configured address. Without the key, the contact page shows the email address instead of the form.
 - **Files Cloudflare reads from `out/`:** `_redirects` (`/` → `/en/`) and `_headers` (long caching for `_next/static`, a week for `/images`, basic security headers).
 - **Environment variable `SITE_URL`:** the site's public address, e.g. `https://<project>.pages.dev`. Open Graph (link preview) images use it as their base URL. Without it they point at `http://localhost:3000`.
 

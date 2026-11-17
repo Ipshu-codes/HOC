@@ -60,8 +60,8 @@ two heritage sites:
 | Gallery lightbox | **yet-another-react-lightbox** (free, MIT) |
 | Images | Pre-optimized to WebP with a **sharp** script (`scripts/optimize-images.ts`); `next/image` with `unoptimized: true` (required for static export) |
 | Fonts | `next/font/google`: *Mukta* (Nepali + English body), *Playfair Display* (English headings) |
-| Contact form | **Web3Forms** (free) — key in `.env.local`, with a `mailto:` fallback |
-| Database (optional, Phase 10 — skipped) | ~~Supabase free tier (PostgreSQL)~~ — not used: Web3Forms handles the form, and the tap-only chatbot has no unanswered questions |
+| Contact | A `mailto:` link to the ward office (the Web3Forms form was removed on 17 Nov 2026) |
+| Database (optional, Phase 10 — skipped) | ~~Supabase free tier (PostgreSQL)~~ — not used: contact is by email, and the tap-only chatbot has no unanswered questions |
 | Content editing (optional) | **Decap CMS** (free, git-based) |
 | Hosting | **Cloudflare Pages** (free) — deploy the static `out/` folder. Fallback: GitHub Pages |
 | Domain | Free `*.pages.dev` subdomain; later a free `.com.np` / `.org.np` (Mercantile) or `.gov.np` via the municipality |
@@ -244,14 +244,14 @@ Nav links scroll smoothly to these sections on the home page.
 
 ### Phase 9 — Contact form, polish
 1. Make sure every UI string comes from `src/i18n/`; mark any machine-generated Nepali in `MISSING_INFO.md` for native-speaker review.
-2. Contact page: Web3Forms form (name, email, message), honeypot spam field, success message; key from `NEXT_PUBLIC_WEB3FORMS_KEY`; `mailto:` fallback.
+2. Contact page: Web3Forms form (name, email, message), honeypot spam field, success message; key from `NEXT_PUBLIC_WEB3FORMS_KEY`; `mailto:` fallback. **Replaced 17 Nov 2026:** the form and Web3Forms were removed; the page shows a welcoming message and the ward office's email as a `mailto:` link.
 3. SEO: metadata on every page, Open Graph images, `app/sitemap.ts`, `app/robots.ts`.
 4. Accessibility: alt text, focus rings, keyboard nav for chatbot/lightbox/map panel, `lang` attributes.
 5. Performance: Lighthouse ≥ 90 on all four scores; lazy-load map and chatbot.
 6. `not-found.tsx` in the red theme.
 
 ### Phase 10 — Optional: PostgreSQL with Supabase (free tier) — ⏭ SKIPPED
-**Skipped (Phase 9 review, 13 Nov 2026).** Not needed: Web3Forms already delivers contact messages by email, and the tap-only chatbot has no free-typed questions, so there are no unanswered questions to log. The plan below is kept for reference only.
+**Skipped (Phase 9 review, 13 Nov 2026).** Not needed: contact messages go by email, and the tap-only chatbot has no free-typed questions, so there are no unanswered questions to log. The plan below is kept for reference only.
 
 Only do this phase if I ask for it.
 1. Create tables:

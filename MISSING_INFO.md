@@ -126,7 +126,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Ward chairperson**: Rojina Shrestha (in `ward.json`; not yet shown on the site)
   - [ ] Check the Nepali spelling रोजिना श्रेष्ठ (written by Claude)
 - [ ] **Official portal URL**: the ward team named "Kathmandu Metropolitan City Ward No. 16" as the official portal but gave no web address
-- [ ] **Web3Forms recipient email** (Phase 9)
+- [x] **Web3Forms recipient email**: no longer needed. The contact form and Web3Forms were removed on 17 Nov 2026; the contact page links to ward16@kathmandu.gov.np.
 
 ## 5. Nepali text needing native-speaker review
 
