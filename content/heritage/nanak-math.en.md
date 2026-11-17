@@ -76,6 +76,10 @@ gallery:
     alt: "A Shivalinga in a small stone niche, surrounded by black stones and red hibiscus flowers"
   - src: "/images/nanak-math/bhandara.webp"
     alt: "Sadhus seated in rows for a shared meal (bhandara)"
+  - src: "/images/nanak-math/yajnashala-construction.webp"
+    alt: "The yajnashala under construction: a brick building with a tiled roof"
+  - src: "/images/nanak-math/satsang-hall-construction.webp"
+    alt: "Steel posts and building materials where the hall for religious discourses and satsang is under construction"
 ---
 
 <!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->
@@ -180,7 +184,7 @@ Puja and readings for the Vishnu Panchayatan deities and the sacred texts, and p
 
 ## The Heritage Here {#architecture}
 
-<!-- source: nanak-account, ward-team | DOCX heritage list (items 1–16) + "Additional info"; items 14 "in need of repair" and 15 "under construction" from the ward team, 17 Nov 2026 -->
+<!-- source: nanak-account, ward-team | DOCX heritage list (items 1–16) + "Additional info"; items 14 "in need of repair", 15 and 16 "under construction" from the ward team, 17 Nov 2026 -->
 The math lists these archaeological, historical and ancient structures and heritage within its grounds:
 
 1. The math, run by the Nepali guru–disciple mahant tradition
@@ -202,7 +206,7 @@ The math lists these archaeological, historical and ancient structures and herit
 13. Sant niwas (residence for saints)
 14. The Brahma Kunda — in need of repair
 15. The yajnashala — under construction
-16. A hall for religious discourses and satsang
+16. A hall for religious discourses and satsang — under construction
 
 <!-- source: nanak-account | DOCX inventory ("जिन्सी सामग्रीहरू") -->
 <!-- ### Treasures of the math {#treasures} -->
