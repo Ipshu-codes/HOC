@@ -180,7 +180,7 @@ Puja and readings for the Vishnu Panchayatan deities and the sacred texts, and p
 
 ## The Heritage Here {#architecture}
 
-<!-- source: nanak-account, ward-team | DOCX heritage list (items 1–16) + "Additional info"; item 14 "in need of repair" from the ward team, 17 Nov 2026 -->
+<!-- source: nanak-account, ward-team | DOCX heritage list (items 1–16) + "Additional info"; items 14 "in need of repair" and 15 "under construction" from the ward team, 17 Nov 2026 -->
 The math lists these archaeological, historical and ancient structures and heritage within its grounds:
 
 1. The math, run by the Nepali guru–disciple mahant tradition
@@ -201,7 +201,7 @@ The math lists these archaeological, historical and ancient structures and herit
 12. A green forest with various gardens in the Vedic style: Navagraha, Panchapallav and Nakshatra gardens and a Dhanvantari garden
 13. Sant niwas (residence for saints)
 14. The Brahma Kunda — in need of repair
-15. The yajnashala
+15. The yajnashala — under construction
 16. A hall for religious discourses and satsang
 
 <!-- source: nanak-account | DOCX inventory ("जिन्सी सामग्रीहरू") -->
