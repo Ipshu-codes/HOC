@@ -22,15 +22,17 @@ const SIZES = "(min-width: 48rem) 18rem, 100vw";
  * items of the first numbered list in a section, e.g. the "यहाँ भएका सम्पदाहरू" / "The Heritage Here"
  * list of the Nanak Math page. Which photo goes with which item is set in content/section-photos.json.
  *
- *   <li class="has-photo photo-left">
+ *   <li class="has-photo">
  *     <div class="item-row">
- *       <a class="item-photo" href="…"><img …></a>
  *       <div class="item-text">…the item's own text…</div>
+ *       <a class="item-photo" href="…"><img …></a>
  *     </div>
  *   </li>
  *
- * Photos alternate left/right (photo-left, photo-right) from 768 px; on phones they sit on top
- * (styles in globals.css, .heritage-prose). A missing section or item number fails the build.
+ * Text comes first, so phones show the text with the photo underneath (and screen readers read the
+ * item before its photo); from 768 px the text is on the left and the photo on the right, the same
+ * for every item (styles in globals.css, .heritage-prose). A missing section or item number fails
+ * the build.
  */
 export default function rehypeSectionPhotos(options: { photos: SectionPhotos }) {
   return (tree: Root, file: VFile) => {
@@ -41,15 +43,13 @@ export default function rehypeSectionPhotos(options: { photos: SectionPhotos }) 
         return;
       }
       const lis = list.children.filter((child): child is Element => child.type === "element" && child.tagName === "li");
-      let shown = 0;
       for (const [number, photo] of Object.entries(items)) {
         const li = lis[Number(number) - 1];
         if (!li) {
           file.fail(`content/section-photos.json: #${sectionId} has no list item ${number} (it has ${lis.length})`);
           return;
         }
-        shown += 1;
-        wrap(li, photo, shown % 2 === 1 ? "photo-left" : "photo-right");
+        wrap(li, photo);
       }
     }
   };
@@ -66,7 +66,7 @@ function firstListInSection(tree: Root, sectionId: string): Element | null {
   return null;
 }
 
-function wrap(li: Element, photo: SectionPhoto, side: "photo-left" | "photo-right") {
+function wrap(li: Element, photo: SectionPhoto) {
   const image: Element = {
     type: "element",
     tagName: "img",
@@ -89,7 +89,7 @@ function wrap(li: Element, photo: SectionPhoto, side: "photo-left" | "photo-righ
     children: [image],
   };
   const text: Element = { type: "element", tagName: "div", properties: { className: ["item-text"] }, children: li.children };
-  const row: Element = { type: "element", tagName: "div", properties: { className: ["item-row"] }, children: [link, text] };
-  li.properties = { ...li.properties, className: ["has-photo", side] };
+  const row: Element = { type: "element", tagName: "div", properties: { className: ["item-row"] }, children: [text, link] };
+  li.properties = { ...li.properties, className: ["has-photo"] };
   li.children = [row] as ElementContent[];
 }

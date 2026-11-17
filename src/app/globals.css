@@ -113,21 +113,22 @@
       @apply bg-sand font-bold text-brick;
     }
     /* List items with a photo (content/section-photos.json, src/lib/rehype-section-photos.ts):
-       photo on top on phones; from 768 px photo and text side by side, alternating sides. */
+       on phones the text with the photo underneath; from 768 px text on the left, photo on the right. */
     /* The list number would line up with the bottom of the photo, so it moves to the start of the
        item's text instead (the browser's own list counter, so numbering stays the same). */
     & li.has-photo {
       @apply my-6 list-none;
     }
+    /* Hung in the list's number column, so it lines up with the numbers of items without a photo. */
+    & li.has-photo .item-text {
+      @apply relative;
+    }
     & li.has-photo .item-text::before {
-      @apply mr-1 text-crimson;
+      @apply absolute right-full pr-[0.4em] text-crimson;
       content: counter(list-item) ".";
     }
     & .item-row {
       @apply flex flex-col gap-3 md:flex-row md:items-center md:gap-6;
-    }
-    & li.photo-right .item-row {
-      @apply md:flex-row-reverse;
     }
     & .item-photo {
       @apply block shrink-0 md:w-2/5;
