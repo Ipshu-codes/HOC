@@ -31,8 +31,14 @@ export const creditsSchema = z.object({
    * How people who gave information are credited, in one place. Content and content/sources.json
    * write `{person:<id>}`, filled in from here at build time (an unknown id fails the build).
    * To stop naming someone, change their text here, e.g. to "the temple's chief priest".
+   * `credit` is the form used in a site's "Information from …" line (see informationFrom).
    */
-  people: z.record(z.string().regex(/^[a-z0-9-]+$/), localized),
+  people: z.record(z.string().regex(/^[a-z0-9-]+$/), localized.extend({ credit: localized.optional() })),
+  /**
+   * Heritage site slug → people (ids above) whose information the page is based on. The page shows
+   * "Information from <credit>" under its text. An unknown person id fails the build.
+   */
+  informationFrom: z.record(z.string(), z.array(z.string()).min(1)).default({}),
 });
 export type Credits = z.infer<typeof creditsSchema>;
 

@@ -90,6 +90,7 @@
     "entry": "प्रवेश",
     "onThisPage": "यस पृष्ठमा",
     "photos": "तस्बिरहरू",
+    "informationFrom": "जानकारी: {people}",
     "seeAllPhotos": "सबै तस्बिर हेर्नुहोस्",
     "viewOnMap": "थ्रीडी नक्सामा हेर्नुहोस्",
     "otherHeritage": {
@@ -182,7 +183,8 @@
       "viewStory": "पूरा कथा हेर्नुहोस्",
       "openPage": "पूरा पृष्ठ खोल्नुहोस्",
       "photos": "तस्बिरहरू",
-      "seeAllPhotos": "सबै तस्बिर हेर्नुहोस्",
+      "informationFrom": "जानकारी: {people}",
+    "seeAllPhotos": "सबै तस्बिर हेर्नुहोस्",
       "contact": "सम्पर्क",
       "address": "ठेगाना",
       "phone": "फोन",
