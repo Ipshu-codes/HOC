@@ -309,11 +309,12 @@
  * English breaks long words with hyphens (<html lang="en">) so lines have no big gaps; browsers have
  * no Nepali hyphenation, so Nepali text is justified without it.
  *
- * ONE SETTING — which version is live:
+ * ONE SETTING — where justifying starts (chosen: version B, from Tailwind's lg breakpoint, 1024 px, so
+ * phones and tablets stay left-aligned; narrower columns get large word gaps, especially in Nepali):
+ *   Version B, justified from 1024 px:   @media (width >= 64rem) {
  *   Version A, justified at all widths:  @media all {
- *   Version B, justified from 768 px:    @media (width >= 48rem) {
  */
-@media (width >= 48rem) {
+@media (width >= 64rem) {
   .justified,
   .heritage-prose > p,
   .heritage-prose .item-desc,
