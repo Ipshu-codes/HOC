@@ -72,6 +72,10 @@ gallery:
     alt: "Flourishing paddy fields planted within the math grounds"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
     alt: "Sadhus who live within the math grounds"
+  - src: "/images/nanak-math/shivalinga-niche.webp"
+    alt: "A Shivalinga in a small stone niche, surrounded by black stones and red hibiscus flowers"
+  - src: "/images/nanak-math/bhandara.webp"
+    alt: "Sadhus seated in rows for a shared meal (bhandara)"
 ---
 
 <!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->
@@ -176,7 +180,7 @@ Puja and readings for the Vishnu Panchayatan deities and the sacred texts, and p
 
 ## The Heritage Here {#architecture}
 
-<!-- source: nanak-account | DOCX heritage list (items 1–16) + "Additional info" -->
+<!-- source: nanak-account, ward-team | DOCX heritage list (items 1–16) + "Additional info"; item 14 "in need of repair" from the ward team, 17 Nov 2026 -->
 The math lists these archaeological, historical and ancient structures and heritage within its grounds:
 
 1. The math, run by the Nepali guru–disciple mahant tradition
@@ -196,7 +200,7 @@ The math lists these archaeological, historical and ancient structures and herit
 11. The ancient, archaeological Nepali chok temple and the mahant gaddi
 12. A green forest with various gardens in the Vedic style: Navagraha, Panchapallav and Nakshatra gardens and a Dhanvantari garden
 13. Sant niwas (residence for saints)
-14. The Brahma Kunda
+14. The Brahma Kunda — in need of repair
 15. The yajnashala
 16. A hall for religious discourses and satsang
 
