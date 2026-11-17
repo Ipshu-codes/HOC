@@ -54,7 +54,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const preview = galleryPreview(home.galleryPreview, heritages);
   const credits = getCredits();
   const illustration = ward.illustration ? imageSet(ward.illustration.files) : null;
-  const overviewLogo = ward.overviewLogo ? imageSet(ward.overviewLogo.files) : null;
+  const overviewImage = ward.overviewImage ? imageSet(ward.overviewImage.files) : null;
   // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
   const naniCredit = naniCreditText(credits, dict, lang);
 
@@ -70,27 +70,25 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       <HomeSection id="overview" title={dict.home.overviewTitle}>
         {/* Same grid as the About section below: text column + 15rem/18rem image column from 768 px.
-            The emblem sits beside the text there, and above it on phones. */}
+            Nani's namaste sits beside the text there, raised to the heading (md:-mt-16), and below the text on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
           <div className="space-y-4 text-lg">
             <p>{fill(byCount(dict.home.overviewIntro, count))}</p>
             <p>{byCount(dict.home.overviewNext, count)}</p>
           </div>
-          {overviewLogo && (
-            <div className="order-first mx-auto w-full max-w-72 rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 md:order-none md:mx-0">
-              {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-              <img
-                src={overviewLogo.src}
-                srcSet={overviewLogo.srcSet}
-                sizes="12rem"
-                width={overviewLogo.width}
-                height={overviewLogo.height}
-                alt={ward.overviewLogo?.alt[lang] ?? ""}
-                loading="lazy"
-                decoding="async"
-                className="mx-auto w-48 max-w-full rounded-full"
-              />
-            </div>
+          {overviewImage && (
+            // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
+            <img
+              src={overviewImage.src}
+              srcSet={overviewImage.srcSet}
+              sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
+              width={overviewImage.width}
+              height={overviewImage.height}
+              alt={ward.overviewImage?.alt[lang] ?? ""}
+              loading="lazy"
+              decoding="async"
+              className="mx-auto w-full max-w-72 rounded-xl shadow-sm ring-1 ring-gold/40 md:mx-0 md:-mt-16"
+            />
           )}
         </div>
       </HomeSection>

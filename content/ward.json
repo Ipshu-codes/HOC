@@ -42,15 +42,15 @@
       "ne": "वडा नं. १६ को चित्र: ढुङ्गे सिंह र कुँदिएको स्तम्भसहितको प्यागोडा शैलीको मन्दिर, माथि “Kathmandu Metropolitan City” र तल “Ward-16” लेखिएको"
     }
   },
-  "overviewLogo": {
+  "overviewImage": {
     "files": [
-      "/images/logo/ward-logo-128.png",
-      "/images/logo/ward-logo-256.png",
-      "/images/logo/ward-logo-296.png"
+      "/images/nani/nani-namaste-320.webp",
+      "/images/nani/nani-namaste-480.webp",
+      "/images/nani/nani-namaste-640.webp"
     ],
     "alt": {
-      "en": "Emblem of Kathmandu Metropolitan City, to which Ward No. 16 belongs",
-      "ne": "वडा नं. १६ रहेको काठमाडौं महानगरपालिकाको लोगो"
+      "en": "Nani, the website's guide, greeting visitors with a namaste",
+      "ne": "नमस्ते गर्दै आगन्तुकलाई स्वागत गरिरहेकी नानी, यस वेबसाइटकी मार्गदर्शक"
     }
   }
 }

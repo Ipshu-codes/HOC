@@ -235,6 +235,20 @@ async function optimizeWardIllustration(): Promise<void> {
   console.log(`ward illustration: ${widths.join(", ")} px`);
 }
 
+/** Nani greeting with a namaste (raw-data Naninamaste.jpeg), beside the Overview text on the home page. */
+async function optimizeNaniNamaste(): Promise<void> {
+  const { source, widths } = manifest.naniNamaste;
+  const dir = path.join(OUT_DIR, "nani");
+  await fs.mkdir(dir, { recursive: true });
+  for (const width of widths) {
+    await sharp(path.join(RAW_DATA_DIR, source))
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toFile(path.join(dir, `nani-namaste-${width}.webp`));
+  }
+  console.log(`nani namaste: ${widths.join(", ")} px`);
+}
+
 async function main(): Promise<void> {
   try {
     await fs.access(RAW_DATA_DIR);
@@ -245,6 +259,7 @@ async function main(): Promise<void> {
 
   await optimizeLogo();
   await optimizeWardIllustration();
+  await optimizeNaniNamaste();
   await optimizeNani();
   await optimizeNaniFigure();
 

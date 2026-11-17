@@ -11,12 +11,10 @@ interface MapButtonProps {
 }
 
 /**
- * Floating "🗺 3D Map" button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the
- * map page itself). Kept small so it covers little text:
- * - phones: a 40 px red circle (icon ~20 px) inside a 44 × 44 px tap area. The link is pulled 2 px towards
- *   the corner so the circle sits as far from the edges as Nani's face on the right. The label stays as its
- *   accessible name.
- * - from 768 px: a slim "3D Map" pill (icon ~16 px).
+ * Floating "🗺" 3D Map button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the
+ * map page itself). Kept small so it covers almost no text: a 36 px red circle (icon 18 px) at every width,
+ * inside a 44 × 44 px tap area. The tap area is pulled 4 px towards the corner so the circle sits
+ * as far from the edges as Nani's face. The label is its accessible name and the mouse tooltip.
  */
 export default function MapButton({ lang, label }: MapButtonProps) {
   const pathname = usePathname();
@@ -25,14 +23,15 @@ export default function MapButton({ lang, label }: MapButtonProps) {
   return (
     <Link
       href={`/${lang}/map/`}
-      className="group fixed bottom-[calc(1rem-2px)] left-[calc(max(1rem,env(safe-area-inset-left))-2px)] z-30 flex size-[44px] items-center justify-center rounded-full md:bottom-6 md:left-[max(1.5rem,env(safe-area-inset-left))] md:size-auto"
+      title={label}
+      className="group fixed bottom-[calc(1rem-4px)] left-[calc(max(1rem,env(safe-area-inset-left))-4px)] z-30 flex size-[44px] items-center justify-center rounded-full md:bottom-[calc(1.5rem-4px)] md:left-[calc(max(1.5rem,env(safe-area-inset-left))-4px)]"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
-      <span className="flex size-[40px] items-center justify-center gap-1 rounded-full bg-crimson font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick md:size-auto md:px-3 md:py-1.5 md:text-sm">
-        <span aria-hidden="true" className="text-[20px] leading-none md:text-[16px]">
+      <span className="flex size-[36px] items-center justify-center rounded-full bg-crimson text-white shadow-md ring-2 ring-white group-hover:bg-brick">
+        <span aria-hidden="true" className="text-[18px] leading-none">
           🗺
         </span>
-        <span className="sr-only md:not-sr-only">{label}</span>
+        <span className="sr-only">{label}</span>
       </span>
     </Link>
   );

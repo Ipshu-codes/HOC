@@ -8,15 +8,21 @@ interface BrandLinkProps {
   href: string;
   /** Accessible name, e.g. "Ward No. 16, home". */
   label: string;
+  className?: string;
   children: ReactNode;
 }
 
 /**
- * The header brand (logo + "WARD NO. 16 / Kathmandu Metropolitan City" + the other-language line) as one
+ * A "Ward No. 16" brand block (the header and footer logo + name, the small logo in the sticky nav) as one
  * link to the home page in the current language. On the home page itself it scrolls to the top instead:
  * smoothly, or instantly for visitors who prefer reduced motion.
  */
-export default function BrandLink({ href, label, children }: BrandLinkProps) {
+export default function BrandLink({
+  href,
+  label,
+  className = "flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-offset-4 md:gap-5",
+  children,
+}: BrandLinkProps) {
   const pathname = usePathname();
 
   function onClick(event: MouseEvent<HTMLAnchorElement>) {
@@ -33,7 +39,7 @@ export default function BrandLink({ href, label, children }: BrandLinkProps) {
       prefetch={false}
       aria-label={label}
       onClick={onClick}
-      className="flex min-w-0 items-center gap-3 rounded-lg focus-visible:outline-offset-4 md:gap-5"
+      className={className}
     >
       {children}
     </Link>

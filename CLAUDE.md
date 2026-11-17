@@ -2,7 +2,7 @@
 
 # Ward 16 Heritage Website
 - Sites: Mhepi Ajima, Nanak Math — Ward No. 16, Kathmandu Metropolitan City
-- Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'). Hosting: Cloudflare Pages.
+- Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'; devIndicators off so the dev "N" badge doesn't cover the 3D Map button). Hosting: Cloudflare Pages.
 - No server features: no API routes, server actions, middleware or ISR.
 - Everything must be FREE. No paid services, no API keys needing billing.
 - Theme: red. Use only the named Tailwind colors: crimson, brick, vermilion, gold, cream, sand, ink. Vermilion and gold fail AA for body text — decoration / large text only (see src/app/globals.css).
@@ -16,10 +16,11 @@
 - Teamwork rules (branches, PRs, never commit to main, resolving globals.css conflicts by keeping both sides): CONTRIBUTING.md.
 - Cite sources in content with `<!-- source: key1, key2 | reviewer detail -->`; keys and their plain-language names live in content/sources.json (an unknown key fails the build). Since 17 Nov 2026 the site shows no Sources section (heritage pages and map panel); the comments stay for reviewers and the build check.
 - Placeholder dots ("………", "....", a lone "…" as content) fail check-content and verify-output (scripts/dot-placeholders.ts), like [PLACEHOLDER; never use them as filler.
+- Home page: Nani's namaste picture (ward.json → `overviewImage`, from raw-data Naninamaste.jpeg) sits beside the Overview text, raised towards the heading, from 768 px; below the text on phones.
 - Home page: the ward illustration (content/ward.json → `illustration`, built from raw-data wardlogo1.png by optimize-images) sits beside the About Ward No. 16 text from 768 px, below it on phones.
-- The floating 3D Map button stays small: on phones a 40 px circle (icon ~20 px) in a 44 × 44 px tap area, as far from the edges as Nani's face; from 768 px a slim pill (icon ~16 px). The label is its accessible name.
+- The floating 3D Map button stays tiny so it covers no text: a 36 px icon-only circle (icon 18 px) at every width, in a 44 × 44 px tap area, as far from the edges as Nani's face. The label is its accessible name and tooltip.
 - Header: the whole brand (logo + title lines) is one link home (BrandLink.tsx), named a11y.homeLink ("Ward No. 16, home"); on the home page it scrolls to the top (instant under reduced motion).
-- Home: the KMC emblem (ward.json → `overviewLogo`, from wardlogo.png) sits beside the Overview text in the same 15rem/18rem column as the About illustration (above the text on phones).
+- Sticky nav: once the header has scrolled out of view, the small round ward logo (ward.json → `logo`) slides in at the left of the red bar as a home link (BrandLink, same name and scroll-to-top); while hidden it is `inert`. The footer brand (logo + name + city) is the same kind of home link.
 - Photos beside list items on a heritage page (e.g. Nanak Math's "यहाँ भएका सम्पदाहरू" / "The Heritage Here") are set in content/section-photos.json (site → section id → item number → gallery photo, or `{ "photo", "description": false }`) and placed by src/lib/rehype-section-photos.ts: text left, photo right from 768 px, text then photo on phones; the photo's gallery description is shown under the item's title unless switched off; "removed" photos are skipped; an unknown photo or item number fails the build.
 - Detail pages render optional parts only when there is data: map button needs coordinates, "Other heritage" needs another visible site, quick facts skip empty fields, the photo credit needs `photos.team` in content/credits.json.
 - Photos showing identifiable people are listed in content/photo-consent.json (pending/approved/removed) and docs/photos-with-people.md; "removed" hides a photo everywhere. Check every newly added photo for faces.

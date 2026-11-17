@@ -20,8 +20,8 @@ export const wardSchema = z.object({
     src: z.string().startsWith("/images/"),
     alt: localized,
   }),
-  /** Emblem beside the Overview text on the home page (raw-data wardlogo.png), smallest file first. */
-  overviewLogo: z
+  /** Nani greeting with a namaste, beside the Overview text on the home page (raw-data Naninamaste.jpeg), smallest file first. */
+  overviewImage: z
     .object({
       files: z.array(z.string().startsWith("/images/")).min(1),
       alt: localized,

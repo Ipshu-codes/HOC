@@ -49,7 +49,14 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
         </div>
       </header>
 
-      <Nav lang={lang} labels={dict.nav} languageLabels={dict.language} items={navItems} />
+      <Nav
+        lang={lang}
+        labels={dict.nav}
+        languageLabels={dict.language}
+        items={navItems}
+        logoSrc={ward.logo.src}
+        homeLabel={dict.a11y.homeLink}
+      />
     </>
   );
 }

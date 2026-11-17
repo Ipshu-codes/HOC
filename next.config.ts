@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   // The default image optimizer needs a server. Images are pre-optimized by
   // `npm run optimize-images` (scripts/optimize-images.ts) instead.
   images: { unoptimized: true },
+  // No "N" dev badge: in `next dev` it sat bottom-left on top of the floating 3D Map button.
+  devIndicators: false,
   experimental: {
     // app/global-not-found.tsx: a 404 page for URLs outside /en and /ne (the root layout is under [lang]).
     globalNotFound: true,
