@@ -33,7 +33,10 @@ export const creditsSchema = z.object({
    * To stop naming someone, change their text here, e.g. to "the temple's chief priest".
    * `credit` is the form used in a site's "Information from …" line (see informationFrom).
    */
-  people: z.record(z.string().regex(/^[a-z0-9-]+$/), localized.extend({ credit: localized.optional() })),
+  people: z.record(
+    z.string().regex(/^[a-z0-9-]+$/),
+    localized.extend({ credit: localized.optional() }),
+  ),
   /**
    * Heritage site slug → people (ids above) whose information the page is based on. The page shows
    * "Information from <credit>" under its text. An unknown person id fails the build.
@@ -51,18 +54,24 @@ const sectionPhoto = z.union([
   // Just the photo: its gallery description (alt text) is also shown under the item's title.
   z.string().startsWith("/images/"),
   // `description: false` when the photo's description doesn't clearly match the item.
-  z.object({ photo: z.string().startsWith("/images/"), description: z.boolean() }),
+  z.object({
+    photo: z.string().startsWith("/images/"),
+    description: z.boolean(),
+  }),
 ]);
 export const sectionPhotosSchema = z.record(
   z.string().regex(/^[a-z0-9-]+$/),
-  z.record(z.string().regex(/^[a-z0-9-]+$/), z.record(z.string().regex(/^[1-9]\d*$/), sectionPhoto)),
+  z.record(
+    z.string().regex(/^[a-z0-9-]+$/),
+    z.record(z.string().regex(/^[1-9]\d*$/), sectionPhoto),
+  ),
 );
 export type SectionPhotosConfig = z.infer<typeof sectionPhotosSchema>;
 
 /**
- * content/photo-consent.json — photos that show identifiable people (see
- * docs/photos-with-people.md). "pending" and "approved" photos are shown;
- * "removed" hides the photo everywhere with this one change.
+ * content/photo-consent.json — photos that need someone's consent: identifiable people (see
+ * docs/photos-with-people.md), or a deity shown prominently (e.g. in the home slideshow).
+ * "pending" and "approved" photos are shown; "removed" hides the photo everywhere with this one change.
  */
 export const photoConsentSchema = z.object({
   photos: z.record(
@@ -70,6 +79,13 @@ export const photoConsentSchema = z.object({
     z.object({
       status: z.enum(["pending", "approved", "removed"]),
       note: z.string().min(1),
+      /** Who gave or refused consent, e.g. "priest". */
+      givenBy: z.string().min(1).optional(),
+      /** When, as YYYY-MM-DD. */
+      date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
     }),
   ),
 });

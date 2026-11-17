@@ -6,6 +6,8 @@ import { z } from "zod";
  * production build, so list photos from several sites in order of preference.
  */
 export const homeSchema = z.object({
+  /** How long each hero photo stays, in milliseconds (the fade is 0.6 s of it). */
+  heroIntervalMs: z.number().int().min(2000).max(20000),
   /**
    * The hero slideshow, in order; photos of sites not on this build are skipped. The first visible
    * one loads with the page and is the default share image. A photo is a path, or { src, position }

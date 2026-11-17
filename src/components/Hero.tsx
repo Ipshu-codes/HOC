@@ -5,6 +5,8 @@ import HeroSlides, { type HeroSlide } from "@/components/HeroSlides";
 interface HeroProps {
   /** content/home.json → heroSlides, visible sites only; the first one loads with the page. */
   slides: HeroSlide[];
+  /** content/home.json → heroIntervalMs. */
+  intervalMs: number;
   slideLabels: { pause: string; play: string };
   title: string;
   subtitle: string;
@@ -15,6 +17,7 @@ interface HeroProps {
 /** Full-width photos (a slideshow) under a dark-red gradient, with title, subtitle and two buttons. */
 export default function Hero({
   slides,
+  intervalMs,
   slideLabels,
   title,
   subtitle,
@@ -23,7 +26,11 @@ export default function Hero({
 }: HeroProps) {
   return (
     <section className="relative isolate flex min-h-[26rem] items-end overflow-hidden md:min-h-[34rem]">
-      <HeroSlides slides={slides} labels={slideLabels} />
+      <HeroSlides
+        slides={slides}
+        intervalMs={intervalMs}
+        labels={slideLabels}
+      />
       {/* Strong at the bottom where the text sits, so white text keeps AA contrast over any photo. */}
       <div
         aria-hidden="true"
