@@ -236,21 +236,21 @@ async function optimizeWardIllustration(): Promise<void> {
 }
 
 /**
- * The 3D Map button's picture: a square crop of the ward's KMC profile map (raw-data "ward 16.jpg":
- * river, main roads and buildings), shown round at Nani's face size. 1x, 2x and 3x files.
- * → public/images/map/map-button-<size>.webp
+ * The complete KMC ward profile map (raw-data "ward 16.jpg"), shown under the Overview text on the home page.
+ * Line art with small labels: higher quality than photos so the text stays legible.
+ * → public/images/map/ward-map-<width>.webp
  */
-async function optimizeMapButton(): Promise<void> {
-  const { source, crop, sizes } = manifest.mapButton;
+async function optimizeWardMap(): Promise<void> {
+  const { source, widths } = manifest.wardMap;
   const dir = path.join(OUT_DIR, "map");
   await fs.mkdir(dir, { recursive: true });
-  const square = await sharp(path.join(RAW_DATA_DIR, source))
-    .extract({ left: crop.left, top: crop.top, width: crop.size, height: crop.size })
-    .toBuffer();
-  for (const size of sizes) {
-    await sharp(square).resize(size, size).webp({ quality: 85 }).toFile(path.join(dir, `map-button-${size}.webp`));
+  for (const width of widths) {
+    await sharp(path.join(RAW_DATA_DIR, source))
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 88 })
+      .toFile(path.join(dir, `ward-map-${width}.webp`));
   }
-  console.log(`map button: ${sizes.join(", ")} px`);
+  console.log(`ward map: ${widths.join(", ")} px`);
 }
 
 /** Nani greeting with a namaste (raw-data Naninamaste.jpeg), beside the Overview text on the home page. */
@@ -278,7 +278,7 @@ async function main(): Promise<void> {
   await optimizeLogo();
   await optimizeWardIllustration();
   await optimizeNaniNamaste();
-  await optimizeMapButton();
+  await optimizeWardMap();
   await optimizeNani();
   await optimizeNaniFigure();
 

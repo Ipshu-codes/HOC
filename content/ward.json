@@ -52,5 +52,26 @@
       "en": "Nani, the website's guide, greeting visitors with a namaste",
       "ne": "नमस्ते गर्दै आगन्तुकलाई स्वागत गरिरहेकी नानी, यस वेबसाइटकी मार्गदर्शक"
     }
+  },
+  "wardMap": {
+    "files": [
+      "/images/map/ward-map-480.webp",
+      "/images/map/ward-map-640.webp",
+      "/images/map/ward-map-960.webp"
+    ],
+    "alt": {
+      "en": "Ward profile map of Ward No. 16, Kathmandu Metropolitan City, from the city's Urban Development Department: the ward boundary, roads, river, buildings and public services, with a legend",
+      "ne": "काठमाडौं महानगरपालिकाको सहरी विकास विभागको वडा नं. १६ को नक्सा: वडाको सिमाना, सडक, खोला, भवन र सार्वजनिक सेवाहरू, सङ्केतसहित"
+    }
+  },
+  "overviewLogo": {
+    "files": [
+      "/images/logo/ward-logo-128.png",
+      "/images/logo/ward-logo-256.png"
+    ],
+    "alt": {
+      "en": "Emblem of Kathmandu Metropolitan City, to which Ward No. 16 belongs",
+      "ne": "वडा नं. १६ रहेको काठमाडौं महानगरपालिकाको लोगो"
+    }
   }
 }

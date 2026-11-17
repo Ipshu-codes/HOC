@@ -27,6 +27,20 @@ export const wardSchema = z.object({
       alt: localized,
     })
     .optional(),
+  /** Ward logo (raw-data wardlogo.png, cropped round) under Nani in the Overview image column, smallest file first. */
+  overviewLogo: z
+    .object({
+      files: z.array(z.string().startsWith("/images/")).min(1),
+      alt: localized,
+    })
+    .optional(),
+  /** The KMC ward profile map (raw-data "ward 16.jpg"), under the Overview text on the home page, smallest file first. */
+  wardMap: z
+    .object({
+      files: z.array(z.string().startsWith("/images/")).min(1),
+      alt: localized,
+    })
+    .optional(),
   /** Ward illustration beside the About text on the home page (raw-data wardlogo1.png), smallest file first. */
   illustration: z
     .object({

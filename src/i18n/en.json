@@ -127,6 +127,7 @@
     "title": "3D Map",
     "intro": "Explore Ward No. 16 in 3D. Select a place to read its story and see its photos, or follow the walking route from stop to stop. Drag to move, right-drag or two-finger drag to tilt and turn.",
     "floatingButton": "3D Map",
+    "floatingButtonShort": "Map",
     "placesHeading": "Places",
     "wardOffice": "Ward Office",
     "approximate": "Approximate location",

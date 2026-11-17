@@ -318,17 +318,12 @@
       640
     ]
   },
-  "mapButton": {
+  "wardMap": {
     "source": "ward 16.jpg",
-    "crop": {
-      "left": 300,
-      "top": 150,
-      "size": 400
-    },
-    "sizes": [
-      64,
-      128,
-      192
+    "widths": [
+      480,
+      640,
+      960
     ]
   },
   "naniNamaste": {
