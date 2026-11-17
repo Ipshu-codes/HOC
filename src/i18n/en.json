@@ -42,6 +42,8 @@
   },
   "home": {
     "heroTitle": "Heritage of Ward No. 16",
+    "slidesPause": "Pause the photo slideshow",
+    "slidesPlay": "Play the photo slideshow",
     "heroSubtitle": "Discover {sites} in Ward No. 16, Kathmandu Metropolitan City.",
     "explore": {
       "one": "Explore {sites}",

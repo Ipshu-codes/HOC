@@ -1,6 +1,15 @@
 {
-  "heroCandidates": [
-    "/images/nanak-math/courtyard-view.webp"
+  "heroSlides": [
+    "/images/nanak-math/courtyard-view.webp",
+    "/images/mhepi-ajima/temple-and-courtyard-shrine.webp",
+    "/images/nanak-math/main-courtyard.webp",
+    "/images/mhepi-ajima/main-gate.webp",
+    "/images/nanak-math/samadhi-temple.webp",
+    "/images/mhepi-ajima/temple-front.webp",
+    "/images/nanak-math/nandi-and-shivalinga.webp",
+    "/images/mhepi-ajima/inner-shrine.webp",
+    "/images/nanak-math/traditional-building.webp",
+    "/images/mhepi-ajima/large-tree.webp"
   ],
   "galleryPreview": [
     "/images/mhepi-ajima/temple-front.webp",
