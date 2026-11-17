@@ -8,7 +8,7 @@ import PhotoCredit from "@/components/PhotoCredit";
 import QuickFacts from "@/components/QuickFacts";
 import ResponsiveImage from "@/components/ResponsiveImage";
 import TableOfContents from "@/components/TableOfContents";
-import { getCredits, getHeritageList, getHeritageSlugs } from "@/lib/content";
+import { getCredits, getHeritageList, getHeritageSlugs, informationFromText } from "@/lib/content";
 import { byCount, getDictionary, isLocale } from "@/lib/i18n";
 import { coverImage, findSiteImage, type SiteImage } from "@/lib/images";
 import type { Heritage, Locale } from "@/types/heritage";
@@ -58,6 +58,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
   const dict = getDictionary(lang);
   const t = dict.heritage;
   const credits = getCredits();
+  const informedBy = informationFromText(heritage.slug, lang);
   const cover = coverImage(heritage);
   const name = lang === "ne" ? heritage.nameNe : heritage.name;
   const otherName = lang === "ne" ? heritage.name : heritage.nameNe;
@@ -118,6 +119,8 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
 
           {/* Rendered from our own markdown files in content/ (trusted, build-time only). */}
           <article className="heritage-prose mt-10" dangerouslySetInnerHTML={{ __html: heritage.html }} />
+          {/* Who gave the information (content/credits.json → informationFrom). */}
+          {informedBy && <p className="mt-8 text-sm text-ink/80">{t.informationFrom.replace("{people}", informedBy)}</p>}
 
           <section id="photos" aria-labelledby="photos-title" className="mt-14">
             <h2 id="photos-title" className="text-3xl font-bold">

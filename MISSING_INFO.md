@@ -63,6 +63,13 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - The name is now "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ)" / "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj (Nanak Math)" everywhere, including the menu, cards, map and chatbot.
   - The section on the name, the Guru Nanak association and the three ages (Spotlight, Nepali Times, Wikipedia) was removed. The chatbot now says Guru Nanak's visit is a legend without an authentic basis, and gives the age as "about 5,000 years; more than 500 by the samadhi".
   - The **Sources** section was removed from every heritage page (decision, 17 Nov 2026). The `<!-- source: -->` comments in the content files stay and are still checked by the build.
+- [ ] **Attribution restored (17 Nov 2026, branch fix/credits-attribution).** After the guru's revision, five claims read as plain fact; each now names its source again, in EN and NE. Luniva: please check the four Nepali additions:
+  - Quick facts "Established": "According to the math, …" / "मठका अनुसार, …"
+  - The line of mahants: "According to the math, the guru–disciple tradition …" / "मठका अनुसार, यस परम्परा …"
+  - Vishnu paduka photo text: "said to be 1,000 years old" / "१००० वर्ष पुरानो मानिने"
+  - Akhanda dhuni photo text: "said to have been kept burning for 700 years" / "७०० वर्षदेखि चलिआएको भनिएको"
+  - Chatbot "How old is it?": "According to the math, it is believed …" / "मठका अनुसार, …"
+  - Not restored, because the guru's revision removed them: the 1,000-year guru gaddi age, the three ages side by side, and the web sources for Guru Nanak's visit around 1516. The chatbot's Guru Nanak answer is still attributed ("According to a legend … no authentic basis").
 - [ ] **Brahmaharidas's dates disagree**: the new paragraph says he came and became mahant in **VS 1450**; the new mahant list gives **VS 1482**–1664.
 - [ ] **Who is the present mahant?** The new paragraph says Gurudev Buddhidas told the history to "आज यस मठका महन्त श्री नेममुनिदासजी महाराज" ("today the mahant"); the list says Nem Muni served VS 2045–2080 and Naval Kishor Das from Asoj VS 2080 to the present.
 - [x] **Festival descriptions**: Krishna Ashtami, Mahashivaratri and Vasantik Navaratri had "………" in Nepali. On instruction (17 Nov 2026) they now show the festival name only, in both languages. The build now fails on dot placeholders like these (`scripts/dot-placeholders.ts`); a scan of all content and interface text found no others. The quick facts now have no festivals (`festivals: []`). Months are still missing for most festivals.
@@ -124,6 +131,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
 - `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
+- `content/credits.json` → `people.mhepi-priest.credit.ne` ("म्हेपी अजिमाका मूल पुरोहित भुषण रत्न बज्राचार्य") and `src/i18n/ne.json` → `heritage.informationFrom` ("जानकारी: …"): the Mhepi Ajima "Information from" line, by Claude, 17 Nov 2026.
 - `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) and `overviewImage.alt.ne` (Nani's namaste beside Overview): alt text written by Claude, 17 Nov 2026.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
   - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.

@@ -153,6 +153,23 @@ export function fillPeople(text: string, lang: Locale, where: string): string {
 }
 
 /**
+ * The "Information from …" credit for a heritage page (content/credits.json → informationFrom),
+ * or null when the site has none. Uses each person's `credit` text, else their usual one.
+ */
+export function informationFromText(slug: string, lang: Locale): string | null {
+  const { people, informationFrom } = getCredits();
+  const ids = informationFrom[slug];
+  if (!ids) return null;
+  return ids
+    .map((id) => {
+      const person = people[id];
+      if (!person) throw new Error(`content/credits.json → informationFrom.${slug}: unknown person "${id}"`);
+      return person.credit?.[lang] ?? person[lang];
+    })
+    .join("; ");
+}
+
+/**
  * Sources cited in the markdown, in order of first appearance, with their
  * plain-language names. Content cites them in HTML comments:
  *   <!-- source: nanak-account, nanak-signboards | DOCX para 3; signboard 2026…heic -->
