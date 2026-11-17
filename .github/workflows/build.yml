@@ -1,0 +1,49 @@
+# Build check for every pull request and every push to main.
+# It only installs, type-checks, lints and builds the site, then throws the result away:
+# there is NO deploy step and nothing is uploaded (no artifacts, no hosting, no secrets).
+# Hosting (Cloudflare Pages) is set up separately, when the team decides to deploy.
+name: Build check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only: the job can read the code and nothing else.
+permissions:
+  contents: read
+
+# A newer push to the same branch or PR cancels the older run.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Typecheck, lint, strict build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install exact dependencies (package-lock.json)
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # `npm run build` runs check-content first (fails on drafts, [PLACEHOLDER, [TODO, unknown
+      # sources or people) and verify-output after (fails on leaked drafts, placeholders and
+      # image metadata). The out/ folder it makes is not kept or uploaded.
+      - name: Strict build (check-content → next build → verify-output)
+        run: npm run build

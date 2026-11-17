@@ -31,6 +31,17 @@ npm run build
 
 Also open the pages you changed in `npm run dev`, in **English and Nepali**, at phone width (375 px) and desktop width (1440 px).
 
+## Automatic build check (GitHub Actions)
+
+Every pull request and every push to `main` runs **Build check** (`.github/workflows/build.yml`) on GitHub. It runs the same steps as above on Node 22: `npm ci`, `npm run typecheck`, `npm run lint` and the strict `npm run build`, which includes check-content and verify-output. It only checks: there is no deploy step and nothing is uploaded.
+
+**`main` is protected:**
+- every change goes through a pull request;
+- the pull request can only be merged when **Build check** is green;
+- direct pushes and force pushes to `main` are blocked, and `main` can't be deleted.
+
+If the check fails, open the run on the pull request's **Checks** tab, read the failing step, fix it on your branch and push again.
+
 ## Merge conflicts
 
 When Git reports a conflict, open the file and look at both sides before choosing anything.
