@@ -69,7 +69,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **"उदासीन" / "Udasin"**: dropped from the tradition field but still in the summary, the signboard name and How to Visit. Confirm which is right.
 - [ ] **Typos in the Nepali to check (not changed):** "बुद्धिदास महाराजको तिथ" (तिथि); "वि.सं. २०८० असाेज" typed as ा+े (असोज); "वासन्तीक नवरात्र" (वासन्तिक); "विष्णु पञ्चायन" in 4 places (पञ्चायतन elsewhere); "संवर्धन  एवं" double space; "नेपाली चोकन मन्दिर" (चोक?).
 - [ ] **Photos beside "यहाँ भएका सम्पदाहरू" / "The Heritage Here"** (`content/section-photos.json`): matched by Claude using the guru's new photo descriptions. Confirm, especially item 11 (ancient Nepali chok temple and mahant gaddi → `main-courtyard`, the courtyard of the two-storey buildings) and item 2 (`gilded-shrine`, described as the Vishnu Panchayatan temple). No photo yet for items 1, 10 and 12–16.
-  - [ ] **Item 11 has no description under its title**: its photo's gallery description ("Courtyard of the math enclosed by traditional two-storey buildings with tiled roofs" / "…मठको चोक") does not clearly describe "the ancient Nepali chok temple and the mahant gaddi". Items 2–9 show their photo's description. Set `"description": true` for item 11 in `content/section-photos.json` once confirmed, or give a better-matching photo.
+  - [x] **Item 11 description**: turned on (17 Nov 2026) on confirmation that the courtyard photo matches "the ancient Nepali chok temple and the mahant gaddi". All nine items now show their photo's description.
 - [ ] **Alternative name "Siddheshwar Mahadev" — needs a source.** Given by the ward team (13 Nov 2026) but not confirmed. It was removed from the chatbot topic label in the Phase 9 review and is **not shown anywhere** on the site.
   - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
   - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere on the site.
@@ -124,7 +124,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
 - `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
-- `content/ward.json` → `illustration.alt.ne`: alt text of the ward illustration (`wardlogo1.png`, added 17 Nov 2026), written by Claude.
+- `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) and `overviewLogo.alt.ne` (the KMC emblem beside Overview): alt text written by Claude, 17 Nov 2026.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
   - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.
 - The `alt` text in all `gallery` entries of the `.ne.md` files

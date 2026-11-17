@@ -20,6 +20,13 @@ export const wardSchema = z.object({
     src: z.string().startsWith("/images/"),
     alt: localized,
   }),
+  /** Emblem beside the Overview text on the home page (raw-data wardlogo.png), smallest file first. */
+  overviewLogo: z
+    .object({
+      files: z.array(z.string().startsWith("/images/")).min(1),
+      alt: localized,
+    })
+    .optional(),
   /** Ward illustration beside the About text on the home page (raw-data wardlogo1.png), smallest file first. */
   illustration: z
     .object({

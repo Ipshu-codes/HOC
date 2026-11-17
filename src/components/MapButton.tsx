@@ -12,8 +12,11 @@ interface MapButtonProps {
 
 /**
  * Floating "🗺 3D Map" button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the
- * map page itself). Kept small so it covers little text: a 48 px round icon on phones (the label stays as its
- * accessible name), a compact pill with the label from 768 px.
+ * map page itself). Kept small so it covers little text:
+ * - phones: a 40 px red circle (icon ~20 px) inside a 44 × 44 px tap area. The link is pulled 2 px towards
+ *   the corner so the circle sits as far from the edges as Nani's face on the right. The label stays as its
+ *   accessible name.
+ * - from 768 px: a slim "3D Map" pill (icon ~16 px).
  */
 export default function MapButton({ lang, label }: MapButtonProps) {
   const pathname = usePathname();
@@ -22,11 +25,15 @@ export default function MapButton({ lang, label }: MapButtonProps) {
   return (
     <Link
       href={`/${lang}/map/`}
-      className="fixed bottom-4 left-[max(1rem,env(safe-area-inset-left))] z-30 flex size-12 items-center justify-center rounded-full bg-crimson text-xl font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick md:bottom-6 md:left-[max(1.5rem,env(safe-area-inset-left))] md:size-auto md:gap-1.5 md:px-3.5 md:py-2 md:text-sm"
+      className="group fixed bottom-[calc(1rem-2px)] left-[calc(max(1rem,env(safe-area-inset-left))-2px)] z-30 flex size-[44px] items-center justify-center rounded-full md:bottom-6 md:left-[max(1.5rem,env(safe-area-inset-left))] md:size-auto"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
-      <span aria-hidden="true">🗺</span>
-      <span className="sr-only md:not-sr-only">{label}</span>
+      <span className="flex size-[40px] items-center justify-center gap-1 rounded-full bg-crimson font-bold text-white shadow-lg ring-2 ring-white group-hover:bg-brick md:size-auto md:px-3 md:py-1.5 md:text-sm">
+        <span aria-hidden="true" className="text-[20px] leading-none md:text-[16px]">
+          🗺
+        </span>
+        <span className="sr-only md:not-sr-only">{label}</span>
+      </span>
     </Link>
   );
 }
