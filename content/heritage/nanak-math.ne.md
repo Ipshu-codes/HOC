@@ -72,6 +72,10 @@ gallery:
     alt: "यस मठ परिसरभित्र रोपिएका लहलहाउँदै गरेका धानखेतहरू"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
     alt: "यस मठ परिसरभित्र रहने साधुहरू"
+  - src: "/images/nanak-math/shivalinga-trishul.webp"
+    alt: "मठ परिसरमा रहेको शिवलिङ्ग र त्रिशूल, पछाडि धानखेत"
+  - src: "/images/nanak-math/bhandara.webp"
+    alt: "भण्डारामा लहरै बसेर भोजन गर्दै साधुसन्त"
 ---
 
 <!-- स्रोत: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (DOCX) र स्थलमा खिचिएका पाटी/साइनबोर्डका फोटो। -->

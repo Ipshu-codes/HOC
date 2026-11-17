@@ -72,6 +72,10 @@ gallery:
     alt: "Flourishing paddy fields planted within the math grounds"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
     alt: "Sadhus who live within the math grounds"
+  - src: "/images/nanak-math/shivalinga-trishul.webp"
+    alt: "Shivalinga and trishul in the math grounds, with the paddy field behind"
+  - src: "/images/nanak-math/bhandara.webp"
+    alt: "Sadhus seated in rows for a shared meal (bhandara)"
 ---
 
 <!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->

@@ -2,24 +2,19 @@
 
 Captured on 17 Nov 2026 in Microsoft Edge from the strict `npm run build`, branch `content/nanak-list-photos`. The pictures show the list only, in EN and NE, at 375, 768 and 1440 px.
 
-Photos added from the gallery's 4-column (computer) grid, given as row, column. None of these show a caption:
+Photos added for items without one, chosen by the team. None of these show a caption:
 
-| Item | Photo | Grid position |
-|---|---|---|
-| 1. The math | samadhi temple | row 1, column 1 (first photo) |
-| 10. The Shivalaya | statue of Mahant Buddhidas | row 3, column 2 |
-| 12. Green forest and gardens | Hanuman shrine under the peepal tree | row 3, column 4 |
-| 13. Sant niwas | Nandi & Shivalinga | row 4, column 1 |
-| 14. Brahma Kunda | heritage signboard | row 4, column 2 |
-| 15. Yajnashala | painting of Brahmaharidas | row 4, column 3 |
-| 16. Satsang hall | painting of Gothalramdas | row 4, column 4 |
+| Item | Photo |
+|---|---|
+| 1. The math | samadhi temple (first gallery photo) |
+| 10. The Shivalaya | Shivalinga and trishul (new to the gallery: `shivalinga-trishul.webp`) |
+| 12. Green forest and gardens | paddy field |
+| 13. Sant niwas | courtyard view |
+| 14. Brahma Kunda | heritage signboard |
+| 15. Yajnashala | painting of Brahmaharidas |
+| 16. Satsang hall | sadhus at a shared meal (`bhandara.webp`, re-added with consent and the photographer's permission) |
 
-Items 2–9 and 11 keep their photos and captions.
-
-Three photos now appear twice in the list:
-- samadhi temple: items 1 and 9;
-- Hanuman shrine: items 4 and 12;
-- Nandi & Shivalinga: items 3 and 13.
+Items 2–9 and 11 keep their photos and captions. The samadhi temple photo appears twice in the list, for items 1 and 9.
 
 **Checks:** the strict build passes. In EN and NE at 375, 768 and 1440 px:
 - all 16 items have a photo;

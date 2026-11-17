@@ -17,6 +17,7 @@ These are the published photos that show a person's face, checked on 12 Nov 2026
 | `nanak-math/sadhu-statue.webp` | Two people seated in the room behind the statue |
 | `nanak-math/sadhus-at-veranda.webp` | A portrait of three sadhus standing at the veranda |
 | `nanak-math/heritage-signboard.webp` | The math's signboard, which includes printed photographs of three mahants |
+| `nanak-math/bhandara.webp` | About 15 sadhus and guests eating in rows in the hall; faces visible. Re-added on 17 Nov 2026: the people and the photographer agreed |
 
 ## Checked and not marked
 
@@ -29,4 +30,4 @@ These are the published photos that show a person's face, checked on 12 Nov 2026
 
 All the other published photos show buildings, shrines, objects, plaques or animals only.
 
-The original of the removed `bhandara.webp` photo (`Guru Nanak Mantha/Photo/IMG-20261104-WA0022.jpg`) is still in raw-data; see MISSING_INFO.md.
+`bhandara.webp` (`Guru Nanak Mantha/Photo/IMG-20261104-WA0022.jpg`) was removed in Phase 6 and re-added on 17 Nov 2026 with consent and the photographer's permission (see MISSING_INFO.md).
