@@ -77,6 +77,54 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <div className="space-y-4 text-lg">
             <p className="justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
             <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
+            {wardMap && (
+              // The whole ward map fills the space under the text; the link opens the largest file to read the labels.
+              <a href={wardMap.src} className="mt-8 block rounded-xl focus-visible:outline-offset-4">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+                <img
+                  src={wardMap.src}
+                  srcSet={wardMap.srcSet}
+                  sizes="(min-width: 64rem) 48rem, (min-width: 48rem) calc(100vw - 21rem), calc(100vw - 2rem)"
+                  width={wardMap.width}
+                  height={wardMap.height}
+                  alt={ward.wardMap?.alt[lang] ?? ""}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full rounded-xl bg-white shadow-sm ring-1 ring-gold/40"
+                />
+              </a>
+            )}
+          </div>
+          {/* Image column: Nani's namaste, then the ward logo beside the map. */}
+          <div className="mx-auto flex w-full max-w-72 flex-col items-center gap-10 md:mx-0 md:-mt-16 md:max-w-none">
+            {overviewImage && (
+              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
+              <img
+                src={overviewImage.src}
+                srcSet={overviewImage.srcSet}
+                sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
+                width={overviewImage.width}
+                height={overviewImage.height}
+                alt={ward.overviewImage?.alt[lang] ?? ""}
+                loading="lazy"
+                decoding="async"
+                className="w-full rounded-xl shadow-sm ring-1 ring-gold/40"
+              />
+            )}
+            {overviewLogo && (
+              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
+              <img
+                src={overviewLogo.src}
+                srcSet={overviewLogo.srcSet}
+                sizes="12rem"
+                width={overviewLogo.width}
+                height={overviewLogo.height}
+                alt={ward.overviewLogo?.alt[lang] ?? ""}
+                loading="lazy"
+                decoding="async"
+                className="w-48 max-w-full rounded-full"
+              />
+            )}
           </div>
         </div>
       </HomeSection>
