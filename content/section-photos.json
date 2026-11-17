@@ -9,7 +9,10 @@
       "7": "/images/nanak-math/vishnu-paduka.webp",
       "8": "/images/nanak-math/gaushala-cow.webp",
       "9": "/images/nanak-math/samadhi-temple.webp",
-      "11": "/images/nanak-math/main-courtyard.webp"
+      "11": {
+        "photo": "/images/nanak-math/main-courtyard.webp",
+        "description": false
+      }
     }
   }
 }

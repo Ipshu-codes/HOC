@@ -41,9 +41,15 @@ export type Credits = z.infer<typeof creditsSchema>;
  * (site slug → section id → list item number → gallery photo), e.g. the "यहाँ भएका सम्पदाहरू" list.
  * Each photo must be in that site's gallery; its alt text comes from the gallery in each language.
  */
+const sectionPhoto = z.union([
+  // Just the photo: its gallery description (alt text) is also shown under the item's title.
+  z.string().startsWith("/images/"),
+  // `description: false` when the photo's description doesn't clearly match the item.
+  z.object({ photo: z.string().startsWith("/images/"), description: z.boolean() }),
+]);
 export const sectionPhotosSchema = z.record(
   z.string().regex(/^[a-z0-9-]+$/),
-  z.record(z.string().regex(/^[a-z0-9-]+$/), z.record(z.string().regex(/^[1-9]\d*$/), z.string().startsWith("/images/"))),
+  z.record(z.string().regex(/^[a-z0-9-]+$/), z.record(z.string().regex(/^[1-9]\d*$/), sectionPhoto)),
 );
 export type SectionPhotosConfig = z.infer<typeof sectionPhotosSchema>;
 

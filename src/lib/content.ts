@@ -117,7 +117,9 @@ function sectionPhotosFor(
   const photos: SectionPhotos = {};
   for (const [section, items] of Object.entries(getSectionPhotos()[slug] ?? {})) {
     photos[section] = {};
-    for (const [number, src] of Object.entries(items)) {
+    for (const [number, setting] of Object.entries(items)) {
+      const src = typeof setting === "string" ? setting : setting.photo;
+      const describe = typeof setting === "string" || setting.description;
       const entry = gallery.find((image) => image.src === src);
       if (!entry) {
         if (fullGallery.some((image) => image.src === src)) continue; // removed by photo consent
@@ -125,7 +127,13 @@ function sectionPhotosFor(
       }
       const image = plainImage(src);
       if (!image) throw new Error(`content/section-photos.json: ${src} has not been built (npm run optimize-images)`);
-      photos[section][Number(number)] = { ...image, alt: entry.alt, href: `/${lang}/gallery/?site=${slug}` };
+      photos[section][Number(number)] = {
+        ...image,
+        alt: entry.alt,
+        // The same gallery text, shown under the item's title (unless switched off for this item).
+        description: describe ? entry.alt : null,
+        href: `/${lang}/gallery/?site=${slug}`,
+      };
     }
   }
   return photos;

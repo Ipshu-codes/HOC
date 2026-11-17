@@ -176,7 +176,8 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
       }`}
     >
       <MapSidebar
-        className="order-2 lg:order-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
+        // lg:px-1 keeps focus rings visible inside the scrolling list; -mx-1 keeps its text on the content edge.
+        className="order-2 lg:order-1 lg:-mx-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
         places={places}
         results={results}
         selectedId={selectedId}

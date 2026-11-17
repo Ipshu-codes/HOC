@@ -39,6 +39,18 @@ function srcSetFor(src: string): string {
     .join(", ");
 }
 
+/** One image given as its sized files (e.g. the ward illustration): the largest is the default `src`. */
+export function imageSet(files: string[]): { src: string; srcSet: string; width: number; height: number } {
+  const sized = files.map((file) => ({ file, ...sizeOf(file) }));
+  const largest = sized.reduce((a, b) => (b.width > a.width ? b : a));
+  return {
+    src: largest.file,
+    srcSet: sized.map(({ file, width }) => `${file} ${width}w`).join(", "),
+    width: largest.width,
+    height: largest.height,
+  };
+}
+
 /** An image that is not a site photo (e.g. the map preview), or null if it has not been built. */
 export function plainImage(src: string): { src: string; srcSet: string; width: number; height: number } | null {
   if (!fs.existsSync(path.join(PUBLIC_DIR, src))) return null;

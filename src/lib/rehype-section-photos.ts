@@ -8,6 +8,8 @@ export interface SectionPhoto {
   width: number;
   height: number;
   alt: string;
+  /** Shown under the item's title: the photo's gallery description (null = title only). */
+  description: string | null;
   /** Where the photo links to (the site's photos in the gallery). */
   href: string;
 }
@@ -24,7 +26,7 @@ const SIZES = "(min-width: 48rem) 18rem, 100vw";
  *
  *   <li class="has-photo">
  *     <div class="item-row">
- *       <div class="item-text">…the item's own text…</div>
+ *       <div class="item-text">…the item's title… <p class="item-desc">…description…</p> …sub-list…</div>
  *       <a class="item-photo" href="…"><img …></a>
  *     </div>
  *   </li>
@@ -88,7 +90,19 @@ function wrap(li: Element, photo: SectionPhoto) {
     properties: { className: ["item-photo"], href: photo.href },
     children: [image],
   };
-  const text: Element = { type: "element", tagName: "div", properties: { className: ["item-text"] }, children: li.children };
+  // The description goes right under the title: before a nested list (the Tulsi Math's sub-shrines), else at the end.
+  const content = [...li.children];
+  if (photo.description) {
+    const desc: Element = {
+      type: "element",
+      tagName: "p",
+      properties: { className: ["item-desc"] },
+      children: [{ type: "text", value: photo.description }],
+    };
+    const nested = content.findIndex((child) => child.type === "element" && (child.tagName === "ul" || child.tagName === "ol"));
+    content.splice(nested < 0 ? content.length : nested, 0, desc);
+  }
+  const text: Element = { type: "element", tagName: "div", properties: { className: ["item-text"] }, children: content };
   const row: Element = { type: "element", tagName: "div", properties: { className: ["item-row"] }, children: [text, link] };
   li.properties = { ...li.properties, className: ["has-photo"] };
   li.children = [row] as ElementContent[];

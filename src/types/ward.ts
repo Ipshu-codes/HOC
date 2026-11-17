@@ -20,6 +20,13 @@ export const wardSchema = z.object({
     src: z.string().startsWith("/images/"),
     alt: localized,
   }),
+  /** Ward illustration beside the About text on the home page (raw-data wardlogo1.png), smallest file first. */
+  illustration: z
+    .object({
+      files: z.array(z.string().startsWith("/images/")).min(1),
+      alt: localized,
+    })
+    .optional(),
 });
 
 export type Ward = z.infer<typeof wardSchema>;

@@ -30,5 +30,16 @@
       "en": "Emblem of Kathmandu Metropolitan City",
       "ne": "काठमाडौं महानगरपालिकाको लोगो"
     }
+  },
+  "illustration": {
+    "files": [
+      "/images/logo/ward-illustration-320.webp",
+      "/images/logo/ward-illustration-480.webp",
+      "/images/logo/ward-illustration-640.webp"
+    ],
+    "alt": {
+      "en": "Illustration of Ward No. 16: a pagoda temple with a stone lion and a carved pillar, under the words “Kathmandu Metropolitan City” and above “Ward-16”",
+      "ne": "वडा नं. १६ को चित्र: ढुङ्गे सिंह र कुँदिएको स्तम्भसहितको प्यागोडा शैलीको मन्दिर, माथि “Kathmandu Metropolitan City” र तल “Ward-16” लेखिएको"
+    }
   }
 }

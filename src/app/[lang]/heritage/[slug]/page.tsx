@@ -151,7 +151,8 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
 
       {others.length > 0 && (
         <section aria-labelledby="other-heritage-title" className="bg-sand">
-          <div className="mx-auto max-w-6xl px-4 py-14">
+          {/* Same vertical rhythm as the home page sections (HomeSection). */}
+          <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
             <h2 id="other-heritage-title" className="mb-8 text-3xl font-bold">
               {byCount(t.otherHeritage, others.length)}
             </h2>

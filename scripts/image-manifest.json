@@ -309,5 +309,13 @@
       "pocketTolerance": 24,
       "minPocket": 400
     }
+  },
+  "wardIllustration": {
+    "source": "wardlogo1.png",
+    "widths": [
+      320,
+      480,
+      640
+    ]
   }
 }

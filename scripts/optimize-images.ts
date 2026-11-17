@@ -217,6 +217,24 @@ async function optimizeNaniFigure(): Promise<void> {
   console.log(`nani figure: ${figure.heights.join(", ")} px tall (${right - left + 1}×${bottom - top + 1} source)`);
 }
 
+/**
+ * The ward illustration (raw-data wardlogo1.png: "Kathmandu Metropolitan City … Ward-16"), shown beside
+ * the About Ward No. 16 text on the home page. WebP at a few widths, metadata stripped.
+ * → public/images/logo/ward-illustration-<width>.webp
+ */
+async function optimizeWardIllustration(): Promise<void> {
+  const { source, widths } = manifest.wardIllustration;
+  const dir = path.join(OUT_DIR, "logo");
+  await fs.mkdir(dir, { recursive: true });
+  for (const width of widths) {
+    await sharp(path.join(RAW_DATA_DIR, source))
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 85 })
+      .toFile(path.join(dir, `ward-illustration-${width}.webp`));
+  }
+  console.log(`ward illustration: ${widths.join(", ")} px`);
+}
+
 async function main(): Promise<void> {
   try {
     await fs.access(RAW_DATA_DIR);
@@ -226,6 +244,7 @@ async function main(): Promise<void> {
   }
 
   await optimizeLogo();
+  await optimizeWardIllustration();
   await optimizeNani();
   await optimizeNaniFigure();
 
