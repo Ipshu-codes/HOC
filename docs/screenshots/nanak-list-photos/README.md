@@ -11,10 +11,10 @@ Photos added for items without one, chosen by the team. None of these show a cap
 | 12. Green forest and gardens | paddy field |
 | 13. Sant niwas | courtyard view |
 | 14. Brahma Kunda | no photo; the item now reads "in need of repair" / "मर्मत आवश्यक" |
-| 15. Yajnashala | akhanda dhuni (same photo as item 6) |
-| 16. Satsang hall | sadhus at a shared meal (`bhandara.webp`, re-added with consent and the photographer's permission) |
+| 15. Yajnashala | the yajnashala under construction (`yajnashala-construction.webp`, new); the item reads "under construction" / "निर्माणाधीन" |
+| 16. Satsang hall | the hall's construction site (`satsang-hall-construction.webp`, new); the item reads "under construction" / "निर्माणाधीन". (`bhandara.webp` stays in the gallery.) |
 
-Items 2–9 and 11 keep their photos and captions. Two photos appear twice in the list: the samadhi temple (items 1 and 9) and the akhanda dhuni (items 6 and 15).
+Items 2–9 and 11 keep their photos and captions. One photo appears twice in the list: the samadhi temple (items 1 and 9).
 
 **Checks:** the strict build passes. In EN and NE at 375, 768 and 1440 px:
 - items 1–13, 15 and 16 have a photo; item 14 has none and reads "in need of repair";

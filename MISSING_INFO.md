@@ -77,7 +77,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **Typos in the Nepali to check (not changed):** "बुद्धिदास महाराजको तिथ" (तिथि); "वि.सं. २०८० असाेज" typed as ा+े (असोज); "वासन्तीक नवरात्र" (वासन्तिक); "विष्णु पञ्चायन" in 4 places (पञ्चायतन elsewhere); "संवर्धन  एवं" double space; "नेपाली चोकन मन्दिर" (चोक?).
 - [ ] **Photos beside "यहाँ भएका सम्पदाहरू" / "The Heritage Here"** (`content/section-photos.json`): matched by Claude using the guru's new photo descriptions. Confirm, especially item 11 (ancient Nepali chok temple and mahant gaddi → `main-courtyard`, the courtyard of the two-storey buildings) and item 2 (`gilded-shrine`, described as the Vishnu Panchayatan temple). No photo yet for items 1, 10 and 12–16.
   - [x] **Item 11 description**: turned on (17 Nov 2026) on confirmation that the courtyard photo matches "the ancient Nepali chok temple and the mahant gaddi". All nine items now show their photo's description.
-  - [x] **Items 10, 12, 13, 16 replaced (17 Nov 2026, from the team's pictures):** 10 Shivalinga in a stone niche (new: `shivalinga-niche.webp`), 12 paddy field, 13 courtyard view, 16 bhandara (re-added); 15 the akhanda dhuni photo, the same as item 6; 14 (Brahma Kunda) has no photo and now reads "in need of repair" / "मर्मत आवश्यक", from the ward team (source key `ward-team`). Nepali wording by Claude; please check. Nepali alt text of `shivalinga-niche.webp` is by Claude; please check.
+  - [x] **Items 10, 12, 13, 16 replaced (17 Nov 2026, from the team's pictures):** 10 Shivalinga in a stone niche (new: `shivalinga-niche.webp`), 12 paddy field, 13 courtyard view, 16 bhandara (re-added; since removed from item 16, still in the gallery); 15 (yajnashala) and 16 (satsang hall) now read "under construction" / "निर्माणाधीन" and show the team's construction photos (new: `yajnashala-construction.webp`, `satsang-hall-construction.webp`; Nepali alt text by Claude, please check) (ward team; Nepali by Claude, please check); 14 (Brahma Kunda) has no photo and now reads "in need of repair" / "मर्मत आवश्यक", from the ward team (source key `ward-team`). Nepali wording by Claude; please check. Nepali alt text of `shivalinga-niche.webp` is by Claude; please check.
   - [x] **Items 1, 10, 12–16** (superseded for 10, 12, 13, 16 by the line above) (17 Nov 2026, chosen by the team from the gallery's 4-column grid): 1 samadhi temple, 10 statue of Mahant Buddhidas, 12 Hanuman shrine under the peepal tree, 13 Nandi & Shivalinga, 14 heritage signboard, 15 painting of Brahmaharidas, 16 painting of Gothalramdas, all **without** captions. Now every item has a photo. Three photos appear twice in the list (samadhi temple: 1 and 9; Hanuman shrine: 4 and 12; Nandi & Shivalinga: 3 and 13); swap them for photos of the actual places when the team has them.
 - [ ] **Alternative name "Siddheshwar Mahadev" — needs a source.** Given by the ward team (13 Nov 2026) but not confirmed. It was removed from the chatbot topic label in the Phase 9 review and is **not shown anywhere** on the site.
   - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
@@ -87,7 +87,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
 - [x] **Photographed features identified** by the guru's review (alt text, 17 Nov 2026): the statue under the canopy is Brahmaleen Mahant Shri Buddhidas Ji Maharaj; the orange image under the tree is Sankatmochan Siddha Hanuman; the three garlanded platforms are the samadhi of the maharajs; the shrine room is where the sadhus keep and worship the Vedic texts; the gilded shrine is the Vishnu Panchayatan temple.
-  - [ ] Still open: is the construction site in the photos the yajnashala?
+  - [x] The construction photos: the team identified one as the yajnashala and one as the satsang hall, both under construction (17 Nov 2026).
 - [ ] **Who wrote the docx?** It speaks of "my gurudev" and appears to be by the current mahant. This is needed for attribution.
 - [ ] **Review of the English translation** of the docx (by Claude)
 
@@ -128,7 +128,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Ward chairperson**: Rojina Shrestha (in `ward.json`; not yet shown on the site)
   - [ ] Check the Nepali spelling रोजिना श्रेष्ठ (written by Claude)
 - [ ] **Official portal URL**: the ward team named "Kathmandu Metropolitan City Ward No. 16" as the official portal but gave no web address
-- [ ] **Web3Forms recipient email** (Phase 9)
+- [x] **Web3Forms recipient email**: no longer needed. The contact form and Web3Forms were removed on 17 Nov 2026; the contact page links to ward16@kathmandu.gov.np.
 
 ## 5. Nepali text needing native-speaker review
 
@@ -140,6 +140,7 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
   - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
+- `src/i18n/ne.json` → `contactPage` (17 Nov 2026, contact page without a form): the welcoming intro, "हामीलाई लेख्नुहोस्", its text, "वडा कार्यालयलाई इमेल गर्नुहोस्" and "वडा कार्यालयलाई सम्पर्क गर्नुहोस्", by Claude; please check.
 - `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude
 - `src/i18n/ne.json` → `chat.didntFindAnswer`: the chatbot's "मेरो प्रश्न यहाँ छैन" reply (wording given by the ward team on 13 Nov 2026), plus `chat.backToTopics` and the other chat labels. Phone numbers in Nepali chat replies are shown in Devanagari digits (०१-४९८१६५३).
 - `src/i18n/ne.json` → Nani: `chat.bubble`, `chat.greeting` and `chat.dialogLabel`/`naniAlt` (wording given by the ward team, 13 Nov 2026); `credits.naniCharacter` ("नानी पात्र: …", by Claude); `content/credits.json` → `nani.creator.ne` ("जेमिनी (एआई-निर्मित चित्र)", by Claude).

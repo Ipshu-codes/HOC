@@ -178,7 +178,7 @@ Missing *facts* (dates, spellings, permissions) are tracked in [`MISSING_INFO.md
   - A moderator at the ward.
   - A consent form.
   - The Memory Archive (Before launch) to publish into.
-- **Free:** the existing Web3Forms setup (free tier) sends submissions by email; no database is needed.
+- **Free:** submissions by email to the ward office (the site has no form service since 17 Nov 2026); no database is needed.
 
 ### More ward heritage sites
 - **What:** add other heritage sites in Ward 16 (temples, maths, kuthis, ponds) when their data is ready.
