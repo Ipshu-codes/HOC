@@ -2,7 +2,7 @@
 
 Everything here is either missing from the raw data or needs a human to check it. Feature ideas live in [docs/ROADMAP.md](docs/ROADMAP.md).
 
-**Current status (13 Nov 2026):**
+**Current status (17 Nov 2026):**
 
 - **Mhepi Ajima is published** (13 Nov 2026). History, legends, festivals, architecture and present day now come from the ward's interview with the temple's chief priest (`Mhepi Ajima/mhepi_ajima.docx`), plus the inscriptions and notice boards. Facts still unknown (opening hours, entry fee, photography rules, directions) are left off the page and listed in §1. The sattal fees and committee phone are still off the page until confirmed.
 - **Nanak Math is publishable.** Facts that are still unknown (entry fee, photography rules, etiquette, most festival months) are simply left off the page rather than shown as TODOs. They stay listed in §2 so they can be added later.
@@ -63,7 +63,7 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - The name is now "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ)" / "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj (Nanak Math)" everywhere, including the menu, cards, map and chatbot.
   - The section on the name, the Guru Nanak association and the three ages (Spotlight, Nepali Times, Wikipedia) was removed. The chatbot now says Guru Nanak's visit is a legend without an authentic basis, and gives the age as "about 5,000 years; more than 500 by the samadhi".
   - The **Sources** section was removed from every heritage page (decision, 17 Nov 2026). The `<!-- source: -->` comments in the content files stay and are still checked by the build.
-- [ ] **Attribution restored (17 Nov 2026, branch fix/credits-attribution).** After the guru's revision, five claims read as plain fact; each now names its source again, in EN and NE. Luniva: please check the four Nepali additions:
+- [ ] **Attribution restored (17 Nov 2026).** After the guru's revision, five claims read as plain fact; each now names its source again, in EN and NE. Luniva: please check the four Nepali additions:
   - Quick facts "Established": "According to the math, …" / "मठका अनुसार, …"
   - The line of mahants: "According to the math, the guru–disciple tradition …" / "मठका अनुसार, यस परम्परा …"
   - Vishnu paduka photo text: "said to be 1,000 years old" / "१००० वर्ष पुरानो मानिने"
@@ -75,10 +75,12 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Festival descriptions**: Krishna Ashtami, Mahashivaratri and Vasantik Navaratri had "………" in Nepali. On instruction (17 Nov 2026) they now show the festival name only, in both languages. The build now fails on dot placeholders like these (`scripts/dot-placeholders.ts`); a scan of all content and interface text found no others. The quick facts now have no festivals (`festivals: []`). Months are still missing for most festivals.
 - [ ] **"उदासीन" / "Udasin"**: dropped from the tradition field but still in the summary, the signboard name and How to Visit. Confirm which is right.
 - [ ] **Typos in the Nepali to check (not changed):** "बुद्धिदास महाराजको तिथ" (तिथि); "वि.सं. २०८० असाेज" typed as ा+े (असोज); "वासन्तीक नवरात्र" (वासन्तिक); "विष्णु पञ्चायन" in 4 places (पञ्चायतन elsewhere); "संवर्धन  एवं" double space; "नेपाली चोकन मन्दिर" (चोक?).
-- [ ] **Photos beside "यहाँ भएका सम्पदाहरू" / "The Heritage Here"** (`content/section-photos.json`): matched by Claude using the guru's new photo descriptions. Confirm, especially item 11 (ancient Nepali chok temple and mahant gaddi → `main-courtyard`, the courtyard of the two-storey buildings) and item 2 (`gilded-shrine`, described as the Vishnu Panchayatan temple). No photo yet for items 1, 10 and 12–16.
-  - [x] **Item 11 description**: turned on (17 Nov 2026) on confirmation that the courtyard photo matches "the ancient Nepali chok temple and the mahant gaddi". All nine items now show their photo's description.
-  - [x] **Items 10, 12, 13, 16 replaced (17 Nov 2026, from the team's pictures):** 10 Shivalinga in a stone niche (new: `shivalinga-niche.webp`), 12 paddy field, 13 courtyard view, 16 bhandara (re-added; since removed from item 16, still in the gallery); 15 (yajnashala) and 16 (satsang hall) now read "under construction" / "निर्माणाधीन" and show the team's construction photos (new: `yajnashala-construction.webp`, `satsang-hall-construction.webp`; Nepali alt text by Claude, please check) (ward team; Nepali by Claude, please check); 14 (Brahma Kunda) has no photo and now reads "in need of repair" / "मर्मत आवश्यक", from the ward team (source key `ward-team`). Nepali wording by Claude; please check. Nepali alt text of `shivalinga-niche.webp` is by Claude; please check.
-  - [x] **Items 1, 10, 12–16** (superseded for 10, 12, 13, 16 by the line above) (17 Nov 2026, chosen by the team from the gallery's 4-column grid): 1 samadhi temple, 10 statue of Mahant Buddhidas, 12 Hanuman shrine under the peepal tree, 13 Nandi & Shivalinga, 14 heritage signboard, 15 painting of Brahmaharidas, 16 painting of Gothalramdas, all **without** captions. Now every item has a photo. Three photos appear twice in the list (samadhi temple: 1 and 9; Hanuman shrine: 4 and 12; Nandi & Shivalinga: 3 and 13); swap them for photos of the actual places when the team has them.
+- [x] **Photos beside "यहाँ भएका सम्पदाहरू" / "The Heritage Here"** (`content/section-photos.json`), final state on 17 Nov 2026:
+  - Items 2–9 and 11: matched by Claude from the guru's photo descriptions; each shows its photo's gallery description (item 11's confirmed by the team).
+  - Items 1, 10, 12, 13, 15 and 16: chosen by the team, photo only (no caption): 1 samadhi temple, 10 Shivalinga in a stone niche, 12 paddy field, 13 courtyard view, 15 the yajnashala under construction, 16 the satsang hall's construction site.
+  - Item 14 (Brahma Kunda): no photo; reads "in need of repair" / "मर्मत आवश्यक". Items 15 and 16 read "under construction" / "निर्माणाधीन". Both notes are from the ward team (source key `ward-team`).
+  - One photo appears twice: the samadhi temple (items 1 and 9).
+  - [ ] Nepali by Claude, for Luniva: the notes "मर्मत आवश्यक" and "निर्माणाधीन", and the Nepali alt text of `shivalinga-niche.webp`, `yajnashala-construction.webp` and `satsang-hall-construction.webp`.
 - [ ] **Alternative name "Siddheshwar Mahadev" — needs a source.** Given by the ward team (13 Nov 2026) but not confirmed. It was removed from the chatbot topic label in the Phase 9 review and is **not shown anywhere** on the site.
   - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
   - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere on the site.
@@ -94,8 +96,8 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 ## 3. Both sites
 
 - **Coordinates** (given by the ward team on 12 Nov 2026, checked against OpenStreetMap):
-  - [x] **Mhepi Ajima**: 27.727614400718654, 85.30859929776761 (given by the ward team, 13 Nov 2026; replaces 27.7172, 85.3082). The point is where OpenStreetMap labels "Mhepi" on the base map. Not marked approximate. Shown on the map in dev only while the site is a draft.
-    - [ ] When Mhepi leaves draft, retake the map preview picture (`map/preview` in `scripts/image-manifest.json`, see DEPLOY.md) so its marker appears in it.
+  - [x] **Mhepi Ajima**: 27.727614400718654, 85.30859929776761 (given by the ward team, 13 Nov 2026; replaces 27.7172, 85.3082). The point is where OpenStreetMap labels "Mhepi" on the base map. Not marked approximate.
+    - [x] The map preview picture was retaken when Mhepi Ajima was published (13 Nov 2026), so its marker is in it. Retake it whenever the places change (see DEPLOY.md).
   - [x] **Nanak Math**: 27.7257, 85.3064 (from gurdwara-sahib.pages.dev). OSM reverse-geocodes it to an amenity named **"Gurunayak Math"**, Naya Bazar, Kathmandu-16 ✓. It is marked approximate (`coordinatesApproximate: true`). The first point offered, 27.73678, 85.28086, landed on a Shiva temple in Nagarjun Municipality and was rejected.
   - [ ] Confirm the exact point on a site visit, then remove `coordinatesApproximate`.
   - [x] **Ward office**: about 27.7290, 85.3016 (Balaju, Kathmandu-16 on OSM). It is marked approximate in `content/ward.json` and on the map. An exact point would allow a small embedded map in the home Contact section.
@@ -104,14 +106,16 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Bhandara photo — re-added 17 Nov 2026.** The team confirmed that the people shown agree and that the photographer gave permission and wants no credit line. It is back in the Nanak Math gallery and beside list item 16. Earlier note: the `IMG-*-WA*.jpg` files are WhatsApp forwards, several watermarked "SHOT ON UMIDIGI G9A", so someone outside the team took them. `bhandara.webp` (from `IMG-20261104-WA0022.jpg`) was **removed from the site** in Phase 6; the original stays in raw-data. **Re-add only with the photographer's permission and a "Photo courtesy of …" credit.** No other WhatsApp photo is published.
 - [x] **Consent decisions for people in photos**: all nine photos in `docs/photos-with-people.md` were set to `"approved"` in `content/photo-consent.json` on 12 Nov 2026 ("use photos with people"). Changing one to `"removed"` still hides it everywhere. The strict build fails if any photo is ever `"pending"` again.
   - Not used: the Mhepi team group photo (`Mhepi Ajima/Photo/20261104_085758.heic`), a team selfie (`Guru Nanak Mantha/Photo/20261104_100241.heic`), and portraits of an elderly sadhu (`IMG_20261104_095808.jpg`, `IMG_20261104_095816.jpg`, `IMG_20261104_095816_1.jpg`).
-- [ ] **Permission** from the math's mahant and the Mhepi committee to publish photos of the inner shrines
+- **Permission to publish photos of the inner shrines:**
+  - [x] **Mhepi Ajima**: the chief priest gave consent on 17 Nov 2026 for the inner shrine photo to be shown prominently (home slideshow); recorded in `content/photo-consent.json`.
+  - [ ] **Nanak Math**: the mahant's permission for the inner-shrine photos (e.g. `gilded-shrine`, the Vishnu Panchayatan temple, and `shrine-room`, where the Vedic texts are kept). **Blocks launch.**
 - **Video:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("YouTube videos", Soon after launch).
 
 ## 3b. Home page
 
 - [x] **Mhepi Ajima inner shrine in the hero slideshow**: the chief priest gave consent on 17 Nov 2026 (recorded in `content/photo-consent.json`: approved, priest, 2026-11-17). It is back in `heroSlides`, after the Mhepi temple front.
 - [ ] **Hero slideshow Nepali labels** (`home.slidesPause` / `home.slidesPlay`, "तस्बिरहरूको स्लाइड शो रोक्नुहोस् / चलाउनुहोस्"): by Claude, 17 Nov 2026; please check.
-- [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used and has been removed from `heroCandidates`. Since 17 Nov 2026 the hero is a slideshow (`heroSlides`); `carved-windows` is still left out of it.
+- [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used. Since 17 Nov 2026 the hero is a slideshow (`content/home.json` → `heroSlides`, 10 photos, 3 s each); `carved-windows` stays out of it.
 - [ ] **Chairperson's name** is in `content/ward.json` but deliberately not shown anywhere until confirmed.
 
 ## 4. Ward information (for `ward.json`, header, footer, contact page)
@@ -155,7 +159,7 @@ These files contain Nepali written by Claude, not taken from a source. A native 
   - [ ] Confirm that wording, or whether to say just "Gemini".
 - [ ] **Nani animation**: `Nani.jpeg` is a single still JPEG (848×1264, one frame), so no animated WebP or MP4/WebM loop could be made from it. The floating button uses the still picture with a gentle CSS bob-and-tilt instead, which is static under reduced motion. If an animated original exists, add it to raw-data and convert it (target < 300 KB, plus a still frame).
 - [ ] Nani is an AI-generated illustration of a child. Confirm the ward is happy to publish it on a public government website, and that Gemini's terms allow this use.
-- **Size (13 Nov 2026):** Nani is a 56 px round face, bottom-left on every page. Hovering over her with a mouse shows the large half-body cut-out (background removed by `npm run optimize-images`; 260 px tall from 768 px, 130 px below) with her speech bubble. Touch screens always show the round face. (Earlier the big figure stood on the page permanently, but it covered the hero buttons, the table of contents, gallery photos, the contact form and the map.)
+- **Size (13 Nov 2026):** Nani is a 56 px round face, bottom-right on every page (swapped with the 3D Map button on 14 Nov 2026). Hovering over her with a mouse shows the large half-body cut-out (background removed by `npm run optimize-images`; 260 px tall from 768 px, 130 px below) with her speech bubble. Touch screens always show the round face. (Earlier the big figure stood on the page permanently, but it covered the hero buttons, the table of contents, gallery photos, the contact form and the map.)
 
 - [ ] **Answers without data**: the entry-fee and photography answers say there is no confirmed information and point to the ward office. Update them in `content/faq.json` once the facts are known.
 - [ ] **More questions**: add entries for questions people actually ask. The answers must come from the content; the build checks that every "Read more" anchor exists in both languages.
