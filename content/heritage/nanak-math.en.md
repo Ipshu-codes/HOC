@@ -6,7 +6,7 @@ summary: "An ancient Udasin math beside the Bishnumati riverbank in Naya Bazar, 
 location: "Beside the Bishnumati riverbank, Naya Bazar (near Bishnumati Bridge), Balaju — Kathmandu Metropolitan City Ward No. 16"
 coordinates: [27.7257, 85.3064]
 coordinatesApproximate: true
-established: "The math has existed ever since Nandi performed penance here, received the darshan of Lord Shiva in person and became Shiva's vahana (mount); it has been protected, managed and run by celibate mahant sadhus of the Nepali guru–disciple tradition."
+established: "According to the math, it has existed ever since Nandi performed penance here, received the darshan of Lord Shiva in person and became Shiva's vahana (mount); it has been protected, managed and run by celibate mahant sadhus of the Nepali guru–disciple tradition."
 deity_or_tradition: "Nepali guru–disciple mahant tradition. A math run through the worship of Vishnu Panchayatan, Hanumanji, Nandeshwar Mahadev, Tulsi Mata and Gau Mata."
 festivals: []
 visiting:
@@ -35,7 +35,7 @@ gallery:
   - src: "/images/nanak-math/sadhu-statue.webp"
     alt: "Statue of Brahmaleen Mahant Shri Buddhidas Ji Maharaj beneath a canopy"
   - src: "/images/nanak-math/vishnu-paduka.webp"
-    alt: "The 1,000-year-old Vishnu paduka at the foot of the peepal tree"
+    alt: "The Vishnu paduka at the foot of the peepal tree, said to be 1,000 years old"
   - src: "/images/nanak-math/shrine-under-tree.webp"
     alt: "Image of Sankatmochan Siddha Hanuman at the foot of the peepal tree"
   - src: "/images/nanak-math/nandi-and-shivalinga.webp"
@@ -53,7 +53,7 @@ gallery:
   - src: "/images/nanak-math/painting-yathiramdas.webp"
     alt: "Painting of Samadhi-siddha Mahayogi Shri Yathiramdas Ji Maharaj seated in the posture of mahayoga sadhana"
   - src: "/images/nanak-math/dhuni-signboard.webp"
-    alt: "The akhanda dhuni of this tradition, where Mahayogi Shri Brahmaharidas Maharaj regularly performed havan, kept burning for 700 years"
+    alt: "The akhanda dhuni of this tradition, where Mahayogi Shri Brahmaharidas Maharaj regularly performed havan, said to have been kept burning for 700 years"
   - src: "/images/nanak-math/akhanda-dhuni.webp"
     alt: "A maharaj who lives here performing havan (hom) at the akhanda dhuni"
   - src: "/images/nanak-math/gaushala-cow.webp"
@@ -113,7 +113,7 @@ In VS 1450 Mahayogi Shri Brahmaharidas Ji Maharaj came to this math, a tapasthal
 ### The line of mahants {#mahants}
 
 <!-- source: nanak-account | DOCX para 3 and list -->
-The guru–disciple tradition has come down from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad, through Brahmaharidas Maharaj, who is in living bhu-samadhi, to this day, and the present, 23rd mahant is **Shri Naval Kishor Das Ji Maharaj**.
+According to the math, the guru–disciple tradition has come down from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad, through Brahmaharidas Maharaj, who is in living bhu-samadhi, to this day, and the present, 23rd mahant is **Shri Naval Kishor Das Ji Maharaj**.
 
 1. Jagatguru Shri Narharyanandacharya Ji Maharaj (regarded as an incarnation of Sanak)
 2. Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, VS 1482 to VS 1664

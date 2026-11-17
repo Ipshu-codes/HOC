@@ -91,6 +91,7 @@
     "onThisPage": "On this page",
     "photos": "Photos",
     "seeAllPhotos": "See all photos",
+    "informationFrom": "Information from {people}",
     "viewOnMap": "View on 3D Map",
     "otherHeritage": {
       "one": "Other heritage site",
@@ -182,6 +183,7 @@
       "openPage": "Open the full page",
       "photos": "Photos",
       "seeAllPhotos": "See all photos",
+    "informationFrom": "Information from {people}",
       "contact": "Contact",
       "address": "Address",
       "phone": "Phone",
