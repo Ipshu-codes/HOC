@@ -55,6 +55,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const credits = getCredits();
   const illustration = ward.illustration ? imageSet(ward.illustration.files) : null;
   const overviewImage = ward.overviewImage ? imageSet(ward.overviewImage.files) : null;
+  const wardMap = ward.wardMap ? imageSet(ward.wardMap.files) : null;
+  const overviewLogo = ward.overviewLogo ? imageSet(ward.overviewLogo.files) : null;
   // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
   const naniCredit = naniCreditText(credits, dict, lang);
 
@@ -76,20 +78,6 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             <p className="justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
             <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
           </div>
-          {overviewImage && (
-            // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-            <img
-              src={overviewImage.src}
-              srcSet={overviewImage.srcSet}
-              sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
-              width={overviewImage.width}
-              height={overviewImage.height}
-              alt={ward.overviewImage?.alt[lang] ?? ""}
-              loading="lazy"
-              decoding="async"
-              className="mx-auto w-full max-w-72 rounded-xl shadow-sm ring-1 ring-gold/40 md:mx-0 md:-mt-16"
-            />
-          )}
         </div>
       </HomeSection>
 
