@@ -82,7 +82,7 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
             className="mb-3 aspect-video w-full rounded-lg object-cover"
           />
         )}
-        {place.summary && <p className="text-base">{place.summary}</p>}
+        {place.summary && <p className="justified text-base">{place.summary}</p>}
 
         {place.contact && (
           <section aria-labelledby="map-contact" className="mt-4">
