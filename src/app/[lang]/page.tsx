@@ -75,56 +75,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             Nani's namaste sits beside the text there, raised to the heading (md:-mt-16), and below the text on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
           <div className="space-y-4 text-lg">
-            <p>{fill(byCount(dict.home.overviewIntro, count))}</p>
-            <p>{byCount(dict.home.overviewNext, count)}</p>
-            {wardMap && (
-              // The whole ward map fills the space under the text; the link opens the largest file to read the labels.
-              <a href={wardMap.src} className="mt-8 block rounded-xl focus-visible:outline-offset-4">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-                <img
-                  src={wardMap.src}
-                  srcSet={wardMap.srcSet}
-                  sizes="(min-width: 64rem) 48rem, (min-width: 48rem) calc(100vw - 21rem), calc(100vw - 2rem)"
-                  width={wardMap.width}
-                  height={wardMap.height}
-                  alt={ward.wardMap?.alt[lang] ?? ""}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full rounded-xl bg-white shadow-sm ring-1 ring-gold/40"
-                />
-              </a>
-            )}
-          </div>
-          {/* Image column: Nani's namaste, then the ward logo beside the map. */}
-          <div className="mx-auto flex w-full max-w-72 flex-col items-center gap-10 md:mx-0 md:-mt-16 md:max-w-none">
-            {overviewImage && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={overviewImage.src}
-                srcSet={overviewImage.srcSet}
-                sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
-                width={overviewImage.width}
-                height={overviewImage.height}
-                alt={ward.overviewImage?.alt[lang] ?? ""}
-                loading="lazy"
-                decoding="async"
-                className="w-full rounded-xl shadow-sm ring-1 ring-gold/40"
-              />
-            )}
-            {overviewLogo && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={overviewLogo.src}
-                srcSet={overviewLogo.srcSet}
-                sizes="12rem"
-                width={overviewLogo.width}
-                height={overviewLogo.height}
-                alt={ward.overviewLogo?.alt[lang] ?? ""}
-                loading="lazy"
-                decoding="async"
-                className="w-48 max-w-full rounded-full"
-              />
-            )}
+            <p className="justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
+            <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
           </div>
         </div>
       </HomeSection>
@@ -135,7 +87,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         {/* Text from the ward team; {sites} keeps draft sites out of production builds. The ward
             illustration fills the space beside it from 768 px, and sits under it on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
-          <p className="text-lg">{fill(dict.home.aboutIntro)}</p>
+          <p className="justified text-lg">{fill(dict.home.aboutIntro)}</p>
           {illustration && (
             // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
             <img
