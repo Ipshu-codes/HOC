@@ -5,7 +5,8 @@
  *    are already left out by src/lib/content.ts, but public/ is copied into out/
  *    as-is, so delete out/images/<draft-slug>/. Then fail if a draft site's slug
  *    or name still appears anywhere in out/.
- * 2. Placeholders: fail if "[PLACEHOLDER", "[TODO" or an unfilled "{person:" credit token
+ * 2. Placeholders: fail if "[PLACEHOLDER", "[TODO", runs of placeholder dots in a page's visible text
+ *    (scripts/dot-placeholders.ts) or an unfilled "{person:" credit token
  *    (content/credits.json → people) appears anywhere in out/ (for example dev-only filler
  *    text that slipped into a production build).
  * 3. Image metadata: fail if any published image still carries EXIF, XMP or text
@@ -14,6 +15,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+
+import { findDotPlaceholders, htmlText } from "./dot-placeholders";
 
 const HERITAGE_DIR = path.join("content", "heritage");
 const OUT_DIR = "out";
@@ -97,6 +100,11 @@ for (const file of listFiles(OUT_DIR)) {
   const text = fs.readFileSync(file, "utf8");
   for (const marker of MARKERS) {
     if (text.includes(marker)) findings.push(`${file}: contains "${marker}"`);
+  }
+  if (file.endsWith(".html")) {
+    for (const dots of findDotPlaceholders(htmlText(text))) {
+      findings.push(`${file}: placeholder dots (${dots.what}): ${dots.text}`);
+    }
   }
   for (const { needles } of drafts) {
     for (const needle of needles) {

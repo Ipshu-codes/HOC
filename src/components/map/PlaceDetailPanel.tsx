@@ -18,7 +18,7 @@ interface PlaceDetailPanelProps {
 
 /**
  * The full story of one place: photo, introduction, quick facts, the sections written in
- * content/heritage/*.md (History, Legends & Beliefs, …), photos and sources.
+ * content/heritage/*.md (History, Legends & Beliefs, …) and photos. (No sources list, as on the heritage pages.)
  * A side column on extra-wide screens, below the map at intermediate widths, and a bottom sheet on phones.
  * Everything shown comes from the place data; nothing here is hard-coded per site.
  */
@@ -172,27 +172,6 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
               </section>
             )}
 
-            {details.sources.length > 0 && (
-              <section aria-labelledby="map-sources" className="mt-5">
-                <h3 id="map-sources" className="font-heading text-lg font-bold text-brick">
-                  {t.sources}
-                </h3>
-                <p className="text-sm">{t.sourcesIntro}</p>
-                <ul className="mt-1 list-disc space-y-1 pl-5 text-sm">
-                  {details.sources.map((source) => (
-                    <li key={source.key}>
-                      {source.url ? (
-                        <a href={source.url} className="text-crimson underline underline-offset-4 hover:text-brick">
-                          {source.label}
-                        </a>
-                      ) : (
-                        source.label
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
           </>
         )}
 

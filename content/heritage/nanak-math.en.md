@@ -1,32 +1,14 @@
 ---
-name: "Nanak Math"
-nameNe: "नानक मठ"
+name: "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj (Nanak Math)"
+nameNe: "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ)"
 slug: "nanak-math"
-summary: "An ancient Udasin math on the bank of the Bishnumati in Naya Bazar, Balaju, revered as the living bhu-samadhi site of Mahayogi Shri Brahmaharidas Maharaj and home to an unbroken Nepali guru–disciple mahant tradition."
-location: "Bishnumati riverbank, Naya Bazar (near Bishnumati Bridge), Balaju — Kathmandu Metropolitan City Ward No. 16"
+summary: "An ancient Udasin math beside the Bishnumati riverbank in Naya Bazar, Balaju, revered as the living bhu-samadhi site of Mahayogi Shri Brahmaharidas Maharaj and home to an unbroken Nepali guru–disciple mahant tradition."
+location: "Beside the Bishnumati riverbank, Naya Bazar (near Bishnumati Bridge), Balaju — Kathmandu Metropolitan City Ward No. 16"
 coordinates: [27.7257, 85.3064]
 coordinatesApproximate: true
-established: "Ancient, by tradition; the living bhu-samadhi temple dates to VS 1664"
-deity_or_tradition: "Udasin; Nepali guru–disciple mahant tradition. Vishnu Panchayatan, Hanuman, Nandeshwar Mahadev (Shiva), Tulsi and Gau Mata are worshipped."
-festivals:
-  - name: "Akshaya Tritiya"
-    month: "Baishakh"
-    description: "Annual puja at the samadhi temple, on the anniversary of the living bhu-samadhi."
-  - name: "Basanta Panchami"
-    description: "Tithi (remembrance day) of Krishna Das Maharaj."
-  - name: "Kojagrat Purnima"
-    description: "Tithi of Mangal Das Maharaj."
-  - name: "Teej (dar khane din)"
-    description: "Tithi of Buddhi Das Maharaj, observed on the day of the Teej feast."
-  - name: "Asar Shashthi"
-    month: "Asar"
-    description: "Tithi of Munindranand Maharaj."
-  - name: "Vijaya Dashami"
-    description: "Birthday of Nem Muni Maharaj."
-  - name: "Sharadiya Navaratri"
-    description: "Durga puja and worship of nine girls and one boy (nau kanya ra ek kumar puja)."
-  - name: "Dhwajarohan"
-    description: "On the full moon when the Sorha Shraddha begin, the flag is changed and a bhandara (communal feast) is held."
+established: "The math has existed ever since Nandi performed penance here, received the darshan of Lord Shiva in person and became Shiva's vahana (mount); it has been protected, managed and run by celibate mahant sadhus of the Nepali guru–disciple tradition."
+deity_or_tradition: "Nepali guru–disciple mahant tradition. A math run through the worship of Vishnu Panchayatan, Hanumanji, Nandeshwar Mahadev, Tulsi Mata and Gau Mata."
+festivals: []
 visiting:
   hours: "7:00 am – 6:00 pm"
   tips: "The temple is open to all visitors for darshan, worship and seva. Cows at the gaushala may be offered green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt — never stale, rotten or leftover food."
@@ -49,130 +31,113 @@ gallery:
   - src: "/images/nanak-math/tulsi-math.webp"
     alt: "The tulsi math: a raised stone shrine with a sloping metal roof and small niches, a tulsi plant growing on top"
   - src: "/images/nanak-math/tulsi-math-niche.webp"
-    alt: "A niche of the tulsi math holding a carved image and dark shaligram stones with red flowers"
+    alt: "A shrine in the Tulsi Math grounds holding Shiva–Parvati and Shaligram Bhagwan"
   - src: "/images/nanak-math/sadhu-statue.webp"
-    alt: "Painted statue of a seated sadhu in orange robes beneath a metal canopy"
+    alt: "Statue of Brahmaleen Mahant Shri Buddhidas Ji Maharaj beneath a canopy"
   - src: "/images/nanak-math/vishnu-paduka.webp"
-    alt: "Stone footprints (Vishnu paduka) among the roots of the peepal tree, decorated with marigolds"
+    alt: "The 1,000-year-old Vishnu paduka at the foot of the peepal tree"
   - src: "/images/nanak-math/shrine-under-tree.webp"
-    alt: "Orange sindoor-covered image in a small shrine at the base of a large tree"
+    alt: "Image of Sankatmochan Siddha Hanuman at the foot of the peepal tree"
   - src: "/images/nanak-math/nandi-and-shivalinga.webp"
-    alt: "Open-air platform with a Nandi bull sculpture, shivalinga stones and a golden trident, beside a paddy field"
-  - src: "/images/nanak-math/brahmaharidas-plaque.webp"
-    alt: "Painted plaque giving the birth (VS 1432) and living-samadhi (VS 1664) dates of Mahayogi Shri Brahmaharidasji Maharaj"
-  - src: "/images/nanak-math/disciples-plaque.webp"
-    alt: "Painted plaque with the details of Mahayogi Shri Yathiramdasji and Shri Gothalramdasji Maharaj"
+    alt: "The Nandeshwar Mahadev temple, Shivalaya and Nandi statue in the eastern part of the grounds of Mahayogi Shri Brahmaharidas Ji Maharaj"
+  # - src: "/images/nanak-math/brahmaharidas-plaque.webp"
+  #   alt: "Painted plaque giving the birth (VS 1432) and living-samadhi (VS 1664) dates of Mahayogi Shri Brahmaharidasji Maharaj"
+  # - src: "/images/nanak-math/disciples-plaque.webp"
+  #   alt: "Painted plaque with the details of Mahayogi Shri Yathiramdasji and Shri Gothalramdasji Maharaj"
   - src: "/images/nanak-math/heritage-signboard.webp"
-    alt: "Signboard listing the math's sacred sites beneath portraits of its three samadhi saints and three mahants"
+    alt: "Signboard at the entrance inside the main temple"
   - src: "/images/nanak-math/painting-brahmaharidas.webp"
-    alt: "Painting of Mahayogi Shri Brahmaharidasji Maharaj seated in a yogic posture"
+    alt: "Painting of Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj seated in the posture of mahayoga sadhana"
   - src: "/images/nanak-math/painting-gothalramdas.webp"
-    alt: "Painting of Mahayogi Shri Gothalramdasji Maharaj seated in meditation beneath trees"
+    alt: "Painting of Samadhi-siddha Mahayogi Shri Gothalramdas Ji Maharaj seated in the posture of mahayoga sadhana"
   - src: "/images/nanak-math/painting-yathiramdas.webp"
-    alt: "Painting of Mahayogi Shri Yathiramdasji Maharaj seated in meditation"
+    alt: "Painting of Samadhi-siddha Mahayogi Shri Yathiramdas Ji Maharaj seated in the posture of mahayoga sadhana"
   - src: "/images/nanak-math/dhuni-signboard.webp"
-    alt: "Sign above the fire pit: the yajna kunda of Mahayogi Brahmaharidas Maharaj and the akhanda dhuni burning for 700 years"
+    alt: "The akhanda dhuni of this tradition, where Mahayogi Shri Brahmaharidas Maharaj regularly performed havan, kept burning for 700 years"
   - src: "/images/nanak-math/akhanda-dhuni.webp"
-    alt: "A sadhu in yellow robes tends the akhanda dhuni, the ever-burning sacred fire, in a dark room"
+    alt: "A maharaj who lives here performing havan (hom) at the akhanda dhuni"
   - src: "/images/nanak-math/gaushala-cow.webp"
-    alt: "A cow in the math's gaushala (cowshed)"
-  - src: "/images/nanak-math/gaushala-poster.webp"
-    alt: "Poster at the gaushala listing what cows may be fed: green fodder, straw, maize flour, bran, husk, oil cake, jaggery and salt"
-  - src: "/images/nanak-math/wooden-paduka.webp"
-    alt: "A pair of wooden sandals (paduka) ringed with marigolds on red velvet"
+    alt: "Cows in the gaushala inside the math grounds"
   - src: "/images/nanak-math/shrine-room.webp"
-    alt: "Shrine room with a cloth-draped platform beneath a pink canopy, framed portraits on the walls"
+    alt: "The place where sadhus of this math's tradition keep the Vedic texts and worship them"
   - src: "/images/nanak-math/gilded-shrine.webp"
-    alt: "Gilded wooden shrine with deity images and marigold offerings"
+    alt: "The Vishnu Panchayatan temple, with the worship of Ganesh, Shiva, Durga, Surya and Vishnu in the form of shaligram, and of Hanumanji"
   - src: "/images/nanak-math/three-stone-platforms.webp"
-    alt: "Three stone platforms garlanded with marigolds and lit with small oil lamps in a white room"
+    alt: "The samadhi site of the maharajs who took samadhi"
   - src: "/images/nanak-math/archival-photograph.webp"
-    alt: "Framed black-and-white photograph of a group of sadhus"
+    alt: "Sadhus with a mahant of this math"
   - src: "/images/nanak-math/satsang-hall.webp"
-    alt: "Hall with benches and a painted frieze of deities along the wall"
+    alt: "Painted images of the nine goddesses, placed for the worship of the Goddess during Sharadiya Navaratri"
   - src: "/images/nanak-math/paddy-field.webp"
-    alt: "Ripening paddy field beside the math, with houses beyond"
+    alt: "Flourishing paddy fields planted within the math grounds"
   - src: "/images/nanak-math/sadhus-at-veranda.webp"
-    alt: "Three sadhus standing in front of the math's veranda"
+    alt: "Sadhus who live within the math grounds"
 ---
 
 <!-- Sources: raw-data "Guru Nanak Mantha/Nanak Mantha.docx" (cited as DOCX) and signboards photographed on site (cited by original filename). English translated from the Nepali sources. -->
 
-## History {#history}
+## Name and Location {#history}
 
 <!-- source: nanak-account, nanak-signboards | DOCX paras 2–3; signboard 20261103_145350.heic -->
-Prachin Udasin Bishnumati Nanak Math stands on the bank of the Bishnumati in Naya Bazar, Balaju. It is known by many names — Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban, Sangat Ban and Sadhukuti — and above all as the place of the **living bhu-samadhi of Mahayogi Shri Brahmaharidas Maharaj**.
+<!-- Prachin Udasin Bishnumati Nanak Math stands on the bank of the Bishnumati in Naya Bazar, Balaju. It is known by many names — Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban, Sangat Ban and Sadhukuti — and above all as the place of the **living bhu-samadhi of Mahayogi Shri Brahmaharidas Maharaj**. -->
 
 <!-- source: nanak-account | DOCX para 3 -->
-According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today.
+According to the math, it has existed since ancient times and has always been run by renunciant mahants of the Nepali guru–disciple (guru–shishya) tradition, a tradition that continues today. For this reason the math's tradition has been protected and nurtured, and this tapasthali (place of penance) of sadhus, with its historical, traditional and cultural importance, has remained as it was to this day.
 
 In this tradition a guru takes a celibate disciple, teaches him the daily rites of the ashram and the worship of the Vishnu Panchayatan, and trains him in the tradition's spiritual practices. Once the disciple is accomplished, sadhus of many sects, mahants, the head of the Guthi Sansthan, local scholars and devotees are invited and he is declared mahant.
 
 <!-- source: nanak-account | DOCX para 4 -->
 Under the math's rules, the outgoing mahant recommends his successor to the Guthi Sansthan, which approves the appointment, and responsibility is handed over with a bhandara for the sadhus, as instructed by Brahmaharidas Maharaj.
 
-### The name and the age of the math {#name-and-age}
-
-<!-- source: web-spotlight-2019, web-nepali-times-2014, web-wikipedia-sikhism-nepal | Spotlight: third udasi; math next to Bishnumati bridge, Balaju. Nepali Times: meditated >1 year at the site now known as Nanak Math, Balaju (no year). Wikipedia: "It is believed that Guru Nanak visited the math in 1516" (cites SikhNet, 2013). None says the math is named after him. -->
-The math's own written account and signboards do not explain the name "Nanak". Sikh tradition associates the math with Guru Nanak Dev, who is believed to have visited this place and meditated here. A 2019 article in Spotlight magazine says he came to Nepal on his third udasi, a long journey of travel and teaching, and places the math beside the Bishnumati bridge in Balaju. A 2014 Nepali Times article says he spent more than a year meditating at the site now known as Nanak Math. According to some accounts, cited in Wikipedia's article on Sikhism in Nepal, his visit took place around 1516. No local source has yet confirmed this association.
-
-<!-- source: nanak-account, nanak-signboards, web-wikipedia-sikhism-nepal | ages side by side, each attributed -->
-The sources give different accounts of the math's age:
-
-- **The math's written account:** its guru gaddi is a thousand years old.
-- **The signboards at the math:** a guru–disciple tradition that has continued without a break for 5,000 years.
-- **Published accounts of Sikh tradition:** Guru Nanak Dev's believed visit, around 1516.
-
-### Mahayogi Shri Brahmaharidas Maharaj {#brahmaharidas}
+### The Living Bhu-Samadhi Temple {#brahmaharidas}
 
 <!-- source: nanak-account, nanak-signboards | Plaque 20261103_135817.heic; DOCX para 4 -->
-- **Born:** VS 1432, Baishakh Purnima
+<!-- - **Born:** VS 1432, Baishakh Purnima
 - **Parents:** Dev Kumari Wastola and Ram Prasad Wastola
 - **Guru:** Jagatguru Shri Narharyanandacharya Ji Maharaj
 - **Living samadhi:** VS 1664, Baishakh Akshaya Tritiya
 
-As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at this math from 1450 onwards, lived on air alone until the age of 232, and guided three disciples to samadhi. Taking two of them — **Shri Gothalramdas Ji** and **Shri Yathiramdas Ji** — with him, he entered living bhu-samadhi in VS 1664 in the presence of sadhus and devotees. His third disciple, **Shri Hareram Das Ji Maharaj**, was taught mahayoga and instructed to carry the tradition forward. This account was told by Guru Buddhidas Maharaj to Nem Muni Das Maharaj.
+As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at this math from 1450 onwards, lived on air alone until the age of 232, and guided three disciples to samadhi. Taking two of them — **Shri Gothalramdas Ji** and **Shri Yathiramdas Ji** — with him, he entered living bhu-samadhi in VS 1664 in the presence of sadhus and devotees. His third disciple, **Shri Hareram Das Ji Maharaj**, was taught mahayoga and instructed to carry the tradition forward. This account was told by Guru Buddhidas Maharaj to Nem Muni Das Maharaj. -->
 
 <!-- source: nanak-signboards | Plaque 20261103_135842.heic -->
-| Detail | Mahayogi Shri Yathiramdas Ji Maharaj | Mahayogi Shri Gothalramdas Ji Maharaj |
-|---|---|---|
-| Born | VS 1511, Shivaratri | VS 1517, Janai Purnima |
-| Mother | Revati Upadhyay | Harimaya Upreti |
-| Father | Manorath Upadhyay | Shyam Babu Upreti |
-| Living bhu-samadhi | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya |
-| Guru | Mahayogi Shri Brahmaharidas Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj |
+| Detail | Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj (guru) | Mahayogi Shri Yathiramdas Ji Maharaj (disciple) | Mahayogi Shri Gothalramdas Ji Maharaj (disciple) |
+|---|---|---|---|
+| Born | VS 1432, Baishakh Purnima | VS 1511, Shivaratri | VS 1517, Janai Purnima |
+| Mother | Dev Kumari Wastola | Revati Upadhyay | Harimaya Upreti |
+| Father | Ram Prasad Wastola | Manorath Upadhyay | Shyam Babu Upreti |
+| Living bhu-samadhi | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya |
+| Guru | Jagatguru Shri Narharyanandacharya Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj |
+
+In VS 1450 Mahayogi Shri Brahmaharidas Ji Maharaj came to this math, a tapasthali of sadhus since ancient times, and became its mahant (peethadhishwar). He had many disciples after that; among his celibate disciples, Yati Ramdas Ji Maharaj, Gothal Ramdas Ji Maharaj and Hariramdas Ji Maharaj practised mahayoga and became able to take samadhi. In VS 1664 Mahayogi Shri Brahmaharidas Ji Maharaj and two of his disciples took living samadhi. What is written here is the history of the tradition as it came down from mahant to mahant, generation after generation, and as Gurudev Buddhidas Ji Maharaj explained it to Shri Nem Muni Das Ji Maharaj, today the mahant of this math.
 
 ### The line of mahants {#mahants}
 
 <!-- source: nanak-account | DOCX para 3 and list -->
-The math traces its tradition from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad down to Brahmaharidas Maharaj. The present mahant, **Shri Naval Kishor Das Ji Maharaj**, is the 23rd in the line:
+The guru–disciple tradition has come down from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad, through Brahmaharidas Maharaj, who is in living bhu-samadhi, to this day, and the present, 23rd mahant is **Shri Naval Kishor Das Ji Maharaj**.
 
 1. Jagatguru Shri Narharyanandacharya Ji Maharaj (regarded as an incarnation of Sanak)
-2. Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj
-3. Mahayogi Shri Hareram Das Ji Maharaj
-4. Mahayogi Shri Gokul Das Ji Maharaj
+2. Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, VS 1482 to VS 1664
+3. Mahayogi Shri Hariram Das Ji Maharaj, from VS 1664
+4. Mahant Shri Gokulram Das Ji Maharaj
 5. Mahant Shri Kashiram Das Ji Maharaj
-6. Mahant Shri Mathura Ramdas Ji Maharaj
+6. Mahant Shri Mathuraram Das Ji Maharaj
 7. Mahant Shri Prayag Das Ji Maharaj
-8. Mahant Shri Kanhiramdas Ji Maharaj
-9. Mahant Shri Atmaramdas Ji Maharaj
-10. Mahant Shri Manramdas Ji Maharaj
+8. Mahant Shri Kanhi Das Ji Maharaj
+9. Mahant Shri Atmaram Das Ji Maharaj
+10. Mahant Shri Manram Das Ji Maharaj
 11. Mahant Shri Dharmadas Ji Maharaj
-12. Mahant Shri Rai Ramdas Ji Maharaj
-13. Mahant Shri Gulab Ramdas Ji Maharaj
-14. Mahant Shri Dhuniramdas Ji Maharaj
-15. Mahant Shri Basanta Das Ji Maharaj
-16. Mahant Shri Gambhir Das Ji Maharaj
-17. Mahant Shri Krishnadas Ji Maharaj
-18. Mahant Shri Mangaldas Ji Maharaj
-19. Mahant Shri Haridas Ji Maharaj
-20. Mahant Shri Munindranand Das Ji Maharaj
-21. Mahant Shri Buddhi Das Ji Maharaj
-22. Mahant Shri Nem Muni Das Ji Maharaj
-23. Mahant Shri Naval Kishor Das Ji Maharaj
-
-<!-- source: nanak-account | DOCX para 4 -->
-Nem Muni Das Maharaj made his disciple Shri Naval Kishor Das mahant according to the math's tradition.
+12. Mahant Shri Rairam Das Ji Maharaj
+13. Mahant Shri Gulab Das Ji Maharaj
+14. Mahant Shri Dhuniram Das Ji Maharaj
+15. Mahant Shri Vasanta Das Ji Maharaj, VS 1891 to VS 1936
+16. Mahant Shri Gambhir Das Ji Maharaj, VS 1936 to VS 1960
+17. Mahant Shri Krishna Das Ji Maharaj, VS 1960 to VS 1980
+18. Mahant Shri Mangal Das Ji Maharaj, VS 1980 to VS 1990
+19. Mahant Shri Hari Das Ji Maharaj, VS 1990 to VS 2003
+20. Mahant Shri Munindranand Das Ji Maharaj, VS 2003 to VS 2026
+21. Mahant Shri Buddhi Das Ji Maharaj, VS 2026 to VS 2045
+22. Mahant Shri Nem Muni Udasin Maharaj, VS 2045 to VS 2080
+23. Mahant Shri Naval Kishor Das Ji Maharaj, from Asoj VS 2080 to the present
 
 ## Legends & Beliefs {#legends}
 
@@ -190,51 +155,55 @@ Sadhus from Nepal, India and abroad who come to Kathmandu for darshan of Pashupa
 <!-- source: nanak-account | DOCX para 4 -->
 The math's gurus brought the Guru Granth Sahib here for study; before that, and still today, the Vedas, Puranas, Upanishads, Ramayana and Bhagavat were kept, worshipped and read in daily satsang.
 
-## Festivals & Jatras {#festivals}
-
+## Special Festivals, Celebrations and Holy Days {#festivals}
 <!-- source: nanak-account | DOCX "वार्षिक कार्यक्रमहरू" -->
 The math's annual programme:
 
-- **Akshaya Tritiya** — annual puja at the samadhi temple
-- **Basanta Panchami** — tithi of Krishna Das Maharaj
-- **Kojagrat Purnima** — tithi of Mangal Das Maharaj
 - **Teej (dar khane din)** — tithi of Buddhi Das Maharaj
-- **Asar Shashthi** — tithi of Munindranand Maharaj
-- **Vijaya Dashami** — birthday of Nem Muni Maharaj
+- **Krishna Ashtami**
+- **Dhwajarohan** — on the full moon when the Sorha Shraddha begin, the flag is changed and a bhandara is held
 - **Sharadiya Navaratri** — Durga puja and worship of nine girls and one boy
-- **Full moon at the start of Sorha Shraddha** — dhwajarohan: the flag is changed and a bhandara is held
+- **Vijaya Dashami** — birthday of Nem Muni Maharaj
+- **Kojagrat Purnima** — tithi of Mangal Das Maharaj
+- **Vasant Panchami** — tithi of Krishna Das Maharaj
+- **Mahashivaratri**
+- **Vasantik Navaratri**
 
 <!-- source: nanak-account | DOCX "परम्परा" list items 2–11 -->
 ### Daily worship {#daily-worship}
 
-Every day the math performs puja, readings and morning and evening aarti for the Vishnu Panchayatan deities and the sacred texts, with bhog and prasad; worship and care of the cows; puja at the samadhi temple; abhishek at the Hanuman temple and on the Shivalinga; service to Nandeshwar Mahadev; puja of the Vishnu paduka beneath the peepal tree; water abhishek for Tulsi Maharani; abhishek of the shaligram; and tending of the akhanda dhuni.
+Puja and readings for the Vishnu Panchayatan deities and the sacred texts, and puja, abhishek, aarti and bhog at the heritage shrines within the math grounds, are performed regularly every morning and evening. Worship, care and protection of the cows; puja at the samadhi temple; abhishek at the Hanuman temple and on the Shivalinga; service to Nandeshwar Mahadev; puja of the Vishnu paduka beneath the peepal tree; water abhishek for Tulsi Maharani; abhishek of the shaligram as a form of Vishnu; and the akhanda dhuni is kept burning without a break.
 
-## Architecture {#architecture}
+## The Heritage Here {#architecture}
 
 <!-- source: nanak-account | DOCX heritage list (items 1–16) + "Additional info" -->
 The math lists these archaeological, historical and ancient structures and heritage within its grounds:
 
-1. A **two-storey, square Vishnu Panchayatan temple with three courtyards** (tin-chok), in archaeological style, with the **Vedic granth gaddi** — the seat where sacred texts are kept and worshipped
-2. The **Hanuman temple** beneath an ancient peepal tree
-3. The **ancient gaushala** — the tradition of sadhus caring for cows here goes back to ancient times
-4. An **ancient Shivalaya**
-5. The **akhanda dhuni**, said to have burned without interruption for about 700 years, kept alive with dry and fallen wood from trees inside the math grounds
-6. The **Tulsi Math**, worshipped since ancient times. On its four sides are Bhimsen (east), Pashupatinath (south), Narsingh Bhagwan (west) and Shiva–Parvati (north), together with shaligram
-7. **Nandi Tapasthali (Nandeshwar Mahadev)** — where Nandi performed penance and saw Shiva
-8. The **Vishnu paduka** beneath the peepal tree, about 1,000 years old — the place where sadhus meditate
-9. Residence and kitchen for visiting sadhus, saints and mahants
-10. A public toilet
-11. The **Brahma Kunda** (in need of reconstruction)
-12. The **guru gaddi** of the Nepali guru–disciple mahant tradition — a thousand years old according to the math's written account, while its signboards speak of a tradition of 5,000 years
-13. A green garden (hariyali ban batika)
-14. A **hall** for religious satsang programmes
-15. A **yajnashala** under construction (in the upper part of the grounds)
-16. The **living bhu-samadhi temple**, built in VS 1664, of the three samadhi-siddha saints — Mahayogi Shri Brahmaharidas Maharaj and his disciples Yathiramdas Maharaj and Gothalramdas Maharaj
+1. The math, run by the Nepali guru–disciple mahant tradition
+2. The Vishnu Panchayatan temple and the Vedic granth temple
+3. The Nandeshwar Mahadev temple
+4. The Sankatmochan Siddha Hanuman temple
+5. The Tulsi Math
+   - Nrisingh temple (west side)
+   - Shiva–Parvati temple (north side)
+   - Shiva temple (south side)
+   - Bhim temple (east side)
+6. The akhanda dhuni
+7. The Vishnu paduka
+8. The gaushala
+9. The living bhu-samadhi temple
+10. The Shivalaya
+11. The ancient, archaeological Nepali chok temple and the mahant gaddi
+12. A green forest with various gardens in the Vedic style: Navagraha, Panchapallav and Nakshatra gardens and a Dhanvantari garden
+13. Sant niwas (residence for saints)
+14. The Brahma Kunda
+15. The yajnashala
+16. A hall for religious discourses and satsang
 
 <!-- source: nanak-account | DOCX inventory ("जिन्सी सामग्रीहरू") -->
-### Treasures of the math {#treasures}
+<!-- ### Treasures of the math {#treasures} -->
 
-The math's inventory of 69 kinds of objects includes:
+<!-- The math's inventory of 69 kinds of objects includes:
 
 - **55 shaligram stones** worshipped as forms of Vishnu
 - **7 sacred texts** — the Guru Granth Sahib, Veda, Shrimad Bhagavat Mahapuran, Shri Ramcharitmanas, Shrimad Bhagavad Gita and Valmiki Ramayan
@@ -242,20 +211,17 @@ The math's inventory of 69 kinds of objects includes:
 - the **iron chimta** (tongs) used by Brahmaharidas Maharaj
 - an ancient panas lamp, two conch shells, brass images of Hanuman and Ganesh, a stone Shivalinga, a copper Nandi, a wooden Panchayatan temple, and a nagara drum and jhyali cymbals
 
-The math intends to collect these historic but worn objects and arrange them as a **museum**.
+The math intends to collect these historic but worn objects and arrange them as a **museum**. -->
 
 ## Present Day {#present-day}
 
 <!-- source: nanak-account | DOCX paras 3–4 -->
 The math is run and managed by its mahant, Shri Naval Kishor Das Ji Maharaj. Daily life includes puja, abhishek, kirtan and bhajan; periodic mahayoga sadhana, katha, pravachan and satsang; morning and evening aarti; and service to cows, guests and visiting saints. The sadhus living here practise mahayoga, contemplating the soul and the Supreme.
 
-Paddy, wheat, maize, greens and vegetables grown on the math's land are used to serve visiting saints, cows, brahmins and guests, and for the regular puja, festivals and bhandaras.
-
-A new yajnashala is under construction, and the Brahma Kunda awaits reconstruction.
+Paddy, wheat, maize, greens and vegetables grown on the math's land are used to serve visiting saints, cows, brahmins and guests, and for the regular puja, tithis, festivals and bhandaras. The dharmashala, Vishnu Panchayatan temple, sant niwas, gaushala, kitchen (pakshala), pathshala, yogashala and yajnashala, which have stood since ancient times, are in need of reconstruction.
 
 ## How to Visit {#how-to-visit}
 
 <!-- source: nanak-account, nanak-signboards | DOCX title + signboards 20261103_133906.heic, 20261103_145350.heic -->
-- **Where:** Naya Bazar, near Bishnumati Bridge, on the bank of the Bishnumati, Balaju — KMC Ward 16. Look for the signboard reading "प्राचिन उदासिन नानक मठ" above the entrance gate; stone steps lead up from the gate.
-- **Hours:** 7:00 am – 6:00 pm, open to all for darshan, seva and worship.
-- **Gaushala:** visitors may offer cows green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt. Stale, rotten or insect-infested food must not be given.
+- **Where:** east of Balaju Chowk, there is a Shivalaya to the left of the Bishnumati bridge over the Bishnumati River. Above it, beside the Bishnumati Corridor, is a signboard reading 'महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल, प्राचीन उदासीन नानक मठ' (Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj, Prachin Udasin Nanak Math). From there, you can climb up to visit the math's historic heritage.
+- **Hours:** 7:00 am – 6:00 pm, open to all visitors.

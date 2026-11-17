@@ -217,6 +217,56 @@ async function optimizeNaniFigure(): Promise<void> {
   console.log(`nani figure: ${figure.heights.join(", ")} px tall (${right - left + 1}×${bottom - top + 1} source)`);
 }
 
+/**
+ * The ward illustration (raw-data wardlogo1.png: "Kathmandu Metropolitan City … Ward-16"), shown beside
+ * the About Ward No. 16 text on the home page. WebP at a few widths, metadata stripped.
+ * → public/images/logo/ward-illustration-<width>.webp
+ */
+async function optimizeWardIllustration(): Promise<void> {
+  const { source, widths } = manifest.wardIllustration;
+  const dir = path.join(OUT_DIR, "logo");
+  await fs.mkdir(dir, { recursive: true });
+  for (const width of widths) {
+    await sharp(path.join(RAW_DATA_DIR, source))
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 85 })
+      .toFile(path.join(dir, `ward-illustration-${width}.webp`));
+  }
+  console.log(`ward illustration: ${widths.join(", ")} px`);
+}
+
+/**
+ * The 3D Map button's picture: a square crop of the ward's KMC profile map (raw-data "ward 16.jpg":
+ * river, main roads and buildings), shown round at Nani's face size. 1x, 2x and 3x files.
+ * → public/images/map/map-button-<size>.webp
+ */
+async function optimizeMapButton(): Promise<void> {
+  const { source, crop, sizes } = manifest.mapButton;
+  const dir = path.join(OUT_DIR, "map");
+  await fs.mkdir(dir, { recursive: true });
+  const square = await sharp(path.join(RAW_DATA_DIR, source))
+    .extract({ left: crop.left, top: crop.top, width: crop.size, height: crop.size })
+    .toBuffer();
+  for (const size of sizes) {
+    await sharp(square).resize(size, size).webp({ quality: 85 }).toFile(path.join(dir, `map-button-${size}.webp`));
+  }
+  console.log(`map button: ${sizes.join(", ")} px`);
+}
+
+/** Nani greeting with a namaste (raw-data Naninamaste.jpeg), beside the Overview text on the home page. */
+async function optimizeNaniNamaste(): Promise<void> {
+  const { source, widths } = manifest.naniNamaste;
+  const dir = path.join(OUT_DIR, "nani");
+  await fs.mkdir(dir, { recursive: true });
+  for (const width of widths) {
+    await sharp(path.join(RAW_DATA_DIR, source))
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toFile(path.join(dir, `nani-namaste-${width}.webp`));
+  }
+  console.log(`nani namaste: ${widths.join(", ")} px`);
+}
+
 async function main(): Promise<void> {
   try {
     await fs.access(RAW_DATA_DIR);
@@ -226,6 +276,9 @@ async function main(): Promise<void> {
   }
 
   await optimizeLogo();
+  await optimizeWardIllustration();
+  await optimizeNaniNamaste();
+  await optimizeMapButton();
   await optimizeNani();
   await optimizeNaniFigure();
 

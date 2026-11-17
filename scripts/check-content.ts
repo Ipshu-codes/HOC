@@ -5,7 +5,8 @@
  *   npm run check-content -- --allow-drafts  used by `npm run build:preview`
  *
  * Strict mode fails (exit code 1) if any file in content/ contains
- * "[PLACEHOLDER" or "[TODO", or a heritage file has `draft: true`.
+ * "[PLACEHOLDER" or "[TODO", runs of dots used as placeholders ("………", "....", a lone "…"; see
+ * scripts/dot-placeholders.ts), or a heritage file has `draft: true`.
  * With --allow-drafts, files with `draft: true` are skipped (the preview build
  * leaves those sites out entirely), but every other file must still be clean.
  *
@@ -16,6 +17,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+
+import { findDotPlaceholders } from "./dot-placeholders";
 
 const CONTENT_DIR = "content";
 const HERITAGE_DIR = path.join(CONTENT_DIR, "heritage");
@@ -50,6 +53,9 @@ function checkMarkers(file: string): Problem[] {
         }
       }
     });
+  for (const dots of findDotPlaceholders(fs.readFileSync(file, "utf8"))) {
+    problems.push({ file, line: dots.line, message: `placeholder dots (${dots.what}): ${dots.text}` });
+  }
   if (isDraft(file)) problems.push({ file, message: "has draft: true" });
   return problems;
 }

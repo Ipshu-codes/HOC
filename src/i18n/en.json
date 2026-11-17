@@ -10,7 +10,7 @@
   },
   "a11y": {
     "skipToContent": "Skip to main content",
-    "homeLink": "Ward No. 16 Heritage — home"
+    "homeLink": "Ward No. 16, home"
   },
   "nav": {
     "label": "Main navigation",
@@ -95,10 +95,7 @@
     "otherHeritage": {
       "one": "Other heritage site",
       "other": "Other heritage sites"
-    },
-    "sources": "Sources",
-    "sourcesIntro": "The information on this page comes from:",
-    "sourcesNote": "Signboards, plaques and inscriptions were read from photographs taken at the site in November 2026."
+    }
   },
   "credits": {
     "photos": "Photos: {team}, {year}",
@@ -185,8 +182,6 @@
       "openPage": "Open the full page",
       "photos": "Photos",
       "seeAllPhotos": "See all photos",
-      "sources": "Sources",
-      "sourcesIntro": "The information comes from:",
       "contact": "Contact",
       "address": "Address",
       "phone": "Phone",

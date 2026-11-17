@@ -59,15 +59,17 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 - [ ] **Entry fee** (not shown on the page until known)
 - [ ] **Photography rules** and dress/footwear etiquette (not shown on the page until known)
-- [ ] **Festival months**: the docx gives the festival names but not months, except Akshaya Tritiya (Baishakh, from the plaques) and Asar Shashthi. The `month` field is omitted for Basanta Panchami, Kojagrat Purnima, Teej, Vijaya Dashami, Navaratri and the Sorha Shraddha full moon.
-- [ ] **Have a local source confirm the Guru Nanak connection.** The History section ("The name and the age of the math") says Sikh tradition *associates* the math with Guru Nanak Dev, who is *believed* to have visited and meditated here. It cites three web sources:
-  - **Spotlight, 2019:** he came on his third udasi; the math is next to the Bishnumati bridge, Balaju. It gives no year.
-  - **Nepali Times, 2014 ("Little Punjab"):** he meditated for more than a year at the site now known as Nanak Math, Balaju. It gives no year.
-  - **Wikipedia, "Sikhism in Nepal":** "It is believed that Guru Nanak visited the math in 1516". Its only citation for the year is a 2013 SikhNet news item.
-  - None of the sources says the math is *named* after him, so the page doesn't say so either.
-  - The math's own written account and signboards do not mention Guru Nanak.
-  - The Hindustan Times / barusahib.org article was dropped (13 Nov 2026) because it is about a different shrine, in Thapathali.
-- [x] **Conflicting ages**: the written account says the guru gaddi is **1,000 years** old; the signboards speak of **5,000 years**; published accounts of Sikh tradition place Guru Nanak's believed visit **around 1516**. All three are shown side by side, each attributed, in History (EN + NE) and in the chatbot. The Architecture section also mentions the first two.
+- **Guru's review (17 Nov 2026):** Luniva Malakar revised the Nepali Nanak Math page and its chatbot answers "as per feedback of guru" (commit `1afc237`); the English was mirrored on 17 Nov 2026 (branch `feat/en-sync-heritage-photos`). As a result:
+  - The name is now "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ)" / "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj (Nanak Math)" everywhere, including the menu, cards, map and chatbot.
+  - The section on the name, the Guru Nanak association and the three ages (Spotlight, Nepali Times, Wikipedia) was removed. The chatbot now says Guru Nanak's visit is a legend without an authentic basis, and gives the age as "about 5,000 years; more than 500 by the samadhi".
+  - The **Sources** section was removed from every heritage page (decision, 17 Nov 2026). The `<!-- source: -->` comments in the content files stay and are still checked by the build.
+- [ ] **Brahmaharidas's dates disagree**: the new paragraph says he came and became mahant in **VS 1450**; the new mahant list gives **VS 1482**–1664.
+- [ ] **Who is the present mahant?** The new paragraph says Gurudev Buddhidas told the history to "आज यस मठका महन्त श्री नेममुनिदासजी महाराज" ("today the mahant"); the list says Nem Muni served VS 2045–2080 and Naval Kishor Das from Asoj VS 2080 to the present.
+- [x] **Festival descriptions**: Krishna Ashtami, Mahashivaratri and Vasantik Navaratri had "………" in Nepali. On instruction (17 Nov 2026) they now show the festival name only, in both languages. The build now fails on dot placeholders like these (`scripts/dot-placeholders.ts`); a scan of all content and interface text found no others. The quick facts now have no festivals (`festivals: []`). Months are still missing for most festivals.
+- [ ] **"उदासीन" / "Udasin"**: dropped from the tradition field but still in the summary, the signboard name and How to Visit. Confirm which is right.
+- [ ] **Typos in the Nepali to check (not changed):** "बुद्धिदास महाराजको तिथ" (तिथि); "वि.सं. २०८० असाेज" typed as ा+े (असोज); "वासन्तीक नवरात्र" (वासन्तिक); "विष्णु पञ्चायन" in 4 places (पञ्चायतन elsewhere); "संवर्धन  एवं" double space; "नेपाली चोकन मन्दिर" (चोक?).
+- [ ] **Photos beside "यहाँ भएका सम्पदाहरू" / "The Heritage Here"** (`content/section-photos.json`): matched by Claude using the guru's new photo descriptions. Confirm, especially item 11 (ancient Nepali chok temple and mahant gaddi → `main-courtyard`, the courtyard of the two-storey buildings) and item 2 (`gilded-shrine`, described as the Vishnu Panchayatan temple). No photo yet for items 1, 10 and 12–16.
+  - [x] **Item 11 description**: turned on (17 Nov 2026) on confirmation that the courtyard photo matches "the ancient Nepali chok temple and the mahant gaddi". All nine items now show their photo's description.
 - [ ] **Alternative name "Siddheshwar Mahadev" — needs a source.** Given by the ward team (13 Nov 2026) but not confirmed. It was removed from the chatbot topic label in the Phase 9 review and is **not shown anywhere** on the site.
   - A search of raw-data found **no occurrence** of Siddheshwar / सिद्धेश्वर (or its spelling variants) in the docx, the transcribed signboards and inscriptions, or any file name. The three web sources don't mention it either.
   - [ ] Give a source for the name (a document, signboard or interview) before it is used anywhere on the site.
@@ -75,12 +77,8 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
   - The earlier message with "six steps" for this name never arrived.
 - [ ] **"1450"**: the docx says Brahmaharidas practised at the math "from 1450" without naming the era. The content assumes VS, to match his VS 1432 birth.
 - [ ] **Name and spelling**: Nanak Math / Nanak Mantha / Prachin Udasin (Udashin) Nanak Math; नानक मठ / नानकमठ. Confirm the preferred English and Nepali forms.
-- [ ] **Identify photographed features** (the alt text is descriptive only):
-  - Is the shrine room with the pink canopy (`shrine-room.webp`) the Vedic granth gaddi or the guru gaddi?
-  - Are the three garlanded stone platforms (`three-stone-platforms.webp`) the samadhi of the three saints?
-  - Is the orange image under the tree (`shrine-under-tree.webp`) the Hanuman shrine?
-  - Who does the statue under the canopy (`sadhu-statue.webp`) depict?
-  - Is the construction site in the photos the yajnashala?
+- [x] **Photographed features identified** by the guru's review (alt text, 17 Nov 2026): the statue under the canopy is Brahmaleen Mahant Shri Buddhidas Ji Maharaj; the orange image under the tree is Sankatmochan Siddha Hanuman; the three garlanded platforms are the samadhi of the maharajs; the shrine room is where the sadhus keep and worship the Vedic texts; the gilded shrine is the Vishnu Panchayatan temple.
+  - [ ] Still open: is the construction site in the photos the yajnashala?
 - [ ] **Who wrote the docx?** It speaks of "my gurudev" and appears to be by the current mahant. This is needed for attribution.
 - [ ] **Review of the English translation** of the docx (by Claude)
 
@@ -126,7 +124,9 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 These files contain Nepali written by Claude, not taken from a source. A native speaker should review them.
 
 - `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
+- `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) and `overviewImage.alt.ne` (Nani's namaste beside Overview): alt text written by Claude, 17 Nov 2026.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
+  - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
 - `src/i18n/ne.json`: all Nepali UI strings (nav, footer, language toggle, skip link) were written by Claude
 - `src/i18n/ne.json` → `chat.didntFindAnswer`: the chatbot's "मेरो प्रश्न यहाँ छैन" reply (wording given by the ward team on 13 Nov 2026), plus `chat.backToTopics` and the other chat labels. Phone numbers in Nepali chat replies are shown in Devanagari digits (०१-४९८१६५३).

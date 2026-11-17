@@ -109,7 +109,7 @@ function checkLink(id: string, link: string, visibleSlugs: Set<string>, heritage
   if (!anchor) return;
   for (const l of LOCALES) {
     const heritage = heritagesByLang[l].find((h) => h.slug === slug);
-    const ids = new Set([...(heritage?.toc.map((t) => t.id) ?? []), "photos", "sources"]);
+    const ids = new Set([...(heritage?.toc.map((t) => t.id) ?? []), "photos"]);
     if (!ids.has(anchor)) throw new Error(`faq.json "${id}": #${anchor} does not exist on the ${l} ${slug} page`);
   }
 }
