@@ -109,7 +109,9 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 
 ## 3b. Home page
 
-- [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used and has been removed from `heroCandidates`.
+- [ ] **Mhepi Ajima inner shrine in the hero slideshow**: removed from `heroSlides` on 17 Nov 2026 until the priest agrees to the deity being shown that prominently. The photo stays in the gallery. Once he agrees, add `/images/mhepi-ajima/inner-shrine.webp` back to `content/home.json` → `heroSlides`.
+- [ ] **Hero slideshow Nepali labels** (`home.slidesPause` / `home.slidesPlay`, "तस्बिरहरूको स्लाइड शो रोक्नुहोस् / चलाउनुहोस्"): by Claude, 17 Nov 2026; please check.
+- [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used and has been removed from `heroCandidates`. Since 17 Nov 2026 the hero is a slideshow (`heroSlides`); `carved-windows` is still left out of it.
 - [ ] **Chairperson's name** is in `content/ward.json` but deliberately not shown anywhere until confirmed.
 
 ## 4. Ward information (for `ward.json`, header, footer, contact page)

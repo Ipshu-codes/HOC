@@ -1,6 +1,41 @@
 {
-  "heroCandidates": [
-    "/images/nanak-math/courtyard-view.webp"
+  "heroSlides": [
+    {
+      "src": "/images/nanak-math/courtyard-view.webp",
+      "position": "center 40%"
+    },
+    {
+      "src": "/images/mhepi-ajima/temple-and-courtyard-shrine.webp",
+      "position": "center 15%"
+    },
+    {
+      "src": "/images/nanak-math/main-courtyard.webp",
+      "position": "center 30%"
+    },
+    {
+      "src": "/images/mhepi-ajima/main-gate.webp",
+      "position": "center 40%"
+    },
+    {
+      "src": "/images/nanak-math/samadhi-temple.webp",
+      "position": "center 20%"
+    },
+    {
+      "src": "/images/mhepi-ajima/temple-front.webp",
+      "position": "center 30%"
+    },
+    {
+      "src": "/images/nanak-math/nandi-and-shivalinga.webp",
+      "position": "center 50%"
+    },
+    {
+      "src": "/images/nanak-math/traditional-building.webp",
+      "position": "center 35%"
+    },
+    {
+      "src": "/images/mhepi-ajima/large-tree.webp",
+      "position": "center 40%"
+    }
   ],
   "galleryPreview": [
     "/images/mhepi-ajima/temple-front.webp",

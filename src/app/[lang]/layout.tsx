@@ -6,7 +6,7 @@ import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
-import { getHeritageList, getHomeConfig, getWard, phoneHref } from "@/lib/content";
+import { getHeritageList, getHeroSlideConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
 import { getDictionary, getNavItems, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
 import { findSiteImage } from "@/lib/images";
@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   const sites = getHeritageList(lang).map((h) => (lang === "ne" ? h.nameNe : h.name));
   const description = dict.site.description.replace("{sites}", joinList(sites, dict.site.and));
   // Default share image for pages without their own: the home page hero (largest file).
-  const hero = getHomeConfig()
-    .heroCandidates.map((src) => findSiteImage(src, getHeritageList(lang)))
+  const hero = getHeroSlideConfig()
+    .map(({ src }) => findSiteImage(src, getHeritageList(lang)))
     .find((image) => image !== null);
   return {
     // Absolute base for Open Graph image URLs. Set SITE_URL in the Cloudflare Pages build settings (see DEPLOY.md).

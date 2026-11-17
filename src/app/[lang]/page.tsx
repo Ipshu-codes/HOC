@@ -8,17 +8,36 @@ import Hero from "@/components/Hero";
 import HomeSection from "@/components/HomeSection";
 import ResponsiveImage from "@/components/ResponsiveImage";
 import SectionDivider from "@/components/SectionDivider";
-import { getCredits, getHeritageList, getHomeConfig, getWard } from "@/lib/content";
+import {
+  getCredits,
+  getHeritageList,
+  getHeroSlideConfig,
+  getHomeConfig,
+  getWard,
+} from "@/lib/content";
 import { naniCreditText } from "@/lib/credits";
 import { byCount, getDictionary, isLocale, siteNameList } from "@/lib/i18n";
-import { coverImage, findSiteImage, imageSet, type SiteImage } from "@/lib/images";
+import {
+  coverImage,
+  findSiteImage,
+  imageSet,
+  type SiteImage,
+} from "@/lib/images";
 import type { Heritage } from "@/types/heritage";
 
 const GALLERY_PREVIEW_COUNT = 6;
 
 /** The 6 preview photos: the preferred list from content/home.json first, then any other photos of visible sites. */
-function galleryPreview(preferred: string[], heritages: Heritage[]): SiteImage[] {
-  const all = [...preferred, ...heritages.flatMap((heritage) => heritage.gallery.map((image) => image.src))];
+function galleryPreview(
+  preferred: string[],
+  heritages: Heritage[],
+): SiteImage[] {
+  const all = [
+    ...preferred,
+    ...heritages.flatMap((heritage) =>
+      heritage.gallery.map((image) => image.src),
+    ),
+  ];
   const unique = [...new Set(all)];
   return unique
     .map((src) => findSiteImage(src, heritages))
@@ -26,7 +45,9 @@ function galleryPreview(preferred: string[], heritages: Heritage[]): SiteImage[]
     .slice(0, GALLERY_PREVIEW_COUNT);
 }
 
-export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   // Title, description and share image come from the layout; add the language alternates.
@@ -48,25 +69,62 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const sites = siteNameList(heritages, lang, dict);
   const fill = (text: string) => text.replace("{sites}", sites);
 
-  const heroImage =
-    home.heroCandidates.map((src) => findSiteImage(src, heritages)).find((image) => image !== null) ??
-    coverImage(heritages[0]);
+  // Hero slideshow: the photos of visible sites only, in content/home.json order; the first cover as a fallback.
+  const heroSlides = getHeroSlideConfig().flatMap(({ src, position }) => {
+    const image = findSiteImage(src, heritages);
+    return image
+      ? [
+          {
+            src: image.src,
+            srcSet: image.srcSet,
+            width: image.width,
+            height: image.height,
+            alt: image.alt,
+            position,
+          },
+        ]
+      : [];
+  });
+  if (heroSlides.length === 0) {
+    const cover = coverImage(heritages[0]);
+    heroSlides.push({
+      src: cover.src,
+      srcSet: cover.srcSet,
+      width: cover.width,
+      height: cover.height,
+      alt: cover.alt,
+      position: undefined,
+    });
+  }
   const preview = galleryPreview(home.galleryPreview, heritages);
   const credits = getCredits();
-  const illustration = ward.illustration ? imageSet(ward.illustration.files) : null;
-  const overviewImage = ward.overviewImage ? imageSet(ward.overviewImage.files) : null;
+  const illustration = ward.illustration
+    ? imageSet(ward.illustration.files)
+    : null;
+  const overviewImage = ward.overviewImage
+    ? imageSet(ward.overviewImage.files)
+    : null;
   const wardMap = ward.wardMap ? imageSet(ward.wardMap.files) : null;
-  const overviewLogo = ward.overviewLogo ? imageSet(ward.overviewLogo.files) : null;
+  const overviewLogo = ward.overviewLogo
+    ? imageSet(ward.overviewLogo.files)
+    : null;
   // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
   const naniCredit = naniCreditText(credits, dict, lang);
 
   return (
     <>
       <Hero
-        image={heroImage}
+        slides={heroSlides}
+        slideLabels={{
+          pause: dict.home.slidesPause,
+          play: dict.home.slidesPlay,
+        }}
         title={dict.home.heroTitle}
         subtitle={fill(dict.home.heroSubtitle)}
-        primary={{ href: "#heritages", label: fill(byCount(dict.home.explore, count)) }}
+        primary={{
+          href: "#heritages",
+          label: fill(byCount(dict.home.explore, count)),
+        }}
         secondary={{ href: `/${lang}/map/`, label: dict.home.viewMap }}
       />
 
@@ -75,11 +133,18 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             Nani's namaste sits beside the text there, raised to the heading (md:-mt-16), and below the text on phones. */}
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
           <div className="space-y-4 text-lg">
-            <p className="justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
-            <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
+            <p className="justified">
+              {fill(byCount(dict.home.overviewIntro, count))}
+            </p>
+            <p className="justified">
+              {byCount(dict.home.overviewNext, count)}
+            </p>
             {wardMap && (
               // The whole ward map fills the space under the text; the link opens the largest file to read the labels.
-              <a href={wardMap.src} className="mt-8 block rounded-xl focus-visible:outline-offset-4">
+              <a
+                href={wardMap.src}
+                className="mt-8 block rounded-xl focus-visible:outline-offset-4"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
                 <img
                   src={wardMap.src}
@@ -158,21 +223,33 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             { term: dict.home.aboutOffice, value: ward.office.address[lang] },
             { term: byCount(dict.home.aboutSites, count), value: sites },
           ].map(({ term, value }) => (
-            <div key={term} className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
+            <div
+              key={term}
+              className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40"
+            >
               <dt className="text-sm font-bold text-crimson">{term}</dt>
               <dd className="mt-1 text-lg font-medium">{value}</dd>
             </div>
           ))}
         </dl>
         {naniCredit && (
-          <p className={`mt-6 text-sm ${credits.nani.creator ? "text-ink/80" : "font-bold text-crimson"}`}>
+          <p
+            className={`mt-6 text-sm ${credits.nani.creator ? "text-ink/80" : "font-bold text-crimson"}`}
+          >
             {naniCredit}
           </p>
         )}
       </HomeSection>
 
-      <HomeSection id="heritages" title={byCount(dict.home.heritagesTitle, count)}>
-        <div className={count === 1 ? "mx-auto max-w-5xl" : "grid gap-8 md:grid-cols-2"}>
+      <HomeSection
+        id="heritages"
+        title={byCount(dict.home.heritagesTitle, count)}
+      >
+        <div
+          className={
+            count === 1 ? "mx-auto max-w-5xl" : "grid gap-8 md:grid-cols-2"
+          }
+        >
           {heritages.map((heritage) => (
             <HeritageCard
               key={heritage.slug}

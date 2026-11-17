@@ -234,6 +234,11 @@ export function getHomeConfig(): HomeConfig {
   return readJson("home.json", homeSchema);
 }
 
+/** content/home.json → heroSlides as { src, position? }, in order. */
+export function getHeroSlideConfig(): { src: string; position?: string }[] {
+  return getHomeConfig().heroSlides.map((slide) => (typeof slide === "string" ? { src: slide } : slide));
+}
+
 export function getSourceRegistry(): SourceRegistry {
   return readJson("sources.json", sourcesSchema);
 }
