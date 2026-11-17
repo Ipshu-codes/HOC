@@ -11,10 +11,10 @@ interface MapButtonProps {
 }
 
 /**
- * Floating "🗺" 3D Map button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the
- * map page itself). Icon only, so it covers little text: a 44 px red circle (icon 22 px) at every width,
- * inside a 48 × 48 px tap area. The tap area is pulled 2 px towards the corner so the circle sits
- * as far from the edges as Nani's face. The label is its accessible name and the mouse tooltip.
+ * Floating 3D Map button, bottom-left on every page (swapped with Nani, who is bottom-right; hidden on the
+ * map page itself). It mirrors Nani's face button: the same round size (size-14), red ring, shadow and
+ * distance from the edges, showing a crop of the ward map (built by optimize-images from raw-data
+ * "ward 16.jpg"). The picture is alt="": the label is the link's accessible name and the mouse tooltip.
  */
 export default function MapButton({ lang, label }: MapButtonProps) {
   const pathname = usePathname();
@@ -24,15 +24,21 @@ export default function MapButton({ lang, label }: MapButtonProps) {
     <Link
       href={`/${lang}/map/`}
       title={label}
-      className="group fixed bottom-[calc(1rem-2px)] left-[calc(max(1rem,env(safe-area-inset-left))-2px)] z-30 flex size-[48px] items-center justify-center rounded-full md:bottom-[calc(1.5rem-2px)] md:left-[calc(max(1.5rem,env(safe-area-inset-left))-2px)]"
+      className="fixed bottom-4 left-[max(1rem,env(safe-area-inset-left))] z-30 block rounded-full md:bottom-6 md:left-[max(1.5rem,env(safe-area-inset-left))]"
       style={{ marginBottom: "env(safe-area-inset-bottom)" }}
     >
-      <span className="flex size-[44px] items-center justify-center rounded-full bg-crimson text-white shadow-md ring-2 ring-white group-hover:bg-brick">
-        <span aria-hidden="true" className="text-[22px] leading-none">
-          🗺
-        </span>
-        <span className="sr-only">{label}</span>
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- tiny fixed-size files with 2x/3x variants; no optimizer needed */}
+      <img
+        src="/images/map/map-button-64.webp"
+        srcSet="/images/map/map-button-64.webp 64w, /images/map/map-button-128.webp 128w, /images/map/map-button-192.webp 192w"
+        sizes="3.5rem"
+        width={64}
+        height={64}
+        alt=""
+        decoding="async"
+        className="size-14 rounded-full bg-white object-cover shadow-lg ring-4 ring-crimson hover:ring-brick"
+      />
+      <span className="sr-only">{label}</span>
     </Link>
   );
 }

@@ -318,6 +318,19 @@
       640
     ]
   },
+  "mapButton": {
+    "source": "ward 16.jpg",
+    "crop": {
+      "left": 300,
+      "top": 150,
+      "size": 400
+    },
+    "sizes": [
+      64,
+      128,
+      192
+    ]
+  },
   "naniNamaste": {
     "source": "Naninamaste.jpeg",
     "widths": [
