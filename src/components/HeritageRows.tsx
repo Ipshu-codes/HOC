@@ -84,7 +84,7 @@ export default function HeritageRows({ rows, labels }: HeritageRowsProps) {
                 />
               )}
             </div>
-            <p className="mt-4 max-w-xl">{row.summary}</p>
+            <p className="justified mt-4 max-w-xl">{row.summary}</p>
             <p className="muted mt-2 max-w-xl text-sm">
               <span className="font-bold">{labels.location}:</span> {row.location}
             </p>

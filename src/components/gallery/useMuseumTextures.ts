@@ -10,23 +10,30 @@ import type { Locale } from "@/types/locale";
  *
  * - Plaques are drawn into a canvas with the page's own next/font families, so English and
  *   Devanagari use exactly the faces the DOM uses (no invented typography, no glyph gaps).
- * - Photographs come from the same small WebP thumbnails the DOM gallery uses; they are only
- *   requested for halls that are active, and released ref-counted when those halls go away.
+ * - Photographs come from the same small WebP thumbnails the DOM gallery uses. Loading priority
+ *   follows the visitor, but a decoded texture stays with its mounted frame; requests are shared
+ *   through a ref-counted cache and only disposed when the last frame using them unmounts.
  */
 
 interface MuseumFonts {
   heading: string;
   mono: string;
+  sans: string;
 }
 
 /** next/font exposes its generated family names as CSS variables; read the *computed* value so
- *  the `html[lang="ne"]` override (heading/mono → Mukta) is respected. */
+ *  the `html[lang="ne"]` override (all three → Mukta) is respected. */
 function fontFamilies(): MuseumFonts {
-  if (typeof document === "undefined") return { heading: "sans-serif", mono: "monospace" };
+  if (typeof document === "undefined") return { heading: "sans-serif", mono: "monospace", sans: "sans-serif" };
   const style = getComputedStyle(document.documentElement);
   const heading = style.getPropertyValue("--font-heading").trim();
   const mono = style.getPropertyValue("--font-mono").trim();
-  return { heading: heading || "sans-serif", mono: mono || "monospace" };
+  const sans = style.getPropertyValue("--font-sans").trim();
+  return {
+    heading: heading || "sans-serif",
+    mono: mono || "monospace",
+    sans: sans || heading || "sans-serif",
+  };
 }
 
 async function waitForFonts(families: string[], sample: string): Promise<void> {
@@ -117,10 +124,129 @@ export function useMuseumTextTexture(text: MuseumPlaqueText, active: boolean): T
   return texture;
 }
 
+/** Canvas resolution per metre of wall panel. The face is drawn once per photo and mapped back
+ *  onto the same physical size, so text stays crisp without a texture per word. */
+const DESCRIPTION_PX_PER_METRE = 600;
+const DESCRIPTION_FACE = "#f4efe4";
+const DESCRIPTION_INK = "#3a241f";
+
+function breakLongWord(ctx: CanvasRenderingContext2D, word: string, maxWidth: number): string[] {
+  const chunks: string[] = [];
+  let chunk = "";
+  for (const character of Array.from(word)) {
+    const candidate = chunk + character;
+    if (chunk && ctx.measureText(candidate).width > maxWidth) {
+      chunks.push(chunk);
+      chunk = character;
+    } else {
+      chunk = candidate;
+    }
+  }
+  if (chunk) chunks.push(chunk);
+  return chunks;
+}
+
+/** Wrap on word boundaries, falling back to character breaks only for a single overlong token. */
+function wrapDescription(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const lines: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const pieces =
+      ctx.measureText(word).width > maxWidth ? breakLongWord(ctx, word, maxWidth) : [word];
+    pieces.forEach((piece, pieceIndex) => {
+      if (pieceIndex > 0) {
+        if (line) lines.push(line);
+        line = "";
+      }
+      const candidate = line ? `${line} ${piece}` : piece;
+      if (ctx.measureText(candidate).width <= maxWidth || !line) line = candidate;
+      else {
+        lines.push(line);
+        line = piece;
+      }
+    });
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+/**
+ * Draw an existing photo description into a cream wall label. Exported so the glyph/wrap check can
+ * drive the same code path as the museum. No text is invented: `description` is the photo's own alt.
+ */
+export function drawMuseumDescription(
+  ctx: CanvasRenderingContext2D,
+  description: string,
+  fontFamily: string,
+  width: number,
+  height: number,
+): void {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = DESCRIPTION_FACE;
+  ctx.fillRect(0, 0, width, height);
+
+  const maxWidth = width - Math.round(width * 0.07);
+  const availableHeight = height - Math.round(height * 0.14);
+  let size = Math.round(height * 0.125);
+  const minSize = Math.round(height * 0.06);
+  let lines: string[] = [];
+  let leading = size * 1.22;
+  while (size >= minSize) {
+    ctx.font = `400 ${size}px ${fontFamily}`;
+    lines = wrapDescription(ctx, description, maxWidth);
+    leading = size * 1.22;
+    if (lines.length * leading <= availableHeight) break;
+    size -= 1;
+  }
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = DESCRIPTION_INK;
+  const firstY = height / 2 - ((lines.length - 1) * leading) / 2;
+  lines.forEach((text, index) => ctx.fillText(text, width / 2, firstY + index * leading));
+}
+
+/** One wall-facing caption texture per mounted photo; created with the same page fonts as the DOM. */
+export function useMuseumDescriptionTexture(
+  description: string,
+  widthMetres: number,
+  heightMetres: number,
+  active: boolean,
+): THREE.CanvasTexture | null {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  useEffect(() => {
+    if (!active || !description) return;
+    let cancelled = false;
+    let created: THREE.CanvasTexture | null = null;
+    (async () => {
+      const fonts = fontFamilies();
+      await waitForFonts([fonts.sans], description);
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(widthMetres * DESCRIPTION_PX_PER_METRE);
+      canvas.height = Math.round(heightMetres * DESCRIPTION_PX_PER_METRE);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      drawMuseumDescription(ctx, description, fonts.sans, canvas.width, canvas.height);
+      created = new THREE.CanvasTexture(canvas);
+      created.colorSpace = THREE.SRGBColorSpace;
+      created.anisotropy = 4;
+      setTexture(created);
+    })();
+    return () => {
+      cancelled = true;
+      created?.dispose();
+    };
+  }, [description, widthMetres, heightMetres, active]);
+  return texture;
+}
+
 interface ImageTextureEntry {
   promise: Promise<THREE.Texture>;
   texture: THREE.Texture | null;
   refs: number;
+  settled: boolean;
+  failed: boolean;
 }
 
 const imageTextures = new Map<string, ImageTextureEntry>();
@@ -128,42 +254,72 @@ const imageLoader = new THREE.TextureLoader();
 
 function entryFor(src: string): ImageTextureEntry {
   const existing = imageTextures.get(src);
-  if (existing) return existing;
+  // A failed entry is replaced on the next request, but a pending one is always reused so a
+  // quick unmount/remount cannot start a second request for the same photograph.
+  if (existing && !existing.failed) return existing;
   const entry: ImageTextureEntry = {
     promise: undefined as unknown as Promise<THREE.Texture>,
     texture: null,
     refs: 0,
+    settled: false,
+    failed: false,
   };
-  entry.promise = imageLoader.loadAsync(src).then((texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 4;
-    entry.texture = texture;
-    return texture;
-  });
+  entry.promise = imageLoader
+    .loadAsync(src)
+    .then((texture) => {
+      if (imageTextures.get(src) !== entry) {
+        texture.dispose();
+        throw new Error("Texture is no longer cached");
+      }
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      // Every frame can unmount while the request is in flight; do not leak a texture nobody owns.
+      if (entry.refs === 0) {
+        imageTextures.delete(src);
+        texture.dispose();
+        throw new Error("Texture is no longer needed");
+      }
+      entry.texture = texture;
+      entry.settled = true;
+      return texture;
+    })
+    .catch((error: unknown) => {
+      entry.failed = true;
+      entry.settled = true;
+      if (imageTextures.get(src) === entry && entry.refs === 0) imageTextures.delete(src);
+      throw error;
+    });
   imageTextures.set(src, entry);
   return entry;
 }
 
+function releaseImageTexture(src: string, entry: ImageTextureEntry): void {
+  if (imageTextures.get(src) !== entry || entry.refs > 0 || !entry.settled) return;
+  imageTextures.delete(src);
+  entry.texture?.dispose();
+}
+
 export function useMuseumImageTexture(src: string, active: boolean): THREE.Texture | null {
-  const [texture, setTexture] = useState<THREE.Texture | null>(() => imageTextures.get(src)?.texture ?? null);
+  const [loaded, setLoaded] = useState<{ src: string; texture: THREE.Texture } | null>(null);
   useEffect(() => {
     if (!active) return;
     const entry = entryFor(src);
     entry.refs += 1;
     let cancelled = false;
-    entry.promise.then((value) => {
-      if (!cancelled) setTexture(value);
-    }).catch(() => {
-      // A missing WebP leaves the cream mat (and the DOM fallback) intact.
-    });
+    entry.promise
+      .then((texture) => {
+        if (!cancelled) setLoaded({ src, texture });
+      })
+      .catch(() => {
+        // A missing WebP leaves the cream mat (and the DOM fallback) intact.
+      });
     return () => {
       cancelled = true;
       entry.refs -= 1;
-      if (entry.refs === 0 && entry.texture) {
-        entry.texture.dispose();
-        imageTextures.delete(src);
-      }
+      setLoaded(null);
+      releaseImageTexture(src, entry);
     };
   }, [src, active]);
-  return texture;
+  // Once decoded, a texture stays on its frame. Only a different photo (`src`) or unmount clears it.
+  return loaded?.src === src ? loaded.texture : null;
 }

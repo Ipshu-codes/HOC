@@ -4,9 +4,9 @@ import type { Locale } from "@/types/locale";
 
 /**
  * Pure layout for the gallery's 3D museum. No Three.js imports here: this module only
- * describes rooms, walls, alcoves and framed artworks in metres, so it can be read and
- * tested without a renderer. The architecture is deliberately generic — plain modern
- * exhibition halls with no site-specific or historical structural claims.
+ * describes one open-entry exhibition corridor in metres, so it can be reasoned about
+ * without a renderer. Words are never invented here: the marker text is the site number
+ * and name already rendered by the gallery DOM.
  */
 
 export type Vec3 = [number, number, number];
@@ -20,34 +20,57 @@ export interface ScreenRect {
 }
 
 export const MUSEUM = {
-  hallWidth: 7.4,
-  hallHeight: 4.4,
+  corridorWidth: 10.4,
+  corridorHeight: 4.6,
   wallThickness: 0.24,
-  doorWidth: 2.0,
-  doorHeight: 2.9,
+  /** The entrance is an open threshold; floor/ceiling/walls continue this far behind the camera. */
+  entryOverhang: 3.2,
   eyeHeight: 1.65,
-  artCentreY: 1.76,
-  artSpacing: 2.5,
-  artHeight: 1.0,
-  minArtWidth: 0.74,
-  maxArtWidth: 1.5,
-  matBorder: 0.14,
-  frameBorder: 0.085,
-  frameDepth: 0.09,
-  alcoveDepth: 3.3,
-  alcoveLength: 4.8,
-  alcoveDoorWidth: 2.4,
+  /** Larger prints are hung a little higher so the label below still clears the floor. */
+  artCentreY: 2.32,
+  /** Site plaques stay at their original absolute height whichever artwork size is built. */
+  markerCentreY: 3.09,
+  /** Bigger prints get longer slots: the corridor extends instead of crowding neighbouring works. */
+  artSpacing: 3.6,
+  siteGap: 2.4,
+  startInset: 4.4,
+  endInset: 4.2,
+  minLength: 32,
+  /** Photograph height; width is 2.05 × the photo's own aspect ratio (≈1.38–2.93 m here). */
+  artHeight: 2.05,
+  minArtWidth: 1.35,
+  maxArtWidth: 3.5,
+  matBorder: 0.16,
+  frameBorder: 0.09,
+  frameDepth: 0.1,
   plaqueWidth: 1.9,
   plaqueHeight: 0.78,
+  /** Wall-facing caption panel below each frame. Width follows the frame; the face texture wraps
+   *  EN/NE text and shrinks its type if an unusually long description needs it. */
+  descriptionGap: 0.1,
+  descriptionHeight: 0.44,
+  descriptionMinWidth: 2.7,
+  descriptionMaxWidth: 3.7,
+  descriptionDepth: 0.03,
+  walkRadius: 0.36,
+  frameClearance: 0.14,
 } as const;
 
-export type SurfaceKind = "wall" | "floor" | "ceiling";
+export type SurfaceKind = "wall" | "floor" | "ceiling" | "panel";
 
 export interface MuseumSurface {
   key: string;
   kind: SurfaceKind;
   position: Vec3;
   size: Vec3;
+}
+
+/** Wall-mounted caption panel. `offsetY` is local to the frame centre; its top edge always stays
+ *  below the frame, so resizing a photograph moves the label with it. */
+export interface MuseumDescriptionPanel {
+  width: number;
+  height: number;
+  offsetY: number;
 }
 
 export interface MuseumArtwork {
@@ -60,27 +83,31 @@ export interface MuseumArtwork {
   rotationY: number;
   width: number;
   height: number;
+  /** The existing localized photo description; never rewritten or added to. */
   caption: string;
+  lang: Locale;
+  description: MuseumDescriptionPanel;
 }
 
-export interface MuseumAlcove {
+/** An existing site number/name plaque at the start of that site's run of photographs. */
+export interface MuseumMarker {
   key: string;
-  side: -1 | 1;
-  centreZ: number;
-  surfaces: MuseumSurface[];
-  artworks: MuseumArtwork[];
+  position: Vec3;
+  rotationY: number;
+  number: string;
+  name: string;
+  lang: Locale;
+  text: string;
 }
 
-export interface MuseumHall {
-  slug: string;
-  name: string;
-  number: string;
+export interface MuseumLayout {
+  /** Open entrance plane (positive Z). There is deliberately no wall mesh here. */
   zNear: number;
+  /** Solid, finished far wall (negative Z). */
   zFar: number;
   surfaces: MuseumSurface[];
   artworks: MuseumArtwork[];
-  alcoves: MuseumAlcove[];
-  plaque: { position: Vec3; rotationY: number; text: string };
+  markers: MuseumMarker[];
   lights: Vec3[];
   urls: string[];
 }
@@ -97,9 +124,11 @@ interface PhotoEntry {
   index: number;
 }
 
-interface ZGap {
-  near: number;
-  far: number;
+interface WalkRect {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
 }
 
 function artSize(photo: GalleryPhoto): { width: number; height: number } {
@@ -116,8 +145,16 @@ function artSize(photo: GalleryPhoto): { width: number; height: number } {
   return { width, height };
 }
 
-function artwork(entry: PhotoEntry, position: Vec3, rotationY: number): MuseumArtwork {
+function artwork(entry: PhotoEntry, position: Vec3, rotationY: number, lang: Locale): MuseumArtwork {
   const { width, height } = artSize(entry.photo);
+  const border = MUSEUM.matBorder + MUSEUM.frameBorder;
+  const frameHeight = height + 2 * border;
+  const frameWidth = width + 2 * border;
+  const description: MuseumDescriptionPanel = {
+    width: Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth)),
+    height: MUSEUM.descriptionHeight,
+    offsetY: -(frameHeight / 2 + MUSEUM.descriptionGap + MUSEUM.descriptionHeight / 2),
+  };
   return {
     key: `art-${entry.index}`,
     index: entry.index,
@@ -127,50 +164,9 @@ function artwork(entry: PhotoEntry, position: Vec3, rotationY: number): MuseumAr
     width,
     height,
     caption: entry.photo.alt,
+    lang,
+    description,
   };
-}
-
-/** Solid portions of a side wall, leaving openings where alcoves attach. */
-function sideSegments(zNear: number, zFar: number, gaps: ZGap[], side: -1 | 1, prefix: string): MuseumSurface[] {
-  const x = side * MUSEUM.hallWidth / 2;
-  let cursor = zNear;
-  const spans: [number, number][] = [];
-  for (const gap of [...gaps].sort((a, b) => b.near - a.near)) {
-    if (gap.near < cursor) spans.push([cursor, gap.near]);
-    cursor = Math.min(cursor, gap.far);
-  }
-  if (cursor > zFar) spans.push([cursor, zFar]);
-  return spans.map(([near, far], i) => ({
-    key: `${prefix}-${i}`,
-    kind: "wall" as const,
-    position: [x, MUSEUM.hallHeight / 2, (near + far) / 2] as Vec3,
-    size: [MUSEUM.wallThickness, MUSEUM.hallHeight, Math.abs(near - far)] as Vec3,
-  }));
-}
-
-/** End wall: solid, or two jambs plus a lintel around a doorway. */
-function endWall(z: number, doorway: boolean, key: string): MuseumSurface[] {
-  const { hallWidth: w, hallHeight: h, wallThickness: t, doorWidth: d, doorHeight: dh } = MUSEUM;
-  if (!doorway) return [{ key, kind: "wall", position: [0, h / 2, z], size: [w, h, t] }];
-  const jamb = (w - d) / 2;
-  return [
-    { key: `${key}-l`, kind: "wall", position: [-(d + jamb) / 2, h / 2, z], size: [jamb, h, t] },
-    { key: `${key}-r`, kind: "wall", position: [(d + jamb) / 2, h / 2, z], size: [jamb, h, t] },
-    { key: `${key}-top`, kind: "wall", position: [0, (dh + h) / 2, z], size: [d, h - dh, t] },
-  ];
-}
-
-function alcoveSurfaces(side: -1 | 1, centreZ: number, key: string): MuseumSurface[] {
-  const { hallWidth, hallHeight, wallThickness: t, alcoveDepth: depth, alcoveLength: length } = MUSEUM;
-  const outerX = side * (hallWidth / 2 + depth);
-  const midX = side * (hallWidth / 2 + depth / 2);
-  return [
-    { key: `${key}-back`, kind: "wall", position: [outerX, hallHeight / 2, centreZ], size: [t, hallHeight, length] },
-    { key: `${key}-near`, kind: "wall", position: [midX, hallHeight / 2, centreZ + length / 2], size: [depth + t, hallHeight, t] },
-    { key: `${key}-far`, kind: "wall", position: [midX, hallHeight / 2, centreZ - length / 2], size: [depth + t, hallHeight, t] },
-    { key: `${key}-floor`, kind: "floor", position: [midX, 0, centreZ], size: [depth, 0.16, length] },
-    { key: `${key}-ceiling`, kind: "ceiling", position: [midX, hallHeight, centreZ], size: [depth, 0.16, length] },
-  ];
 }
 
 function twoDigits(n: number, lang: Locale): string {
@@ -179,102 +175,100 @@ function twoDigits(n: number, lang: Locale): string {
 }
 
 /**
- * Builds one hall per visible site, laid end to end along -Z. A hall with a following
- * hall gets a doorway in its far wall; the next hall's near wall is omitted so the two
- * spaces connect without overlapping geometry.
+ * Builds one continuous, open-entry corridor. Photographs stay in the existing flat order;
+ * alternating the wall is only a display detail, and a site change inserts an extra gap so
+ * each site's photographs remain a recognisable group. Nothing is reordered or duplicated.
  */
-export function buildMuseumLayout(rooms: MuseumRoomInput[], photos: GalleryPhoto[], lang: Locale): MuseumHall[] {
-  const { hallWidth, hallHeight, artCentreY, artSpacing, alcoveDoorWidth, alcoveLength } = MUSEUM;
-  const halls: MuseumHall[] = [];
-  let zNear = 0;
+export function buildMuseumLayout(rooms: MuseumRoomInput[], photos: GalleryPhoto[], lang: Locale): MuseumLayout {
+  const { corridorWidth: width, corridorHeight: height, artCentreY, artSpacing, siteGap, startInset, endInset, minLength } = MUSEUM;
+  const half = width / 2;
+  const roomBySlug = new Map(rooms.map((room) => [room.slug, room]));
+  // Mount on the room-facing side of the wall, not inside its thickness: the wall's inner face is
+  // half - wallThickness/2, so a frame/plaque front must clear that face or the wall occludes it.
+  const wallFace = half - MUSEUM.wallThickness / 2;
+  const mountClearance = 0.012;
+  const artworkWallX = wallFace + MUSEUM.frameDepth / 2 - mountClearance;
+  const plaqueWallX = wallFace + 0.03 - mountClearance;
 
-  rooms.filter((room) => room.visible).forEach((room, roomIndex) => {
-    const entries: PhotoEntry[] = [];
-    photos.forEach((photo, index) => {
-      if (photo.site === room.slug) entries.push({ photo, index });
-    });
+  const artworks: MuseumArtwork[] = [];
+  const markers: MuseumMarker[] = [];
+  let cursorZ = -startInset;
+  let previousSite: string | null = null;
 
-    // A few small alcoves break up the long halls; the rest of the photos hang in the hall itself.
-    const alcoveCount = Math.min(3, Math.floor(entries.length / 7));
-    const perAlcove = alcoveCount > 0 ? Math.min(4, Math.floor(entries.length / (alcoveCount + 1))) : 0;
-    const hallEntries = entries.slice(0, entries.length - alcoveCount * perAlcove);
-    const alcoveEntries = entries.slice(entries.length - alcoveCount * perAlcove);
+  photos.forEach((photo, index) => {
+    if (previousSite !== null && photo.site !== previousSite) cursorZ -= siteGap;
 
-    const perSide = Math.ceil(hallEntries.length / 2);
-    const length = Math.max(12, perSide * artSpacing + 4);
-    const zFar = zNear - length;
-    const centreZ = (zNear + zFar) / 2;
-    const prefix = `hall-${room.slug}`;
+    // The side is decided from the unchanged flat index: every photo gets exactly one slot.
+    const side: -1 | 1 = index % 2 === 0 ? -1 : 1;
+    artworks.push(
+      artwork(
+        { photo, index },
+        [side * artworkWallX, artCentreY, cursorZ],
+        side === -1 ? Math.PI / 2 : -Math.PI / 2,
+        lang,
+      ),
+    );
 
-    const alcoveFractions = [0.32, 0.61, 0.84];
-    const alcoves: MuseumAlcove[] = Array.from({ length: alcoveCount }, (_, i) => {
-      const side: -1 | 1 = i % 2 === 0 ? -1 : 1;
-      const aZ = zNear - length * alcoveFractions[i];
-      const key = `${prefix}-alcove-${i}`;
-      const group = alcoveEntries.slice(i * perAlcove, (i + 1) * perAlcove);
-      const outerX = side * (hallWidth / 2 + MUSEUM.alcoveDepth);
-      const midX = side * (hallWidth / 2 + MUSEUM.alcoveDepth / 2);
-      const items = group.map((entry, j): MuseumArtwork => {
-        if (j === 0) return artwork(entry, [outerX - side * 0.06, artCentreY, aZ + alcoveLength / 4], side === -1 ? Math.PI / 2 : -Math.PI / 2);
-        if (j === 1) return artwork(entry, [outerX - side * 0.06, artCentreY, aZ - alcoveLength / 4], side === -1 ? Math.PI / 2 : -Math.PI / 2);
-        if (j === 2) return artwork(entry, [midX, artCentreY, aZ + alcoveLength / 2 - 0.06], Math.PI);
-        return artwork(entry, [midX, artCentreY, aZ - alcoveLength / 2 + 0.06], 0);
+    if (previousSite !== photo.site) {
+      const room = roomBySlug.get(photo.site);
+      const number = room?.number ?? twoDigits([...roomBySlug.keys()].indexOf(photo.site) + 1, lang);
+      const name = room?.name ?? photo.site;
+      const markerSide: -1 | 1 = side === -1 ? 1 : -1;
+      markers.push({
+        key: `site-${photo.site}-${index}`,
+        position: [markerSide * plaqueWallX, MUSEUM.markerCentreY, cursorZ],
+        rotationY: markerSide === -1 ? Math.PI / 2 : -Math.PI / 2,
+        number,
+        name,
+        lang,
+        text: `${number}  ${name}`,
       });
-      return { key, side, centreZ: aZ, surfaces: alcoveSurfaces(side, aZ, key), artworks: items };
-    });
+    }
 
-    const gaps: ZGap[] = alcoves.map((a) => ({ near: a.centreZ + alcoveDoorWidth / 2, far: a.centreZ - alcoveDoorWidth / 2 }));
-    const surfaces: MuseumSurface[] = [
-      { key: `${prefix}-floor`, kind: "floor", position: [0, 0, centreZ], size: [hallWidth, 0.16, length] },
-      { key: `${prefix}-ceiling`, kind: "ceiling", position: [0, hallHeight, centreZ], size: [hallWidth, 0.16, length] },
-      ...sideSegments(zNear, zFar, gaps.filter((_, i) => alcoves[i].side === -1), -1, `${prefix}-left`),
-      ...sideSegments(zNear, zFar, gaps.filter((_, i) => alcoves[i].side === 1), 1, `${prefix}-right`),
-      ...(roomIndex === 0 ? endWall(zNear, false, `${prefix}-entrance`) : []),
-      ...endWall(zFar, roomIndex < rooms.filter((r) => r.visible).length - 1, `${prefix}-exit`),
-    ];
-
-    const artworks: MuseumArtwork[] = [];
-    let leftZ = zNear - 2.2;
-    let rightZ = zNear - 2.2;
-    hallEntries.forEach((entry, i) => {
-      const side: -1 | 1 = i % 2 === 0 ? -1 : 1;
-      const z = side === -1 ? leftZ : rightZ;
-      if (side === -1) leftZ -= artSpacing;
-      else rightZ -= artSpacing;
-      if (z < zFar + 1.2) return;
-      // Do not hang a frame across an alcove opening on the same wall.
-      if (gaps.some((gap, gi) => alcoves[gi].side === side && z <= gap.near + 0.4 && z >= gap.far - 0.4)) return;
-      artworks.push(artwork(entry, [side * (hallWidth / 2 - 0.06), artCentreY, z], side === -1 ? Math.PI / 2 : -Math.PI / 2));
-    });
-
-    const lights: Vec3[] = [];
-    for (let z = zNear - 3; z > zFar; z -= 7) lights.push([0, hallHeight - 0.5, z]);
-
-    const number = room.number || twoDigits(roomIndex + 1, lang);
-    halls.push({
-      slug: room.slug,
-      name: room.name,
-      number,
-      zNear,
-      zFar,
-      surfaces,
-      artworks,
-      alcoves,
-      plaque: {
-        position: [-(hallWidth / 2 - 0.06), 2.85, zNear - 3.2],
-        rotationY: Math.PI / 2,
-        text: `${number}  ${room.name}`,
-      },
-      lights,
-      urls: [...artworks, ...alcoves.flatMap((a) => a.artworks)].map((a) => a.photo.thumb.src),
-    });
-    zNear = zFar;
+    previousSite = photo.site;
+    cursorZ -= artSpacing;
   });
 
-  return halls;
+  const lastZ = artworks.length ? cursorZ + artSpacing : -startInset;
+  const zNear = MUSEUM.entryOverhang;
+  const zFar = Math.min(lastZ - endInset, zNear - minLength);
+  const length = zNear - zFar;
+  const centreZ = (zNear + zFar) / 2;
+  const t = MUSEUM.wallThickness;
+
+  const surfaces: MuseumSurface[] = [
+    { key: "corridor-floor", kind: "floor", position: [0, 0, centreZ], size: [width, 0.16, length] },
+    { key: "corridor-ceiling", kind: "ceiling", position: [0, height, centreZ], size: [width, 0.16, length] },
+    { key: "corridor-left", kind: "wall", position: [-half, height / 2, centreZ], size: [t, height, length] },
+    { key: "corridor-right", kind: "wall", position: [half, height / 2, centreZ], size: [t, height, length] },
+    { key: "corridor-far", kind: "wall", position: [0, height / 2, zFar], size: [width, height, t] },
+    {
+      key: "corridor-far-panel",
+      kind: "panel",
+      position: [0, height / 2, zFar + t / 2 + 0.04],
+      size: [width * 0.42, height * 0.58, 0.06],
+    },
+  ];
+
+  const lightCount = Math.min(9, Math.max(3, Math.ceil(length / 10)));
+  const lights: Vec3[] = Array.from({ length: lightCount }, (_, index) => [
+    0,
+    height - 0.5,
+    zNear - ((index + 0.5) * length) / lightCount,
+  ]);
+
+  return {
+    zNear,
+    zFar,
+    surfaces,
+    artworks,
+    markers,
+    lights,
+    urls: artworks.map((art) => art.photo.thumb.src),
+  };
 }
 
-/* ---- Navigation (phase 3): pure geometry, no renderer imports ---- */
+/* ---- Navigation: pure geometry, no renderer imports ---- */
 
 export interface CameraPose {
   x: number;
@@ -283,14 +277,11 @@ export interface CameraPose {
   pitch: number;
 }
 
-/** Match the static scene's opening view; the camera never starts behind a wall. */
-export const INITIAL_POSE: CameraPose = { x: -0.8, z: -0.5, yaw: 0, pitch: 0 };
+/** Match the static scene's opening view; the camera never starts outside the open entrance. */
+export const INITIAL_POSE: CameraPose = { x: 0, z: 0, yaw: 0, pitch: 0 };
 
-interface WalkRect {
-  minX: number;
-  maxX: number;
-  minZ: number;
-  maxZ: number;
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 
 function contains(rect: WalkRect, x: number, z: number): boolean {
@@ -298,69 +289,44 @@ function contains(rect: WalkRect, x: number, z: number): boolean {
 }
 
 /**
- * The walkable footprint is the union of axis-aligned rectangles: each hall interior, the narrow
- * connector through every end doorway, and each alcove plus the bridge through its side opening.
- * The body radius is already subtracted, so a point in a rectangle cannot touch a wall or frame.
- * Keeping this in the layout module means collision can be reasoned about without WebGL.
+ * One inset rectangle: the corridor interior. The entrance is visually open, but its
+ * boundary is still a collision limit so the camera cannot walk out into the void.
+ * The body radius and the small frame clearance are already subtracted.
  */
-export function walkableRects(halls: MuseumHall[], radius = 0.28): WalkRect[] {
-  const { hallWidth, doorWidth, alcoveDepth, alcoveLength, alcoveDoorWidth } = MUSEUM;
-  const half = hallWidth / 2;
-  const rects: WalkRect[] = [];
-  halls.forEach((hall, index) => {
-    rects.push({
-      minX: -half + radius,
-      maxX: half - radius,
-      minZ: hall.zFar + radius,
-      maxZ: hall.zNear - radius,
-    });
-    if (index < halls.length - 1) {
-      // The next hall starts at this hall's far wall; bridge the two interiors at the doorway.
-      rects.push({
-        minX: -doorWidth / 2 + radius,
-        maxX: doorWidth / 2 - radius,
-        minZ: hall.zFar - radius - 0.1,
-        maxZ: hall.zFar + radius + 0.1,
-      });
-    }
-    hall.alcoves.forEach((alcove) => {
-      const wall = alcove.side * half;
-      const outer = alcove.side * (half + alcoveDepth);
-      rects.push({
-        minX: Math.min(wall, outer) + radius,
-        maxX: Math.max(wall, outer) - radius,
-        minZ: alcove.centreZ - alcoveLength / 2 + radius,
-        maxZ: alcove.centreZ + alcoveLength / 2 - radius,
-      });
-      const bridge = radius + 0.14;
-      rects.push({
-        minX: wall - bridge,
-        maxX: wall + bridge,
-        minZ: alcove.centreZ - alcoveDoorWidth / 2 + radius,
-        maxZ: alcove.centreZ + alcoveDoorWidth / 2 - radius,
-      });
-    });
-  });
-  return rects;
+export function corridorWalkRect(layout: MuseumLayout, radius = MUSEUM.walkRadius): WalkRect {
+  const half = MUSEUM.corridorWidth / 2;
+  const margin = radius + MUSEUM.frameClearance;
+  return {
+    minX: -half + margin,
+    maxX: half - margin,
+    minZ: layout.zFar + margin,
+    maxZ: layout.zNear - margin,
+  };
 }
 
-export function isMuseumWalkable(halls: MuseumHall[], x: number, z: number, radius = 0.28): boolean {
-  return walkableRects(halls, radius).some((rect) => contains(rect, x, z));
+export function isMuseumWalkable(layout: MuseumLayout, x: number, z: number, radius = MUSEUM.walkRadius): boolean {
+  return contains(corridorWalkRect(layout, radius), x, z);
+}
+
+/** Clamp a preserved pose into the current corridor, keeping its viewing direction. */
+export function clampPose(layout: MuseumLayout, pose: CameraPose, radius = MUSEUM.walkRadius): CameraPose {
+  const rect = corridorWalkRect(layout, radius);
+  return { ...pose, x: clamp(pose.x, rect.minX, rect.maxX), z: clamp(pose.z, rect.minZ, rect.maxZ) };
 }
 
 /**
  * Move from `from` towards `to` in short steps, sliding along walls instead of crossing them.
- * Stepping (rather than a single end-point test) is what keeps a large wheel delta or a filter
- * transition from tunnelling through a solid wall into the next hall.
+ * Stepping (rather than a single end-point test) prevents a large key/wheel delta from tunnelling
+ * through a wall or through a framed photograph.
  */
-export function clipMuseumPosition(
-  halls: MuseumHall[],
+export function clipCorridorPosition(
+  layout: MuseumLayout,
   from: [number, number],
   to: [number, number],
-  radius = 0.28,
+  radius = MUSEUM.walkRadius,
 ): [number, number] {
-  const rects = walkableRects(halls, radius);
-  const walkable = (x: number, z: number) => rects.some((rect) => contains(rect, x, z));
+  const rect = corridorWalkRect(layout, radius);
+  const walkable = (x: number, z: number) => contains(rect, x, z);
   let x = from[0];
   let z = from[1];
   const dx = to[0] - x;
@@ -381,35 +347,16 @@ export function clipMuseumPosition(
 }
 
 /** Flat artwork order by photo index — exactly the order of the accessible DOM frames. */
-export function orderedArtworks(halls: MuseumHall[]): MuseumArtwork[] {
-  return halls
-    .flatMap((hall) => [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)])
-    .sort((a, b) => a.index - b.index);
+export function orderedArtworks(layout: MuseumLayout): MuseumArtwork[] {
+  return [...layout.artworks].sort((a, b) => a.index - b.index);
 }
 
 /** Stand in front of a frame and look straight at it: local +z of the frame points into the room. */
-export function artworkPose(art: MuseumArtwork, distance = 1.9): CameraPose {
+export function artworkPose(art: MuseumArtwork, distance = 2.0): CameraPose {
   return {
     x: art.position[0] + Math.sin(art.rotationY) * distance,
     z: art.position[2] + Math.cos(art.rotationY) * distance,
     yaw: art.rotationY,
     pitch: 0,
   };
-}
-
-export function hallEntryPose(hall: MuseumHall): CameraPose {
-  return { x: 0, z: hall.zNear - 2.4, yaw: 0, pitch: 0 };
-}
-
-export function hallOfArtwork(halls: MuseumHall[], index: number): MuseumHall | null {
-  return (
-    halls.find((hall) =>
-      [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)].some((art) => art.index === index),
-    ) ?? null
-  );
-}
-
-export function firstIndexInHall(hall: MuseumHall): number | null {
-  const arts = [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)];
-  return arts.length ? Math.min(...arts.map((art) => art.index)) : null;
 }

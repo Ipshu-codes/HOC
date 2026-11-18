@@ -33,7 +33,7 @@ export default async function ContactPage({
     // Biegajaca's contact page: giant title, the intro, a hairline; "write to us" left, details right.
     <div className="wrap pt-8 pb-16 md:pt-10">
       <h1 className="d-xl max-w-[12ch]">{dict.contactPage.title}</h1>
-      <p className="lede mt-6 mb-10 max-w-2xl">{dict.contactPage.intro}</p>
+      <p className="justified lede mt-6 mb-10 max-w-2xl">{dict.contactPage.intro}</p>
 
       <div className="rule grid gap-10 pt-10 lg:grid-cols-12 lg:gap-[var(--gap)]">
         {/* No form and no form service: visitors write from their own email app. */}
@@ -41,7 +41,7 @@ export default async function ContactPage({
           <h2 id="write-to-us" className="d-3">
             {dict.contactPage.writeHeading}
           </h2>
-          <p className="lede mt-5">{dict.contactPage.writeBody}</p>
+          <p className="justified lede mt-5">{dict.contactPage.writeBody}</p>
           <a
             href={mailto}
             className="btn btn-lg btn-accent mt-8"

@@ -13,11 +13,11 @@ export default function RootRedirect() {
       <meta httpEquiv="refresh" content="0; url=/en/" />
       <link rel="canonical" href="/en/" />
       <p>
-        <Link href="/en/" className="text-crimson underline">
+        <Link href="/en/" className="text-fg underline">
           {en.site.title} — {en.language.en}
         </Link>
         {" · "}
-        <Link href="/ne/" className="text-crimson underline" lang="ne">
+        <Link href="/ne/" className="text-fg underline" lang="ne">
           {ne.site.title} — {ne.language.ne}
         </Link>
       </p>

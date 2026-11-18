@@ -4,22 +4,27 @@ import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useEffect, type MutableRefObject } from "react";
 import * as THREE from "three";
 
-import { MUSEUM, type MuseumArtwork, type MuseumHall, type MuseumSurface } from "@/lib/museum-layout";
-import type { Locale } from "@/types/locale";
-import { useMuseumImageTexture, useMuseumTextTexture } from "./useMuseumTextures";
+import {
+  MUSEUM,
+  type MuseumArtwork,
+  type MuseumLayout,
+  type MuseumMarker,
+  type MuseumSurface,
+} from "@/lib/museum-layout";
+import { useMuseumDescriptionTexture, useMuseumImageTexture, useMuseumTextTexture } from "./useMuseumTextures";
 
 /** Gallery-scoped neutral palette (mirrors the CSS tokens in globals.css). No site-specific detail. */
 const STONE = "#c9bca8";
 const SANDSTONE = "#d8c6a8";
 const IVORY = "#f4efe4";
+const PANEL = "#e7dbc6";
 const CONCRETE = "#a8a198";
 const CHARCOAL = "#272522";
 
 interface SceneProps {
-  halls: MuseumHall[];
-  activeHalls: number;
-  lang: Locale;
-  /** Photo index currently under the spotlight (from the nearest artwork or DOM focus). */
+  layout: MuseumLayout;
+  /** Growing set of frames whose thumbnails have been requested; loaded ones never go blank. */
+  loadingIndices: ReadonlySet<number>;
   activeIndex: number;
   hoverIndex: number | null;
   interactive: boolean;
@@ -29,13 +34,50 @@ interface SceneProps {
   onSelect: (index: number) => void;
 }
 
+function surfaceColor(surface: MuseumSurface): string {
+  if (surface.kind === "floor") return CONCRETE;
+  if (surface.kind === "ceiling") return IVORY;
+  if (surface.kind === "panel") return PANEL;
+  if (surface.key === "corridor-left") return STONE;
+  return SANDSTONE;
+}
+
 function Surface({ surface }: { surface: MuseumSurface }) {
-  const color = surface.kind === "floor" ? CONCRETE : surface.kind === "ceiling" ? IVORY : surface.kind === "wall" && surface.key.includes("alcove") ? SANDSTONE : STONE;
   return (
     <mesh position={surface.position}>
       <boxGeometry args={surface.size} />
-      <meshStandardMaterial color={color} roughness={0.96} metalness={0} />
+      <meshStandardMaterial color={surfaceColor(surface)} roughness={0.96} metalness={0} />
     </mesh>
+  );
+}
+
+/** The photo's own description on a small panel fixed to the wall below its frame. It shares the
+ *  artwork's rotation, so it faces the visitor without ever turning to follow the camera. */
+function DescriptionPanel({ art, active }: { art: MuseumArtwork; active: boolean }) {
+  const { width, height, offsetY } = art.description;
+  const texture = useMuseumDescriptionTexture(art.caption, width, height, active);
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    if (texture) invalidate();
+  }, [texture, invalidate]);
+
+  const depth = MUSEUM.descriptionDepth;
+  // Sit just inside the frame's front plane so the label reads as part of the same wall unit.
+  const panelZ = MUSEUM.frameDepth / 2 - depth / 2 + 0.002;
+
+  return (
+    <group position={[0, offsetY, panelZ]}>
+      <mesh>
+        <boxGeometry args={[width, height, depth]} />
+        <meshStandardMaterial color="#3a2a17" roughness={0.82} metalness={0} />
+      </mesh>
+      {texture && (
+        <mesh position={[0, 0, depth / 2 + 0.001]}>
+          <planeGeometry args={[width - 0.03, height - 0.03]} />
+          <meshBasicMaterial map={texture} toneMapped={false} />
+        </mesh>
+      )}
+    </group>
   );
 }
 
@@ -94,51 +136,57 @@ function FramedArtwork({
 
   return (
     <group
-      ref={(node) => {
-        if (node) objectsRef.current.set(art.index, node);
-        else objectsRef.current.delete(art.index);
-      }}
       position={art.position}
       rotation={[0, art.rotationY, 0]}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onClick={onClick}
     >
-      <mesh>
-        <boxGeometry args={[art.width + 2 * (mat + frame), art.height + 2 * (mat + frame), depth]} />
-        <meshStandardMaterial color={hovered ? "#6b532e" : focused ? "#3a2a17" : CHARCOAL} roughness={0.52} metalness={0.16} />
-      </mesh>
-      <mesh position={[0, 0, face + 0.001]}>
-        <planeGeometry args={[art.width + 2 * mat, art.height + 2 * mat]} />
-        <meshStandardMaterial color={IVORY} roughness={0.95} metalness={0} />
-      </mesh>
-      {texture && (
-        <mesh position={[0, 0, face + 0.002]}>
-          <planeGeometry args={[art.width, art.height]} />
-          {/* A little emissive keeps prints legible under gallery light without flattening the shading. */}
-          <meshStandardMaterial
-            map={texture}
-            emissive="#ffffff"
-            emissiveMap={texture}
-            emissiveIntensity={hovered ? 0.85 : focused ? 0.62 : 0.3}
-            roughness={0.9}
-            metalness={0}
-          />
+      {/* Only the frame is registered for the photo-view FLIP bounds; the label below is part of
+          the same visual unit but must not stretch the opening rectangle for the photograph. */}
+      <group
+        ref={(node) => {
+          if (node) objectsRef.current.set(art.index, node);
+          else objectsRef.current.delete(art.index);
+        }}
+      >
+        <mesh>
+          <boxGeometry args={[art.width + 2 * (mat + frame), art.height + 2 * (mat + frame), depth]} />
+          <meshStandardMaterial color={hovered ? "#6b532e" : focused ? "#3a2a17" : CHARCOAL} roughness={0.52} metalness={0.16} />
         </mesh>
-      )}
+        <mesh position={[0, 0, face + 0.001]}>
+          <planeGeometry args={[art.width + 2 * mat, art.height + 2 * mat]} />
+          <meshStandardMaterial color={IVORY} roughness={0.95} metalness={0} />
+        </mesh>
+        {texture && (
+          <mesh position={[0, 0, face + 0.002]}>
+            <planeGeometry args={[art.width, art.height]} />
+            {/* A little emissive keeps prints legible under gallery light without flattening the shading. */}
+            <meshStandardMaterial
+              map={texture}
+              emissive="#ffffff"
+              emissiveMap={texture}
+              emissiveIntensity={hovered ? 0.85 : focused ? 0.62 : 0.3}
+              roughness={0.9}
+              metalness={0}
+            />
+          </mesh>
+        )}
+      </group>
+      <DescriptionPanel art={art} active={active} />
     </group>
   );
 }
 
 /** The site's existing name and number, drawn with the page's own fonts (EN or NE). */
-function HallPlaque({ hall, active, lang }: { hall: MuseumHall; active: boolean; lang: Locale }) {
-  const texture = useMuseumTextTexture({ number: hall.number, name: hall.name, lang }, active);
+function SitePlaque({ marker }: { marker: MuseumMarker }) {
+  const texture = useMuseumTextTexture({ number: marker.number, name: marker.name, lang: marker.lang }, true);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     if (texture) invalidate();
   }, [texture, invalidate]);
   return (
-    <group position={hall.plaque.position} rotation={[0, hall.plaque.rotationY, 0]}>
+    <group position={marker.position} rotation={[0, marker.rotationY, 0]}>
       <mesh>
         <boxGeometry args={[MUSEUM.plaqueWidth, MUSEUM.plaqueHeight, 0.06]} />
         <meshStandardMaterial color={IVORY} roughness={0.9} metalness={0} />
@@ -153,70 +201,10 @@ function HallPlaque({ hall, active, lang }: { hall: MuseumHall; active: boolean;
   );
 }
 
-function Hall({
-  hall,
-  active,
-  lang,
-  activeIndex,
-  hoverIndex,
-  interactive,
-  gesture,
-  objectsRef,
-  onHover,
-  onSelect,
-}: Omit<SceneProps, "halls" | "activeHalls"> & { hall: MuseumHall; active: boolean }) {
-  const artworkProps = {
-    active,
-    hovered: false,
-    interactive,
-    gesture,
-    objectsRef,
-    onHover,
-    onSelect,
-  };
-  return (
-    <group>
-      {hall.surfaces.map((surface) => (
-        <Surface key={surface.key} surface={surface} />
-      ))}
-      {hall.artworks.map((art) => (
-        <FramedArtwork
-          key={art.key}
-          {...artworkProps}
-          art={art}
-          focused={art.index === activeIndex}
-          hovered={art.index === hoverIndex}
-        />
-      ))}
-      {hall.alcoves.map((alcove) => (
-        <group key={alcove.key}>
-          {alcove.surfaces.map((surface) => (
-            <Surface key={surface.key} surface={surface} />
-          ))}
-          {alcove.artworks.map((art) => (
-            <FramedArtwork
-              key={art.key}
-              {...artworkProps}
-              art={art}
-              focused={art.index === activeIndex}
-              hovered={art.index === hoverIndex}
-            />
-          ))}
-        </group>
-      ))}
-      <HallPlaque hall={hall} active={active} lang={lang} />
-      {hall.lights.map((position, index) => (
-        <pointLight key={index} position={position} intensity={22} distance={16} decay={2} color="#fff1dc" />
-      ))}
-    </group>
-  );
-}
-
-/** The exhibition space; navigation and raycast selection are owned by MuseumCanvas. */
+/** The corridor; navigation and raycast selection are owned by MuseumCanvas. */
 export default function MuseumScene({
-  halls,
-  activeHalls,
-  lang,
+  layout,
+  loadingIndices,
   activeIndex,
   hoverIndex,
   interactive,
@@ -230,20 +218,28 @@ export default function MuseumScene({
       <ambientLight intensity={0.7} color="#fff6ea" />
       <hemisphereLight args={["#fff6ea", "#6b6256", 0.5]} />
       <directionalLight position={[2, 6, 4]} intensity={0.6} color="#fff4e4" />
-      {halls.map((hall, index) => (
-        <Hall
-          key={hall.slug}
-          hall={hall}
-          active={index < activeHalls}
-          lang={lang}
-          activeIndex={activeIndex}
-          hoverIndex={hoverIndex}
+      {layout.surfaces.map((surface) => (
+        <Surface key={surface.key} surface={surface} />
+      ))}
+      {layout.artworks.map((art) => (
+        <FramedArtwork
+          key={art.key}
+          art={art}
+          active={loadingIndices.has(art.index)}
+          focused={art.index === activeIndex}
+          hovered={art.index === hoverIndex}
           interactive={interactive}
           gesture={gesture}
           objectsRef={objectsRef}
           onHover={onHover}
           onSelect={onSelect}
         />
+      ))}
+      {layout.markers.map((marker) => (
+        <SitePlaque key={marker.key} marker={marker} />
+      ))}
+      {layout.lights.map((position, index) => (
+        <pointLight key={index} position={position} intensity={22} distance={16} decay={2} color="#fff1dc" />
       ))}
     </>
   );

@@ -15,5 +15,5 @@ export default function PhotoCredit({ credits, dict, lang, className = "" }: Pho
   const text = photoCreditText(credits, dict, lang);
   if (!text) return null;
   const isPlaceholder = !credits.photos.team;
-  return <p className={`text-sm ${isPlaceholder ? "font-bold text-crimson" : "text-ink/80"} ${className}`}>{text}</p>;
+  return <p className={`text-sm ${isPlaceholder ? "font-bold text-fg" : "text-fg/80"} ${className}`}>{text}</p>;
 }

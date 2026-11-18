@@ -523,7 +523,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                 <img
                   src={photo.thumb.src}
                   srcSet={photo.thumb.srcSet}
-                  sizes="(min-width: 48rem) 20rem, 11rem"
+                  sizes="(min-width: 48rem) 20rem, 8rem"
                   width={photo.thumb.width}
                   height={photo.thumb.height}
                   alt=""
@@ -536,8 +536,8 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                   }}
                   onLoad={(event) => event.currentTarget.removeAttribute("data-loading")}
                 />
-                <span className="leading-snug">{photo.alt}</span>
-                <span className="mono muted md:text-right">
+                <span className="list-caption leading-snug">{photo.alt}</span>
+                <span className="list-meta mono muted md:text-right">
                   {siteName.get(photo.site)}
                   {year !== null && (
                     <>

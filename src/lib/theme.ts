@@ -4,6 +4,6 @@
  *
  *   "a"  our red theme: sand ground, cream surfaces, brick footer and menu, crimson buttons
  *   "b"  Biegajaca's palette: light grey ground, near-black #1d1d1c text and dark bands, crimson accent only
- *   "c"  red theme: cream ground, brick-red bands/menu/footer, crimson headings, buttons and links, gold sparingly
+ *   "c"  heritage-red ground, cream panels/text, deep-red bands/menu/footer, crimson accent buttons, gold sparingly
  */
 export const PALETTE: "a" | "b" | "c" = "c";

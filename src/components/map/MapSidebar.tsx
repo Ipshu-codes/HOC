@@ -58,7 +58,7 @@ export default function MapSidebar(props: MapSidebarProps) {
         <h2 id="map-places-title" className="mb-1 text-2xl font-bold">
           {t.placesHeading}
         </h2>
-        <p aria-live="polite" className="mb-2 text-sm text-ink/80">
+        <p aria-live="polite" className="mb-2 text-sm text-fg/80">
           {results.length === 0 ? t.search.noResults : countText}
         </p>
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">

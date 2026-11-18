@@ -5,16 +5,17 @@
  * only these named colors exist: bg-crimson, text-brick, border-gold, …
  *
  * WCAG AA contrast (normal text needs 4.5:1):
- *   white on crimson 5.88 ✓   white on brick 9.12 ✓   crimson on cream 5.59 ✓
- *   crimson on sand 4.80 ✓    brick on cream 8.66 ✓   ink on cream 15.76 ✓
+ *   cream on heritage 10.22 ✓   cream on heritage-soft 8.13 ✓   cream on heritage-deep 13.81 ✓
+ *   ink on cream 15.76 ✓  brick on cream 8.66 ✓  crimson on cream 5.59 ✓
+ *   white on crimson 5.88 ✓    white on brick 9.12 ✓
  *   white on vermilion 4.12 ✗ vermilion on cream 3.91 ✗  → vermilion only for
  *     decoration or large text (≥ 24px, or ≥ 18.66px bold); use brick for hover states.
  *   gold on cream 2.26 ✗      → gold only for borders, dividers and icons, never text.
  *
- * On top of the named colours, the UI match uses ROLE tokens (ground, fg, band, accent, …): each
- * palette below fills the roles from the named colours (or, for palette B, Biegajaca's greys).
- * Components use the roles (bg-ground, text-fg, …), so changing the palette is one line:
- * src/lib/theme.ts → PALETTE.
+ * On top of the named colours, the UI match uses ROLE tokens (ground, fg, paper-fg, band, accent, …):
+ * each palette below fills the roles from the named colours (or, for palette B, Biegajaca's greys).
+ * Red surfaces take cream text; cream paper surfaces keep ink/brick/crimson text. Components use the
+ * roles (bg-ground, text-fg, …), so changing the palette is one line: src/lib/theme.ts → PALETTE.
  */
 @theme {
   --color-*: initial;
@@ -25,6 +26,10 @@
   --color-cream: #fff8f0;
   --color-sand: #f3e6d8;
   --color-ink: #2b1a1a;
+  /* Deliberate red hierarchy: ground, subtle emphasis, and deeper bands/menu/footer. */
+  --color-heritage: #7a151b;
+  --color-heritage-soft: #8f2428;
+  --color-heritage-deep: #521015;
   --color-white: #ffffff;
   --color-black: #000000;
   --color-transparent: transparent;
@@ -56,38 +61,44 @@
  *            body   muted  btn label  accent text  hover title  band text  menu   footer
  *   A        13.5   6.5    5.9        7.4          7.4          15.8       8.7    8.7
  *   B        10.2   5.5    5.9        5.5          5.5          14.2       14.2   10.2
- *   C        15.8   7.1    5.9        5.6          8.7          8.7        8.7     8.7
+ *   C        10.2   6.3    5.9       10.2          8.8          13.8       13.8   13.8
  *
- * Button hover = fg fill with ground-coloured text (≥ 10:1 in all three). Gold (palette C) is used only
- * for rules and dots (3.8:1 on brick: decoration, never text). The crimson button fill stands ≥ 3:1 off
- * every ground (A 4.8, B 3.5, C 5.6). Default (no data-palette): C.
- * In C, headings and outline buttons are crimson on cream (5.59) and sand (4.80); the footer is
- * brick with cream text (8.66). Crimson on brick is only 1.55, so dark surfaces always keep cream text.
+ * Button hover = fg fill with ground-coloured text (≥ 10:1). The heritage reds stay dark enough for
+ * cream text; crimson is kept for buttons and paper-surface links, with a cream button edge so the fill
+ * still reads against the red ground. Default (no data-palette): C.
+ * Cream paper surfaces keep ink/brick/crimson text; dark surfaces always keep cream text.
  */
 :root,
 :root[data-palette="c"] {
-  --ground: var(--color-cream);
-  --ground-alt: var(--color-sand);
-  --fg: var(--color-ink);
-  --heading: var(--color-crimson);
-  --muted: color-mix(in srgb, var(--color-ink) 75%, var(--color-cream));
-  --line: color-mix(in srgb, var(--color-ink) 22%, transparent);
+  --ground: var(--color-heritage);
+  --ground-alt: var(--color-heritage-soft);
+  --fg: var(--color-cream);
+  --heading: var(--color-cream);
+  --muted: color-mix(in srgb, var(--color-cream) 75%, var(--color-heritage));
+  --line: color-mix(in srgb, var(--color-cream) 28%, transparent);
   --accent: var(--color-crimson);
   --accent-fg: var(--color-white);
-  --accent-text: var(--color-crimson);
-  --hover-text: var(--color-brick);
-  --band: var(--color-brick);
+  --accent-text: var(--color-cream);
+  --accent-border: var(--color-cream);
+  --hover-text: var(--color-sand);
+  --band: var(--color-heritage-deep);
   --band-fg: var(--color-cream);
-  --band-muted: color-mix(in srgb, var(--color-cream) 75%, var(--color-brick));
+  --band-muted: color-mix(in srgb, var(--color-cream) 75%, var(--color-heritage-deep));
   --band-line: color-mix(in srgb, var(--color-cream) 30%, transparent);
-  --menu: var(--color-brick);
+  --menu: var(--color-heritage-deep);
   --menu-fg: var(--color-cream);
-  --footer: var(--color-brick);
+  --footer: var(--color-heritage-deep);
   --footer-fg: var(--color-cream);
   --footer-line: color-mix(in srgb, var(--color-cream) 30%, transparent);
   --paper: var(--color-cream);
+  --paper-fg: var(--color-ink);
+  --paper-heading: var(--color-brick);
+  --paper-accent: var(--color-crimson);
+  --paper-muted: color-mix(in srgb, var(--color-ink) 75%, var(--color-cream));
+  --paper-line: color-mix(in srgb, var(--color-ink) 22%, transparent);
   --decor: var(--color-gold);
-  --focus: var(--color-crimson);
+  --focus: var(--color-cream);
+  --focus-halo: var(--color-heritage-deep);
 }
 :root[data-palette="a"] {
   --ground: var(--color-sand);
@@ -161,12 +172,24 @@
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 2px;
+    /* A contrasting halo keeps the ring visible on both red ground and cream paper. */
+    box-shadow: 0 0 0 5px var(--focus-halo, transparent);
   }
 
   body {
     @apply font-sans antialiased;
     background: var(--ground);
     color: var(--fg);
+  }
+
+  /* Light utility surfaces stay paper: their inherited text and role colours must not follow
+     the red page roles. Explicit text-* utilities from components still win in the utilities layer. */
+  :is(.bg-cream, .bg-white, .bg-sand) {
+    color: var(--paper-fg, var(--color-ink));
+    --heading: var(--paper-heading, var(--color-brick));
+    --muted: var(--paper-muted, color-mix(in srgb, var(--color-ink) 75%, var(--color-cream)));
+    --line: var(--paper-line, color-mix(in srgb, var(--color-ink) 22%, transparent));
+    --accent-text: var(--paper-accent, var(--color-crimson));
   }
 
   /* Headings: heavy italic capitals with tight tracking (English). */
@@ -202,8 +225,8 @@
     @apply text-lg leading-relaxed;
 
     & h2 {
-      margin-top: clamp(4rem, 8vw, 7rem);
-      margin-bottom: 1.5rem;
+      margin-top: clamp(3rem, 5vw, 4.5rem);
+      margin-bottom: 1.25rem;
       padding-top: 1.25rem;
       border-top: 1px solid var(--line);
       font-size: clamp(2.2rem, 5.4vw, 4.6rem);
@@ -220,15 +243,15 @@
     }
     & p {
       @apply my-4;
-      max-width: 42rem;
+      max-width: min(100%, 54rem);
     }
     & ul {
       @apply my-4 list-disc space-y-1.5 pl-6;
-      max-width: 46rem;
+      max-width: min(100%, 56rem);
     }
     & ol {
       @apply my-4 list-decimal space-y-1 pl-7;
-      max-width: 46rem;
+      max-width: min(100%, 56rem);
     }
     & li::marker {
       color: var(--accent-text);
@@ -244,8 +267,8 @@
     }
     & blockquote {
       @apply my-6 px-5 py-4 font-medium;
-      max-width: 42rem;
-      border-left: 4px solid var(--accent);
+      max-width: min(100%, 54rem);
+      border-left: 4px solid var(--heading);
       background: var(--ground-alt);
     }
     /* Keep the line breaks of verses such as the temple bhajan. */
@@ -498,6 +521,7 @@
 @media (width >= 64rem) {
   .justified,
   .heritage-prose > p,
+  .heritage-prose .row-rest,
   .map-detail-prose > p {
     text-align: justify;
     text-justify: inter-word;
@@ -505,6 +529,7 @@
   }
   :lang(en) .justified,
   :lang(en) .heritage-prose > p,
+  :lang(en) .heritage-prose .row-rest,
   :lang(en) .map-detail-prose > p {
     hyphens: auto;
   }
@@ -543,7 +568,7 @@
   padding-inline: var(--gutter);
 }
 .section {
-  padding-block: max(3.5rem, 5.5vw);
+  padding-block: max(3rem, 4vw);
 }
 .grid12 {
   display: grid;
@@ -644,7 +669,7 @@ html[lang="ne"] .btn {
 .btn-accent {
   background: var(--accent);
   color: var(--accent-fg);
-  border-color: var(--accent);
+  border-color: var(--accent-border, var(--accent));
 }
 .btn-outline {
   background: transparent;
@@ -653,8 +678,8 @@ html[lang="ne"] .btn {
 }
 .btn-paper {
   background: var(--paper);
-  color: var(--accent-text);
-  border-color: var(--accent-text);
+  color: var(--paper-accent, var(--accent-text));
+  border-color: var(--paper-accent, var(--accent-text));
 }
 @media (hover: hover) and (pointer: fine) {
   .btn:hover {
@@ -952,7 +977,7 @@ html[lang="ne"] .hero-title {
 }
 .paper-line {
   background: var(--paper);
-  color: var(--fg);
+  color: var(--paper-fg, var(--fg));
   padding: 0.02em 0.22em 0.06em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -972,7 +997,7 @@ html[lang="ne"] .hero-title {
 .hero-sub {
   max-width: 24rem;
   background: var(--paper);
-  color: var(--fg);
+  color: var(--paper-fg, var(--fg));
   padding: 0.6rem 0.75rem;
   font-size: 1rem;
   line-height: 1.4;
@@ -1231,6 +1256,13 @@ html[lang="en"] .site-row-name {
     transform: translateX(70%) rotate(7deg);
   }
 }
+/* A single photograph (the heritage pages' "other site" link) is not a fan: keep it upright and in
+   normal flow, so an enlarged photo gives the container its real height instead of overlapping the
+   heading beside/below it. */
+.fan > :only-child {
+  position: relative;
+  transform: none;
+}
 .fan[data-waiting] > * {
   transform: translateX(0) rotate(0deg);
 }
@@ -1449,7 +1481,10 @@ html[lang="ne"] .filter-tabs button {
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: var(--museum-charcoal);
+  background: var(--museum-ivory);
+}
+.wall-stage.museum-active {
+  min-height: clamp(28rem, 62vh, 46rem);
 }
 .museum-canvas canvas {
   display: block;
@@ -1783,29 +1818,22 @@ html[lang="ne"] .wall-placard {
 }
 .wall-stage.hanging-active .wall-placard {
   display: block;
-  position: absolute;
-  left: var(--gutter);
-  bottom: 0;
-  max-width: min(36rem, 60%);
-  margin: 0;
-  padding: 0;
+  position: static;
+  width: 100%;
+  max-width: none;
+  margin: 1.1rem 0 0;
+  padding: 0.75rem 0.85rem;
   overflow: visible;
-  background: none;
-  color: var(--fg);
-  box-shadow: none;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  box-shadow: 0 0.4rem 1rem rgb(0 0 0 / 0.25);
   font-family: var(--font-mono);
   font-size: 0.68rem;
   line-height: 1.5;
   text-align: left;
+  overflow-wrap: anywhere;
   -webkit-line-clamp: unset;
   line-clamp: unset;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s var(--ease-std), visibility 0.2s;
-}
-.wall-stage.hanging-active .wall-item[data-current] .wall-placard {
-  opacity: 1;
-  visibility: visible;
 }
 .wall-stage.hanging-active .line-counter {
   display: flex;
@@ -1923,29 +1951,22 @@ html[lang="ne"] .wall-placard {
   }
   .wall-stage .wall-placard {
     display: block;
-    position: absolute;
-    left: var(--gutter);
-    bottom: 0;
-    max-width: min(36rem, 60%);
-    margin: 0;
-    padding: 0;
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin: 1.1rem 0 0;
+    padding: 0.75rem 0.85rem;
     overflow: visible;
-    background: none;
-    color: var(--fg);
-    box-shadow: none;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    box-shadow: 0 0.4rem 1rem rgb(0 0 0 / 0.25);
     font-family: var(--font-mono);
     font-size: 0.68rem;
     line-height: 1.5;
     text-align: left;
+    overflow-wrap: anywhere;
     -webkit-line-clamp: unset;
     line-clamp: unset;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s var(--ease-std), visibility 0.2s;
-  }
-  .wall-stage .wall-item[data-current] .wall-placard {
-    opacity: 1;
-    visibility: visible;
   }
   .wall-stage .line-counter {
     display: flex;
@@ -1976,22 +1997,93 @@ html[lang="ne"] .wall-placard {
     rotate: 0.5deg;
   }
 }
-/* List view rows. */
+/* ---- Phone hanging wall: one large framed print per swipe, description in full below it ----
+   Still the recovered 6bed439 line (string, tilt, wheel/swipe/arrows, snap), but sized for a hand:
+   the print takes most of the viewport, all prints share one 4:5 cream mat window so portraits fill
+   it and landscapes sit whole inside it (never cropped or stretched), and the dark frame, inset
+   placard and centred counter keep it reading as the museum wall rather than a plain carousel. */
+@media (max-width: 47.99rem) {
+  .wall-stage.hanging-active {
+    padding-block: 0.25rem 0.75rem;
+  }
+  .wall-stage.hanging-active .walk-track {
+    gap: 1rem;
+    /* Exactly half the item width, so snap:center lands each print in the middle. */
+    padding: 2.4rem calc(50% - min(42vw, 10rem)) 1.75rem;
+  }
+  .wall-stage.hanging-active .wall-item {
+    width: min(84vw, 20rem);
+  }
+  .wall-stage.hanging-active .wall-frame {
+    padding: clamp(0.35rem, 1.4vw, 0.5rem);
+    background: #2c1412;
+    border: 1px solid rgb(0 0 0 / 0.4);
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.45), 0 0.15rem 0.4rem rgb(0 0 0 / 0.35);
+  }
+  .wall-stage.hanging-active .wall-mat {
+    padding: clamp(0.35rem, 1.4vw, 0.5rem);
+    background: var(--color-cream);
+    box-shadow: inset 0 0 0 1px rgb(43 26 26 / 0.18);
+  }
+  .wall-stage.hanging-active .wall-frame img,
+  .wall-stage.hanging-active .wall-item .wall-frame img,
+  .wall-stage.hanging-active .wall-item:nth-child(3n + 2) .wall-frame img,
+  .wall-stage.hanging-active .wall-item:nth-child(3n) .wall-frame img {
+    /* A constant mat window: portrait prints fill it, landscapes sit whole inside it (no crop). */
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    background: var(--color-cream);
+  }
+  .wall-stage.hanging-active .wall-placard {
+    width: calc(100% - 2.5rem);
+    margin: 0.85rem auto 0;
+    padding: 0.85rem 0.9rem;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    text-align: left;
+  }
+  html[lang="ne"] .wall-stage.hanging-active .wall-placard {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .wall-stage.hanging-active .line-counter {
+    right: auto;
+    bottom: 0.4rem;
+    left: 50%;
+    translate: -50% 0;
+  }
+}
+/* List view rows. Phones: a small print beside the caption, with the site and year under it,
+   so the caption keeps a readable measure instead of being squeezed by a third column. */
 .list-row {
   display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  grid-template-columns: 20.4rem minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 1rem;
+  gap: 2.2rem;
   width: 100%;
-  padding: 1.1rem 0.25rem;
+  padding: 1.33rem 0.25rem;
   text-align: left;
   transition: background-color 0.16s;
 }
-@media (min-width: 48rem) {
+@media (max-width: 47.99rem) {
   .list-row {
-    grid-template-columns: 20.4rem minmax(0, 1fr) auto auto;
-    gap: 2.2rem;
-    padding: 1.33rem 0.25rem;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    align-items: start;
+    gap: 0.4rem 1rem;
+    padding: 1.1rem 0.25rem;
+  }
+  .list-row img {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .list-caption {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .list-meta {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
   }
 }
 @media (hover: hover) and (pointer: fine) {

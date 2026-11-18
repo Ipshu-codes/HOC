@@ -11,13 +11,12 @@ import {
   MUSEUM,
   artworkPose,
   buildMuseumLayout,
-  clipMuseumPosition,
-  firstIndexInHall,
-  hallEntryPose,
-  hallOfArtwork,
+  clampPose,
+  clipCorridorPosition,
   orderedArtworks,
   type CameraPose,
-  type MuseumHall,
+  type MuseumArtwork,
+  type MuseumLayout,
   type MuseumRoomInput,
   type ScreenRect,
 } from "@/lib/museum-layout";
@@ -49,7 +48,8 @@ interface MuseumCanvasProps {
 }
 
 interface ControlsProps extends Omit<MuseumCanvasProps, "photos" | "sites" | "lang"> {
-  halls: MuseumHall[];
+  layout: MuseumLayout;
+  artworks: MuseumArtwork[];
   gesture: MutableRefObject<MuseumGesture>;
 }
 
@@ -58,29 +58,82 @@ interface MuseumGesture {
   moved: boolean;
 }
 
+type MoveAction = "forward" | "backward" | "left" | "right";
+
+/** Thumbnails start nearest the visitor, then fill the rest of the corridor in small idle batches. */
+const LOAD_WINDOW = 6;
+const BACKGROUND_BATCH = 4;
+const BACKGROUND_DELAY_MS = 220;
+const FIRST_BATCH_DELAY_MS = 600;
+
+function nearbyArtworkIndices(activeIndex: number, count: number): number[] {
+  if (count === 0) return [];
+  const start = Math.max(0, activeIndex - LOAD_WINDOW);
+  const end = Math.min(count - 1, activeIndex + LOAD_WINDOW);
+  const indices: number[] = [];
+  for (let index = start; index <= end; index += 1) indices.push(index);
+  return indices;
+}
+
 function twoDigits(n: number, lang: Locale): string {
   const text = formatNumber(n, lang);
   return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
 }
 
-/** Mouse, wheel, touch and keyboard navigation. All state is in refs: no React render per drag frame. */
+/** Codes keep W/A/S/D stable; arrows use `key` because their codes are layout-independent. */
+function movementAction(event: KeyboardEvent): MoveAction | null {
+  switch (event.code) {
+    case "KeyW":
+      return "forward";
+    case "KeyS":
+      return "backward";
+    case "KeyA":
+      return "left";
+    case "KeyD":
+      return "right";
+  }
+  switch (event.key) {
+    case "ArrowUp":
+      return "forward";
+    case "ArrowDown":
+      return "backward";
+    case "ArrowLeft":
+      return "left";
+    case "ArrowRight":
+      return "right";
+  }
+  return null;
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && Boolean(target.closest("input, textarea, select, [contenteditable='true'], [role='textbox']"));
+}
+
+/** Real controls keep their own keyboard behaviour; accessible artwork frames stay navigable. */
+function isGuardedControl(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row")) return true;
+  return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame");
+}
+
+/**
+ * Mouse, wheel, touch and keyboard navigation. All state is in refs: no React render per drag frame.
+ */
 function MuseumControls({
-  halls,
+  layout,
+  artworks,
   enabled,
   reducedMotion,
   activeIndex,
   poseRef,
   focusNonce,
   onActiveIndex,
-  onFocusArtwork,
-  filter,
   gesture,
 }: ControlsProps) {
   const camera = useThree((state) => state.camera);
   const invalidate = useThree((state) => state.invalidate);
   const gl = useThree((state) => state.gl);
 
-  const artworks = useMemo(() => orderedArtworks(halls), [halls]);
   // Refs start from constants; the preserved pose is copied in the mount effect below (reading
   // poseRef.current during render would break React's render rules). No per-frame React state.
   const target = useRef<CameraPose>({ ...INITIAL_POSE });
@@ -88,28 +141,40 @@ function MuseumControls({
   const pointers = useRef(new Map<number, { x: number; y: number; startX: number; startY: number }>());
   const pinch = useRef<number | null>(null);
   const handledNonce = useRef(focusNonce);
-  const handledFilter = useRef(filter);
+  const pressed = useRef(new Set<MoveAction>());
+  const initialised = useRef(false);
 
   useEffect(() => {
     currentIndex.current = activeIndex;
   }, [activeIndex]);
 
-  // On (re)mount, resume the pose Gallery kept while PhotoView or a layout switch unmounted us.
-  // The canvas starts at INITIAL_POSE for SSR-safe rendering; this effect puts it back on the view.
+  // On first mount, resume the pose Gallery kept while PhotoView or a layout switch unmounted us.
+  // On a later layout change, only clamp the goal when the new corridor makes it invalid; damping
+  // then eases the camera back instead of teleporting to the entrance.
   useEffect(() => {
-    const pose = poseRef.current;
-    target.current = { ...pose };
-    camera.position.set(pose.x, MUSEUM.eyeHeight, pose.z);
-    camera.rotation.set(pose.pitch, pose.yaw, 0, "YXZ");
-    invalidate();
-  }, [poseRef, camera, invalidate]);
+    if (!initialised.current) {
+      initialised.current = true;
+      const pose = clampPose(layout, poseRef.current);
+      target.current = { ...pose };
+      poseRef.current = { ...pose };
+      camera.position.set(pose.x, MUSEUM.eyeHeight, pose.z);
+      camera.rotation.set(pose.pitch, pose.yaw, 0, "YXZ");
+      invalidate();
+      return;
+    }
+    const clamped = clampPose(layout, target.current);
+    if (clamped.x !== target.current.x || clamped.z !== target.current.z) {
+      target.current = { ...target.current, x: clamped.x, z: clamped.z };
+      invalidate();
+    }
+  }, [layout, poseRef, camera, invalidate]);
 
   const steer = useCallback(
     (pose: CameraPose) => {
-      target.current = { ...pose };
+      target.current = { ...clampPose(layout, pose) };
       invalidate();
     },
-    [invalidate],
+    [layout, invalidate],
   );
 
   const steerToArtwork = useCallback(
@@ -121,40 +186,69 @@ function MuseumControls({
   );
 
   // A focused DOM frame asks the camera to look at its 3D counterpart. The nonce guard keeps a
-  // hall/language re-render from steering on its own; only a fresh focus request does that.
+  // filter/language re-render from steering on its own; only a fresh focus request does that.
   useEffect(() => {
     if (focusNonce === handledNonce.current) return;
     handledNonce.current = focusNonce;
     steerToArtwork(activeIndex);
   }, [focusNonce, activeIndex, steerToArtwork]);
 
-  // A site filter moves to that hall's entrance. "All" keeps the current view when appropriate.
+  // Movement is keyed independently of yaw: strafing never rotates the camera. Modify keys and
+  // page controls are ignored, and every release/blur clears held keys so motion cannot stick.
   useEffect(() => {
-    if (filter === handledFilter.current) return;
-    handledFilter.current = filter;
-    if (filter === "all" || !halls[0]) return;
-    steer(hallEntryPose(halls[0]));
-    const first = firstIndexInHall(halls[0]);
-    if (first !== null) {
-      currentIndex.current = first;
-      onActiveIndex(first);
+    if (!enabled) {
+      pressed.current.clear();
+      return;
     }
-  }, [filter, halls, steer, onActiveIndex]);
+    const clear = () => {
+      if (pressed.current.size === 0) return;
+      pressed.current.clear();
+      invalidate();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+      if (isEditableTarget(event.target) || isGuardedControl(event.target)) return;
+      const action = movementAction(event);
+      if (!action) return;
+      event.preventDefault();
+      pressed.current.add(action);
+      invalidate();
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      const action = movementAction(event);
+      if (!action) return;
+      pressed.current.delete(action);
+    };
+    const onVisibility = () => {
+      if (document.hidden) clear();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", clear);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", clear);
+      document.removeEventListener("visibilitychange", onVisibility);
+      clear();
+    };
+  }, [enabled, invalidate]);
 
-  /** Move along the camera's ground-forward vector, clipped by the hall/doorway footprint. */
+  /** Move along the camera's ground-forward vector, clipped by the corridor footprint. */
   const moveForward = useCallback(
     (step: number) => {
       const { yaw } = target.current;
-      const [x, z] = clipMuseumPosition(
-        halls,
-        [poseRef.current.x, poseRef.current.z],
+      const [x, z] = clipCorridorPosition(
+        layout,
+        [target.current.x, target.current.z],
         [target.current.x - Math.sin(yaw) * step, target.current.z - Math.cos(yaw) * step],
       );
       target.current.x = x;
       target.current.z = z;
       invalidate();
     },
-    [halls, poseRef, invalidate],
+    [layout, invalidate],
   );
 
   // Pointer: one finger/mouse button looks around; two fingers pinch to walk. Pointer capture keeps
@@ -225,42 +319,33 @@ function MuseumControls({
     };
   }, [gl, enabled, invalidate, moveForward, gesture]);
 
-  // Arrow keys walk the same order as the DOM frames; Up/Down move to the neighbouring hall.
-  useEffect(() => {
-    if (!enabled) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
-      event.preventDefault();
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        const next = currentIndex.current + (event.key === "ArrowRight" ? 1 : -1);
-        if (next < 0 || next >= artworks.length) return;
-        currentIndex.current = next;
-        onActiveIndex(next);
-        steerToArtwork(next);
-        onFocusArtwork(next);
-        return;
-      }
-      const here = halls.findIndex((hall) => hall.slug === hallOfArtwork(halls, currentIndex.current)?.slug);
-      const next = here + (event.key === "ArrowDown" ? 1 : -1);
-      if (here < 0 || next < 0 || next >= halls.length) return;
-      steer(hallEntryPose(halls[next]));
-      const first = firstIndexInHall(halls[next]);
-      if (first !== null) {
-        currentIndex.current = first;
-        onActiveIndex(first);
-        onFocusArtwork(first);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [enabled, artworks, halls, onActiveIndex, onFocusArtwork, steer, steerToArtwork]);
-
   // Damping and spotlight both run inside useFrame. With frameloop="demand", invalidate() here is
   // what keeps the transition alive until it settles; once still, the scene costs no frames.
   useFrame((_, delta) => {
     const pose = poseRef.current;
     const goal = target.current;
-    const k = reducedMotion ? 1 : 1 - Math.exp(-Math.min(delta, 0.05) * 7);
+    const dt = Math.min(delta, 0.05);
+
+    if (enabled && pressed.current.size > 0) {
+      let forward = 0;
+      let strafe = 0;
+      if (pressed.current.has("forward")) forward += 1;
+      if (pressed.current.has("backward")) forward -= 1;
+      if (pressed.current.has("right")) strafe += 1;
+      if (pressed.current.has("left")) strafe -= 1;
+      if (forward !== 0 || strafe !== 0) {
+        const length = Math.hypot(forward, strafe);
+        const speed = (2.7 * dt) / length;
+        const yaw = goal.yaw;
+        const dx = (-Math.sin(yaw) * forward + Math.cos(yaw) * strafe) * speed;
+        const dz = (-Math.cos(yaw) * forward - Math.sin(yaw) * strafe) * speed;
+        const [x, z] = clipCorridorPosition(layout, [goal.x, goal.z], [goal.x + dx, goal.z + dz]);
+        goal.x = x;
+        goal.z = z;
+      }
+    }
+
+    const k = reducedMotion ? 1 : 1 - Math.exp(-dt * 7);
     let dyaw = goal.yaw - pose.yaw;
     while (dyaw > Math.PI) dyaw -= Math.PI * 2;
     while (dyaw < -Math.PI) dyaw += Math.PI * 2;
@@ -272,11 +357,12 @@ function MuseumControls({
     camera.rotation.set(pose.pitch, pose.yaw, 0, "YXZ");
 
     const moving =
-      Math.abs(goal.x - pose.x) + Math.abs(goal.z - pose.z) + Math.abs(dyaw) + Math.abs(goal.pitch - pose.pitch) > 0.002;
+      pressed.current.size > 0 || Math.abs(goal.x - pose.x) + Math.abs(goal.z - pose.z) + Math.abs(dyaw) + Math.abs(goal.pitch - pose.pitch) > 0.002;
     if (moving) invalidate();
 
     let nearest = -1;
-    let best = 3.6;
+    // Larger frames are comfortably viewed from farther back; keep the active index in step.
+    let best = 6.2;
     for (const art of artworks) {
       const distance = Math.hypot(pose.x - art.position[0], pose.z - art.position[2]);
       if (distance < best) {
@@ -356,37 +442,66 @@ function ProjectionBridge({
  * the same view. Rendered with `dynamic(..., { ssr: false })`, so nothing here is prerendered.
  */
 export default function MuseumCanvas(props: MuseumCanvasProps) {
-  const { photos, sites, filter, lang, activeIndex, onFail } = props;
+  const { photos, filter, lang, activeIndex, onFail } = props;
   const shown = useMemo(
     () => (filter === "all" ? photos : photos.filter((photo) => photo.site === filter)),
     [photos, filter],
   );
   const rooms = useMemo<MuseumRoomInput[]>(
     () =>
-      sites.map((site, index) => ({
+      props.sites.map((site, index) => ({
         slug: site.slug,
         name: site.name,
         number: twoDigits(index + 1, lang),
         visible: filter === "all" || filter === site.slug,
       })),
-    [sites, filter, lang],
+    [props.sites, filter, lang],
   );
-  const halls = useMemo(() => buildMuseumLayout(rooms, shown, lang), [rooms, shown, lang]);
+  const layout = useMemo(() => buildMuseumLayout(rooms, shown, lang), [rooms, shown, lang]);
+  const artworks = useMemo(() => orderedArtworks(layout), [layout]);
 
-  // Progressive loading: the nearest hall is lit immediately, later halls one per idle period.
-  // Camera navigation does not create textures early; it only changes which hall is looked at.
-  const [activeHalls, setActiveHalls] = useState(1);
+  // Loading priority is a growing set, not a moving window: once a frame has been asked to load it
+  // keeps its texture for as long as it is mounted. A new exhibition (filter/language/photo set)
+  // starts a fresh set; navigation only adds nearby frames, so distant frames never go blank.
+  const exhibitionKey = useMemo(() => shown.map((photo) => photo.thumb.src).join("\u0000"), [shown]);
+  const [backgroundIndices, setBackgroundIndices] = useState(() => ({
+    key: exhibitionKey,
+    indices: new Set(nearbyArtworkIndices(activeIndex, artworks.length)),
+  }));
+  const loadingIndices = useMemo(() => {
+    const base =
+      backgroundIndices.key === exhibitionKey
+        ? backgroundIndices.indices
+        : new Set(nearbyArtworkIndices(activeIndex, artworks.length));
+    // Derived during render so walking adds the newly nearby frames without a cascading render.
+    const next = new Set(base);
+    for (const index of nearbyArtworkIndices(activeIndex, artworks.length)) next.add(index);
+    return next;
+  }, [backgroundIndices, exhibitionKey, activeIndex, artworks.length]);
+
+  // After the first nearby group has had time to decode, fill the remaining frames a few at a time.
   useEffect(() => {
-    if (activeHalls >= halls.length) return;
-    let id = 0;
-    const advance = () => setActiveHalls((count) => Math.min(count + 1, halls.length));
-    if (typeof window.requestIdleCallback === "function") id = window.requestIdleCallback(advance);
-    else id = window.setTimeout(advance, 250);
-    return () => {
-      if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(id);
-      else window.clearTimeout(id);
-    };
-  }, [activeHalls, halls.length]);
+    if (loadingIndices.size >= artworks.length) return;
+    const isFirstBatch = loadingIndices.size === nearbyArtworkIndices(activeIndex, artworks.length).length;
+    const timer = window.setTimeout(() => {
+      setBackgroundIndices((previous) => {
+        const base = previous.key === exhibitionKey ? previous.indices : loadingIndices;
+        const next = new Set(base);
+        if (next.size >= artworks.length) {
+          return previous.key === exhibitionKey ? previous : { key: exhibitionKey, indices: next };
+        }
+        const pending: number[] = [];
+        for (let index = 0; index < artworks.length; index += 1) {
+          if (!next.has(index)) pending.push(index);
+        }
+        pending.sort((a, b) => Math.abs(a - activeIndex) - Math.abs(b - activeIndex) || a - b);
+        for (const index of pending.slice(0, BACKGROUND_BATCH)) next.add(index);
+        if (previous.key === exhibitionKey && next.size === base.size) return previous;
+        return { key: exhibitionKey, indices: next };
+      });
+    }, isFirstBatch ? FIRST_BATCH_DELAY_MS : BACKGROUND_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [loadingIndices, artworks.length, exhibitionKey, activeIndex]);
 
   const gesture = useRef<MuseumGesture>({ moved: false });
   const objectsRef = useRef(new Map<number, THREE.Object3D>());
@@ -413,13 +528,13 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
         frameloop="demand"
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: "high-performance" }}
-        // R3F auto-lookAt(0,0,0) unless a rotation is supplied; [0,0,0] looks straight down the hall (-Z).
+        // The camera starts at the open entrance and looks straight down the hallway (-Z).
         camera={{
           position: [INITIAL_POSE.x, MUSEUM.eyeHeight, INITIAL_POSE.z],
           rotation: [0, 0, 0],
-          fov: 64,
+          fov: 66,
           near: 0.1,
-          far: 220,
+          far: 260,
         }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -427,11 +542,11 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
           gl.domElement.addEventListener("webglcontextlost", fail, { once: true });
         }}
       >
-        <MuseumControls {...props} halls={halls} gesture={gesture} />
+        <color attach="background" args={["#e9dfd0"]} />
+        <MuseumControls {...props} layout={layout} artworks={artworks} gesture={gesture} />
         <MuseumScene
-          halls={halls}
-          activeHalls={activeHalls}
-          lang={lang}
+          layout={layout}
+          loadingIndices={loadingIndices}
           activeIndex={activeIndex}
           hoverIndex={props.enabled ? hoverIndex : null}
           interactive={props.enabled}
