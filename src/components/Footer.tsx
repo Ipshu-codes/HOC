@@ -26,10 +26,11 @@ export default function Footer({
 }: FooterProps) {
   const heritagesTitle = byCount(dict.footer.heritages, heritages.length);
   const linkClass =
-    "underline-offset-4 hover:text-white hover:underline focus-visible:outline-cream";
+    // inline-flex + min-h-11: a 44 px tall tap target on phones (the lines were 28 px, 2 px apart).
+    "inline-flex min-h-11 items-center underline-offset-4 hover:text-white hover:underline focus-visible:outline-cream";
 
   return (
-    <footer className="mt-auto bg-brick text-cream">
+    <footer className="site-footer mt-auto bg-brick text-cream">
       <SectionDivider className="text-gold" />
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -60,7 +61,7 @@ export default function Footer({
           <h2 className="mb-3 font-sans text-lg font-bold text-white">
             {dict.footer.office}
           </h2>
-          <address className="space-y-1 not-italic">
+          <address className="not-italic">
             <p>
               <span className="sr-only">{dict.footer.address}: </span>
               {ward.office.address[lang]}
@@ -87,7 +88,7 @@ export default function Footer({
           <h2 className="mb-3 font-sans text-lg font-bold text-white">
             {dict.footer.quickLinks}
           </h2>
-          <ul className="space-y-1">
+          <ul>
             {navItems.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} prefetch={false} className={linkClass}>
@@ -102,7 +103,7 @@ export default function Footer({
           <h2 className="mb-3 font-sans text-lg font-bold text-white">
             {heritagesTitle}
           </h2>
-          <ul className="space-y-1">
+          <ul>
             {heritages.map((heritage) => (
               <li key={heritage.slug}>
                 <Link

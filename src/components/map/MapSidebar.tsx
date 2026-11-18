@@ -1,39 +1,31 @@
 "use client";
 
-import type { MapPlace, PlaceKind } from "@/components/map/types";
+import type { MapPlace } from "@/components/map/types";
 import { fill } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
 interface MapSidebarProps {
-  places: MapPlace[];
-  /** Places that pass the current search and filters. */
+  /** Places that pass the current search. */
   results: MapPlace[];
   selectedId: string | null;
   query: string;
-  kinds: ReadonlySet<PlaceKind>;
   onQueryChange: (query: string) => void;
-  onToggleKind: (kind: PlaceKind) => void;
-  onClearFilters: () => void;
   onSelect: (id: string) => void;
   labels: Dictionary["map"];
   lang: Locale;
   className?: string;
 }
 
-const CHIP = "min-h-11 rounded-full px-4 py-2 text-sm font-bold ring-1";
-
-/** Search, category filters and the list of places. */
+/** Search and the list of places. */
 export default function MapSidebar(props: MapSidebarProps) {
-  const { places, results, selectedId, query, kinds, labels, lang } = props;
+  const { results, selectedId, query, labels, lang } = props;
   const t = labels;
-  const allKinds = [...new Set(places.map((place) => place.kind))];
-  const filtersActive = query.trim() !== "" || kinds.size > 0;
   const countText = fill(results.length === 1 ? t.search.count.one : t.search.count.other, { n: results.length }, lang);
 
   return (
     <div className={`space-y-5 ${props.className ?? ""}`}>
-      {/* ---- Search + filters ---- */}
+      {/* ---- Search ---- */}
       <section aria-label={t.search.label}>
         <label htmlFor="map-search" className="mb-1 block font-bold">
           {t.search.label}
@@ -46,7 +38,7 @@ export default function MapSidebar(props: MapSidebarProps) {
             onChange={(event) => props.onQueryChange(event.target.value)}
             placeholder={t.search.placeholder}
             autoComplete="off"
-            className="min-h-11 w-full rounded-lg border border-gold/60 bg-white px-3 py-2 pr-11 text-base text-ink placeholder:text-ink/60"
+            className={`min-h-11 w-full rounded-lg border border-gold/60 bg-white px-3 py-2 text-base text-ink placeholder:text-sm placeholder:text-ink/60 ${query !== "" ? "pr-11" : ""}`}
           />
           {query !== "" && (
             <button
@@ -59,39 +51,6 @@ export default function MapSidebar(props: MapSidebarProps) {
             </button>
           )}
         </div>
-
-        {allKinds.length > 1 && (
-          <div role="group" aria-label={t.filters.label} className="mt-3 flex flex-wrap gap-2">
-            <button
-              type="button"
-              aria-pressed={kinds.size === 0}
-              onClick={props.onClearFilters}
-              className={`${CHIP} ${kinds.size === 0 ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"}`}
-            >
-              {t.filters.all}
-            </button>
-            {allKinds.map((kind) => (
-              <button
-                key={kind}
-                type="button"
-                aria-pressed={kinds.has(kind)}
-                onClick={() => props.onToggleKind(kind)}
-                className={`${CHIP} ${kinds.has(kind) ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"}`}
-              >
-                {t.kinds[kind]}
-              </button>
-            ))}
-          </div>
-        )}
-        {filtersActive && (
-          <button
-            type="button"
-            onClick={props.onClearFilters}
-            className="mt-2 min-h-11 font-bold text-crimson underline underline-offset-4 hover:text-brick"
-          >
-            {t.filters.clear}
-          </button>
-        )}
       </section>
 
       {/* ---- Places ---- */}

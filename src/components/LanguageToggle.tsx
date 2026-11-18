@@ -31,8 +31,8 @@ export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
               aria-current={current ? "true" : undefined}
               className={
                 current
-                  ? "block rounded-full bg-cream px-3 py-1 text-sm font-bold text-brick focus-visible:outline-cream"
-                  : "block rounded-full px-3 py-1 text-sm font-medium text-cream hover:bg-crimson focus-visible:outline-cream"
+                  ? "flex min-h-11 min-w-11 items-center justify-center rounded-full bg-cream px-3 text-sm font-bold text-brick focus-visible:outline-cream"
+                  : "flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium text-cream hover:bg-crimson focus-visible:outline-cream"
               }
             >
               {/* Visible "EN" / "ने" plus the full name for screen readers ("EN English"):

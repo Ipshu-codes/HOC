@@ -3,10 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ContactStrip from "@/components/ContactStrip";
+import FeaturedCarousel from "@/components/FeaturedCarousel";
 import HeritageCard from "@/components/HeritageCard";
 import Hero from "@/components/Hero";
 import HomeSection from "@/components/HomeSection";
-import ResponsiveImage from "@/components/ResponsiveImage";
 import SectionDivider from "@/components/SectionDivider";
 import {
   getCredits,
@@ -25,20 +25,25 @@ import {
 } from "@/lib/images";
 import type { Heritage } from "@/types/heritage";
 
-const GALLERY_PREVIEW_COUNT = 6;
+/** Photos in the home page carousel ("01 / 09"). */
+const GALLERY_PREVIEW_COUNT = 9;
 
-/** The 6 preview photos: the preferred list from content/home.json first, then any other photos of visible sites. */
+/**
+ * The carousel photos: the preferred list from content/home.json first, then any other photos of
+ * visible sites. The sites' cover photos are left out: the heritage cards just above already show them.
+ */
 function galleryPreview(
   preferred: string[],
   heritages: Heritage[],
 ): SiteImage[] {
+  const covers = new Set(heritages.map((heritage) => heritage.cover));
   const all = [
     ...preferred,
     ...heritages.flatMap((heritage) =>
       heritage.gallery.map((image) => image.src),
     ),
   ];
-  const unique = [...new Set(all)];
+  const unique = [...new Set(all)].filter((src) => !covers.has(src));
   return unique
     .map((src) => findSiteImage(src, heritages))
     .filter((image): image is SiteImage => image !== null)
@@ -97,6 +102,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     });
   }
   const preview = galleryPreview(home.galleryPreview, heritages);
+  const siteNames = new Map(heritages.map((h) => [h.slug, lang === "ne" ? h.nameNe : h.name]));
   const credits = getCredits();
   const illustration = ward.illustration
     ? imageSet(ward.illustration.files)
@@ -144,7 +150,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               // The whole ward map fills the space under the text; the link opens the largest file to read the labels.
               <a
                 href={wardMap.src}
-                className="mt-8 block rounded-xl focus-visible:outline-offset-4"
+                className="mt-8 block rounded-xl transition-transform duration-300 ease-(--ease-out) hover:-translate-y-0.5 focus-visible:outline-offset-4 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
                 <img
@@ -217,7 +223,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             />
           )}
         </div>
-        <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-8 grid gap-4 sm:grid-cols-2">
           {[
             { term: dict.home.aboutMunicipality, value: ward.city[lang] },
             { term: dict.home.aboutWard, value: ward.name[lang] },
@@ -226,7 +232,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           ].map(({ term, value }) => (
             <div
               key={term}
-              className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40"
+              className="info-card rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40"
             >
               <dt className="text-sm font-bold text-crimson">{term}</dt>
               <dd className="mt-1 text-lg font-medium">{value}</dd>
@@ -267,24 +273,27 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       <SectionDivider />
 
       <HomeSection id="gallery" title={dict.home.galleryTitle}>
-        <p className="mb-6 text-lg">{fill(dict.home.galleryIntro)}</p>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-          {preview.map((image) => (
-            <li key={image.src}>
-              <ResponsiveImage
-                image={image}
-                sizes="(min-width: 768px) 33vw, 50vw"
-                className="aspect-square w-full rounded-xl object-cover shadow-sm"
-              />
-            </li>
-          ))}
-        </ul>
-        <Link
-          href={`/${lang}/gallery/`}
-          className="mt-6 inline-block font-bold text-crimson underline underline-offset-4 hover:text-brick"
-        >
-          {dict.home.seeAll} <span aria-hidden="true">→</span>
-        </Link>
+        <p className="section-intro mb-10 text-lg">{fill(dict.home.galleryIntro)}</p>
+        <FeaturedCarousel
+          lang={lang}
+          labels={dict.home.carousel}
+          slides={preview.map((image) => ({
+            src: image.src,
+            srcSet: image.srcSet,
+            width: image.width,
+            height: image.height,
+            alt: image.alt,
+            site: siteNames.get(image.site) ?? "",
+          }))}
+        />
+        <p className="mt-10 text-center">
+          <Link
+            href={`/${lang}/gallery/`}
+            className="btn-ghost inline-block rounded-xl border border-ink px-6 py-3 font-bold text-ink hover:bg-ink hover:text-cream"
+          >
+            {dict.home.seeAll} <span aria-hidden="true">→</span>
+          </Link>
+        </p>
       </HomeSection>
 
       <ContactStrip lang={lang} dict={dict} ward={ward} />

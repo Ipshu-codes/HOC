@@ -82,7 +82,7 @@ export function coverImage(heritage: Heritage): SiteImage {
 export interface GalleryPhoto {
   site: HeritageSlug;
   alt: string;
-  /** The 640 px file, with a srcset that adds the 480 px one for small screens. */
+  /** The 640 px file, with a srcset of the 480 / 640 / 960 px files. */
   thumb: { src: string; srcSet: string; width: number; height: number };
   /** 480 / 640 / 960 / 1280 / 1920 px versions, given to the lightbox so the large files load only when opened. */
   full: { src: string; width: number; height: number }[];
@@ -94,7 +94,12 @@ export function galleryPhotos(heritages: Heritage[]): GalleryPhoto[] {
       const variants = variantsOf(image.src).map((file) => ({ src: file, ...sizeOf(file) }));
       const small = variants.filter((v) => /-(480|640)\.webp$/.test(v.src));
       const thumb = small.at(-1) ?? variants[0];
-      const srcSet = small.map((v) => `${v.src} ${v.width}w`).join(", ");
+      // The grid crops each photo to 4:5, so a landscape photo needs a source wider than its tile: the
+      // 960 px file is offered too (picked by sharp screens; small screens and the list keep 480/640).
+      const srcSet = variants
+        .filter((v) => /-(480|640|960)\.webp$/.test(v.src))
+        .map((v) => `${v.src} ${v.width}w`)
+        .join(", ");
       return { site: heritage.slug, alt: image.alt, thumb: { ...thumb, srcSet }, full: variants };
     }),
   );

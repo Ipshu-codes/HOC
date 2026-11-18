@@ -81,6 +81,8 @@ function wrap(li: Element, photo: SectionPhoto) {
       alt: photo.alt,
       loading: "lazy",
       decoding: "async",
+      // data-develop: starts grey below the fold, turns to colour in view (src/components/PhotoDevelop.tsx).
+      dataDevelop: "",
     },
     children: [],
   };

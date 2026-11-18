@@ -74,7 +74,7 @@ export default function Nav({
     <nav
       ref={navRef}
       aria-label={labels.label}
-      className="sticky top-0 z-40 bg-brick shadow-md"
+      className="site-nav sticky top-0 z-40 bg-brick shadow-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2">
         <div className="flex min-w-0 items-center gap-1">

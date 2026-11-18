@@ -137,6 +137,7 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - `content/heritage/mhepi-ajima.ne.md`: rewritten on 13 Nov 2026 by Claude from the priest's Nepali transcript (condensed, mostly his own words). Everything apart from the quoted inscriptions and the bhajan needs review. The new Mhepi chatbot answers in `content/faq.json` (`mhepi-*`, including the new `mhepi-name` and `mhepi-machhindranath`) too.
 - `content/credits.json` → `people.mhepi-priest.credit.ne` ("म्हेपी अजिमाका मूल पुरोहित भुषण रत्न बज्राचार्य") and `src/i18n/ne.json` → `heritage.informationFrom` ("जानकारी: …"): the Mhepi Ajima "Information from" line, by Claude, 17 Nov 2026.
 - `content/ward.json` → `illustration.alt.ne` (ward illustration, `wardlogo1.png`) and `overviewImage.alt.ne` (Nani's namaste beside Overview): alt text written by Claude, 17 Nov 2026.
+- `src/i18n/ne.json` → `home.carousel` ("छानिएका तस्बिरहरू", "अघिल्लो तस्बिर", "अर्को तस्बिर", "{total} मध्ये {n}") and `gallery.view` / `gallery.empty` ("यसरी हेर्नुहोस्", "ग्यालरी", "सूची", "यहाँ देखाउन अहिलेसम्म कुनै तस्बिर छैन।"): the UI refresh's photo carousel and Gallery/List switch, by Claude, 18 Nov 2026.
 - `content/heritage/nanak-math.ne.md`: mostly the docx's own sentences, shortened. The summary, How to Visit, list intros and table labels are by Claude.
   - **Revised on 17 Nov 2026** by Luniva Malakar from the guru's feedback (native speaker). The English page (`nanak-math.en.md`) and the English chatbot answers now mirror her Nepali; Claude's English translation of the new text needs a review.
 - The `alt` text in all `gallery` entries of the `.ne.md` files
@@ -168,5 +169,5 @@ These files contain Nepali written by Claude, not taken from a source. A native 
 - [ ] **Verify the walking route on foot.** Walk Mhepi Ajima → Nanak Math (and on to the ward office if it is added) with the map open on a phone. Check that the stops are in a sensible order, the path shown is walkable (once real paths are fetched), and the distances and times are about right. Note anything unsafe or confusing (busy crossings, steps, closed lanes).
 - [x] **Route needs two published sites.** Mhepi Ajima was published on 13 Nov 2026, so the route now appears with both stops (checked in the strict build).
 - **Map categories:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("More ward heritage sites", Later).
-- [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, filters, legend, route, detail panel) were written by the developer and need a native-speaker review.
+- [ ] **Nepali interface strings** added under `map` in `src/i18n/ne.json` (search, legend, route, detail panel) were written by the developer and need a native-speaker review.
 - **Audio stories:** moved to [docs/ROADMAP.md](docs/ROADMAP.md) ("Phase 9B: Spatial Memory Archive", Before launch).

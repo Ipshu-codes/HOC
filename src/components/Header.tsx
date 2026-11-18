@@ -21,7 +21,7 @@ interface HeaderProps {
 export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
   return (
     <>
-      <header className="border-b-2 border-gold/60 bg-cream">
+      <header className="site-header border-b-2 border-gold/60 bg-cream">
         <div className="mx-auto flex max-w-6xl items-center px-4 py-3 md:py-5">
           <BrandLink href={`/${lang}/`} label={dict.a11y.homeLink}>
             {/* alt="": the link's name ("Ward No. 16, home") already says what it is. */}

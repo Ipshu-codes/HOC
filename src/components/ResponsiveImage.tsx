@@ -7,6 +7,8 @@ interface ResponsiveImageProps {
   className?: string;
   /** Above-the-fold image (the hero): load immediately with high priority. */
   priority?: boolean;
+  /** Starts grey below the fold and turns to colour in view (PhotoDevelop.tsx). */
+  develop?: boolean;
 }
 
 /**
@@ -14,7 +16,7 @@ interface ResponsiveImageProps {
  * scripts/optimize-images.ts. next/image cannot build a srcset in a static
  * export (it needs its image server), so we do it ourselves.
  */
-export default function ResponsiveImage({ image, sizes, className, priority = false }: ResponsiveImageProps) {
+export default function ResponsiveImage({ image, sizes, className, priority = false, develop = false }: ResponsiveImageProps) {
   return (
     // eslint-disable-next-line @next/next/no-img-element -- see comment above
     <img
@@ -28,6 +30,7 @@ export default function ResponsiveImage({ image, sizes, className, priority = fa
       fetchPriority={priority ? "high" : "auto"}
       decoding="async"
       className={className}
+      data-develop={develop ? "" : undefined}
     />
   );
 }

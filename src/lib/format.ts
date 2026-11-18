@@ -1,9 +1,25 @@
 // Small helpers shared by the map components. No server-only imports: client components use this file.
 import type { Locale } from "@/types/locale";
 
+/** 2026 → "2026" / "२०२६": a year, so no thousands separator. */
+export function formatYear(year: number, lang: Locale): string {
+  return format(year, lang, { useGrouping: false });
+}
+
+/**
+ * Formats a number the same way on the server and in every browser. Intl's "ne-NP" is not reliable:
+ * Node writes "५३" but Chrome writes "53" (even with "-u-nu-deva"), so prerendered Nepali pages failed
+ * to hydrate (gallery photo count, map place count). So: format with "en-IN" (the lakh grouping Nepali
+ * uses, 1,00,000), then swap in Devanagari digits ourselves.
+ */
+function format(n: number, lang: Locale, options?: Intl.NumberFormatOptions): string {
+  const text = new Intl.NumberFormat(lang === "ne" ? "en-IN" : "en", options).format(n);
+  return lang === "ne" ? text.replace(/[0-9]/g, (digit) => String.fromCharCode(0x0966 + Number(digit))) : text;
+}
+
 /** 3 → "3" on English pages, "३" on Nepali pages (Devanagari digits, as elsewhere on the site). */
 export function formatNumber(n: number, lang: Locale): string {
-  return new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(n);
+  return format(n, lang);
 }
 
 /**
@@ -29,10 +45,11 @@ export function haversineMeters([lat1, lng1]: [number, number], [lat2, lng2]: [n
 
 /** 640 m → "640 m", 1,234 m → "1.2 km". Nepali pages get Devanagari digits. */
 export function formatDistance(meters: number, lang: Locale, units: { m: string; km: string }): string {
-  const nf = (max: number) => new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en", { maximumFractionDigits: max });
-  return meters < 1000 ? `${nf(0).format(Math.round(meters))} ${units.m}` : `${nf(1).format(meters / 1000)} ${units.km}`;
+  return meters < 1000
+    ? `${format(Math.round(meters), lang, { maximumFractionDigits: 0 })} ${units.m}`
+    : `${format(meters / 1000, lang, { maximumFractionDigits: 1 })} ${units.km}`;
 }
 
 export function formatMinutes(seconds: number, lang: Locale): string {
-  return new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(Math.max(1, Math.round(seconds / 60)));
+  return format(Math.max(1, Math.round(seconds / 60)), lang);
 }

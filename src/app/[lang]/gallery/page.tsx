@@ -34,14 +34,23 @@ export default async function GalleryPage({ params }: PageProps<"/[lang]/gallery
     name: lang === "ne" ? heritage.nameNe : heritage.name,
   }));
 
-  const galleryProps = { lang, photos, sites, credit: photoCreditText(credits, dict, lang), labels: dict.gallery };
+  const galleryProps = {
+    lang,
+    photos,
+    sites,
+    credit: photoCreditText(credits, dict, lang),
+    year: credits.photos.year,
+    labels: dict.gallery,
+  };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      <h1 className="text-4xl font-bold md:text-5xl">{dict.gallery.title}</h1>
-      <div aria-hidden="true" className="mt-3 mb-6 h-1 w-16 rounded-full bg-gold" />
-      <p className="max-w-3xl text-lg">{dict.gallery.intro.replace("{sites}", siteNameList(heritages, lang, dict))}</p>
-      <PhotoCredit credits={credits} dict={dict} lang={lang} className="mt-2 mb-8" />
+    <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
+      {/* Centred page heading, the same family as the home sections (globals.css: .page-title). */}
+      <header className="mb-12 text-center md:mb-16">
+        <h1 className="page-title font-bold">{dict.gallery.title}</h1>
+        <p className="mx-auto mt-6 max-w-2xl text-lg">{dict.gallery.intro.replace("{sites}", siteNameList(heritages, lang, dict))}</p>
+        <PhotoCredit credits={credits} dict={dict} lang={lang} className="mt-2" />
+      </header>
 
       {/* Reading ?site= needs a Suspense boundary in a static export. The fallback is the same
           grid without the URL filter, so the prerendered HTML is complete before JavaScript runs. */}

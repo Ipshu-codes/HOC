@@ -78,6 +78,12 @@
     "galleryTitle": "Gallery",
     "galleryIntro": "Photos from {sites}.",
     "seeAll": "See all photos",
+    "carousel": {
+      "label": "Featured photos",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "slide": "{n} of {total}"
+    },
     "contactTitle": "Contact",
     "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office."
   },
@@ -115,6 +121,12 @@
       "one": "{n} photo",
       "other": "{n} photos"
     },
+    "view": {
+      "label": "View as",
+      "grid": "Gallery",
+      "list": "List"
+    },
+    "empty": "No photos to show here yet.",
     "lightbox": {
       "Previous": "Previous photo",
       "Next": "Next photo",
@@ -166,11 +178,6 @@
         "one": "{n} place",
         "other": "{n} places"
       }
-    },
-    "filters": {
-      "label": "Category",
-      "all": "All",
-      "clear": "Clear search and filters"
     },
     "legend": {
       "heading": "Legend",

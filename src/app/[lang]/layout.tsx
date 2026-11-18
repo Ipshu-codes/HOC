@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { mukta, playfair } from "@/app/fonts";
+import { bricolage, mukta } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
+import PhotoDevelop from "@/components/PhotoDevelop";
 import { getHeritageList, getHeroSlideConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
 import { getDictionary, getNavItems, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
@@ -61,7 +62,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const navItems = getNavItems(lang, dict);
 
   return (
-    <html lang={lang} className={`${mukta.variable} ${playfair.variable}`}>
+    <html lang={lang} className={`${mukta.variable} ${lang === "en" ? bricolage.variable : ""}`}>
       <body className="flex min-h-screen flex-col">
         <a
           href="#main-content"
@@ -75,6 +76,8 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         </main>
         <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />
         <MapButton lang={lang} label={dict.map.floatingButton} short={dict.map.floatingButtonShort} />
+        {/* Greys photos below the fold and turns each to colour as it scrolls into view. */}
+        <PhotoDevelop />
         {/* Topics and answers for visible sites only, in the page language. */}
         <Chatbot
           data={getChatData(lang)}

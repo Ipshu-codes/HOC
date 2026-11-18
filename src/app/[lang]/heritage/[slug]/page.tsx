@@ -126,14 +126,10 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
             <h2 id="photos-title" className="text-3xl font-bold">
               {t.photos}
             </h2>
-            <ul className="mt-4 flex snap-x gap-3 overflow-x-auto pb-3">
+            <ul className="-mx-4 mt-6 flex snap-x gap-4 overflow-x-auto px-4 pt-1 pb-5">
               {photos.map((image) => (
-                <li key={image.src} className="w-56 shrink-0 snap-start md:w-64">
-                  <ResponsiveImage
-                    image={image}
-                    sizes="16rem"
-                    className="aspect-4/3 w-full rounded-xl object-cover shadow-sm"
-                  />
+                <li key={image.src} className="print w-56 shrink-0 snap-start md:w-64">
+                  <ResponsiveImage image={image} sizes="16rem" className="aspect-4/3 w-full object-cover" develop />
                 </li>
               ))}
             </ul>
@@ -153,7 +149,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
       </div>
 
       {others.length > 0 && (
-        <section aria-labelledby="other-heritage-title" className="bg-sand">
+        <section aria-labelledby="other-heritage-title" className="border-t border-ink/20">
           {/* Same vertical rhythm as the home page sections (HomeSection). */}
           <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
             <h2 id="other-heritage-title" className="mb-8 text-3xl font-bold">

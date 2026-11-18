@@ -41,7 +41,7 @@ interface MapViewProps {
   places: MapPlace[];
   /** Selected place (from ?site=, the list, a marker or the route). Highlighted, flown to, popup shown. */
   focusId: string | null;
-  /** Places that pass the current search and filters; the others are hidden. */
+  /** Places that pass the current search; the others are hidden. */
   visibleIds: ReadonlySet<string>;
   route: MapRoute | null;
   /** While the detail panel is open the popup is hidden and the camera leaves room for the panel. */

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import MapSidebar from "@/components/map/MapSidebar";
 import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
-import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
+import type { MapPlace, MapRoute } from "@/components/map/types";
 import { isMobile } from "@/lib/breakpoints";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
@@ -62,7 +62,7 @@ export function MapExplorerFromUrl(props: Omit<MapExplorerProps, "requestedId">)
 const normalise = (text: string) => text.normalize("NFC").toLocaleLowerCase().trim();
 
 /**
- * The heritage map page: sidebar (search, filters and places), the 3D map, and a detail panel.
+ * The heritage map page: sidebar (search and places), the 3D map, and a detail panel.
  * This component owns all the state; MapView only draws it.
  *   selectedId  which place is highlighted / flown to
  *   detailOpen  whether its full story is open
@@ -86,20 +86,18 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   }, []);
   const [detailOpen, setDetailOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [kinds, setKinds] = useState<ReadonlySet<PlaceKind>>(new Set());
   const mapWrapRef = useRef<HTMLDivElement>(null);
 
-  // ---- search + filters (work on the same place data the markers use, in both languages) ----
+  // ---- search (works on the same place data the markers use, in both languages) ----
   const results = useMemo(() => {
     const q = normalise(query);
     return places.filter(
       (place) =>
-        (kinds.size === 0 || kinds.has(place.kind)) &&
-        (q === "" || normalise(place.name).includes(q) || normalise(place.nameAlt).includes(q)),
+        q === "" || normalise(place.name).includes(q) || normalise(place.nameAlt).includes(q),
     );
-  }, [places, query, kinds]);
+  }, [places, query]);
 
-  // Markers shown on the map are the places that pass the current search and filters.
+  // Markers shown on the map are the places that pass the current search.
   const visibleIds = useMemo(() => {
     return new Set(results.map((place) => place.id));
   }, [results]);
@@ -141,20 +139,6 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
     setDetailOpen(false);
   }, []);
 
-  const toggleKind = useCallback((kind: PlaceKind) => {
-    setKinds((current) => {
-      const next = new Set(current);
-      if (next.has(kind)) next.delete(kind);
-      else next.add(kind);
-      return next;
-    });
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setQuery("");
-    setKinds(new Set());
-  }, []);
-
   // Escape closes the detail panel.
   useEffect(() => {
     if (!detailOpen) return;
@@ -171,21 +155,17 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
 
   return (
     <div
-      className={`flex flex-col gap-4 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-6 ${
-        showDetail ? "2xl:grid-cols-[19rem_minmax(0,1fr)_25rem]" : ""
+      className={`flex flex-col gap-4 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-6 ${
+        showDetail ? "2xl:grid-cols-[15rem_minmax(0,1fr)_25rem]" : ""
       }`}
     >
       <MapSidebar
         // lg:px-1 keeps focus rings visible inside the scrolling list; -mx-1 keeps its text on the content edge.
-        className="order-2 lg:order-1 lg:-mx-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
-        places={places}
+        className="order-2 lg:order-1 lg:-mx-1 lg:max-h-[80vh] lg:overflow-y-auto lg:px-1"
         results={results}
         selectedId={selectedId}
         query={query}
-        kinds={kinds}
         onQueryChange={setQuery}
-        onToggleKind={toggleKind}
-        onClearFilters={clearFilters}
         onSelect={selectFromList}
         labels={labels}
         lang={lang}
@@ -193,7 +173,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
 
       <div
         ref={mapWrapRef}
-        className="relative order-1 h-[60dvh] min-h-80 scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[75vh]"
+        className="relative order-1 h-[70dvh] min-h-80 scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[80vh]"
       >
         {mapOn ? (
           <MapView
@@ -215,7 +195,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
               <img
                 src={preview.src}
                 srcSet={preview.srcSet}
-                sizes="(min-width: 64rem) 75vw, 100vw"
+                sizes="(min-width: 64rem) 80vw, 100vw"
                 width={preview.width}
                 height={preview.height}
                 alt={labels.previewAlt}

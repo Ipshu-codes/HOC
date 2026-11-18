@@ -27,7 +27,7 @@
 
   /* Font variables are set by next/font in src/app/fonts.ts */
   --font-sans: var(--font-mukta), system-ui, sans-serif;
-  --font-heading: var(--font-playfair), var(--font-mukta), Georgia, serif;
+  --font-heading: var(--font-bricolage), system-ui, sans-serif;
 }
 
 @layer base {
@@ -60,11 +60,18 @@
     @apply bg-cream font-sans text-ink antialiased;
   }
 
-  /* Devanagari has no Playfair glyphs; headings in Nepali fall back to Mukta via the stack above. */
   h1,
   h2,
   h3 {
     @apply font-heading text-brick;
+  }
+
+  /* Nepali pages use Mukta for headings too (Bricolage is not even loaded there). Weights give the hierarchy: 700 headings, 600 sub-headings. */
+  html[lang="ne"] {
+    --font-heading: var(--font-mukta), system-ui, sans-serif;
+  }
+  html[lang="ne"] h3 {
+    font-weight: 600;
   }
 }
 
@@ -74,7 +81,7 @@
     @apply max-w-3xl text-lg leading-relaxed;
 
     & h2 {
-      @apply mt-14 mb-4 border-b-2 border-gold/50 pb-2 text-3xl font-bold first:mt-0;
+      @apply mt-16 mb-5 border-b border-ink/20 pb-3 text-3xl leading-tight font-bold first:mt-0 md:text-4xl;
     }
     & h3 {
       @apply mt-8 mb-3 text-2xl font-bold;
@@ -134,7 +141,8 @@
       @apply block shrink-0 md:w-2/5;
     }
     & .item-photo img {
-      @apply aspect-[4/3] w-full rounded-xl object-cover shadow-sm ring-1 ring-gold/40 transition hover:opacity-90;
+      @apply aspect-[4/3] w-full border-8 border-cream object-cover;
+      box-shadow: var(--print-shadow);
     }
     & .item-text {
       @apply min-w-0 flex-1;
@@ -262,10 +270,32 @@
   }
 }
 
+/* Played once when the page opens and once more on each hover, so the button does not keep moving
+   beside the reading (WCAG 2.2.2: anything moving past 5 s needs a way to stop it). The hover uses a
+   copy of the keyframes because a changed animation-name is what makes the browser start it again. */
+@keyframes nani-bob-again {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(3deg);
+  }
+}
+
 @layer components {
   .nani-animated {
-    animation: nani-bob 4s ease-in-out infinite;
+    animation: nani-bob 4s ease-in-out 1;
     transform-origin: 50% 90%;
+  }
+  .group:hover .nani-animated {
+    animation-name: nani-bob-again;
   }
 }
 
@@ -338,5 +368,386 @@
   }
   :lang(en) .heritage-prose .item-desc {
     hyphens: auto;
+  }
+}
+
+/*
+ * UI REFRESH, "Quiet museum" direction (unlayered on purpose: it must win over Tailwind utilities).
+ * Idea: a gallery wall. Sand ground, photos hung as cream-matted prints, lots of air, centred
+ * numbered headings, large confident type with short lines, hairline rules. Colours stay the named
+ * theme colours; nothing tilts. Motion uses transform/opacity (and a one-off filter for
+ * grey-to-colour), behind hover:hover media queries, and rests under prefers-reduced-motion.
+ */
+:root {
+  /* Strong ease-out for UI answers; the in-out curve for things moving across the screen. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --hairline: color-mix(in srgb, var(--color-ink) 18%, transparent);
+  --print-shadow: 0 1px 2px color-mix(in srgb, var(--color-ink) 12%, transparent),
+    0 14px 28px -18px color-mix(in srgb, var(--color-ink) 45%, transparent);
+}
+body {
+  background: var(--color-sand);
+}
+.site-header {
+  background: var(--color-sand);
+  border-bottom: 1px solid var(--hairline);
+}
+/* Dark enough all the way up to the title (phones put it high in a short hero): on a busy photo the
+   title read 2.2:1 at its worst with the lighter shade; large text needs 3:1. */
+.hero-shade {
+  background: linear-gradient(
+    to top,
+    var(--color-ink),
+    color-mix(in srgb, var(--color-ink) 80%, transparent) 45%,
+    color-mix(in srgb, var(--color-ink) 45%, transparent)
+  );
+}
+/* Big, plain title over the shade (white on ink is far above AA). English gets tight display tracking. */
+.hero-title {
+  font-size: clamp(2.6rem, 7vw, 6rem);
+  line-height: 1;
+  max-width: 14ch;
+}
+html[lang="en"] .hero-title {
+  letter-spacing: -0.035em;
+}
+html[lang="ne"] .hero-title {
+  line-height: 1.3; /* Devanagari needs room for its marks; no tracking (it breaks conjuncts) */
+  max-width: 18ch;
+}
+/* The hero text arrives once when the page opens: title, line, buttons, 70 ms apart. */
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-enter > * {
+    animation: hero-in 0.7s var(--ease-out) both;
+  }
+  .hero-enter > :nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .hero-enter > :nth-child(3) {
+    animation-delay: 140ms;
+  }
+}
+/* One button size everywhere (the hero, card and contact buttons had three heights: 44, 49 and 53 px). */
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  border-radius: 9999px;
+  box-shadow: none;
+}
+/* Small tracked capitals for buttons, nav and labels (English only: Devanagari has no capitals and breaks with tracking). */
+html[lang="en"] .btn-primary,
+html[lang="en"] .btn-ghost,
+html[lang="en"] .site-nav ul a {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8125rem;
+}
+html[lang="en"] .label-small {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+}
+
+/* ---- Home sections: one wall colour, separated by air and a hairline ---- */
+.home-section {
+  counter-increment: sec;
+  background: transparent;
+  border-top: 1px solid var(--hairline);
+}
+.home-section > div {
+  padding-block: 4.5rem;
+}
+@media (min-width: 48rem) {
+  .home-section > div {
+    padding-block: 7rem;
+  }
+}
+.section-rule {
+  display: none;
+}
+/* Centred heading with its number above: "01", a short hairline, then the title. */
+.section-title {
+  margin-inline: auto;
+  margin-bottom: 3rem;
+  max-width: 18ch;
+  text-align: center;
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+html[lang="en"] .section-title {
+  letter-spacing: -0.03em;
+}
+html[lang="ne"] .section-title {
+  line-height: 1.25;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+}
+/* The "01" index. The "/ " gives it an empty text alternative, so screen readers skip it. */
+.section-title::before {
+  content: counter(sec, decimal-leading-zero) / "";
+  display: block;
+  margin-bottom: 1.1rem;
+  font-family: var(--font-mukta), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--color-crimson);
+  font-variant-numeric: tabular-nums;
+}
+html[lang="ne"] .section-title::before {
+  content: counter(sec, devanagari) / "";
+  letter-spacing: 0;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  margin: 1.4rem auto 0;
+  background: var(--color-ink);
+  opacity: 0.4;
+}
+/* Page headings (gallery, contact): the same large centred type as the home sections. */
+.page-title {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+html[lang="en"] .page-title {
+  letter-spacing: -0.035em;
+}
+html[lang="ne"] .page-title {
+  line-height: 1.25;
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+}
+/* Short body text: a calm reading measure for intros. */
+.home-section .section-intro {
+  max-width: 38rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* ---- Info rows (About facts, Contact): a hairline above, no box ---- */
+.info-card {
+  border-radius: 0;
+  box-shadow: none;
+  --tw-ring-shadow: 0 0 #0000;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  padding-inline: 0;
+}
+
+/* ---- Prints: a photo in a cream mat with a soft shadow (gallery tiles, cards, carousel) ---- */
+.print {
+  background: var(--color-cream);
+  padding: 0.5rem;
+  box-shadow: var(--print-shadow);
+}
+@media (min-width: 48rem) {
+  .print {
+    padding: 0.75rem;
+  }
+}
+
+/* ---- Heritage cards: a print with the name under it; details slide up over the photo on hover ---- */
+.site-card {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  --tw-ring-shadow: 0 0 #0000;
+  overflow: visible;
+}
+.site-card img {
+  border-radius: 0;
+}
+.card-media {
+  position: relative;
+  overflow: hidden;
+}
+/* The peek panel repeats the summary for sighted mouse users (aria-hidden); everyone else reads the text below.
+   Hover reveals (this panel, the gallery captions) only run with motion allowed: under reduced motion
+   the text simply stays in view under the photo, nothing is hidden behind a hover. */
+.card-peek {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .card-peek {
+    display: block;
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.25rem 1.5rem;
+    background: color-mix(in srgb, var(--color-cream) 96%, transparent);
+    color: var(--color-ink);
+    transform: translateY(101%);
+    transition: transform 0.16s var(--ease-out); /* leaving: quick */
+  }
+  .site-card:hover .card-peek,
+  .site-card:focus-within .card-peek {
+    transform: translateY(0);
+    transition-duration: 0.22s; /* arriving */
+  }
+  /* A long summary must not run off the photo: at most 5 lines here (the whole text is on the site's page,
+     and screen readers get it all from .card-details). */
+  .card-peek > p:first-child {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    overflow: hidden;
+  }
+  /* The same text is in the peek panel, so here it is kept for screen readers only. */
+  .site-card .card-details {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ---- Gallery grid (Gallery.tsx): airy columns, 4:5 prints, caption revealed on hover ---- */
+.museum-tile .tile-caption {
+  display: block;
+  margin-top: 0.6rem;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .museum-tile .tile-media {
+    position: relative;
+    overflow: hidden;
+  }
+  .museum-tile .tile-caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    background: color-mix(in srgb, var(--color-cream) 96%, transparent);
+    transform: translateY(101%);
+    transition: transform 0.16s var(--ease-out); /* leaving: quick */
+  }
+  .museum-tile:hover .tile-caption,
+  .museum-tile:focus-visible .tile-caption {
+    transform: translateY(0);
+    transition-duration: 0.22s; /* arriving */
+  }
+}
+/* List rows: a hairline between rows, a faint tint on hover. */
+.museum-row {
+  border-bottom: 1px solid var(--hairline);
+}
+.museum-row:first-child {
+  border-top: 1px solid var(--hairline);
+}
+@media (hover: hover) and (pointer: fine) {
+  .museum-row > button {
+    transition: background-color 0.18s ease;
+  }
+  .museum-row > button:hover {
+    background-color: color-mix(in srgb, var(--color-cream) 70%, transparent);
+  }
+}
+
+/* ---- Segmented switches (site filter, Gallery/List) ---- */
+.seg-switch button {
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+/* The Gallery/List pill: an ink thumb slides under the chosen half. */
+.view-switch {
+  position: relative;
+  isolation: isolate;
+}
+.view-switch-thumb {
+  position: absolute;
+  z-index: -1;
+  inset: 0.25rem auto 0.25rem 0.25rem;
+  width: calc(50% - 0.25rem);
+  border-radius: 9999px;
+  background: var(--color-ink);
+  transition: transform 0.2s var(--ease-out);
+}
+.view-switch[data-view="list"] .view-switch-thumb {
+  transform: translateX(100%);
+}
+
+/* ---- Featured carousel (FeaturedCarousel.tsx) ---- */
+.carousel-track {
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+}
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+.carousel-slide {
+  scroll-snap-align: center;
+}
+/* Slides beside the current one rest grey and quieter; the current one is in full colour. */
+@media (prefers-reduced-motion: no-preference) {
+  .carousel-slide img {
+    transition: filter 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
+  }
+  .carousel-slide:not([data-current]) img {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+}
+.carousel-progress {
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-out);
+}
+
+/* ---- From grey to colour (PhotoDevelop.tsx marks photos that start below the fold) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-develop] {
+    transition: filter 0.7s var(--ease-out);
+  }
+  [data-develop="pending"] {
+    filter: grayscale(1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    [data-develop="pending"]:hover,
+    :hover > [data-develop="pending"] {
+      filter: grayscale(0);
+    }
+  }
+}
+
+.site-footer {
+  background: var(--color-brick);
+}
+
+/* ---- Press and hover answers (Emil: buttons press, linked cards lift 2px) ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .btn-primary,
+  .btn-ghost,
+  .press {
+    transition: transform 0.16s var(--ease-out), background-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-primary:active,
+  .btn-ghost:active,
+  .press:active {
+    transform: scale(0.97);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .site-card .print,
+    .museum-tile .print {
+      transition: transform 0.2s var(--ease-out);
+    }
+    .site-card:hover .print,
+    .museum-tile:hover .print {
+      transform: translateY(-2px);
+    }
   }
 }
