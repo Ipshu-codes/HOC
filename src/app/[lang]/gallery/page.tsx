@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import Gallery, { GalleryFromUrl } from "@/components/Gallery";
-import PhotoCredit from "@/components/PhotoCredit";
 import { photoCreditText } from "@/lib/credits";
 import { getCredits, getHeritageList } from "@/lib/content";
 import { getDictionary, isLocale, siteNameList } from "@/lib/i18n";
@@ -44,12 +43,11 @@ export default async function GalleryPage({ params }: PageProps<"/[lang]/gallery
   };
 
   return (
-    // Shutabug collection page: a centred title, the intro in small mono, the credit; the line runs full width.
+    // Shutabug collection page: a centred title and intro; the credit sits with the wall, which runs full width.
     <div className="pt-6 pb-8">
       <header className="wrap mx-auto mb-5 max-w-3xl text-center">
         <h1 className="d-3">{dict.gallery.title}</h1>
         <p className="mono muted mx-auto mt-3 max-w-xl normal-case">{dict.gallery.intro.replace("{sites}", siteNameList(heritages, lang, dict))}</p>
-        <PhotoCredit credits={credits} dict={dict} lang={lang} className="mono mt-2" />
       </header>
 
       {/* Reading ?site= needs a Suspense boundary in a static export. The fallback is the same

@@ -1417,96 +1417,152 @@ html[lang="ne"] .filter-tabs button {
   color: var(--accent-text);
   text-decoration: underline;
 }
-/* The hanging line: a horizontal scroller (swipe / wheel / keys) with a string drawn across. */
-.line-stage {
+/* ---- The museum wall: deep red, CSS spotlight pools, framed prints and cream placards ---- */
+.wall-stage {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* Five soft pools of light, painted over the wall colour — no images, no extra requests. */
+  background:
+    radial-gradient(ellipse 30rem 24rem at 12% 4%, rgb(255 248 240 / 0.17), transparent 70%),
+    radial-gradient(ellipse 26rem 22rem at 78% 14%, rgb(255 248 240 / 0.14), transparent 72%),
+    radial-gradient(ellipse 32rem 26rem at 46% 44%, rgb(255 248 240 / 0.13), transparent 72%),
+    radial-gradient(ellipse 28rem 24rem at 18% 74%, rgb(255 248 240 / 0.15), transparent 70%),
+    radial-gradient(ellipse 30rem 26rem at 86% 88%, rgb(255 248 240 / 0.13), transparent 72%),
+    var(--wall, #6b1418);
+  color: var(--color-cream);
+  padding-block: clamp(2.5rem, 5vw, 5rem);
 }
-.line-track {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(1.2rem, 4vw, 4.5rem);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding: 2.6rem calc(50% - clamp(5.5rem, 8vw, 7.5rem)) 4.2rem;
+.wall-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(2.5rem, 4vw, 4.5rem) clamp(1rem, 2.4vw, 2.75rem);
+  max-width: 96rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
-.line-track::-webkit-scrollbar {
-  display: none;
+.wall-item {
+  grid-column: span 4;
+  min-width: 0;
 }
-.line-string {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 4rem;
-  width: 100%;
-  pointer-events: none;
-  color: var(--muted);
+/* A repeating six-print rhythm: 5+3+4, 3+5+4 — every row fills the twelve columns. */
+.wall-item:nth-child(6n + 1) {
+  grid-column: span 5;
 }
-/* Not positioned: the caption inside must be placed against the stage, not the print. */
-.line-print {
-  flex: none;
-  scroll-snap-align: center;
-  width: clamp(11rem, 16vw, 15rem);
+.wall-item:nth-child(6n + 2) {
+  grid-column: span 3;
 }
-.line-print button {
-  position: relative;
+.wall-item:nth-child(6n + 3) {
+  grid-column: span 4;
+}
+.wall-item:nth-child(6n + 4) {
+  grid-column: span 3;
+}
+.wall-item:nth-child(6n + 5) {
+  grid-column: span 5;
+}
+.wall-item:nth-child(6n) {
+  grid-column: span 4;
+}
+/* Dark frame lip, cream mat, deep cast shadow. */
+.wall-frame {
   display: block;
   width: 100%;
-  transform-origin: 50% -1.4rem;
-  will-change: transform;
+  padding: 0.5rem;
+  background: #2c1412;
+  border: 1px solid rgb(0 0 0 / 0.45);
+  box-shadow: 0 1.4rem 2.6rem rgb(0 0 0 / 0.5), 0 0.2rem 0.5rem rgb(0 0 0 / 0.4);
+  transition: transform 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out);
 }
-.line-print button::before {
-  /* the peg */
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -1.4rem;
-  width: 3px;
-  height: 1.6rem;
-  background: var(--fg);
-  translate: -50% 0;
+.wall-mat {
+  display: block;
+  padding: clamp(0.55rem, 1vw, 0.9rem);
+  background: var(--color-cream);
+  box-shadow: inset 0 0 0 1px rgb(43 26 26 / 0.18);
 }
-@media (pointer: fine) {
-  /* Mouse and trackpad move the line smoothly; snapping would fight the wheel. Touch keeps snapping. */
-  .line-track {
-    scroll-snap-type: none;
-  }
-}
-.line-print img {
+.wall-frame img {
+  display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  box-shadow: var(--print-shadow);
+  background: var(--color-sand);
+  box-shadow: 0 0 0 1px rgb(43 26 26 / 0.28);
+}
+/* Different ratios make the frames hang at different heights on the wall. */
+.wall-item:nth-child(6n + 2) .wall-frame img {
+  aspect-ratio: 3 / 4;
+}
+.wall-item:nth-child(6n + 3) .wall-frame img {
+  aspect-ratio: 1 / 1;
+}
+.wall-item:nth-child(6n + 4) .wall-frame img {
+  aspect-ratio: 3 / 4;
+}
+.wall-item:nth-child(6n + 5) .wall-frame img {
+  aspect-ratio: 4 / 5;
+}
+.wall-item:nth-child(6n) .wall-frame img {
+  aspect-ratio: 5 / 6;
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .line-print button:hover {
-    animation: print-sway 1.1s ease-in-out;
+  .wall-frame:hover {
+    transform: translateY(-4px) rotate(-0.4deg);
+    box-shadow: 0 2rem 3.2rem rgb(0 0 0 / 0.55), 0 0.3rem 0.7rem rgb(0 0 0 / 0.45);
   }
 }
-@keyframes print-sway {
-  25% {
-    rotate: 2.2deg;
+/* Placards use the photo's existing alt text; the ink-on-cream pair is AA. */
+.wall-placard {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.8rem;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 0.5rem 1.1rem rgb(0 0 0 / 0.35);
+}
+html[lang="ne"] .wall-placard {
+  font-family: var(--font-mukta);
+  font-size: 0.8rem;
+}
+.wall-credit {
+  max-width: 36rem;
+  margin: clamp(2.5rem, 5vw, 4.5rem) auto 0;
+  padding: 0.7rem 1rem;
+  border-top: 3px solid var(--color-crimson);
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-align: center;
+  box-shadow: 0 0.5rem 1.1rem rgb(0 0 0 / 0.35);
+}
+@media (width < 48rem) {
+  .wall-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 1rem;
   }
-  60% {
-    rotate: -1.4deg;
-  }
-  85% {
-    rotate: 0.5deg;
+  .wall-item,
+  .wall-item:nth-child(n) {
+    grid-column: span 1;
   }
 }
-/* The current print's caption sits bottom left under the line, the counter bottom right. */
-.line-caption {
-  position: absolute;
-  left: var(--gutter);
-  bottom: 0;
-  max-width: min(36rem, 60%);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s var(--ease-std), visibility 0.2s;
+@media (width < 27rem) {
+  .wall-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
-.line-print[data-current] .line-caption {
-  opacity: 1;
-  visibility: visible;
+@media (prefers-reduced-motion: reduce) {
+  .wall-frame {
+    transition: none;
+  }
 }
 /* List view rows. */
 .list-row {
@@ -1622,19 +1678,4 @@ html[lang="ne"] .filter-tabs button {
 .hero-ctas {
   align-items: flex-start;
 }
-/* The hanging line's caption: two lines at most, with room under the line on phones. */
-.line-caption .works-title {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-@media (width < 48rem) {
-  .line-stage {
-    padding-bottom: 6.5rem;
-  }
-  .line-caption {
-    max-width: calc(100% - 2 * var(--gutter) - 4.5rem);
-  }
-}
+/* Gallery wall: the framed grid already spaces the placards, so no line-specific overrides remain. */
