@@ -113,8 +113,32 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     window.history.replaceState(null, "", slug === "all" ? pathname : `${pathname}?site=${slug}`);
   }
 
-  const openPhoto = (index: number, from: HTMLElement | null) => {
-    setOpen({ index, from });
+  const zooming = useRef(false);
+
+  /** A frame grows briefly under the finger/cursor, then hands off to the existing gliding photo view. */
+  const openPhoto = (index: number, from: HTMLElement | null, zoom?: HTMLElement | null) => {
+    if (zooming.current) return;
+    if (!zoom || !from || reducedMotion()) {
+      setOpen({ index, from });
+      return;
+    }
+    zooming.current = true;
+    const animation = zoom.animate(
+      [
+        { transform: "scale(1)" },
+        { transform: "scale(1.2)", offset: 0.75 },
+        { transform: "scale(1.22)" },
+      ],
+      { duration: 230, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
+    );
+    animation.onfinish = () => {
+      setOpen({ index, from });
+      // The view has measured the enlarged frame; settle it back so closing glides to its usual place.
+      requestAnimationFrame(() => animation.cancel());
+    };
+    animation.oncancel = () => {
+      zooming.current = false;
+    };
   };
 
   /** Bring a frame to the middle; paging is instant when the visitor asked for less motion. */
@@ -272,7 +296,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                       className="wall-frame"
                       data-frame-index={index}
                       aria-labelledby={`${captionId}-${index}`}
-                      onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}
+                      onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"), event.currentTarget)}
                     >
                       <span className="wall-mat">
                         {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
@@ -283,8 +307,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                           width={photo.thumb.width}
                           height={photo.thumb.height}
                           alt=""
-                          loading={index < 6 ? "eager" : "lazy"}
-                          fetchPriority={index === 0 ? "high" : "auto"}
+                          loading="lazy"
                           decoding="async"
                         />
                       </span>
