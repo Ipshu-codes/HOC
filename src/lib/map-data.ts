@@ -99,15 +99,16 @@ export function getMapData(lang: Locale): { places: MapPlace[]; route: MapRoute 
     : [];
 
   const places = [...sites, ...officePlace];
-  return { places, route: buildRoute(lang, sites) };
+  return { places, route: buildRoute(lang, places, sites) };
 }
 
-/** The first predefined route that still has two or more published stops, or null. */
-function buildRoute(lang: Locale, sites: MapPlace[]): MapRoute | null {
-  const byId = new Map(sites.map((place) => [place.id, place]));
+/** The first predefined route that still has two or more published heritage stops, or null. */
+function buildRoute(lang: Locale, places: MapPlace[], heritageSites: MapPlace[]): MapRoute | null {
+  const byId = new Map(places.map((place) => [place.id, place]));
+  const heritageIds = new Set(heritageSites.map((place) => place.id));
   for (const definition of getRoutes()) {
     const stops = definition.stops.filter((slug) => byId.has(slug));
-    if (stops.length < 2) continue;
+    if (stops.filter((slug) => heritageIds.has(slug)).length < 2) continue;
 
     const legs: RouteLeg[] = stops.slice(0, -1).map((from, i) => {
       const to = stops[i + 1];
