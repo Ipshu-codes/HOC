@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import DraftBanner from "@/components/DraftBanner";
 import HeritageCard from "@/components/HeritageCard";
+import HeritageSectionNav from "@/components/HeritageSectionNav";
 import PhotoCredit from "@/components/PhotoCredit";
 import QuickFacts from "@/components/QuickFacts";
 import ResponsiveImage from "@/components/ResponsiveImage";
@@ -81,7 +82,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
       <DraftBanner draft={heritage.draft} dict={dict} />
 
       {/* Cover banner with the name in both languages */}
-      <section className="relative isolate flex min-h-[18rem] items-end overflow-hidden md:min-h-[26rem]">
+      <section className="relative isolate flex min-h-[24rem] items-end overflow-hidden md:min-h-[34rem]">
         <ResponsiveImage image={cover} sizes="100vw" priority className="absolute inset-0 -z-10 size-full object-cover" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-brick via-brick/70 to-brick/10" />
         <div className="mx-auto w-full max-w-6xl px-4 pt-20 pb-8 md:pb-12">
@@ -100,7 +101,11 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 lg:py-14">
+      <div
+        className={`mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 lg:py-14 ${
+          others.length === 0 ? "pb-32 md:pb-14" : ""
+        }`}
+      >
         <div>
           <TableOfContents title={t.onThisPage} entries={toc} />
         </div>
@@ -155,7 +160,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
       {others.length > 0 && (
         <section aria-labelledby="other-heritage-title" className="bg-sand">
           {/* Same vertical rhythm as the home page sections (HomeSection). */}
-          <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
+          <div className="mx-auto max-w-6xl px-4 pt-14 pb-32 md:py-20">
             <h2 id="other-heritage-title" className="mb-8 text-3xl font-bold">
               {byCount(t.otherHeritage, others.length)}
             </h2>
@@ -174,6 +179,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
           </div>
         </section>
       )}
+      <HeritageSectionNav labels={t} />
     </>
   );
 }

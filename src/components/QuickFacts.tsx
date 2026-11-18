@@ -24,14 +24,14 @@ export default function QuickFacts({ heritage, dict }: QuickFactsProps) {
   const shown = facts.filter(({ value }) => (Array.isArray(value) ? value.length > 0 : Boolean(value)));
 
   return (
-    <aside aria-labelledby="quick-facts-title" className="rounded-xl bg-sand p-6 shadow-sm ring-1 ring-gold/50">
-      <h2 id="quick-facts-title" className="text-2xl font-bold">
+    <aside aria-labelledby="quick-facts-title" className="rounded-xl bg-ink p-6 text-cream shadow-sm ring-1 ring-white/20">
+      <h2 id="quick-facts-title" className="text-2xl font-bold text-cream">
         {t.quickFacts}
       </h2>
       <dl className="mt-4 space-y-4">
         {shown.map(({ term, value }) => (
           <div key={term}>
-            <dt className="text-sm font-bold text-crimson">{term}</dt>
+            <dt className="text-sm font-bold text-cream/80">{term}</dt>
             <dd className="mt-0.5">
               {Array.isArray(value) ? (
                 <ul className="list-disc space-y-0.5 pl-5">
