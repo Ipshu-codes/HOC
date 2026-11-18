@@ -1,19 +1,19 @@
 {
  "sources": {
-  "content/credits.json": "0d5fb7f4fe920779ac1d1e76b4c474123778765f6f4b4b4b12c66beed4086c5c",
-  "content/faq.json": "157dff86aa5cfd1dc16e14ce812d58aa5e550fa7cb52afea756b65c27cf247a2",
+  "content/credits.json": "527edef7946cbc9fb96fae324b7f0df9ac7a64117a73aab36cf990a58665ace4",
+  "content/faq.json": "1f9dab4a4dc032122f837c17fee7da5465c61f7b12bf2f53081ed7351920a96f",
   "content/heritage/mhepi-ajima.en.md": "2e0f7e96c632d049fca09509e9e876911a76fb3c29c9b1e8782e8e5325ce5da1",
   "content/heritage/mhepi-ajima.ne.md": "7dcd6ebda0b66fcbdff7f5e5c1e068d0bb143d3a2e2b28c4815b19f1fff88996",
-  "content/heritage/nanak-math.en.md": "272fa49e2cc611320d16bc8fd2e235bfa4256d8ab246898b92d7eb6f9ed9453a",
-  "content/heritage/nanak-math.ne.md": "0ee62bdb57972081aff452a951d43bbbbbd9290684051819c3a15c211c5244ba",
-  "content/home.json": "0188a1ab4063d10f801b7aadf3e9dc696acfb8b93fc8c758cfe94b0339b9426b",
-  "content/photo-consent.json": "f6236019c9f08f902c77c1c1f9bb25b4a335f58f1e760777d81296f25c90e8eb",
-  "content/routes.json": "cd8d8c278b496451175236d6ebac317032d277ed417dbd15c66aab58558c9d3e",
-  "content/section-photos.json": "5dc675deab06710ee3288bff1d14934f9adef58bfd10755e1f0554212293dd31",
-  "content/sources.json": "7b64d4944ff7ad49fbd6f62f8f1a4b4ca9fbffcce5410d16281513a1251829c4",
-  "content/ward.json": "47e186bbad63b618a9ae3b258c4b96e86883121a95ee2c2035136d895914c70c",
-  "src/i18n/en.json": "d89d3c74218ed65b85e4c2a3629de486b5d7b59b2742b1ea882ddb740a43a2fc",
-  "src/i18n/ne.json": "84fde47111a978bddecae57174f9f51c118418248467a5a4954a171fe2d7de9b"
+  "content/heritage/nanak-math.en.md": "684de0a1ad02a7c7fd6dfcc321d660c8c260f71727ff3c5da3ffeb1d736162b0",
+  "content/heritage/nanak-math.ne.md": "395dd4741e8916b69b174e8b59f043a607494966bc055576a70e2fff9460076b",
+  "content/home.json": "a9f7fb6a1163b34b0c17952e439f77a522825dc02f8145f856d3c17b646fecf6",
+  "content/photo-consent.json": "22ddd882880903e467b90c61d86765c49692cc7a5bbfaf42f28e28936d7d08fd",
+  "content/routes.json": "ef02669ac2d4a1d03b2d1129707f794029fc9585e2724c9cfb6e54e6d9d9f89d",
+  "content/section-photos.json": "bad42932cc3e9f247f9c393d87e82f014b0843667192d3600b74ab72774d7867",
+  "content/sources.json": "cf365822d6b0a5886f00f1e7e4da1c1345bccddd092b50fbb07c6cd0d008ee7f",
+  "content/ward.json": "4fb4619a6c44f06df8272ac66f68856bba426ae19d6d92ba39f06088732f1eb9",
+  "src/i18n/en.json": "c4aa1ed0ccd9256332653c2fabfe45e2f4a6fe82a7d00a67deec28b3075b896a",
+  "src/i18n/ne.json": "b27b2a593734e0c54912b0496a45e31e3c0e88573c3ebd005d6ec0bcafc828df"
  },
  "pages": {
   "en/contact/": [

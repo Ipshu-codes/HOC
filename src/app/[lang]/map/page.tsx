@@ -30,10 +30,10 @@ export default async function MapPage({ params }: PageProps<"/[lang]/map">) {
   const props = { places, route, labels: dict.map, lang, preview: plainImage(MAP_PREVIEW) };
 
   return (
-    <div className="map-page mx-auto max-w-7xl px-4 py-10 md:py-14">
-      <h1 className="text-4xl font-bold md:text-5xl">{dict.map.title}</h1>
-      <div aria-hidden="true" className="mt-3 mb-4 h-1 w-16 rounded-full bg-gold" />
-      <p className="mb-6 max-w-3xl text-lg">{dict.map.intro}</p>
+    // Biegajaca's page top (giant italic title, a short paragraph), then the map across the full width.
+    <div className="map-page wrap pt-8 pb-10 md:pt-10">
+      <h1 className="d-1 max-w-[14ch]">{dict.map.title}</h1>
+      <p className="lede mt-5 mb-8 max-w-2xl">{dict.map.intro}</p>
 
       {/* Reading ?site= needs a Suspense boundary in a static export. */}
       <Suspense fallback={<MapExplorer {...props} />}>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { bricolage, mukta } from "@/app/fonts";
+import { archivo, archivoDisplay, jetbrainsMono, mukta } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -12,6 +12,7 @@ import { getChatData } from "@/lib/faq";
 import { getDictionary, getNavItems, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
 import { findSiteImage } from "@/lib/images";
 import { SITE_URL } from "@/lib/site-url";
+import { PALETTE } from "@/lib/theme";
 import { LOCALES } from "@/types/heritage";
 import "@/app/globals.css";
 
@@ -62,16 +63,22 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const navItems = getNavItems(lang, dict);
 
   return (
-    <html lang={lang} className={`${mukta.variable} ${lang === "en" ? bricolage.variable : ""}`}>
+    // English loads Archivo + JetBrains Mono; Nepali pages only Mukta. data-palette: src/lib/theme.ts.
+    <html
+      lang={lang}
+      data-palette={PALETTE}
+      className={`${mukta.variable} ${lang === "en" ? `${archivo.variable} ${archivoDisplay.variable} ${jetbrainsMono.variable}` : ""}`}
+    >
       <body className="flex min-h-screen flex-col">
         <a
           href="#main-content"
-          className="sr-only z-50 rounded-md bg-crimson px-4 py-2 font-bold text-white focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+          className="sr-only z-90 rounded-md bg-crimson px-4 py-2 font-bold text-white focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
         >
           {dict.a11y.skipToContent}
         </a>
         <Header lang={lang} dict={dict} ward={ward} navItems={navItems} />
-        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+        {/* pt: room under the fixed header. */}
+        <main id="main-content" tabIndex={-1} className="flex-1 pt-(--header-h) focus:outline-none">
           {children}
         </main>
         <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />

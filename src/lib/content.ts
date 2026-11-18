@@ -33,6 +33,7 @@ import {
 import { routesFileSchema, type RouteDefinition } from "@/types/route";
 import { wardSchema, type Ward } from "@/types/ward";
 import { plainImage } from "@/lib/images";
+import rehypeListRows from "@/lib/rehype-list-rows";
 import rehypeSectionPhotos, { type SectionPhotos } from "@/lib/rehype-section-photos";
 import remarkHeadingIds from "@/lib/remark-heading-ids";
 
@@ -47,6 +48,7 @@ const markdownToHtml = (photos: SectionPhotos) =>
     .use(remarkHeadingIds) // "## इतिहास {#history}" → <h2 id="history">
     .use(remarkRehype) // HTML comments in markdown (source notes) are dropped here
     .use(rehypeSectionPhotos, { photos })
+    .use(rehypeListRows) // Festivals and How to Visit lists as rows (layout only, same words)
     .use(rehypeStringify);
 
 /** HTML → plain text: drop tags, decode the entities the markdown renderer emits (e.g. "&#x26;" for "&"). */

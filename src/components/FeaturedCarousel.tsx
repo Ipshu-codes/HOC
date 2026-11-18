@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { formatNumber } from "@/lib/format";
 import type { Locale } from "@/types/locale";
@@ -16,60 +17,79 @@ export interface CarouselSlide {
   site: string;
 }
 
-/** How many slides after the current one are downloaded in advance. */
-const LOAD_AHEAD = 2;
-
 interface FeaturedCarouselProps {
   slides: CarouselSlide[];
   lang: Locale;
   labels: { label: string; previous: string; next: string; slide: string };
+  /** The section heading and its sentence (rendered in the text column). */
+  heading: ReactNode;
+  /** "See all photos" link. */
+  more: { href: string; label: string };
 }
 
+/** Desktop with motion: the pinned, scroll-driven version. Phones, tablets and reduced motion: swipe. */
+const PIN_QUERY = "(min-width: 64rem) and (prefers-reduced-motion: no-preference)";
+function subscribePin(onChange: () => void) {
+  const query = window.matchMedia(PIN_QUERY);
+  query.addEventListener("change", onChange);
+  return () => {
+    query.removeEventListener("change", onChange);
+  };
+}
+
+/** Scroll distance per photo in pinned mode, as a share of the screen height. */
+const STEP_VH = 0.7;
+
 /**
- * Numbered photo carousel ("01 / 09") with arrow buttons.
+ * The numbered photo carousel ("01 / 09"), after Biegajaca's works carousel.
  *
- * The track is a plain horizontal scroller with CSS scroll snapping, so swiping on a phone is the
- * browser's own (smooth, compositor-driven) scrolling and needs no gesture code. The arrows scroll to
- * the previous/next slide; the counter follows whichever slide is nearest the centre. The track can
- * be focused and scrolled with the arrow keys. Slides load lazily, so only the ones near the view are
- * downloaded.
+ * One DOM, two modes (data-mode on the section):
+ *   swipe  a horizontal scroller with CSS scroll snapping: swipe, arrows, the arrow keys. Neighbours of
+ *          the current photo rest grey. Used on phones and tablets (< 1024 px), with reduced motion and
+ *          before JavaScript runs.
+ *   pin    desktop: the section is several screens tall and its stage sticks under the header; scrolling
+ *          the page moves the photos along (the old one slides left and fades to grey) and the current
+ *          caption shows in the text column. The arrows scroll the page to the previous/next photo.
  */
-export default function FeaturedCarousel({ slides, lang, labels }: FeaturedCarouselProps) {
+export default function FeaturedCarousel({ slides, lang, labels, heading, more }: FeaturedCarouselProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
+  const capSpaceRef = useRef<HTMLDivElement>(null);
+  // Which mode follows the screen width and the reduced-motion setting (swipe on the server and before JS).
+  const pinned = useSyncExternalStore(subscribePin, () => window.matchMedia(PIN_QUERY).matches, () => false);
+  const mode: "swipe" | "pin" = pinned ? "pin" : "swipe";
   const [current, setCurrent] = useState(0);
-  // Set when the carousel comes near the screen, or on the first scroll of the track: from then on every
-  // slide loads, so even a long fling never lands on an empty frame.
-  const [moved, setMoved] = useState(false);
+  const [nearView, setNearView] = useState(false);
   const total = slides.length;
 
-  // "1" → "01" (Nepali: "०१"), so the counter keeps its width.
   const twoDigits = (n: number) => {
     const text = formatNumber(n, lang);
     return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
   };
 
-  // Load every slide once the carousel comes near the screen (like any image further down a page);
-  // before that only the first slides are fetched.
+  // Load every photo once the section comes near the screen (before that, only the first few).
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track || !("IntersectionObserver" in window)) return;
+    const section = sectionRef.current;
+    if (!section || !("IntersectionObserver" in window)) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setMoved(true);
+          setNearView(true);
           observer.disconnect();
         }
       },
-      { rootMargin: "300px 0px" },
+      { rootMargin: "400px 0px" },
     );
-    observer.observe(track);
+    observer.observe(section);
     return () => {
       observer.disconnect();
     };
   }, []);
 
-  // Follow the scroll position: the current slide is the one whose centre is nearest the track's centre.
+  // Swipe mode: the current slide is the one nearest the track's centre.
   useEffect(() => {
+    if (mode !== "swipe") return;
     const track = trackRef.current;
     if (!track) return;
     let frame = 0;
@@ -89,7 +109,6 @@ export default function FeaturedCarousel({ slides, lang, labels }: FeaturedCarou
       setCurrent(nearest);
     };
     const onScroll = () => {
-      setMoved(true);
       if (frame === 0) frame = requestAnimationFrame(measure);
     };
     track.addEventListener("scroll", onScroll, { passive: true });
@@ -97,72 +116,94 @@ export default function FeaturedCarousel({ slides, lang, labels }: FeaturedCarou
       track.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [mode]);
 
-  const go = useCallback((index: number) => {
+  // Pin mode: page scroll → position of every photo (set directly on the elements, no re-render per frame).
+  useEffect(() => {
+    if (mode !== "pin") return;
+    const section = sectionRef.current;
+    const stage = stageRef.current;
     const track = trackRef.current;
-    const slide = track?.children[index] as HTMLElement | undefined;
-    if (!track || !slide) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    track.scrollTo({
-      left: slide.offsetLeft - (track.clientWidth - slide.offsetWidth) / 2,
-      behavior: reduce ? "auto" : "smooth",
-    });
-  }, []);
+    if (!section || !stage || !track) return;
+    const photos = Array.from(track.querySelectorAll<HTMLElement>(".works-photo"));
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      const step = window.innerHeight * STEP_VH;
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const progress = Math.min(Math.max((window.scrollY - top) / step, 0), total - 1);
+      photos.forEach((photo, index) => {
+        const offset = index - progress;
+        // Leaving (offset < 0): slides left, greys and fades out quickly, before it reaches the text column.
+        // Coming (offset > 0): waits at the right edge, grey, and colours in as it reaches the middle.
+        const grey = offset < 0 ? Math.min(-offset * 2.5, 1) : Math.min(Math.max((offset - 0.15) * 1.6, 0), 1);
+        const opacity = offset < 0 ? Math.max(1 + offset * 2.2, 0) : offset > 1.6 ? 0 : 1 - Math.min(offset, 1) * 0.35;
+        photo.style.transform = `translateX(${offset * 108}%)`;
+        photo.style.filter = `grayscale(${grey})`;
+        photo.style.opacity = String(opacity);
+      });
+      setCurrent(Math.round(progress));
+    };
+    const placeCaption = () => {
+      if (capSpaceRef.current) stage.style.setProperty("--cap-top", `${capSpaceRef.current.offsetTop}px`);
+    };
+    const onScroll = () => {
+      if (frame === 0) frame = requestAnimationFrame(place);
+    };
+    const onResize = () => {
+      placeCaption();
+      onScroll();
+    };
+    placeCaption();
+    frame = requestAnimationFrame(place);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(frame);
+      photos.forEach((photo) => {
+        photo.style.transform = "";
+        photo.style.filter = "";
+        photo.style.opacity = "";
+      });
+      stage.style.removeProperty("--cap-top");
+    };
+  }, [mode, total]);
+
+  const go = useCallback(
+    (index: number) => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (mode === "pin") {
+        const section = sectionRef.current;
+        if (!section) return;
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: top + index * window.innerHeight * STEP_VH + 1, behavior: reduce ? "auto" : "smooth" });
+        return;
+      }
+      const track = trackRef.current;
+      const slide = track?.children[index] as HTMLElement | undefined;
+      if (!track || !slide) return;
+      track.scrollTo({ left: slide.offsetLeft - (track.clientWidth - slide.offsetWidth) / 2, behavior: reduce ? "auto" : "smooth" });
+    },
+    [mode],
+  );
 
   const atStart = current === 0;
   const atEnd = current === total - 1;
-  const arrow =
-    "press flex size-12 shrink-0 items-center justify-center rounded-full border border-ink text-xl text-ink hover:bg-ink hover:text-cream aria-disabled:cursor-default aria-disabled:opacity-35 aria-disabled:hover:bg-transparent aria-disabled:hover:text-ink";
+  const pinHeight = mode === "pin" ? `calc(100vh + ${(total - 1) * STEP_VH * 100}vh)` : undefined;
 
-  return (
-    <div role="region" aria-roledescription="carousel" aria-label={labels.label}>
-      {/* Sizes are in cqw (1% of this wrapper's width, a CSS container query unit): a % inside the
-          padded track would be a % of the track minus its padding. The side padding lets the first and
-          last slides sit in the centre too. On phones the track runs to the screen edges (-mx-4). */}
-      <div className="@container -mx-4 md:mx-0">
-        <ul
-          ref={trackRef}
-          tabIndex={0}
-          className="carousel-track relative flex gap-4 overflow-x-auto px-[9cqw] py-4 focus-visible:outline-offset-[-2px] md:gap-8 md:px-[20cqw] lg:px-[28cqw]"
-        >
-          {slides.map((slide, index) => (
-            <li
-              key={slide.src}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={labels.slide.replace("{n}", formatNumber(index + 1, lang)).replace("{total}", formatNumber(total, lang))}
-              data-current={index === current ? "" : undefined}
-              className="carousel-slide w-[82cqw] shrink-0 md:w-[60cqw] lg:w-[44cqw]"
-            >
-              <figure>
-                <div className="print">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-                  <img
-                    src={slide.src}
-                    srcSet={slide.srcSet}
-                    sizes="(min-width: 64rem) 32rem, (min-width: 48rem) 60vw, 82vw"
-                    width={slide.width}
-                    height={slide.height}
-                    alt=""
-                    // The slides just ahead load before they are reached; all of them once the
-                    // carousel has been moved. Until then the rest wait (lazy).
-                    loading={moved || index <= current + LOAD_AHEAD ? "eager" : "lazy"}
-                    decoding="async"
-                    className="aspect-4/3 w-full object-cover"
-                  />
-                </div>
-                <figcaption className="mt-4">
-                  <span className="label-small block font-bold text-crimson">{slide.site}</span>
-                  <span className="mt-1 line-clamp-2 block text-ink/80">{slide.alt}</span>
-                </figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
+  const controls = (
+    <>
+      <div className="mt-6 flex items-center gap-4">
+        <p aria-live="polite" className="mono tabular-nums">
+          {twoDigits(current + 1)} <span aria-hidden="true">/</span>
+          <span className="sr-only">,</span> {twoDigits(total)}
+        </p>
+        <span aria-hidden="true" className="works-count-line" />
       </div>
-
-      <div className="mt-6 flex items-center justify-center gap-5">
+      {mode === "pin" && <div ref={capSpaceRef} className="works-cap-space" />}
+      <div className="mt-5 flex flex-wrap items-center gap-2">
         <button
           type="button"
           aria-label={labels.previous}
@@ -170,22 +211,10 @@ export default function FeaturedCarousel({ slides, lang, labels }: FeaturedCarou
           onClick={() => {
             if (!atStart) go(current - 1);
           }}
-          className={arrow}
+          className="btn btn-outline btn-square"
         >
           <span aria-hidden="true">←</span>
         </button>
-        <div className="flex min-w-32 flex-col items-center gap-2">
-          <p aria-live="polite" className="text-sm font-bold tracking-[0.12em] text-ink tabular-nums">
-            {twoDigits(current + 1)} <span aria-hidden="true">/</span>
-            <span className="sr-only">,</span> {twoDigits(total)}
-          </p>
-          <span aria-hidden="true" className="block h-px w-24 bg-ink/20">
-            <span
-              className="carousel-progress block h-px w-full bg-crimson"
-              style={{ transform: `scaleX(${(current + 1) / total})` }}
-            />
-          </span>
-        </div>
         <button
           type="button"
           aria-label={labels.next}
@@ -193,11 +222,71 @@ export default function FeaturedCarousel({ slides, lang, labels }: FeaturedCarou
           onClick={() => {
             if (!atEnd) go(current + 1);
           }}
-          className={arrow}
+          className="btn btn-outline btn-square"
         >
           <span aria-hidden="true">→</span>
         </button>
+        <Link href={more.href} className="btn btn-accent">
+          {more.label} <span aria-hidden="true">→</span>
+        </Link>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <section
+      ref={sectionRef}
+      id="gallery"
+      aria-labelledby="gallery-title"
+      data-mode={mode}
+      className="works relative"
+      style={{ height: pinHeight }}
+    >
+      <div ref={stageRef} className="works-stage">
+        <div className={mode === "pin" ? "works-text" : "wrap section pb-6"}>{heading}{mode === "pin" && controls}</div>
+
+        <div role="region" aria-roledescription="carousel" aria-label={labels.label}>
+          <ul
+            ref={trackRef}
+            tabIndex={mode === "swipe" ? 0 : -1}
+            className="works-track flex gap-4 overflow-x-auto px-[9vw] py-2 focus-visible:outline-offset-[-2px] md:gap-8 md:px-[20vw]"
+          >
+            {slides.map((slide, index) => (
+              <li
+                key={slide.src}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={labels.slide.replace("{n}", formatNumber(index + 1, lang)).replace("{total}", formatNumber(total, lang))}
+                data-current={index === current ? "" : undefined}
+                className="works-slide w-[82vw] shrink-0 md:w-[60vw]"
+              >
+                <figure>
+                  <div className="works-photo">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+                    <img
+                      src={slide.src}
+                      srcSet={slide.srcSet}
+                      sizes="(min-width: 64rem) 56vw, (min-width: 48rem) 60vw, 82vw"
+                      width={slide.width}
+                      height={slide.height}
+                      alt=""
+                      loading={nearView || index <= 2 ? "eager" : "lazy"}
+                      decoding="async"
+                      className="aspect-4/3 w-full object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-4">
+                    <span className="works-title line-clamp-3 block">{slide.alt}</span>
+                    <span className="mono muted mt-2 block">{slide.site}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {mode === "swipe" && <div className="wrap pb-14">{controls}</div>}
+      </div>
+    </section>
   );
 }

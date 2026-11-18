@@ -18,7 +18,7 @@ export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
   const pathname = usePathname();
 
   return (
-    <ul aria-label={labels.label} className="flex items-center rounded-full border border-cream/40 p-0.5">
+    <ul aria-label={labels.label} className="flex items-center rounded-full border border-current/40 p-0.5">
       {LOCALES.map((locale) => {
         const current = locale === lang;
         const href = pathname.replace(/^\/(en|ne)(?=\/|$)/, `/${locale}`);
@@ -31,8 +31,8 @@ export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
               aria-current={current ? "true" : undefined}
               className={
                 current
-                  ? "flex min-h-11 min-w-11 items-center justify-center rounded-full bg-cream px-3 text-sm font-bold text-brick focus-visible:outline-cream"
-                  : "flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium text-cream hover:bg-crimson focus-visible:outline-cream"
+                  ? "flex min-h-11 min-w-11 items-center justify-center rounded-full bg-fg px-3 text-sm font-bold text-ground"
+                  : "flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium hover:underline hover:underline-offset-4"
               }
             >
               {/* Visible "EN" / "ने" plus the full name for screen readers ("EN English"):

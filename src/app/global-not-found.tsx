@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { bricolage, mukta } from "@/app/fonts";
+import { archivo, archivoDisplay, jetbrainsMono, mukta } from "@/app/fonts";
+import { PALETTE } from "@/lib/theme";
 import en from "@/i18n/en.json";
 import ne from "@/i18n/ne.json";
 import "@/app/globals.css";
@@ -16,23 +17,23 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en" className={`${mukta.variable} ${bricolage.variable}`}>
-      <body className="flex min-h-screen items-center justify-center bg-cream px-4">
-        <main className="w-full max-w-xl rounded-xl bg-white p-8 text-center shadow-lg ring-1 ring-gold/50">
-          <p aria-hidden="true" className="font-heading text-7xl font-bold text-crimson">
+    <html lang="en" data-palette={PALETTE} className={`${mukta.variable} ${archivo.variable} ${archivoDisplay.variable} ${jetbrainsMono.variable}`}>
+      <body className="flex min-h-screen items-center justify-center bg-ground px-4">
+        <main className="w-full max-w-xl text-center">
+          <p aria-hidden="true" className="d-xl text-heading">
             404
           </p>
-          <h1 className="mt-2 text-3xl font-bold">{en.notFound.title}</h1>
+          <h1 className="d-2 mt-2">{en.notFound.title}</h1>
           <p className="mt-2 text-lg">{en.notFound.body}</p>
-          <div lang="ne" className="mt-6 border-t border-gold/50 pt-6">
-            <h2 className="text-2xl font-bold">{ne.notFound.title}</h2>
+          <div lang="ne" className="rule mt-8 pt-8">
+            <h2 className="text-3xl not-italic normal-case">{ne.notFound.title}</h2>
             <p className="mt-2 text-lg">{ne.notFound.body}</p>
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/en/" className="rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick">
+            <Link href="/en/" className="btn btn-lg btn-accent">
               {en.notFound.home}
             </Link>
-            <Link href="/ne/" lang="ne" className="rounded-xl bg-brick px-5 py-3 font-bold text-white hover:bg-crimson">
+            <Link href="/ne/" lang="ne" className="btn btn-lg btn-outline">
               {ne.notFound.home}
             </Link>
           </div>

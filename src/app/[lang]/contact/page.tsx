@@ -25,35 +25,26 @@ export default async function ContactPage({
   if (!isLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const ward = getWard();
-  const linkClass =
-    "font-medium text-crimson underline underline-offset-4 hover:text-brick";
+  const linkClass = "link-slide font-medium";
   // A plain mailto: link: the visitor's own email app opens with the ward's address and a subject line.
   const mailto = `mailto:${ward.office.email}?subject=${encodeURIComponent(dict.contactPage.mailSubject)}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      <h1 className="text-4xl font-bold md:text-5xl">
-        {dict.contactPage.title}
-      </h1>
-      <div
-        aria-hidden="true"
-        className="mt-3 mb-6 h-1 w-16 rounded-full bg-gold"
-      />
-      <p className="mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
+    // Biegajaca's contact page: giant title, the intro, a hairline; "write to us" left, details right.
+    <div className="wrap pt-8 pb-16 md:pt-10">
+      <h1 className="d-xl max-w-[12ch]">{dict.contactPage.title}</h1>
+      <p className="lede mt-6 mb-10 max-w-2xl">{dict.contactPage.intro}</p>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="rule grid gap-10 pt-10 lg:grid-cols-12 lg:gap-[var(--gap)]">
         {/* No form and no form service: visitors write from their own email app. */}
-        <section
-          aria-labelledby="write-to-us"
-          className="rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 md:p-8"
-        >
-          <h2 id="write-to-us" className="text-2xl font-bold">
+        <section aria-labelledby="write-to-us" className="lg:col-span-7">
+          <h2 id="write-to-us" className="d-3">
             {dict.contactPage.writeHeading}
           </h2>
-          <p className="mt-3 text-lg">{dict.contactPage.writeBody}</p>
+          <p className="lede mt-5">{dict.contactPage.writeBody}</p>
           <a
             href={mailto}
-            className="mt-6 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
+            className="btn btn-lg btn-accent mt-8"
           >
             {dict.contactPage.emailButton} <span aria-hidden="true">→</span>
           </a>
@@ -64,13 +55,13 @@ export default async function ContactPage({
           </p>
         </section>
 
-        <aside className="rounded-xl bg-sand p-6 ring-1 ring-gold/50">
-          <h2 className="text-2xl font-bold">
+        <aside className="lg:col-span-4 lg:col-start-9">
+          <h2 className="mono muted mb-3">
             {dict.contactPage.officeHeading}
           </h2>
-          <dl className="mt-4 space-y-3">
+          <dl className="spec-list border-b border-line">
             <div>
-              <dt className="text-sm font-bold text-crimson">
+              <dt className="mono muted pt-0.5">
                 {dict.footer.address}
               </dt>
               <dd>{ward.office.address[lang]}</dd>
@@ -87,7 +78,7 @@ export default async function ContactPage({
               )}
             </div>
             <div>
-              <dt className="text-sm font-bold text-crimson">
+              <dt className="mono muted pt-0.5">
                 {dict.footer.phone}
               </dt>
               <dd>
@@ -97,7 +88,7 @@ export default async function ContactPage({
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-bold text-crimson">
+              <dt className="mono muted pt-0.5">
                 {dict.footer.email}
               </dt>
               <dd>

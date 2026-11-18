@@ -1,7 +1,4 @@
-import Image from "next/image";
-
-import BrandLink from "@/components/BrandLink";
-import Nav from "@/components/Nav";
+import SiteHeader from "@/components/SiteHeader";
 import type { Dictionary, NavItem } from "@/lib/i18n";
 import type { Locale } from "@/types/heritage";
 import type { Ward } from "@/types/ward";
@@ -14,49 +11,22 @@ interface HeaderProps {
 }
 
 /**
- * Top of every page, following the sketch: logo circle on the left, "WARD NO. 16 /
- * Kathmandu Metropolitan City" beside it, and the nav row underneath. The whole brand
- * is one link home (BrandLink). The title band scrolls away; only the nav bar sticks.
+ * Top of every page: the fixed header with MENU, the ward name (one link home) and the language
+ * switch (SiteHeader, a client component because of the menu). Only the strings it needs are passed.
  */
 export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
   return (
-    <>
-      <header className="site-header border-b-2 border-gold/60 bg-cream">
-        <div className="mx-auto flex max-w-6xl items-center px-4 py-3 md:py-5">
-          <BrandLink href={`/${lang}/`} label={dict.a11y.homeLink}>
-            {/* alt="": the link's name ("Ward No. 16, home") already says what it is. */}
-            <Image
-              src={ward.logo.src}
-              alt=""
-              width={128}
-              height={128}
-              priority
-              className="size-14 shrink-0 rounded-full ring-2 ring-crimson ring-offset-2 ring-offset-cream md:size-20"
-            />
-
-            <span className="block min-w-0">
-              <span className="block font-heading text-2xl leading-tight font-bold tracking-wide text-brick md:text-4xl">
-                {dict.site.headerTitle}
-              </span>
-              <span className="block text-base leading-snug font-medium text-crimson md:text-lg">
-                {dict.site.headerSubtitle}
-              </span>
-              <span lang={dict.site.otherLanguage} className="hidden text-sm text-ink/80 sm:block">
-                {dict.site.otherLanguageLine}
-              </span>
-            </span>
-          </BrandLink>
-        </div>
-      </header>
-
-      <Nav
-        lang={lang}
-        labels={dict.nav}
-        languageLabels={dict.language}
-        items={navItems}
-        logoSrc={ward.logo.src}
-        homeLabel={dict.a11y.homeLink}
-      />
-    </>
+    <SiteHeader
+      lang={lang}
+      labels={dict.nav}
+      languageLabels={dict.language}
+      homeLabel={dict.a11y.homeLink}
+      title={dict.site.headerTitle}
+      subtitle={dict.site.headerSubtitle}
+      otherLanguage={dict.site.otherLanguage as Locale}
+      otherLanguageLine={dict.site.otherLanguageLine}
+      items={navItems}
+      logoSrc={ward.logo.src}
+    />
   );
 }

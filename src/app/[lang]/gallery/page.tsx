@@ -44,12 +44,12 @@ export default async function GalleryPage({ params }: PageProps<"/[lang]/gallery
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
-      {/* Centred page heading, the same family as the home sections (globals.css: .page-title). */}
-      <header className="mb-12 text-center md:mb-16">
-        <h1 className="page-title font-bold">{dict.gallery.title}</h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg">{dict.gallery.intro.replace("{sites}", siteNameList(heritages, lang, dict))}</p>
-        <PhotoCredit credits={credits} dict={dict} lang={lang} className="mt-2" />
+    // Shutabug collection page: a centred title, the intro in small mono, the credit; the line runs full width.
+    <div className="pt-6 pb-8">
+      <header className="wrap mx-auto mb-5 max-w-3xl text-center">
+        <h1 className="d-3">{dict.gallery.title}</h1>
+        <p className="mono muted mx-auto mt-3 max-w-xl normal-case">{dict.gallery.intro.replace("{sites}", siteNameList(heritages, lang, dict))}</p>
+        <PhotoCredit credits={credits} dict={dict} lang={lang} className="mono mt-2" />
       </header>
 
       {/* Reading ?site= needs a Suspense boundary in a static export. The fallback is the same

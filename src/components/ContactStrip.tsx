@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import HomeSection from "@/components/HomeSection";
 import { phoneHref } from "@/lib/content";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
@@ -12,54 +11,68 @@ interface ContactStripProps {
   ward: Ward;
 }
 
+/** "Visit the ward" → ["Visit the", "ward"]; one word → ["", word]. The words themselves never change. */
+function splitLastWord(text: string): [string, string] {
+  const cut = text.trimEnd().lastIndexOf(" ");
+  return cut < 0 ? ["", text] : [text.slice(0, cut + 1), text.slice(cut + 1)];
+}
+
 /**
- * Ward office contact details. The address is plain text with a link to our own 3D map
- * (only when the office has coordinates); the site never links to external map services.
+ * The home page's closing call to action (Biegajaca layout): a giant heading whose last word is drawn
+ * as an outline, the intro on the left, the ward office details as mono rows, and the button on the
+ * right. The address is plain text with a link to our own 3D map (only when the office has
+ * coordinates); the site never links to external map services.
  */
 export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
-  // inline-flex + min-h-11: a 44 px tall tap target on phones.
-  const linkClass = "inline-flex min-h-11 items-center font-medium text-crimson underline underline-offset-4 hover:text-brick";
+  const [lead, last] = splitLastWord(dict.home.contactTitle);
+  const linkClass = "link-slide font-medium";
 
   return (
-    <HomeSection id="contact" title={dict.home.contactTitle} tone="sand">
-      <p className="max-w-2xl text-lg">{dict.home.contactIntro}</p>
+    <section id="contact" aria-labelledby="contact-title" className="wrap section">
+      <h2 id="contact-title" className="d-xl max-w-[14ch]">
+        {lead}
+        <span className="outline-word">{last}</span>
+      </h2>
 
-      <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="info-card rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
-          <dt className="font-bold text-brick">{dict.footer.address}</dt>
-          <dd className="mt-1">{ward.office.address[lang]}</dd>
-          {ward.office.coordinates && (
-            <dd className="mt-2">
-              <Link href={`/${lang}/map/?site=ward-office`} className={linkClass}>
-                {dict.heritage.viewOnMap}
-              </Link>
-            </dd>
-          )}
+      <div className="mt-10 grid gap-10 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <p className="lede">{dict.home.contactIntro}</p>
+          <dl className="mt-8 max-w-xl">
+            <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4 rule py-2">
+              <dt className="mono muted pt-3">{dict.footer.address}</dt>
+              <dd>
+                <span className="block pt-2.5">{ward.office.address[lang]}</span>
+                {ward.office.coordinates && (
+                  <Link href={`/${lang}/map/?site=ward-office`} className={linkClass}>
+                    {dict.heritage.viewOnMap}
+                  </Link>
+                )}
+              </dd>
+            </div>
+            <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4 rule py-2">
+              <dt className="mono muted pt-3">{dict.footer.phone}</dt>
+              <dd>
+                <a href={phoneHref(ward.office.phone)} className={linkClass}>
+                  {ward.office.phone}
+                </a>
+              </dd>
+            </div>
+            <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4 rule border-b border-line py-2">
+              <dt className="mono muted pt-3">{dict.footer.email}</dt>
+              <dd>
+                <a href={`mailto:${ward.office.email}`} className={`${linkClass} break-all`}>
+                  {ward.office.email}
+                </a>
+              </dd>
+            </div>
+          </dl>
         </div>
-        <div className="info-card rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
-          <dt className="font-bold text-brick">{dict.footer.phone}</dt>
-          <dd className="mt-1">
-            <a href={phoneHref(ward.office.phone)} className={linkClass}>
-              {ward.office.phone}
-            </a>
-          </dd>
+        <div className="flex items-end lg:col-span-6 lg:justify-end">
+          <Link href={`/${lang}/contact/`} className="btn btn-lg btn-accent">
+            {dict.contactPage.contactLink} <span aria-hidden="true">→</span>
+          </Link>
         </div>
-        <div className="info-card rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
-          <dt className="font-bold text-brick">{dict.footer.email}</dt>
-          <dd className="mt-1">
-            <a href={`mailto:${ward.office.email}`} className={`${linkClass} break-all`}>
-              {ward.office.email}
-            </a>
-          </dd>
-        </div>
-      </dl>
-
-      <Link
-        href={`/${lang}/contact/`}
-        className="btn-primary mt-8 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
-      >
-        {dict.contactPage.contactLink} <span aria-hidden="true">→</span>
-      </Link>
-    </HomeSection>
+      </div>
+    </section>
   );
 }

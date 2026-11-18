@@ -23,18 +23,19 @@ export default function QuickFacts({ heritage, dict }: QuickFactsProps) {
   ];
   const shown = facts.filter(({ value }) => (Array.isArray(value) ? value.length > 0 : Boolean(value)));
 
+  // Their spec list: small mono labels on the left, values on the right, hairlines between.
   return (
-    <aside aria-labelledby="quick-facts-title" className="rounded-xl bg-sand p-6 shadow-sm ring-1 ring-gold/50">
-      <h2 id="quick-facts-title" className="text-2xl font-bold">
+    <aside aria-labelledby="quick-facts-title">
+      <h2 id="quick-facts-title" className="mono muted mb-2">
         {t.quickFacts}
       </h2>
-      <dl className="mt-4 space-y-4">
+      <dl className="spec-list border-b border-line">
         {shown.map(({ term, value }) => (
           <div key={term}>
-            <dt className="text-sm font-bold text-crimson">{term}</dt>
-            <dd className="mt-0.5">
+            <dt className="mono muted pt-0.5">{term}</dt>
+            <dd>
               {Array.isArray(value) ? (
-                <ul className="list-disc space-y-0.5 pl-5">
+                <ul className="space-y-0.5">
                   {value.map((item) => (
                     <li key={item}>{item}</li>
                   ))}

@@ -9,7 +9,7 @@
  *    word of the content, the interface strings or the chatbot answers can change.
  * 2. Rendered: for every built page (EN and NE), the words a visitor or a screen reader gets (text,
  *    plus alt, aria-label, title and placeholder attributes) are compared with the baseline as a
- *    multiset. An added or changed word fails. A removed word fails unless it is listed in
+ *    multiset (pure numbers such as a "01 / 09" counter are not words). An added or changed word fails. A removed word fails unless it is listed in
  *    docs/ui-match/text-allow-removed.json with a reason (an element the layout dropped). Words that
  *    only changed place are reported as moved, which is allowed.
  *
@@ -78,7 +78,9 @@ export function pageWords(html: string): string[] {
 function sourceHashes(): Record<string, string> {
   const hashes: Record<string, string> = {};
   for (const file of SOURCE_DIRS.flatMap(walk).sort()) {
-    hashes[file.split(path.sep).join("/")] = crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+    // Line endings normalised first: a Windows checkout (CRLF) has the same words as the repository (LF).
+    const text = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+    hashes[file.split(path.sep).join("/")] = crypto.createHash("sha256").update(text).digest("hex");
   }
   return hashes;
 }
@@ -93,9 +95,16 @@ function renderedPages(): Record<string, string[]> {
   return pages;
 }
 
+/**
+ * Counters and page numbers ("01 / 09", "०१", "53") are not words: pure numerals and their punctuation
+ * are left out of the comparison. Numbers inside the content are still covered by the source lock.
+ */
+const NUMERAL = /^[0-9०-९/—–\-.,:()]+$/;
+const isWord = (token: string) => !NUMERAL.test(token);
+
 function counts(words: string[]): Map<string, number> {
   const map = new Map<string, number>();
-  for (const word of words) map.set(word, (map.get(word) ?? 0) + 1);
+  for (const word of words) if (isWord(word)) map.set(word, (map.get(word) ?? 0) + 1);
   return map;
 }
 
@@ -151,8 +160,12 @@ function check(): boolean {
     if (added.length) errors.push(`${page}: ${added.length} added/changed word(s): ${added.slice(0, 20).join(" | ")}`);
     if (unexplained.length) errors.push(`${page}: ${unexplained.length} removed word(s) not in ${ALLOW_REMOVED}: ${unexplained.slice(0, 20).join(" | ")}`);
     const allowedGone = removed.length - unexplained.length;
-    const moved = before.join(" ") !== after.filter((w) => was.has(w)).join(" ");
+    const moved = before.filter(isWord).join(" ") !== after.filter((w) => isWord(w) && was.has(w)).join(" ");
+    // Words that are gone from the page altogether (not just a duplicate copy fewer): always listed.
+    const present = new Set(after);
+    const goneEntirely = [...new Set(removed.filter((word) => !present.has(word)))];
     notes.push(`${page.padEnd(28)} ${after.length} words, 0 changed${allowedGone ? `, ${allowedGone} removed (allowed)` : ""}${moved ? ", order changed (blocks moved)" : ", same order"}`);
+    if (goneEntirely.length && !unexplained.length) notes.push(`${" ".repeat(30)}gone from the page entirely (allowed): ${goneEntirely.join(" ")}`);
   }
   for (const page of Object.keys(pages)) if (!(page in baseline.pages)) errors.push(`${page}: new page with no baseline`);
 
@@ -164,10 +177,13 @@ function check(): boolean {
   return true;
 }
 
-const mode = process.argv[2];
-if (mode === "save") save();
-else if (mode === "check") process.exit(check() ? 0 : 1);
-else {
-  console.error("usage: tsx scripts/text-lock.ts save|check");
-  process.exit(2);
+// Run as a command (tsx scripts/text-lock.ts save|check); importing the file (pageWords) runs nothing.
+if (process.argv[1] && /text-lock.ts$/.test(process.argv[1])) {
+  const mode = process.argv[2];
+  if (mode === "save") save();
+  else if (mode === "check") process.exit(check() ? 0 : 1);
+  else {
+    console.error("usage: tsx scripts/text-lock.ts save|check");
+    process.exit(2);
+  }
 }
