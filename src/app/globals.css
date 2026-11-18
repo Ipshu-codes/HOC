@@ -1433,37 +1433,79 @@ html[lang="ne"] .filter-tabs button {
   color: var(--color-cream);
   padding-block: clamp(2.5rem, 5vw, 5rem);
 }
-.wall-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: start;
-  gap: clamp(2.5rem, 4vw, 4.5rem) clamp(1rem, 2.4vw, 2.75rem);
-  max-width: 96rem;
-  margin-inline: auto;
-  padding-inline: var(--gutter);
+/* One horizontal walk: a room is one heritage site. Wheel and swipe both move along this track. */
+.walk-track {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 1rem var(--gutter) 3rem;
+}
+.walk-track::-webkit-scrollbar {
+  display: none;
+}
+.walk-track:focus-visible {
+  outline-offset: -3px;
+}
+.walk-room {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  padding-right: clamp(2.5rem, 5vw, 5rem);
+  border-right: 1px solid rgb(255 248 240 / 0.28);
+}
+.walk-room:last-child {
+  padding-right: var(--gutter);
+  border-right: 0;
+}
+/* A filtered-out room keeps its name in the DOM (for the word lock and the tab's accessible name). */
+.walk-room[hidden] {
+  display: none;
+}
+.room-plaque {
+  flex: 0 0 clamp(9rem, 14vw, 13rem);
+  padding: 1rem;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  text-align: center;
+  box-shadow: 0 0.5rem 1.1rem rgb(0 0 0 / 0.35);
+}
+.room-number {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--color-crimson);
+}
+.room-name {
+  margin-top: 0.6rem;
+  font-size: clamp(1.4rem, 2.6vw, 2.4rem);
+  line-height: 1.05;
+}
+html[lang="en"] .room-name {
+  font-style: italic;
+  font-stretch: 84%;
+  text-transform: uppercase;
 }
 .wall-item {
-  grid-column: span 4;
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 clamp(10rem, 15vw, 15rem);
   min-width: 0;
+  margin: 0;
+  scroll-snap-align: center;
 }
-/* A repeating six-print rhythm: 5+3+4, 3+5+4 — every row fills the twelve columns. */
-.wall-item:nth-child(6n + 1) {
-  grid-column: span 5;
+/* Narrower and wider frames give each room a varied rhythm. */
+.wall-item:nth-child(3n + 2) {
+  flex-basis: clamp(9rem, 12vw, 12rem);
 }
-.wall-item:nth-child(6n + 2) {
-  grid-column: span 3;
-}
-.wall-item:nth-child(6n + 3) {
-  grid-column: span 4;
-}
-.wall-item:nth-child(6n + 4) {
-  grid-column: span 3;
-}
-.wall-item:nth-child(6n + 5) {
-  grid-column: span 5;
-}
-.wall-item:nth-child(6n) {
-  grid-column: span 4;
+.wall-item:nth-child(3n) {
+  flex-basis: clamp(11rem, 17vw, 17rem);
 }
 /* Dark frame lip, cream mat, deep cast shadow. */
 .wall-frame {
@@ -1489,21 +1531,32 @@ html[lang="ne"] .filter-tabs button {
   background: var(--color-sand);
   box-shadow: 0 0 0 1px rgb(43 26 26 / 0.28);
 }
-/* Different ratios make the frames hang at different heights on the wall. */
-.wall-item:nth-child(6n + 2) .wall-frame img {
+/* Different ratios make the frames hang at different heights; --parallax is written by the walk. */
+.wall-item:nth-child(3n + 2) .wall-frame img {
   aspect-ratio: 3 / 4;
 }
-.wall-item:nth-child(6n + 3) .wall-frame img {
+.wall-item:nth-child(3n) .wall-frame img {
   aspect-ratio: 1 / 1;
 }
-.wall-item:nth-child(6n + 4) .wall-frame img {
-  aspect-ratio: 3 / 4;
+.wall-frame img {
+  translate: var(--parallax, 0px) 0;
 }
-.wall-item:nth-child(6n + 5) .wall-frame img {
-  aspect-ratio: 4 / 5;
+/* Every frame has its own pool of light; the nearest one burns a little brighter. */
+.wall-item::before {
+  content: "";
+  position: absolute;
+  inset: -18% -30% 6%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 35%, rgb(255 248 240 / 0.55), transparent 68%);
+  opacity: 0.28;
+  transition: opacity 0.35s var(--ease-std);
 }
-.wall-item:nth-child(6n) .wall-frame img {
-  aspect-ratio: 5 / 6;
+.wall-item[data-near]::before {
+  opacity: 0.9;
+}
+.wall-item[data-near] .wall-frame {
+  box-shadow: 0 1.4rem 2.6rem rgb(0 0 0 / 0.5), 0 0 4.5rem rgb(255 248 240 / 0.3);
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .wall-frame:hover {
@@ -1545,23 +1598,37 @@ html[lang="ne"] .wall-placard {
   box-shadow: 0 0.5rem 1.1rem rgb(0 0 0 / 0.35);
 }
 @media (width < 48rem) {
-  .wall-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2.5rem 1rem;
+  .walk-track {
+    gap: 2rem;
+    padding-inline: var(--gutter);
+  }
+  .walk-room {
+    gap: 1.25rem;
+    padding-right: 2rem;
+  }
+  .room-plaque {
+    flex-basis: 8rem;
+    padding: 0.75rem;
   }
   .wall-item,
-  .wall-item:nth-child(n) {
-    grid-column: span 1;
-  }
-}
-@media (width < 27rem) {
-  .wall-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .wall-item:nth-child(3n + 2),
+  .wall-item:nth-child(3n) {
+    flex-basis: 10rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wall-frame {
+  .wall-frame,
+  .wall-item::before {
     transition: none;
+  }
+  .wall-frame img {
+    translate: 0 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* Wheel movement is continuous; snapping would fight it. Touch and reduced motion keep snapping. */
+  .walk-track {
+    scroll-snap-type: none;
   }
 }
 /* List view rows. */

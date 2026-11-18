@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useId, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 
 import PhotoView from "@/components/PhotoView";
 import { formatNumber, formatYear } from "@/lib/format";
@@ -31,7 +31,7 @@ export function GalleryFromUrl(props: Omit<GalleryProps, "requestedSite">) {
 }
 
 type View = "grid" | "list";
-/** sessionStorage key: the chosen view lasts for the visit (this tab), not forever. "grid" = the wall. */
+/** sessionStorage key: the chosen view lasts for the visit (this tab), not forever. "grid" = the walk. */
 const VIEW_KEY = "gallery-view";
 const VIEW_EVENT = "gallery-view-change";
 /** Used when storage is blocked (private windows, site data off): the switch still works on this page. */
@@ -63,14 +63,16 @@ function chooseView(next: View) {
   window.dispatchEvent(new Event(VIEW_EVENT));
 }
 
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /**
  * The gallery (Shutabug's collection page, docs/ui-match/reference-notes.md §2).
  *
- * Gallery view: a deep-red museum wall with CSS spotlight pools. Every photo hangs in a dark frame
- * with a cream mat and a deep shadow; the grid gives the frames several sizes and aspect ratios. Each
- * cream placard is the photo's existing alt text, and the single wall credit is the page's existing
- * photo credit — no new words are introduced (the text lock compares word counts on every page).
- * Click a frame to open the photo view.
+ * Gallery view: a walk along a deep-red museum wall, one room per heritage site. Each room's plaque
+ * carries the existing site name and its "01"/"02" number; the frames carry the photos' existing alt
+ * text. Swipe or scroll sideways to walk, use the arrow keys to step between frames, and the frame
+ * nearest the middle gets the brightest spotlight. With reduced motion the walk becomes plain paging:
+ * no parallax, no smooth scrolling. No new words are introduced (the text lock counts every page).
  *
  * List view: rows with a photo, the caption, the site and the year; a row opens the same photo view.
  * The chosen view is remembered for the visit.
@@ -84,12 +86,26 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   const [filter, setFilter] = useState<string>(preselected);
   const [open, setOpen] = useState<{ index: number; from: HTMLElement | null } | null>(null);
   const captionId = useId();
+  const roomId = useId();
+  const walkRef = useRef<HTMLDivElement>(null);
   // The prerendered HTML is the gallery view (server snapshot); after hydration the remembered view is read.
   const view = useSyncExternalStore(subscribeView, readView, () => "grid" as const);
 
   const siteName = new Map(sites.map((site) => [site.slug, site.name]));
   const shown = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
   const formatCount = (n: number) => (n === 1 ? labels.count.one : labels.count.other).replace("{n}", formatNumber(n, lang));
+  const twoDigits = (n: number) => {
+    const text = formatNumber(n, lang);
+    return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
+  };
+
+  /** All sites keep their room (and the site-name word) even when a filter empties it; it is just hidden. */
+  const rooms = sites.map((site) => ({
+    ...site,
+    number: twoDigits(sites.findIndex((entry) => entry.slug === site.slug) + 1),
+    headingId: `${roomId}-${site.slug}`,
+    frames: shown.flatMap((photo, index) => (photo.site === site.slug ? [{ photo, index }] : [])),
+  }));
 
   function choose(slug: string) {
     setFilter(slug);
@@ -101,20 +117,111 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     setOpen({ index, from });
   };
 
+  /** Bring a frame to the middle; paging is instant when the visitor asked for less motion. */
+  const stepTo = useCallback((index: number, behavior?: ScrollBehavior) => {
+    const track = walkRef.current;
+    const frame = track?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[index];
+    if (!track || !frame) return;
+    track.scrollTo({
+      left: frame.offsetLeft - (track.clientWidth - frame.offsetWidth) / 2,
+      behavior: behavior ?? (reducedMotion() ? "auto" : "smooth"),
+    });
+  }, []);
+
+  // Walk: wheel moves sideways, touch swipes natively. The middle frame gets the spotlight and each
+  // image drifts a few pixels against the scroll (a light parallax), unless motion is reduced.
+  useEffect(() => {
+    const track = walkRef.current;
+    if (!track || view !== "grid") return;
+    const frames = Array.from(track.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item"));
+    const reduce = reducedMotion();
+    let frame = 0;
+    let lastStep = 0;
+
+    const update = () => {
+      frame = 0;
+      const middle = track.getBoundingClientRect().left + track.clientWidth / 2;
+      let nearest = 0;
+      let best = Infinity;
+      frames.forEach((item, index) => {
+        const box = item.getBoundingClientRect();
+        const centre = box.left + box.width / 2;
+        const distance = Math.abs(centre - middle);
+        if (distance < best) {
+          best = distance;
+          nearest = index;
+        }
+        const drift = reduce ? 0 : ((centre - middle) / Math.max(track.clientWidth, 1)) * -18;
+        item.style.setProperty("--parallax", `${drift.toFixed(1)}px`);
+      });
+      track.dataset.current = String(nearest);
+      frames.forEach((item, index) => {
+        if (index === nearest) item.setAttribute("data-near", "");
+        else item.removeAttribute("data-near");
+      });
+    };
+
+    const onScroll = () => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const max = track.scrollWidth - track.clientWidth;
+      const atEnd = event.deltaY > 0 ? track.scrollLeft >= max - 1 : track.scrollLeft <= 1;
+      if (atEnd) return;
+      event.preventDefault();
+      if (!reduce) {
+        track.scrollLeft += event.deltaY;
+        return;
+      }
+      // Reduced motion: one frame per deliberate wheel step, no glide.
+      const now = Date.now();
+      if (now - lastStep < 300) return;
+      lastStep = now;
+      const current = Number(track.dataset.current ?? "0");
+      stepTo(Math.min(Math.max(current + Math.sign(event.deltaY), 0), frames.length - 1), "auto");
+    };
+
+    frame = requestAnimationFrame(update);
+    track.addEventListener("scroll", onScroll, { passive: true });
+    track.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      track.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+      frames.forEach((item) => {
+        item.removeAttribute("data-near");
+        item.style.removeProperty("--parallax");
+      });
+    };
+  }, [view, filter, stepTo]);
+
   const tabs = [{ slug: "all", name: labels.all }, ...sites];
 
   return (
     <>
       {/* One toolbar row: the photo count, the site filter (their collections line), the Gallery/List pill.
-          Phones: the filter on its own row above. */}
+          Phones: the filter on its own row above. Site tabs show their room number; the room plaque is
+          their accessible name via aria-labelledby, so the site name is only in the page once. */}
       <div className="wrap mb-1 grid grid-cols-[1fr_auto] items-center gap-x-4 md:grid-cols-[1fr_auto_1fr]">
         {showFilter && (
           <div role="group" aria-label={labels.filterLabel} className="filter-tabs col-span-2 flex flex-wrap justify-center gap-x-2 md:col-span-1 md:col-start-2 md:row-start-1">
-            {tabs.map((tab) => (
-              <button key={tab.slug} type="button" aria-pressed={filter === tab.slug} onClick={() => choose(tab.slug)}>
-                {tab.name}
-              </button>
-            ))}
+            {tabs.map((tab) => {
+              const site = sites.find((entry) => entry.slug === tab.slug);
+              return (
+                <button
+                  key={tab.slug}
+                  type="button"
+                  aria-pressed={filter === tab.slug}
+                  aria-labelledby={site ? rooms.find((room) => room.slug === site.slug)?.headingId : undefined}
+                  onClick={() => choose(tab.slug)}
+                >
+                  {site ? twoDigits(sites.findIndex((entry) => entry.slug === site.slug) + 1) : tab.name}
+                </button>
+              );
+            })}
           </div>
         )}
         <p className="mono muted md:col-start-1 md:row-start-1" aria-live="polite">
@@ -135,37 +242,62 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
       ) : view === "grid" ? (
         <div className="wall-stage">
-          <ul className="wall-grid">
-            {shown.map((photo, index) => (
-              <li key={photo.thumb.src} className="wall-item">
-                <button
-                  type="button"
-                  className="wall-frame"
-                  aria-labelledby={`${captionId}-${index}`}
-                  onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}
-                >
-                  <span className="wall-mat">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-                    <img
-                      src={photo.thumb.src}
-                      srcSet={photo.thumb.srcSet}
-                      sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 16rem, 42vw"
-                      width={photo.thumb.width}
-                      height={photo.thumb.height}
-                      alt=""
-                      loading={index < 6 ? "eager" : "lazy"}
-                      fetchPriority={index === 0 ? "high" : "auto"}
-                      decoding="async"
-                    />
+          <div
+            ref={walkRef}
+            className="walk-track"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+              event.preventDefault();
+              const current = Number(walkRef.current?.dataset.current ?? "0");
+              const next = Math.min(Math.max(current + (event.key === "ArrowRight" ? 1 : -1), 0), shown.length - 1);
+              stepTo(next);
+              walkRef.current?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[next]?.querySelector("button")?.focus({ preventScroll: true });
+            }}
+          >
+            {rooms.map((room) => (
+              <section key={room.slug} className="walk-room" hidden={room.frames.length === 0}>
+                <div className="room-plaque">
+                  <span className="room-number" aria-hidden="true">
+                    {room.number}
                   </span>
-                </button>
-                {/* The placard names the frame (aria-labelledby); it is the photo's existing alt text. */}
-                <span id={`${captionId}-${index}`} className="wall-placard">
-                  {photo.alt}
-                </span>
-              </li>
+                  <h2 id={room.headingId} className="room-name">
+                    {room.name}
+                  </h2>
+                </div>
+                {room.frames.map(({ photo, index }) => (
+                  <figure key={photo.thumb.src} className="wall-item">
+                    <button
+                      type="button"
+                      className="wall-frame"
+                      data-frame-index={index}
+                      aria-labelledby={`${captionId}-${index}`}
+                      onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}
+                    >
+                      <span className="wall-mat">
+                        {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+                        <img
+                          src={photo.thumb.src}
+                          srcSet={photo.thumb.srcSet}
+                          sizes="(min-width: 64rem) 18rem, 14rem"
+                          width={photo.thumb.width}
+                          height={photo.thumb.height}
+                          alt=""
+                          loading={index < 6 ? "eager" : "lazy"}
+                          fetchPriority={index === 0 ? "high" : "auto"}
+                          decoding="async"
+                        />
+                      </span>
+                    </button>
+                    {/* The placard names the frame (aria-labelledby); it is the photo's existing alt text. */}
+                    <figcaption id={`${captionId}-${index}`} className="wall-placard">
+                      {photo.alt}
+                    </figcaption>
+                  </figure>
+                ))}
+              </section>
             ))}
-          </ul>
+          </div>
         </div>
       ) : (
         <ul className="wrap mx-auto max-w-[56rem]">
@@ -223,9 +355,9 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
           onIndexChange={(index) => setOpen((value) => (value ? { ...value, index } : value))}
           onClose={() => setOpen(null)}
           sourceFor={(index) =>
-            (view === "grid"
-              ? document.querySelectorAll<HTMLImageElement>(".wall-frame img")[index]
-              : document.querySelectorAll<HTMLImageElement>(".list-row img")[index]) ?? null
+            document.querySelector<HTMLImageElement>(`.wall-frame[data-frame-index="${index}"] img`) ??
+            document.querySelectorAll<HTMLImageElement>(".list-row img")[index] ??
+            null
           }
         />
       )}
