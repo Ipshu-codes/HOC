@@ -11,6 +11,14 @@ import type { Locale } from "@/types/locale";
 
 export type Vec3 = [number, number, number];
 
+/** A frame's on-screen box, used only to place the shared photo view's FLIP source. */
+export interface ScreenRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 export const MUSEUM = {
   hallWidth: 7.4,
   hallHeight: 4.4,

@@ -19,6 +19,7 @@ import {
   type CameraPose,
   type MuseumHall,
   type MuseumRoomInput,
+  type ScreenRect,
 } from "@/lib/museum-layout";
 import type { Locale } from "@/types/locale";
 import MuseumScene from "./MuseumScene";
@@ -39,10 +40,22 @@ interface MuseumCanvasProps {
   focusNonce: number;
   onActiveIndex: (index: number) => void;
   onFocusArtwork: (index: number) => void;
+  /** A raycast hit on a frame opens the gallery's one photo view. */
+  onOpenArtwork: (index: number) => void;
+  /** Context loss or a renderer error switches Gallery to the hanging-memory fallback. */
+  onFail: () => void;
+  /** Gallery fills this with a live projection of every mounted frame before opening PhotoView. */
+  projectionRef: MutableRefObject<(() => Record<number, ScreenRect>) | null>;
 }
 
 interface ControlsProps extends Omit<MuseumCanvasProps, "photos" | "sites" | "lang"> {
   halls: MuseumHall[];
+  gesture: MutableRefObject<MuseumGesture>;
+}
+
+interface MuseumGesture {
+  /** Set once a pointer travels far enough that its release must not count as a frame click. */
+  moved: boolean;
 }
 
 function twoDigits(n: number, lang: Locale): string {
@@ -61,6 +74,7 @@ function MuseumControls({
   onActiveIndex,
   onFocusArtwork,
   filter,
+  gesture,
 }: ControlsProps) {
   const camera = useThree((state) => state.camera);
   const invalidate = useThree((state) => state.invalidate);
@@ -71,7 +85,7 @@ function MuseumControls({
   // poseRef.current during render would break React's render rules). No per-frame React state.
   const target = useRef<CameraPose>({ ...INITIAL_POSE });
   const currentIndex = useRef(activeIndex);
-  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pointers = useRef(new Map<number, { x: number; y: number; startX: number; startY: number }>());
   const pinch = useRef<number | null>(null);
   const handledNonce = useRef(focusNonce);
   const handledFilter = useRef(filter);
@@ -145,6 +159,7 @@ function MuseumControls({
 
   // Pointer: one finger/mouse button looks around; two fingers pinch to walk. Pointer capture keeps
   // a drag alive outside the canvas, and `touch-action: none` (CSS) stops the page scrolling under it.
+  // The drag flag survives pointerup so the click that follows a drag cannot select a frame.
   useEffect(() => {
     const element = gl.domElement;
     if (!enabled) return;
@@ -153,7 +168,8 @@ function MuseumControls({
 
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (activePointers.size === 0) gesture.current.moved = false;
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY });
       element.setPointerCapture(event.pointerId);
       if (activePointers.size === 2) {
         const [a, b] = [...activePointers.values()];
@@ -164,7 +180,8 @@ function MuseumControls({
     const onPointerMove = (event: PointerEvent) => {
       const previous = activePointers.get(event.pointerId);
       if (!previous) return;
-      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (Math.hypot(event.clientX - previous.startX, event.clientY - previous.startY) > 6) gesture.current.moved = true;
+      activePointers.set(event.pointerId, { ...previous, x: event.clientX, y: event.clientY });
       if (activePointers.size >= 2) {
         const [a, b] = [...activePointers.values()];
         const distance = Math.hypot(a.x - b.x, a.y - b.y);
@@ -206,7 +223,7 @@ function MuseumControls({
       activePointers.clear();
       pinch.current = null;
     };
-  }, [gl, enabled, invalidate, moveForward]);
+  }, [gl, enabled, invalidate, moveForward, gesture]);
 
   // Arrow keys walk the same order as the DOM frames; Up/Down move to the neighbouring hall.
   useEffect(() => {
@@ -276,13 +293,70 @@ function MuseumControls({
   return null;
 }
 
+/** Project each mounted frame's world box into canvas pixels, for PhotoView's opening glide. */
+function projectArtworkRects(
+  objects: Map<number, THREE.Object3D>,
+  camera: THREE.Camera,
+  canvas: HTMLCanvasElement,
+): Record<number, ScreenRect> {
+  const box = new THREE.Box3();
+  const point = new THREE.Vector3();
+  const bounds = canvas.getBoundingClientRect();
+  const rects: Record<number, ScreenRect> = {};
+  objects.forEach((object, index) => {
+    box.setFromObject(object);
+    if (box.isEmpty()) return;
+    let left = Infinity;
+    let top = Infinity;
+    let right = -Infinity;
+    let bottom = -Infinity;
+    for (const x of [box.min.x, box.max.x]) {
+      for (const y of [box.min.y, box.max.y]) {
+        for (const z of [box.min.z, box.max.z]) {
+          point.set(x, y, z).project(camera);
+          if (point.z < -1 || point.z > 1) continue;
+          const px = bounds.left + (point.x * 0.5 + 0.5) * bounds.width;
+          const py = bounds.top + (-point.y * 0.5 + 0.5) * bounds.height;
+          left = Math.min(left, px);
+          top = Math.min(top, py);
+          right = Math.max(right, px);
+          bottom = Math.max(bottom, py);
+        }
+      }
+    }
+    if (!Number.isFinite(left) || right - left < 2 || bottom - top < 2) return;
+    rects[index] = { left, top, width: right - left, height: bottom - top };
+  });
+  return rects;
+}
+
+/** Lives inside Canvas so it can read the live camera and canvas without lifting R3F state. */
+function ProjectionBridge({
+  objectsRef,
+  projectionRef,
+}: {
+  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
+  projectionRef: MutableRefObject<(() => Record<number, ScreenRect>) | null>;
+}) {
+  const camera = useThree((state) => state.camera);
+  const gl = useThree((state) => state.gl);
+  useEffect(() => {
+    const project = () => projectArtworkRects(objectsRef.current, camera, gl.domElement);
+    projectionRef.current = project;
+    return () => {
+      if (projectionRef.current === project) projectionRef.current = null;
+    };
+  }, [camera, gl, objectsRef, projectionRef]);
+  return null;
+}
+
 /**
  * Client-only entry for the 3D museum. The DOM walk (Gallery.tsx) stays in the page as the
  * accessibility tree and the no-WebGL fallback; this layer is the visual implementation of
  * the same view. Rendered with `dynamic(..., { ssr: false })`, so nothing here is prerendered.
  */
 export default function MuseumCanvas(props: MuseumCanvasProps) {
-  const { photos, sites, filter, lang, activeIndex } = props;
+  const { photos, sites, filter, lang, activeIndex, onFail } = props;
   const shown = useMemo(
     () => (filter === "all" ? photos : photos.filter((photo) => photo.site === filter)),
     [photos, filter],
@@ -314,6 +388,25 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
     };
   }, [activeHalls, halls.length]);
 
+  const gesture = useRef<MuseumGesture>({ moved: false });
+  const objectsRef = useRef(new Map<number, THREE.Object3D>());
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const failed = useRef(false);
+  const fail = useCallback(() => {
+    if (failed.current) return;
+    failed.current = true;
+    onFail();
+  }, [onFail]);
+
+  useEffect(
+    () => () => {
+      if (canvasRef.current) canvasRef.current.style.cursor = "";
+      canvasRef.current?.removeEventListener("webglcontextlost", fail);
+    },
+    [fail],
+  );
+
   return (
     <div className="museum-canvas gallery-museum" aria-hidden="true">
       <Canvas
@@ -330,10 +423,24 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
         }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
+          canvasRef.current = gl.domElement;
+          gl.domElement.addEventListener("webglcontextlost", fail, { once: true });
         }}
       >
-        <MuseumControls {...props} halls={halls} />
-        <MuseumScene halls={halls} activeHalls={activeHalls} lang={lang} activeIndex={activeIndex} />
+        <MuseumControls {...props} halls={halls} gesture={gesture} />
+        <MuseumScene
+          halls={halls}
+          activeHalls={activeHalls}
+          lang={lang}
+          activeIndex={activeIndex}
+          hoverIndex={props.enabled ? hoverIndex : null}
+          interactive={props.enabled}
+          gesture={gesture}
+          objectsRef={objectsRef}
+          onHover={setHoverIndex}
+          onSelect={props.onOpenArtwork}
+        />
+        <ProjectionBridge objectsRef={objectsRef} projectionRef={props.projectionRef} />
       </Canvas>
     </div>
   );

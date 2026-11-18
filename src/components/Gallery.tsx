@@ -5,16 +5,16 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 
 import PhotoView from "@/components/PhotoView";
+import MuseumErrorBoundary from "@/components/gallery/MuseumErrorBoundary";
 import { MUSEUM_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "@/lib/breakpoints";
 import { formatNumber, formatYear } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
-import { INITIAL_POSE, type CameraPose } from "@/lib/museum-layout";
+import { INITIAL_POSE, type CameraPose, type ScreenRect } from "@/lib/museum-layout";
 import type { Locale } from "@/types/locale";
 import { useWebGL } from "@/lib/webgl";
 
 // Client-only 3D layer, code-split away from the initial bundle (same pattern as MapView).
-// Phase 1: the component is an empty scaffold, so the DOM gallery below still renders unchanged.
 const MuseumCanvas = dynamic(() => import("@/components/gallery/MuseumCanvas"), { ssr: false });
 
 interface GalleryProps {
@@ -38,19 +38,27 @@ export function GalleryFromUrl(props: Omit<GalleryProps, "requestedSite">) {
   return <Gallery {...props} requestedSite={searchParams.get("site")} />;
 }
 
-type View = "grid" | "list";
-/** sessionStorage key: the chosen view lasts for the visit (this tab), not forever. "grid" = the walk. */
+type View = "grid" | "hanging" | "list";
+/** sessionStorage key: the chosen view lasts for the visit (this tab), not forever. "grid" = the 3D museum. */
 const VIEW_KEY = "gallery-view";
 const VIEW_EVENT = "gallery-view-change";
 /** Used when storage is blocked (private windows, site data off): the switch still works on this page. */
 let memoryView: View | null = null;
+
+interface OpenState {
+  index: number;
+  from: HTMLElement | null;
+  /** Empty FLIP sources projected from the 3D frames while the canvas is frozen behind PhotoView. */
+  sources?: Map<number, HTMLElement>;
+}
 
 // The chosen view lives outside React (sessionStorage), so the component subscribes to it with
 // useSyncExternalStore, React's hook for reading outside state without a render mismatch.
 function readView(): View {
   if (memoryView) return memoryView;
   try {
-    return window.sessionStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
+    const saved = window.sessionStorage.getItem(VIEW_KEY);
+    return saved === "list" || saved === "hanging" ? saved : "grid";
   } catch {
     return "grid";
   }
@@ -77,18 +85,52 @@ const reducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
 const SAG = 34;
 const STRING_TOP = 18;
 
+/** Decorative view glyphs: no words, no labels, no extra accessibility text. */
+function MuseumIcon() {
+  return (
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="view-icon" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 4.5h18v15H3zM9.5 19.5V9.5L15 5.5v14" />
+    </svg>
+  );
+}
+
+function HangingIcon() {
+  return (
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="view-icon" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2.5 5.5q9.5 8 19 0M7 7v6h6V9.5M14.5 9.5v5h5V8.5" />
+    </svg>
+  );
+}
+
+/** An empty, inert box whose rect PhotoView can use as a FLIP source for a canvas frame. */
+function placeProxy(rect: ScreenRect): HTMLElement {
+  const element = document.createElement("span");
+  element.setAttribute("aria-hidden", "true");
+  Object.assign(element.style, {
+    position: "fixed",
+    left: `${rect.left}px`,
+    top: `${rect.top}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+    pointerEvents: "none",
+    opacity: "0",
+  });
+  document.body.appendChild(element);
+  return element;
+}
+
 /**
  * The gallery (Shutabug's collection page, docs/ui-match/reference-notes.md §2).
  *
- * Gallery view: on roomy screens the 3D museum is the visual layer; drag to look, wheel or pinch to
- * walk, arrow keys to step between frames and halls, with the nearest frame lit a little brighter.
- * On phones and small/portrait tablets the original hanging line from 6bed439 is used instead: prints
- * hang from a sagging string, swipe or wheel moves the line, arrows and focus step one print. Both
- * layers share this one DOM tree, its data, filters and photo view. Reduced motion makes either
- * plain paging with no parallax or damping. No new words are introduced (the text lock counts every page).
+ * Gallery view: on roomy screens with WebGL the 3D museum is the visual layer; drag to look, wheel or
+ * pinch to walk, and click a framed print to open the one existing PhotoView. On every other screen,
+ * in the hanging view, or when WebGL fails, the original hanging line from 6bed439 is used instead:
+ * prints hang from a sagging string, swipe or wheel moves the line, arrows and focus step one print.
+ * All presentations share this one DOM tree, its data, filters, photo view and saved state.
  *
  * List view: rows with a photo, the caption, the site and the year; a row opens the same photo view.
- * The chosen view is remembered for the visit.
+ * The chosen view is remembered for the visit. No new words are introduced: the third view control
+ * uses existing DOM text plus numerals, which the text lock does not count as words.
  */
 export default function Gallery({ lang, photos, sites, credit, year, labels, requestedSite = null }: GalleryProps) {
   const pathname = usePathname();
@@ -97,9 +139,10 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   // ?site=nanak-math preselects a tab (links from the detail pages use it).
   const preselected = showFilter && requestedSite && sites.some((site) => site.slug === requestedSite) ? requestedSite : "all";
   const [filter, setFilter] = useState<string>(preselected);
-  const [open, setOpen] = useState<{ index: number; from: HTMLElement | null } | null>(null);
+  const [open, setOpen] = useState<OpenState | null>(null);
   const captionId = useId();
   const roomId = useId();
+  const viewId = useId();
   const walkRef = useRef<HTMLDivElement>(null);
   // The prerendered HTML is the gallery view (server snapshot); after hydration the remembered view is read.
   const view = useSyncExternalStore(subscribeView, readView, () => "grid" as const);
@@ -109,13 +152,19 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   // original hanging line from 6bed439; CSS applies the same choice before hydration.
   const roomy = useMediaQuery(MUSEUM_QUERY);
   const reduced = useMediaQuery(REDUCED_MOTION_QUERY);
-  const useMuseum = webgl && roomy && view === "grid";
+  const [museumFailed, setMuseumFailed] = useState(false);
+  const failMuseum = useCallback(() => setMuseumFailed(true), []);
+  const galleryView = view !== "list";
+  const useMuseum = webgl && roomy && view === "grid" && !museumFailed;
+  const hanging = galleryView && !useMuseum;
   // Camera state lives here so PhotoView open/close and layout switches never reset the view.
   const poseRef = useRef<CameraPose>({ ...INITIAL_POSE });
+  const projectionRef = useRef<(() => Record<number, ScreenRect>) | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [focusNonce, setFocusNonce] = useState(0);
   const [lineCurrent, setLineCurrent] = useState(0);
   const internalFocus = useRef(false);
+  const lastIndexRef = useRef(0);
 
   const siteName = new Map(sites.map((site) => [site.slug, site.name]));
   const shown = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
@@ -124,6 +173,10 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     const text = formatNumber(n, lang);
     return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
   };
+
+  useEffect(() => {
+    lastIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
   /** All sites keep their room (and the site-name word) even when a filter empties it; it is just hidden. */
   const rooms = sites.map((site) => ({
@@ -135,6 +188,9 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
 
   function choose(slug: string) {
     setFilter(slug);
+    lastIndexRef.current = 0;
+    setActiveIndex(0);
+    setLineCurrent(0);
     // Keep the choice in the URL (shareable) without a navigation or scroll jump.
     window.history.replaceState(null, "", slug === "all" ? pathname : `${pathname}?site=${slug}`);
   }
@@ -142,10 +198,13 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   const zooming = useRef(false);
 
   /** A frame grows briefly under the finger/cursor, then hands off to the existing gliding photo view. */
-  const openPhoto = (index: number, from: HTMLElement | null, zoom?: HTMLElement | null) => {
+  const openPhoto = (index: number, from: HTMLElement | null, zoom?: HTMLElement | null, sources?: Map<number, HTMLElement>) => {
     if (zooming.current) return;
     if (!zoom || !from || reducedMotion()) {
-      setOpen({ index, from });
+      setOpen((previous) => {
+        previous?.sources?.forEach((element) => element.remove());
+        return { index, from, sources };
+      });
       return;
     }
     zooming.current = true;
@@ -158,7 +217,10 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       { duration: 230, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
     );
     animation.onfinish = () => {
-      setOpen({ index, from });
+      setOpen((previous) => {
+        previous?.sources?.forEach((element) => element.remove());
+        return { index, from, sources };
+      });
       // The view has measured the enlarged frame; settle it back so closing glides to its usual place.
       requestAnimationFrame(() => animation.cancel());
     };
@@ -166,6 +228,23 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       zooming.current = false;
     };
   };
+
+  /** A raycast hit routes through the same open path, with empty rects standing in for the hidden DOM frames. */
+  const openMuseumArtwork = useCallback((index: number) => {
+    const rects = projectionRef.current?.() ?? {};
+    const sources = new Map<number, HTMLElement>();
+    Object.entries(rects).forEach(([key, rect]) => sources.set(Number(key), placeProxy(rect)));
+    const from =
+      sources.get(index) ??
+      placeProxy({ left: window.innerWidth / 2 - 2, top: window.innerHeight / 2 - 2, width: 4, height: 4 });
+    lastIndexRef.current = index;
+    setActiveIndex(index);
+    setLineCurrent(index);
+    setOpen((previous) => {
+      previous?.sources?.forEach((element) => element.remove());
+      return { index, from, sources };
+    });
+  }, []);
 
   /** Bring a frame to the middle; paging is instant when the visitor asked for less motion. */
   const stepTo = useCallback((index: number, behavior?: ScrollBehavior) => {
@@ -189,11 +268,13 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     });
   }, []);
 
-  /** Keyboard navigation in the 3D hall returns focus to the matching accessible DOM frame. */
-  const focusArtwork = useCallback((index: number) => {
-    setActiveIndex(index);
+  /** Focus the matching accessible DOM frame without asking the camera to steer. */
+  const focusDomFrame = useCallback((index: number) => {
     const button = walkRef.current?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[index]?.querySelector("button");
-    if (!button) return;
+    if (!button) {
+      internalFocus.current = false;
+      return;
+    }
     internalFocus.current = true;
     button.focus({ preventScroll: true });
     requestAnimationFrame(() => {
@@ -201,11 +282,30 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     });
   }, []);
 
+  /** Keyboard navigation in the 3D hall returns focus to the matching accessible DOM frame. */
+  const focusArtwork = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      focusDomFrame(index);
+    },
+    [focusDomFrame],
+  );
+
+  // Returning from List, a filter change, or a layout switch restores the print of the last visit.
+  useEffect(() => {
+    if (view === "list") return;
+    const id = requestAnimationFrame(() => {
+      if (hanging) centre(lastIndexRef.current, false);
+      else stepTo(lastIndexRef.current, "auto");
+    });
+    return () => cancelAnimationFrame(id);
+  }, [view, filter, hanging, centre, stepTo]);
+
   // Walk: wheel moves sideways, touch swipes natively. The middle frame gets the spotlight and each
   // image drifts a few pixels against the scroll (a light parallax), unless motion is reduced.
   useEffect(() => {
     const track = walkRef.current;
-    if (!track || view !== "grid" || useMuseum) return;
+    if (!track || view === "list" || useMuseum || hanging) return;
     const frames = Array.from(track.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item"));
     const reduce = reducedMotion();
     let frame = 0;
@@ -218,13 +318,13 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       let best = Infinity;
       frames.forEach((item, index) => {
         const box = item.getBoundingClientRect();
-        const centre = box.left + box.width / 2;
-        const distance = Math.abs(centre - middle);
+        const centreX = box.left + box.width / 2;
+        const distance = Math.abs(centreX - middle);
         if (distance < best) {
           best = distance;
           nearest = index;
         }
-        const drift = reduce ? 0 : ((centre - middle) / Math.max(track.clientWidth, 1)) * -18;
+        const drift = reduce ? 0 : ((centreX - middle) / Math.max(track.clientWidth, 1)) * -18;
         item.style.setProperty("--parallax", `${drift.toFixed(1)}px`);
       });
       track.dataset.current = String(nearest);
@@ -269,14 +369,14 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         item.style.removeProperty("--parallax");
       });
     };
-  }, [view, filter, stepTo, useMuseum]);
+  }, [view, filter, stepTo, useMuseum, hanging]);
 
-  // The original hanging line (6bed439), now the phone layout: each print hangs from the sagging
-  // string at the height and tilt of the curve under it; the middle print is current. Wheel moves
-  // the line sideways, swipe is native scroll, arrows and focus step one print. Reduced motion
-  // pages one at a time instead of gliding.
+  // The recovered hanging line (6bed439): each print hangs from the sagging string at the height and
+  // tilt of the curve under it; the middle print is current. This also runs on roomy screens when the
+  // visitor chooses the hanging view or WebGL is unavailable. Wheel moves the line, swipe is native,
+  // arrows and focus step one print. Reduced motion pages one at a time instead of gliding.
   useEffect(() => {
-    if (useMuseum || view !== "grid") return;
+    if (!hanging) return;
     const track = walkRef.current;
     if (!track) return;
     const items = Array.from(track.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item"));
@@ -305,6 +405,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       });
       track.dataset.current = String(nearest);
       setLineCurrent(nearest);
+      lastIndexRef.current = nearest;
       items.forEach((item, index) => {
         if (index === nearest) item.setAttribute("data-current", "");
         else item.removeAttribute("data-current");
@@ -343,15 +444,17 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       buttons.forEach((button) => button.style.removeProperty("transform"));
       items.forEach((item) => item.removeAttribute("data-current"));
     };
-  }, [view, filter, useMuseum, centre]);
+  }, [filter, hanging, centre]);
 
   const tabs = [{ slug: "all", name: labels.all }, ...sites];
+  const threeView = webgl && roomy && !museumFailed;
 
   return (
     <>
-      {/* One toolbar row: the photo count, the site filter (their collections line), the Gallery/List pill.
+      {/* One toolbar row: the photo count, the site filter (their collections line), the view pill.
           Phones: the filter on its own row above. Site tabs show their room number; the room plaque is
-          their accessible name via aria-labelledby, so the site name is only in the page once. */}
+          their accessible name via aria-labelledby, so the site name is only in the page once. The third
+          view control reuses the existing Gallery word and a numeral, so the text lock stays at zero. */}
       <div className="wrap mb-1 grid grid-cols-[1fr_auto] items-center gap-x-4 md:grid-cols-[1fr_auto_1fr]">
         {showFilter && (
           <div role="group" aria-label={labels.filterLabel} className="filter-tabs col-span-2 flex flex-wrap justify-center gap-x-2 md:col-span-1 md:col-start-2 md:row-start-1">
@@ -376,33 +479,102 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         </p>
         <div className="md:col-start-3 md:row-start-1 md:justify-self-end">
           <div role="group" aria-label={labels.view.label} className="view-pill">
-            {(["grid", "list"] as const).map((option) => (
-              <button key={option} type="button" aria-pressed={view === option} onClick={() => chooseView(option)}>
-                {labels.view[option]}
+            {/* With the third control hidden, Gallery represents the hanging-memory presentation. */}
+            <button
+              type="button"
+              aria-pressed={view === "grid" || (!threeView && view === "hanging")}
+              aria-labelledby={`${viewId}-gallery ${viewId}-museum-index`}
+              onClick={() => chooseView("grid")}
+            >
+              <MuseumIcon />
+              <span id={`${viewId}-gallery`}>{labels.view.grid}</span>
+              <span id={`${viewId}-museum-index`} className="view-index">
+                {twoDigits(1)}
+              </span>
+            </button>
+            {threeView && (
+              <button
+                type="button"
+                aria-pressed={view === "hanging"}
+                aria-labelledby={`${viewId}-gallery ${viewId}-hanging-index`}
+                onClick={() => chooseView("hanging")}
+              >
+                <HangingIcon />
+                <span id={`${viewId}-hanging-index`} className="view-index">
+                  {twoDigits(2)}
+                </span>
               </button>
-            ))}
+            )}
+            <button type="button" aria-pressed={view === "list"} onClick={() => chooseView("list")}>
+              {labels.view.list}
+            </button>
           </div>
         </div>
       </div>
 
       {shown.length === 0 ? (
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
-      ) : view === "grid" ? (
-        <div className={`wall-stage${useMuseum ? " museum-active" : ""}`}>
+      ) : view === "list" ? (
+        <ul className="wrap mx-auto max-w-[56rem]">
+          {shown.map((photo, index) => (
+            <li key={photo.thumb.src}>
+              <button type="button" className="list-row" onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+                <img
+                  src={photo.thumb.src}
+                  srcSet={photo.thumb.srcSet}
+                  sizes="(min-width: 48rem) 20rem, 11rem"
+                  width={photo.thumb.width}
+                  height={photo.thumb.height}
+                  alt=""
+                  loading={index < 4 ? "eager" : "lazy"}
+                  decoding="async"
+                  data-loading=""
+                  // Sharpens from a blur once loaded (CSS); an image that loaded before React started is shown at once.
+                  ref={(img) => {
+                    if (img?.complete) img.removeAttribute("data-loading");
+                  }}
+                  onLoad={(event) => event.currentTarget.removeAttribute("data-loading")}
+                />
+                <span className="leading-snug">{photo.alt}</span>
+                <span className="mono muted md:text-right">
+                  {siteName.get(photo.site)}
+                  {year !== null && (
+                    <>
+                      <span aria-hidden="true"> · </span>
+                      <span className="sr-only">, </span>
+                      {formatYear(year, lang)}
+                    </>
+                  )}
+                </span>
+                <span aria-hidden="true" className="mono hidden md:block">
+                  →
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className={`wall-stage${useMuseum ? " museum-active" : ""}${hanging ? " hanging-active" : ""}`}>
           {useMuseum && (
-            <MuseumCanvas
-              photos={photos}
-              sites={sites}
-              filter={filter}
-              lang={lang}
-              enabled={!open}
-              reducedMotion={reduced}
-              activeIndex={activeIndex}
-              poseRef={poseRef}
-              focusNonce={focusNonce}
-              onActiveIndex={setActiveIndex}
-              onFocusArtwork={focusArtwork}
-            />
+            <MuseumErrorBoundary onError={failMuseum}>
+              <MuseumCanvas
+                photos={photos}
+                sites={sites}
+                filter={filter}
+                lang={lang}
+                enabled={!open}
+                reducedMotion={reduced}
+                activeIndex={activeIndex}
+                poseRef={poseRef}
+                focusNonce={focusNonce}
+                onActiveIndex={setActiveIndex}
+                onFocusArtwork={focusArtwork}
+                onOpenArtwork={openMuseumArtwork}
+                onFail={failMuseum}
+                projectionRef={projectionRef}
+              />
+            </MuseumErrorBoundary>
           )}
           {/* The string and its counter are inert geometry and numerals: no words are added. */}
           <svg aria-hidden="true" className="line-string" viewBox="0 0 100 40" preserveAspectRatio="none">
@@ -481,46 +653,6 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
             {twoDigits(lineCurrent + 1)} <span className="inline-block h-px w-10 bg-current" /> {twoDigits(shown.length)}
           </p>
         </div>
-      ) : (
-        <ul className="wrap mx-auto max-w-[56rem]">
-          {shown.map((photo, index) => (
-            <li key={photo.thumb.src}>
-              <button type="button" className="list-row" onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}>
-                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-                <img
-                  src={photo.thumb.src}
-                  srcSet={photo.thumb.srcSet}
-                  sizes="(min-width: 48rem) 20rem, 11rem"
-                  width={photo.thumb.width}
-                  height={photo.thumb.height}
-                  alt=""
-                  loading={index < 4 ? "eager" : "lazy"}
-                  decoding="async"
-                  data-loading=""
-                  // Sharpens from a blur once loaded (CSS); an image that loaded before React started is shown at once.
-                  ref={(img) => {
-                    if (img?.complete) img.removeAttribute("data-loading");
-                  }}
-                  onLoad={(event) => event.currentTarget.removeAttribute("data-loading")}
-                />
-                <span className="leading-snug">{photo.alt}</span>
-                <span className="mono muted md:text-right">
-                  {siteName.get(photo.site)}
-                  {year !== null && (
-                    <>
-                      <span aria-hidden="true"> · </span>
-                      <span className="sr-only">, </span>
-                      {formatYear(year, lang)}
-                    </>
-                  )}
-                </span>
-                <span aria-hidden="true" className="mono hidden md:block">
-                  →
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
       )}
 
       {/* The page's existing credit line, now a small plaque under the wall/places. */}
@@ -536,20 +668,28 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
           labels={labels.lightbox}
           onIndexChange={(index) => {
             setOpen((value) => (value ? { ...value, index } : value));
-            if (!useMuseum) centre(index, false);
+            if (useMuseum) {
+              // Lightbox paging changes the spotlight, never the camera the visitor walked to.
+              lastIndexRef.current = index;
+              setActiveIndex(index);
+            } else if (hanging) centre(index, false);
+            else stepTo(index, "auto");
           }}
           onClose={() => {
-            // PhotoView returns focus to the print it opened from. That is not a new navigation
-            // request: keep the camera where it was across the view instead of steering to it again.
+            const closingIndex = open.index;
+            const closingSources = open.sources;
+            // PhotoView's FLIP source is an empty proxy here; return focus to the accessible frame.
+            // Set the guard now: PhotoView also restores focus synchronously before our deferred call,
+            // and neither focus event may steer the camera away from where the visitor walked.
             if (useMuseum) {
               internalFocus.current = true;
-              requestAnimationFrame(() => {
-                internalFocus.current = false;
-              });
+              requestAnimationFrame(() => focusDomFrame(closingIndex));
             }
             setOpen(null);
+            if (closingSources) requestAnimationFrame(() => closingSources.forEach((element) => element.remove()));
           }}
           sourceFor={(index) =>
+            open.sources?.get(index) ??
             document.querySelector<HTMLImageElement>(`.wall-frame[data-frame-index="${index}"] img`) ??
             document.querySelectorAll<HTMLImageElement>(".list-row img")[index] ??
             null

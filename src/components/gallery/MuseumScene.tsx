@@ -1,7 +1,8 @@
 "use client";
 
-import { useThree } from "@react-three/fiber";
-import { useEffect } from "react";
+import { useThree, type ThreeEvent } from "@react-three/fiber";
+import { useEffect, type MutableRefObject } from "react";
+import * as THREE from "three";
 
 import { MUSEUM, type MuseumArtwork, type MuseumHall, type MuseumSurface } from "@/lib/museum-layout";
 import type { Locale } from "@/types/locale";
@@ -20,6 +21,12 @@ interface SceneProps {
   lang: Locale;
   /** Photo index currently under the spotlight (from the nearest artwork or DOM focus). */
   activeIndex: number;
+  hoverIndex: number | null;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
+  onHover: (index: number | null) => void;
+  onSelect: (index: number) => void;
 }
 
 function Surface({ surface }: { surface: MuseumSurface }) {
@@ -33,7 +40,27 @@ function Surface({ surface }: { surface: MuseumSurface }) {
 }
 
 /** A photo under cream mat and dark frame, kept to the photograph's own aspect ratio. */
-function FramedArtwork({ art, active, focused }: { art: MuseumArtwork; active: boolean; focused: boolean }) {
+function FramedArtwork({
+  art,
+  active,
+  focused,
+  hovered,
+  interactive,
+  gesture,
+  objectsRef,
+  onHover,
+  onSelect,
+}: {
+  art: MuseumArtwork;
+  active: boolean;
+  focused: boolean;
+  hovered: boolean;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
+  onHover: (index: number | null) => void;
+  onSelect: (index: number) => void;
+}) {
   const texture = useMuseumImageTexture(art.photo.thumb.src, active);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
@@ -41,17 +68,45 @@ function FramedArtwork({ art, active, focused }: { art: MuseumArtwork; active: b
   }, [texture, invalidate]);
   useEffect(() => {
     invalidate();
-  }, [focused, invalidate]);
+  }, [focused, hovered, invalidate]);
 
   const mat = MUSEUM.matBorder;
   const frame = MUSEUM.frameBorder;
   const depth = MUSEUM.frameDepth;
   const face = depth / 2;
+
+  const onPointerOver = (event: ThreeEvent<PointerEvent>) => {
+    if (!interactive || gesture.current.moved) return;
+    event.stopPropagation();
+    onHover(art.index);
+  };
+  const onPointerOut = (event: ThreeEvent<PointerEvent>) => {
+    if (!interactive) return;
+    event.stopPropagation();
+    onHover(null);
+  };
+  const onClick = (event: ThreeEvent<MouseEvent>) => {
+    // A look-around drag ends in a click event too; the gesture flag is the only reliable discriminator.
+    if (!interactive || gesture.current.moved) return;
+    event.stopPropagation();
+    onSelect(art.index);
+  };
+
   return (
-    <group position={art.position} rotation={[0, art.rotationY, 0]}>
+    <group
+      ref={(node) => {
+        if (node) objectsRef.current.set(art.index, node);
+        else objectsRef.current.delete(art.index);
+      }}
+      position={art.position}
+      rotation={[0, art.rotationY, 0]}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
+      onClick={onClick}
+    >
       <mesh>
         <boxGeometry args={[art.width + 2 * (mat + frame), art.height + 2 * (mat + frame), depth]} />
-        <meshStandardMaterial color={CHARCOAL} roughness={0.52} metalness={0.16} />
+        <meshStandardMaterial color={hovered ? "#6b532e" : focused ? "#3a2a17" : CHARCOAL} roughness={0.52} metalness={0.16} />
       </mesh>
       <mesh position={[0, 0, face + 0.001]}>
         <planeGeometry args={[art.width + 2 * mat, art.height + 2 * mat]} />
@@ -65,7 +120,7 @@ function FramedArtwork({ art, active, focused }: { art: MuseumArtwork; active: b
             map={texture}
             emissive="#ffffff"
             emissiveMap={texture}
-            emissiveIntensity={focused ? 0.62 : 0.3}
+            emissiveIntensity={hovered ? 0.85 : focused ? 0.62 : 0.3}
             roughness={0.9}
             metalness={0}
           />
@@ -98,14 +153,40 @@ function HallPlaque({ hall, active, lang }: { hall: MuseumHall; active: boolean;
   );
 }
 
-function Hall({ hall, active, lang, activeIndex }: { hall: MuseumHall; active: boolean; lang: Locale; activeIndex: number }) {
+function Hall({
+  hall,
+  active,
+  lang,
+  activeIndex,
+  hoverIndex,
+  interactive,
+  gesture,
+  objectsRef,
+  onHover,
+  onSelect,
+}: Omit<SceneProps, "halls" | "activeHalls"> & { hall: MuseumHall; active: boolean }) {
+  const artworkProps = {
+    active,
+    hovered: false,
+    interactive,
+    gesture,
+    objectsRef,
+    onHover,
+    onSelect,
+  };
   return (
     <group>
       {hall.surfaces.map((surface) => (
         <Surface key={surface.key} surface={surface} />
       ))}
       {hall.artworks.map((art) => (
-        <FramedArtwork key={art.key} art={art} active={active} focused={art.index === activeIndex} />
+        <FramedArtwork
+          key={art.key}
+          {...artworkProps}
+          art={art}
+          focused={art.index === activeIndex}
+          hovered={art.index === hoverIndex}
+        />
       ))}
       {hall.alcoves.map((alcove) => (
         <group key={alcove.key}>
@@ -113,7 +194,13 @@ function Hall({ hall, active, lang, activeIndex }: { hall: MuseumHall; active: b
             <Surface key={surface.key} surface={surface} />
           ))}
           {alcove.artworks.map((art) => (
-            <FramedArtwork key={art.key} art={art} active={active} focused={art.index === activeIndex} />
+            <FramedArtwork
+              key={art.key}
+              {...artworkProps}
+              art={art}
+              focused={art.index === activeIndex}
+              hovered={art.index === hoverIndex}
+            />
           ))}
         </group>
       ))}
@@ -125,15 +212,38 @@ function Hall({ hall, active, lang, activeIndex }: { hall: MuseumHall; active: b
   );
 }
 
-/** The exhibition space; navigation lives in MuseumCanvas, selection stays in the DOM (phase 4 adds raycasting). */
-export default function MuseumScene({ halls, activeHalls, lang, activeIndex }: SceneProps) {
+/** The exhibition space; navigation and raycast selection are owned by MuseumCanvas. */
+export default function MuseumScene({
+  halls,
+  activeHalls,
+  lang,
+  activeIndex,
+  hoverIndex,
+  interactive,
+  gesture,
+  objectsRef,
+  onHover,
+  onSelect,
+}: SceneProps) {
   return (
     <>
       <ambientLight intensity={0.7} color="#fff6ea" />
       <hemisphereLight args={["#fff6ea", "#6b6256", 0.5]} />
       <directionalLight position={[2, 6, 4]} intensity={0.6} color="#fff4e4" />
       {halls.map((hall, index) => (
-        <Hall key={hall.slug} hall={hall} active={index < activeHalls} lang={lang} activeIndex={activeIndex} />
+        <Hall
+          key={hall.slug}
+          hall={hall}
+          active={index < activeHalls}
+          lang={lang}
+          activeIndex={activeIndex}
+          hoverIndex={hoverIndex}
+          interactive={interactive}
+          gesture={gesture}
+          objectsRef={objectsRef}
+          onHover={onHover}
+          onSelect={onSelect}
+        />
       ))}
     </>
   );
