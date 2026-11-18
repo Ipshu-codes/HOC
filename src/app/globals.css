@@ -56,18 +56,20 @@
  *            body   muted  btn label  accent text  hover title  band text  menu   footer
  *   A        13.5   6.5    5.9        7.4          7.4          15.8       8.7    8.7
  *   B        10.2   5.5    5.9        5.5          5.5          14.2       14.2   10.2
- *   C        15.8   7.1    5.9        5.6          8.7          8.7        8.7    15.8
+ *   C        15.8   7.1    5.9        5.6          8.7          8.7        8.7     8.7
  *
  * Button hover = fg fill with ground-coloured text (≥ 10:1 in all three). Gold (palette C) is used only
  * for rules and dots (3.8:1 on brick: decoration, never text). The crimson button fill stands ≥ 3:1 off
  * every ground (A 4.8, B 3.5, C 5.6). Default (no data-palette): C.
+ * In C, headings and outline buttons are crimson on cream (5.59) and sand (4.80); the footer is
+ * brick with cream text (8.66). Crimson on brick is only 1.55, so dark surfaces always keep cream text.
  */
 :root,
 :root[data-palette="c"] {
   --ground: var(--color-cream);
   --ground-alt: var(--color-sand);
   --fg: var(--color-ink);
-  --heading: var(--color-ink);
+  --heading: var(--color-crimson);
   --muted: color-mix(in srgb, var(--color-ink) 75%, var(--color-cream));
   --line: color-mix(in srgb, var(--color-ink) 22%, transparent);
   --accent: var(--color-crimson);
@@ -80,8 +82,9 @@
   --band-line: color-mix(in srgb, var(--color-cream) 30%, transparent);
   --menu: var(--color-brick);
   --menu-fg: var(--color-cream);
-  --footer: var(--color-cream);
-  --footer-fg: var(--color-ink);
+  --footer: var(--color-brick);
+  --footer-fg: var(--color-cream);
+  --footer-line: color-mix(in srgb, var(--color-cream) 30%, transparent);
   --paper: var(--color-cream);
   --decor: var(--color-gold);
   --focus: var(--color-crimson);
@@ -645,13 +648,13 @@ html[lang="ne"] .btn {
 }
 .btn-outline {
   background: transparent;
-  color: var(--fg);
-  border-color: var(--fg);
+  color: var(--accent-text);
+  border-color: var(--accent-text);
 }
 .btn-paper {
   background: var(--paper);
-  color: var(--fg);
-  border-color: var(--paper);
+  color: var(--accent-text);
+  border-color: var(--accent-text);
 }
 @media (hover: hover) and (pointer: fine) {
   .btn:hover {
@@ -1249,10 +1252,13 @@ html[lang="en"] .site-row-name {
 .site-footer {
   background: var(--footer);
   color: var(--footer-fg);
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--footer-line, var(--line));
 }
 .site-footer h2 {
   color: var(--footer-fg);
+}
+.site-footer .border-line {
+  border-color: var(--footer-line, var(--line));
 }
 .wordmark {
   display: block;
@@ -1388,8 +1394,8 @@ html[lang="ne"] .view-pill button {
   font-weight: 600;
 }
 .view-pill button[aria-pressed="true"] {
-  background: var(--fg);
-  color: var(--ground);
+  background: var(--accent);
+  color: var(--accent-fg);
 }
 .filter-tabs button {
   min-height: 2.75rem;
@@ -1408,7 +1414,7 @@ html[lang="ne"] .filter-tabs button {
   font-weight: 600;
 }
 .filter-tabs button[aria-pressed="true"] {
-  color: var(--fg);
+  color: var(--accent-text);
   text-decoration: underline;
 }
 /* The hanging line: a horizontal scroller (swipe / wheel / keys) with a string drawn across. */
