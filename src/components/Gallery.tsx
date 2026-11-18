@@ -273,8 +273,8 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       {shown.length === 0 ? (
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
       ) : view === "grid" ? (
-        <div className="wall-stage">
-          {webgl && <MuseumCanvas />}
+        <div className={`wall-stage${webgl ? " museum-active" : ""}`}>
+          {webgl && <MuseumCanvas photos={photos} sites={sites} filter={filter} lang={lang} />}
           <div
             ref={walkRef}
             className="walk-track"

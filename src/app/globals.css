@@ -1428,6 +1428,22 @@ html[lang="ne"] .filter-tabs button {
   --museum-concrete: #a8a198;
   --museum-charcoal: #272522;
 }
+/* The 3D layer is a visual overlay; the DOM walk stays in the accessibility tree as the
+   source of truth and the no-WebGL fallback. The stage keeps its height from the walk track. */
+.museum-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--museum-charcoal);
+}
+.museum-canvas canvas {
+  display: block;
+  touch-action: none;
+}
+.wall-stage.museum-active .walk-track {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ---- The museum wall: deep red, CSS spotlight pools, framed prints and cream placards ---- */
 .wall-stage {
