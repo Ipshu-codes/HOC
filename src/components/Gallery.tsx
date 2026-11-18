@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 
@@ -8,6 +9,11 @@ import { formatNumber, formatYear } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
 import type { Locale } from "@/types/locale";
+import { useWebGL } from "@/lib/webgl";
+
+// Client-only 3D layer, code-split away from the initial bundle (same pattern as MapView).
+// Phase 1: the component is an empty scaffold, so the DOM gallery below still renders unchanged.
+const MuseumCanvas = dynamic(() => import("@/components/gallery/MuseumCanvas"), { ssr: false });
 
 interface GalleryProps {
   lang: Locale;
@@ -90,6 +96,8 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   const walkRef = useRef<HTMLDivElement>(null);
   // The prerendered HTML is the gallery view (server snapshot); after hydration the remembered view is read.
   const view = useSyncExternalStore(subscribeView, readView, () => "grid" as const);
+  // False during prerender, checked after hydration; gates the client-only 3D layer (DOM gallery is the fallback).
+  const webgl = useWebGL();
 
   const siteName = new Map(sites.map((site) => [site.slug, site.name]));
   const shown = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
@@ -266,6 +274,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
       ) : view === "grid" ? (
         <div className="wall-stage">
+          {webgl && <MuseumCanvas />}
           <div
             ref={walkRef}
             className="walk-track"

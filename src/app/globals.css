@@ -1417,6 +1417,18 @@ html[lang="ne"] .filter-tabs button {
   color: var(--accent-text);
   text-decoration: underline;
 }
+/* ---- 3D museum palette (Phase 1 tokens; applied by later phases) ----
+   Warm stone, sandstone, ivory, concrete and charcoal — scoped to the gallery so the
+   site's crimson/cream branding stays untouched everywhere else. Defining the custom
+   properties here changes nothing visually until a rule consumes them. */
+.gallery-museum {
+  --museum-stone: #c9bca8;
+  --museum-sandstone: #d8c6a8;
+  --museum-ivory: #f4efe4;
+  --museum-concrete: #a8a198;
+  --museum-charcoal: #272522;
+}
+
 /* ---- The museum wall: deep red, CSS spotlight pools, framed prints and cream placards ---- */
 .wall-stage {
   position: relative;

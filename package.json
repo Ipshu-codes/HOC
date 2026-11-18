@@ -17,6 +17,7 @@
     "text-lock": "tsx scripts/text-lock.ts"
   },
   "dependencies": {
+    "@react-three/fiber": "9.8.2",
     "gray-matter": "^4.0.3",
     "image-size": "^2.1.0",
     "maplibre-gl": "5.24.0",
@@ -29,6 +30,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "server-only": "^0.0.1",
+    "three": "0.187.0",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.2.0",
     "zod": "^4.6.7"
@@ -38,6 +40,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "0.187.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "heic-convert": "^2.1.0",
