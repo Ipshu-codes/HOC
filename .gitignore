@@ -43,3 +43,9 @@ next-env.d.ts
 ward16-heritageraw-data/
 raw-data/
 *.zip
+
+# UI match: screenshots of the reference sites contain their artists' work; local only, never commit
+docs/ui-match/reference/
+docs/ui-match/compare/
+# taste-skill gate state (local tool)
+.taste-skill/

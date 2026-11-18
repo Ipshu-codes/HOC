@@ -6,14 +6,15 @@
     "dev": "next dev",
     "prebuild": "npm run check-content",
     "build": "next build",
-    "postbuild": "tsx scripts/verify-output.ts",
-    "build:preview": "tsx scripts/check-content.ts --allow-drafts && next build && tsx scripts/verify-output.ts",
+    "postbuild": "tsx scripts/verify-output.ts && tsx scripts/text-lock.ts check",
+    "build:preview": "tsx scripts/check-content.ts --allow-drafts && next build && tsx scripts/verify-output.ts && tsx scripts/text-lock.ts check",
     "start": "npx serve out",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "check-content": "tsx scripts/check-content.ts",
     "optimize-images": "tsx scripts/optimize-images.ts",
-    "fetch-route": "tsx scripts/fetch-walking-route.ts"
+    "fetch-route": "tsx scripts/fetch-walking-route.ts",
+    "text-lock": "tsx scripts/text-lock.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
