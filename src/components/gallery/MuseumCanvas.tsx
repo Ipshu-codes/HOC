@@ -1,12 +1,25 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 
 import { formatNumber } from "@/lib/format";
 import type { GalleryPhoto } from "@/lib/images";
-import { buildMuseumLayout, MUSEUM, type MuseumRoomInput } from "@/lib/museum-layout";
+import {
+  INITIAL_POSE,
+  MUSEUM,
+  artworkPose,
+  buildMuseumLayout,
+  clipMuseumPosition,
+  firstIndexInHall,
+  hallEntryPose,
+  hallOfArtwork,
+  orderedArtworks,
+  type CameraPose,
+  type MuseumHall,
+  type MuseumRoomInput,
+} from "@/lib/museum-layout";
 import type { Locale } from "@/types/locale";
 import MuseumScene from "./MuseumScene";
 
@@ -16,6 +29,20 @@ interface MuseumCanvasProps {
   sites: { slug: string; name: string }[];
   filter: string;
   lang: Locale;
+  /** False while PhotoView is open: the camera keeps its pose but stops taking input. */
+  enabled: boolean;
+  reducedMotion: boolean;
+  activeIndex: number;
+  /** Lives in Gallery, so opening PhotoView or switching layouts never resets the camera. */
+  poseRef: MutableRefObject<CameraPose>;
+  /** Incremented when a DOM frame asks the camera to look at it. */
+  focusNonce: number;
+  onActiveIndex: (index: number) => void;
+  onFocusArtwork: (index: number) => void;
+}
+
+interface ControlsProps extends Omit<MuseumCanvasProps, "photos" | "sites" | "lang"> {
+  halls: MuseumHall[];
 }
 
 function twoDigits(n: number, lang: Locale): string {
@@ -23,12 +50,239 @@ function twoDigits(n: number, lang: Locale): string {
   return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
 }
 
+/** Mouse, wheel, touch and keyboard navigation. All state is in refs: no React render per drag frame. */
+function MuseumControls({
+  halls,
+  enabled,
+  reducedMotion,
+  activeIndex,
+  poseRef,
+  focusNonce,
+  onActiveIndex,
+  onFocusArtwork,
+  filter,
+}: ControlsProps) {
+  const camera = useThree((state) => state.camera);
+  const invalidate = useThree((state) => state.invalidate);
+  const gl = useThree((state) => state.gl);
+
+  const artworks = useMemo(() => orderedArtworks(halls), [halls]);
+  // Refs start from constants; the preserved pose is copied in the mount effect below (reading
+  // poseRef.current during render would break React's render rules). No per-frame React state.
+  const target = useRef<CameraPose>({ ...INITIAL_POSE });
+  const currentIndex = useRef(activeIndex);
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<number | null>(null);
+  const handledNonce = useRef(focusNonce);
+  const handledFilter = useRef(filter);
+
+  useEffect(() => {
+    currentIndex.current = activeIndex;
+  }, [activeIndex]);
+
+  // On (re)mount, resume the pose Gallery kept while PhotoView or a layout switch unmounted us.
+  // The canvas starts at INITIAL_POSE for SSR-safe rendering; this effect puts it back on the view.
+  useEffect(() => {
+    const pose = poseRef.current;
+    target.current = { ...pose };
+    camera.position.set(pose.x, MUSEUM.eyeHeight, pose.z);
+    camera.rotation.set(pose.pitch, pose.yaw, 0, "YXZ");
+    invalidate();
+  }, [poseRef, camera, invalidate]);
+
+  const steer = useCallback(
+    (pose: CameraPose) => {
+      target.current = { ...pose };
+      invalidate();
+    },
+    [invalidate],
+  );
+
+  const steerToArtwork = useCallback(
+    (index: number) => {
+      const art = artworks.find((item) => item.index === index);
+      if (art) steer(artworkPose(art));
+    },
+    [artworks, steer],
+  );
+
+  // A focused DOM frame asks the camera to look at its 3D counterpart. The nonce guard keeps a
+  // hall/language re-render from steering on its own; only a fresh focus request does that.
+  useEffect(() => {
+    if (focusNonce === handledNonce.current) return;
+    handledNonce.current = focusNonce;
+    steerToArtwork(activeIndex);
+  }, [focusNonce, activeIndex, steerToArtwork]);
+
+  // A site filter moves to that hall's entrance. "All" keeps the current view when appropriate.
+  useEffect(() => {
+    if (filter === handledFilter.current) return;
+    handledFilter.current = filter;
+    if (filter === "all" || !halls[0]) return;
+    steer(hallEntryPose(halls[0]));
+    const first = firstIndexInHall(halls[0]);
+    if (first !== null) {
+      currentIndex.current = first;
+      onActiveIndex(first);
+    }
+  }, [filter, halls, steer, onActiveIndex]);
+
+  /** Move along the camera's ground-forward vector, clipped by the hall/doorway footprint. */
+  const moveForward = useCallback(
+    (step: number) => {
+      const { yaw } = target.current;
+      const [x, z] = clipMuseumPosition(
+        halls,
+        [poseRef.current.x, poseRef.current.z],
+        [target.current.x - Math.sin(yaw) * step, target.current.z - Math.cos(yaw) * step],
+      );
+      target.current.x = x;
+      target.current.z = z;
+      invalidate();
+    },
+    [halls, poseRef, invalidate],
+  );
+
+  // Pointer: one finger/mouse button looks around; two fingers pinch to walk. Pointer capture keeps
+  // a drag alive outside the canvas, and `touch-action: none` (CSS) stops the page scrolling under it.
+  useEffect(() => {
+    const element = gl.domElement;
+    if (!enabled) return;
+    // Keep a stable local reference so cleanup releases exactly the pointers this effect tracked.
+    const activePointers = pointers.current;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      element.setPointerCapture(event.pointerId);
+      if (activePointers.size === 2) {
+        const [a, b] = [...activePointers.values()];
+        pinch.current = Math.hypot(a.x - b.x, a.y - b.y);
+      }
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const previous = activePointers.get(event.pointerId);
+      if (!previous) return;
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (activePointers.size >= 2) {
+        const [a, b] = [...activePointers.values()];
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinch.current !== null) moveForward((distance - pinch.current) * 0.012);
+        pinch.current = distance;
+        return;
+      }
+      target.current.yaw -= (event.clientX - previous.x) * 0.0032;
+      target.current.pitch = Math.max(-1.05, Math.min(1.05, target.current.pitch - (event.clientY - previous.y) * 0.0026));
+      invalidate();
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      activePointers.delete(event.pointerId);
+      if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
+      if (activePointers.size < 2) pinch.current = null;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const notch = Math.max(-1, Math.min(1, event.deltaY / 100));
+      if (notch !== 0) moveForward(notch * 0.9);
+    };
+
+    element.addEventListener("pointerdown", onPointerDown);
+    element.addEventListener("pointermove", onPointerMove);
+    element.addEventListener("pointerup", onPointerUp);
+    element.addEventListener("pointercancel", onPointerUp);
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      element.removeEventListener("pointerdown", onPointerDown);
+      element.removeEventListener("pointermove", onPointerMove);
+      element.removeEventListener("pointerup", onPointerUp);
+      element.removeEventListener("pointercancel", onPointerUp);
+      element.removeEventListener("wheel", onWheel);
+      for (const id of activePointers.keys()) {
+        if (element.hasPointerCapture(id)) element.releasePointerCapture(id);
+      }
+      activePointers.clear();
+      pinch.current = null;
+    };
+  }, [gl, enabled, invalidate, moveForward]);
+
+  // Arrow keys walk the same order as the DOM frames; Up/Down move to the neighbouring hall.
+  useEffect(() => {
+    if (!enabled) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+      event.preventDefault();
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        const next = currentIndex.current + (event.key === "ArrowRight" ? 1 : -1);
+        if (next < 0 || next >= artworks.length) return;
+        currentIndex.current = next;
+        onActiveIndex(next);
+        steerToArtwork(next);
+        onFocusArtwork(next);
+        return;
+      }
+      const here = halls.findIndex((hall) => hall.slug === hallOfArtwork(halls, currentIndex.current)?.slug);
+      const next = here + (event.key === "ArrowDown" ? 1 : -1);
+      if (here < 0 || next < 0 || next >= halls.length) return;
+      steer(hallEntryPose(halls[next]));
+      const first = firstIndexInHall(halls[next]);
+      if (first !== null) {
+        currentIndex.current = first;
+        onActiveIndex(first);
+        onFocusArtwork(first);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [enabled, artworks, halls, onActiveIndex, onFocusArtwork, steer, steerToArtwork]);
+
+  // Damping and spotlight both run inside useFrame. With frameloop="demand", invalidate() here is
+  // what keeps the transition alive until it settles; once still, the scene costs no frames.
+  useFrame((_, delta) => {
+    const pose = poseRef.current;
+    const goal = target.current;
+    const k = reducedMotion ? 1 : 1 - Math.exp(-Math.min(delta, 0.05) * 7);
+    let dyaw = goal.yaw - pose.yaw;
+    while (dyaw > Math.PI) dyaw -= Math.PI * 2;
+    while (dyaw < -Math.PI) dyaw += Math.PI * 2;
+    pose.x += (goal.x - pose.x) * k;
+    pose.z += (goal.z - pose.z) * k;
+    pose.yaw += dyaw * k;
+    pose.pitch += (goal.pitch - pose.pitch) * k;
+    camera.position.set(pose.x, MUSEUM.eyeHeight, pose.z);
+    camera.rotation.set(pose.pitch, pose.yaw, 0, "YXZ");
+
+    const moving =
+      Math.abs(goal.x - pose.x) + Math.abs(goal.z - pose.z) + Math.abs(dyaw) + Math.abs(goal.pitch - pose.pitch) > 0.002;
+    if (moving) invalidate();
+
+    let nearest = -1;
+    let best = 3.6;
+    for (const art of artworks) {
+      const distance = Math.hypot(pose.x - art.position[0], pose.z - art.position[2]);
+      if (distance < best) {
+        best = distance;
+        nearest = art.index;
+      }
+    }
+    if (nearest >= 0 && nearest !== currentIndex.current) {
+      currentIndex.current = nearest;
+      onActiveIndex(nearest);
+    }
+  });
+
+  return null;
+}
+
 /**
  * Client-only entry for the 3D museum. The DOM walk (Gallery.tsx) stays in the page as the
  * accessibility tree and the no-WebGL fallback; this layer is the visual implementation of
  * the same view. Rendered with `dynamic(..., { ssr: false })`, so nothing here is prerendered.
  */
-export default function MuseumCanvas({ photos, sites, filter, lang }: MuseumCanvasProps) {
+export default function MuseumCanvas(props: MuseumCanvasProps) {
+  const { photos, sites, filter, lang, activeIndex } = props;
   const shown = useMemo(
     () => (filter === "all" ? photos : photos.filter((photo) => photo.site === filter)),
     [photos, filter],
@@ -46,7 +300,7 @@ export default function MuseumCanvas({ photos, sites, filter, lang }: MuseumCanv
   const halls = useMemo(() => buildMuseumLayout(rooms, shown, lang), [rooms, shown, lang]);
 
   // Progressive loading: the nearest hall is lit immediately, later halls one per idle period.
-  // Phase 3 swaps this for camera-driven activation; the texture hook is already ref-counted.
+  // Camera navigation does not create textures early; it only changes which hall is looked at.
   const [activeHalls, setActiveHalls] = useState(1);
   useEffect(() => {
     if (activeHalls >= halls.length) return;
@@ -66,14 +320,20 @@ export default function MuseumCanvas({ photos, sites, filter, lang }: MuseumCanv
         frameloop="demand"
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: "high-performance" }}
-        // R3F auto-lookAt(0,0,0) unless a rotation is supplied; without this the camera faces
-        // back through the entrance wall. [0,0,0] looks straight down the hall (-Z).
-        camera={{ position: [-0.8, MUSEUM.eyeHeight, -0.5], rotation: [0, 0, 0], fov: 68, near: 0.1, far: 220 }}
+        // R3F auto-lookAt(0,0,0) unless a rotation is supplied; [0,0,0] looks straight down the hall (-Z).
+        camera={{
+          position: [INITIAL_POSE.x, MUSEUM.eyeHeight, INITIAL_POSE.z],
+          rotation: [0, 0, 0],
+          fov: 64,
+          near: 0.1,
+          far: 220,
+        }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
         }}
       >
-        <MuseumScene halls={halls} activeHalls={activeHalls} lang={lang} />
+        <MuseumControls {...props} halls={halls} />
+        <MuseumScene halls={halls} activeHalls={activeHalls} lang={lang} activeIndex={activeIndex} />
       </Canvas>
     </div>
   );

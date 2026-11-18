@@ -18,6 +18,8 @@ interface SceneProps {
   halls: MuseumHall[];
   activeHalls: number;
   lang: Locale;
+  /** Photo index currently under the spotlight (from the nearest artwork or DOM focus). */
+  activeIndex: number;
 }
 
 function Surface({ surface }: { surface: MuseumSurface }) {
@@ -31,12 +33,15 @@ function Surface({ surface }: { surface: MuseumSurface }) {
 }
 
 /** A photo under cream mat and dark frame, kept to the photograph's own aspect ratio. */
-function FramedArtwork({ art, active }: { art: MuseumArtwork; active: boolean }) {
+function FramedArtwork({ art, active, focused }: { art: MuseumArtwork; active: boolean; focused: boolean }) {
   const texture = useMuseumImageTexture(art.photo.thumb.src, active);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     if (texture) invalidate();
   }, [texture, invalidate]);
+  useEffect(() => {
+    invalidate();
+  }, [focused, invalidate]);
 
   const mat = MUSEUM.matBorder;
   const frame = MUSEUM.frameBorder;
@@ -60,7 +65,7 @@ function FramedArtwork({ art, active }: { art: MuseumArtwork; active: boolean })
             map={texture}
             emissive="#ffffff"
             emissiveMap={texture}
-            emissiveIntensity={0.3}
+            emissiveIntensity={focused ? 0.62 : 0.3}
             roughness={0.9}
             metalness={0}
           />
@@ -93,14 +98,14 @@ function HallPlaque({ hall, active, lang }: { hall: MuseumHall; active: boolean;
   );
 }
 
-function Hall({ hall, active, lang }: { hall: MuseumHall; active: boolean; lang: Locale }) {
+function Hall({ hall, active, lang, activeIndex }: { hall: MuseumHall; active: boolean; lang: Locale; activeIndex: number }) {
   return (
     <group>
       {hall.surfaces.map((surface) => (
         <Surface key={surface.key} surface={surface} />
       ))}
       {hall.artworks.map((art) => (
-        <FramedArtwork key={art.key} art={art} active={active} />
+        <FramedArtwork key={art.key} art={art} active={active} focused={art.index === activeIndex} />
       ))}
       {hall.alcoves.map((alcove) => (
         <group key={alcove.key}>
@@ -108,7 +113,7 @@ function Hall({ hall, active, lang }: { hall: MuseumHall; active: boolean; lang:
             <Surface key={surface.key} surface={surface} />
           ))}
           {alcove.artworks.map((art) => (
-            <FramedArtwork key={art.key} art={art} active={active} />
+            <FramedArtwork key={art.key} art={art} active={active} focused={art.index === activeIndex} />
           ))}
         </group>
       ))}
@@ -120,15 +125,15 @@ function Hall({ hall, active, lang }: { hall: MuseumHall; active: boolean; lang:
   );
 }
 
-/** Static exhibition space only: no camera movement, raycasting or photo-view handoff yet. */
-export default function MuseumScene({ halls, activeHalls, lang }: SceneProps) {
+/** The exhibition space; navigation lives in MuseumCanvas, selection stays in the DOM (phase 4 adds raycasting). */
+export default function MuseumScene({ halls, activeHalls, lang, activeIndex }: SceneProps) {
   return (
     <>
       <ambientLight intensity={0.7} color="#fff6ea" />
       <hemisphereLight args={["#fff6ea", "#6b6256", 0.5]} />
       <directionalLight position={[2, 6, 4]} intensity={0.6} color="#fff4e4" />
       {halls.map((hall, index) => (
-        <Hall key={hall.slug} hall={hall} active={index < activeHalls} lang={lang} />
+        <Hall key={hall.slug} hall={hall} active={index < activeHalls} lang={lang} activeIndex={activeIndex} />
       ))}
     </>
   );

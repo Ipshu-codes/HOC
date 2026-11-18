@@ -265,3 +265,143 @@ export function buildMuseumLayout(rooms: MuseumRoomInput[], photos: GalleryPhoto
 
   return halls;
 }
+
+/* ---- Navigation (phase 3): pure geometry, no renderer imports ---- */
+
+export interface CameraPose {
+  x: number;
+  z: number;
+  yaw: number;
+  pitch: number;
+}
+
+/** Match the static scene's opening view; the camera never starts behind a wall. */
+export const INITIAL_POSE: CameraPose = { x: -0.8, z: -0.5, yaw: 0, pitch: 0 };
+
+interface WalkRect {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+function contains(rect: WalkRect, x: number, z: number): boolean {
+  return x >= rect.minX && x <= rect.maxX && z >= rect.minZ && z <= rect.maxZ;
+}
+
+/**
+ * The walkable footprint is the union of axis-aligned rectangles: each hall interior, the narrow
+ * connector through every end doorway, and each alcove plus the bridge through its side opening.
+ * The body radius is already subtracted, so a point in a rectangle cannot touch a wall or frame.
+ * Keeping this in the layout module means collision can be reasoned about without WebGL.
+ */
+export function walkableRects(halls: MuseumHall[], radius = 0.28): WalkRect[] {
+  const { hallWidth, doorWidth, alcoveDepth, alcoveLength, alcoveDoorWidth } = MUSEUM;
+  const half = hallWidth / 2;
+  const rects: WalkRect[] = [];
+  halls.forEach((hall, index) => {
+    rects.push({
+      minX: -half + radius,
+      maxX: half - radius,
+      minZ: hall.zFar + radius,
+      maxZ: hall.zNear - radius,
+    });
+    if (index < halls.length - 1) {
+      // The next hall starts at this hall's far wall; bridge the two interiors at the doorway.
+      rects.push({
+        minX: -doorWidth / 2 + radius,
+        maxX: doorWidth / 2 - radius,
+        minZ: hall.zFar - radius - 0.1,
+        maxZ: hall.zFar + radius + 0.1,
+      });
+    }
+    hall.alcoves.forEach((alcove) => {
+      const wall = alcove.side * half;
+      const outer = alcove.side * (half + alcoveDepth);
+      rects.push({
+        minX: Math.min(wall, outer) + radius,
+        maxX: Math.max(wall, outer) - radius,
+        minZ: alcove.centreZ - alcoveLength / 2 + radius,
+        maxZ: alcove.centreZ + alcoveLength / 2 - radius,
+      });
+      const bridge = radius + 0.14;
+      rects.push({
+        minX: wall - bridge,
+        maxX: wall + bridge,
+        minZ: alcove.centreZ - alcoveDoorWidth / 2 + radius,
+        maxZ: alcove.centreZ + alcoveDoorWidth / 2 - radius,
+      });
+    });
+  });
+  return rects;
+}
+
+export function isMuseumWalkable(halls: MuseumHall[], x: number, z: number, radius = 0.28): boolean {
+  return walkableRects(halls, radius).some((rect) => contains(rect, x, z));
+}
+
+/**
+ * Move from `from` towards `to` in short steps, sliding along walls instead of crossing them.
+ * Stepping (rather than a single end-point test) is what keeps a large wheel delta or a filter
+ * transition from tunnelling through a solid wall into the next hall.
+ */
+export function clipMuseumPosition(
+  halls: MuseumHall[],
+  from: [number, number],
+  to: [number, number],
+  radius = 0.28,
+): [number, number] {
+  const rects = walkableRects(halls, radius);
+  const walkable = (x: number, z: number) => rects.some((rect) => contains(rect, x, z));
+  let x = from[0];
+  let z = from[1];
+  const dx = to[0] - x;
+  const dz = to[1] - z;
+  const steps = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.08));
+  for (let i = 1; i <= steps; i += 1) {
+    const nx = from[0] + (dx * i) / steps;
+    const nz = from[1] + (dz * i) / steps;
+    if (walkable(nx, nz)) {
+      x = nx;
+      z = nz;
+      continue;
+    }
+    if (walkable(nx, z)) x = nx;
+    if (walkable(x, nz)) z = nz;
+  }
+  return [x, z];
+}
+
+/** Flat artwork order by photo index — exactly the order of the accessible DOM frames. */
+export function orderedArtworks(halls: MuseumHall[]): MuseumArtwork[] {
+  return halls
+    .flatMap((hall) => [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)])
+    .sort((a, b) => a.index - b.index);
+}
+
+/** Stand in front of a frame and look straight at it: local +z of the frame points into the room. */
+export function artworkPose(art: MuseumArtwork, distance = 1.9): CameraPose {
+  return {
+    x: art.position[0] + Math.sin(art.rotationY) * distance,
+    z: art.position[2] + Math.cos(art.rotationY) * distance,
+    yaw: art.rotationY,
+    pitch: 0,
+  };
+}
+
+export function hallEntryPose(hall: MuseumHall): CameraPose {
+  return { x: 0, z: hall.zNear - 2.4, yaw: 0, pitch: 0 };
+}
+
+export function hallOfArtwork(halls: MuseumHall[], index: number): MuseumHall | null {
+  return (
+    halls.find((hall) =>
+      [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)].some((art) => art.index === index),
+    ) ?? null
+  );
+}
+
+export function firstIndexInHall(hall: MuseumHall): number | null {
+  const arts = [...hall.artworks, ...hall.alcoves.flatMap((alcove) => alcove.artworks)];
+  return arts.length ? Math.min(...arts.map((art) => art.index)) : null;
+}

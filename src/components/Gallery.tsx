@@ -5,9 +5,11 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 
 import PhotoView from "@/components/PhotoView";
+import { MUSEUM_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "@/lib/breakpoints";
 import { formatNumber, formatYear } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
+import { INITIAL_POSE, type CameraPose } from "@/lib/museum-layout";
 import type { Locale } from "@/types/locale";
 import { useWebGL } from "@/lib/webgl";
 
@@ -69,16 +71,21 @@ function chooseView(next: View) {
   window.dispatchEvent(new Event(VIEW_EVENT));
 }
 
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
+
+/** How far the middle of the string sags below its ends, in px (recovered from 6bed439). */
+const SAG = 34;
+const STRING_TOP = 18;
 
 /**
  * The gallery (Shutabug's collection page, docs/ui-match/reference-notes.md §2).
  *
- * Gallery view: a walk along a deep-red museum wall, one room per heritage site. Each room's plaque
- * carries the existing site name and its "01"/"02" number; the frames carry the photos' existing alt
- * text. Swipe or scroll sideways to walk, use the arrow keys to step between frames, and the frame
- * nearest the middle gets the brightest spotlight. With reduced motion the walk becomes plain paging:
- * no parallax, no smooth scrolling. No new words are introduced (the text lock counts every page).
+ * Gallery view: on roomy screens the 3D museum is the visual layer; drag to look, wheel or pinch to
+ * walk, arrow keys to step between frames and halls, with the nearest frame lit a little brighter.
+ * On phones and small/portrait tablets the original hanging line from 6bed439 is used instead: prints
+ * hang from a sagging string, swipe or wheel moves the line, arrows and focus step one print. Both
+ * layers share this one DOM tree, its data, filters and photo view. Reduced motion makes either
+ * plain paging with no parallax or damping. No new words are introduced (the text lock counts every page).
  *
  * List view: rows with a photo, the caption, the site and the year; a row opens the same photo view.
  * The chosen view is remembered for the visit.
@@ -98,6 +105,17 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   const view = useSyncExternalStore(subscribeView, readView, () => "grid" as const);
   // False during prerender, checked after hydration; gates the client-only 3D layer (DOM gallery is the fallback).
   const webgl = useWebGL();
+  // The 3D museum needs room in both directions. Phones and small/portrait tablets keep the
+  // original hanging line from 6bed439; CSS applies the same choice before hydration.
+  const roomy = useMediaQuery(MUSEUM_QUERY);
+  const reduced = useMediaQuery(REDUCED_MOTION_QUERY);
+  const useMuseum = webgl && roomy && view === "grid";
+  // Camera state lives here so PhotoView open/close and layout switches never reset the view.
+  const poseRef = useRef<CameraPose>({ ...INITIAL_POSE });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [focusNonce, setFocusNonce] = useState(0);
+  const [lineCurrent, setLineCurrent] = useState(0);
+  const internalFocus = useRef(false);
 
   const siteName = new Map(sites.map((site) => [site.slug, site.name]));
   const shown = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
@@ -160,11 +178,34 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     });
   }, []);
 
+  /** Recovered from 6bed439: bring a hanging print to the middle of the line. */
+  const centre = useCallback((index: number, smooth = true) => {
+    const track = walkRef.current;
+    const item = track?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[index];
+    if (!track || !item) return;
+    track.scrollTo({
+      left: item.offsetLeft + item.offsetWidth / 2 - track.clientWidth / 2,
+      behavior: smooth && !reducedMotion() ? "smooth" : "auto",
+    });
+  }, []);
+
+  /** Keyboard navigation in the 3D hall returns focus to the matching accessible DOM frame. */
+  const focusArtwork = useCallback((index: number) => {
+    setActiveIndex(index);
+    const button = walkRef.current?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[index]?.querySelector("button");
+    if (!button) return;
+    internalFocus.current = true;
+    button.focus({ preventScroll: true });
+    requestAnimationFrame(() => {
+      internalFocus.current = false;
+    });
+  }, []);
+
   // Walk: wheel moves sideways, touch swipes natively. The middle frame gets the spotlight and each
   // image drifts a few pixels against the scroll (a light parallax), unless motion is reduced.
   useEffect(() => {
     const track = walkRef.current;
-    if (!track || view !== "grid") return;
+    if (!track || view !== "grid" || useMuseum) return;
     const frames = Array.from(track.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item"));
     const reduce = reducedMotion();
     let frame = 0;
@@ -228,7 +269,81 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         item.style.removeProperty("--parallax");
       });
     };
-  }, [view, filter, stepTo]);
+  }, [view, filter, stepTo, useMuseum]);
+
+  // The original hanging line (6bed439), now the phone layout: each print hangs from the sagging
+  // string at the height and tilt of the curve under it; the middle print is current. Wheel moves
+  // the line sideways, swipe is native scroll, arrows and focus step one print. Reduced motion
+  // pages one at a time instead of gliding.
+  useEffect(() => {
+    if (useMuseum || view !== "grid") return;
+    const track = walkRef.current;
+    if (!track) return;
+    const items = Array.from(track.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item"));
+    const buttons = items.map((item) => item.querySelector<HTMLElement>("button")).filter((button): button is HTMLElement => Boolean(button));
+    let frame = 0;
+    let lastStep = 0;
+
+    const hang = () => {
+      frame = 0;
+      const width = Math.max(track.clientWidth, 1);
+      const left = track.getBoundingClientRect().left;
+      let nearest = 0;
+      let best = Infinity;
+      buttons.forEach((button, index) => {
+        const box = items[index].getBoundingClientRect();
+        const x = (box.left + box.width / 2 - left) / width;
+        const clamped = Math.min(Math.max(x, -0.2), 1.2);
+        const drop = 4 * SAG * clamped * (1 - clamped);
+        const slope = (4 * SAG * (1 - 2 * clamped)) / width;
+        button.style.transform = `translateY(${drop}px) rotate(${(Math.atan(slope) * 180) / Math.PI}deg)`;
+        const distance = Math.abs(x - 0.5);
+        if (distance < best) {
+          best = distance;
+          nearest = index;
+        }
+      });
+      track.dataset.current = String(nearest);
+      setLineCurrent(nearest);
+      items.forEach((item, index) => {
+        if (index === nearest) item.setAttribute("data-current", "");
+        else item.removeAttribute("data-current");
+      });
+    };
+
+    const onScroll = () => {
+      if (frame === 0) frame = requestAnimationFrame(hang);
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const max = track.scrollWidth - track.clientWidth;
+      const atEnd = event.deltaY > 0 ? track.scrollLeft >= max - 1 : track.scrollLeft <= 1;
+      if (atEnd) return;
+      event.preventDefault();
+      if (!reducedMotion()) {
+        track.scrollLeft += event.deltaY;
+        return;
+      }
+      const now = Date.now();
+      if (now - lastStep < 300) return;
+      lastStep = now;
+      const current = Number(track.dataset.current ?? "0");
+      centre(Math.min(Math.max(current + Math.sign(event.deltaY), 0), items.length - 1), false);
+    };
+
+    frame = requestAnimationFrame(hang);
+    track.addEventListener("scroll", onScroll, { passive: true });
+    track.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      track.removeEventListener("scroll", onScroll);
+      track.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+      buttons.forEach((button) => button.style.removeProperty("transform"));
+      items.forEach((item) => item.removeAttribute("data-current"));
+    };
+  }, [view, filter, useMuseum, centre]);
 
   const tabs = [{ slug: "all", name: labels.all }, ...sites];
 
@@ -273,18 +388,44 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       {shown.length === 0 ? (
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
       ) : view === "grid" ? (
-        <div className={`wall-stage${webgl ? " museum-active" : ""}`}>
-          {webgl && <MuseumCanvas photos={photos} sites={sites} filter={filter} lang={lang} />}
+        <div className={`wall-stage${useMuseum ? " museum-active" : ""}`}>
+          {useMuseum && (
+            <MuseumCanvas
+              photos={photos}
+              sites={sites}
+              filter={filter}
+              lang={lang}
+              enabled={!open}
+              reducedMotion={reduced}
+              activeIndex={activeIndex}
+              poseRef={poseRef}
+              focusNonce={focusNonce}
+              onActiveIndex={setActiveIndex}
+              onFocusArtwork={focusArtwork}
+            />
+          )}
+          {/* The string and its counter are inert geometry and numerals: no words are added. */}
+          <svg aria-hidden="true" className="line-string" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path
+              d={`M0 ${STRING_TOP / 2} Q50 ${STRING_TOP / 2 + SAG} 100 ${STRING_TOP / 2}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
           <div
             ref={walkRef}
             className="walk-track"
             tabIndex={0}
             onKeyDown={(event) => {
+              // On large screens the 3D controls own the arrow keys; the DOM layer stays focusable.
+              if (useMuseum) return;
               if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
               event.preventDefault();
               const current = Number(walkRef.current?.dataset.current ?? "0");
               const next = Math.min(Math.max(current + (event.key === "ArrowRight" ? 1 : -1), 0), shown.length - 1);
-              stepTo(next);
+              centre(next);
               walkRef.current?.querySelectorAll<HTMLElement>(".walk-room:not([hidden]) .wall-item")[next]?.querySelector("button")?.focus({ preventScroll: true });
             }}
           >
@@ -306,6 +447,12 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                       data-frame-index={index}
                       aria-labelledby={`${captionId}-${index}`}
                       onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"), event.currentTarget)}
+                      onFocus={() => {
+                        setActiveIndex(index);
+                        if (internalFocus.current) return;
+                        if (useMuseum) setFocusNonce((nonce) => nonce + 1);
+                        else centre(index);
+                      }}
                     >
                       <span className="wall-mat">
                         {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
@@ -330,6 +477,9 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
               </section>
             ))}
           </div>
+          <p aria-hidden="true" className="mono line-counter absolute right-[var(--gutter)] bottom-0 flex items-center gap-3 tabular-nums">
+            {twoDigits(lineCurrent + 1)} <span className="inline-block h-px w-10 bg-current" /> {twoDigits(shown.length)}
+          </p>
         </div>
       ) : (
         <ul className="wrap mx-auto max-w-[56rem]">
@@ -384,8 +534,21 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
           credit={credit}
           siteName={siteName}
           labels={labels.lightbox}
-          onIndexChange={(index) => setOpen((value) => (value ? { ...value, index } : value))}
-          onClose={() => setOpen(null)}
+          onIndexChange={(index) => {
+            setOpen((value) => (value ? { ...value, index } : value));
+            if (!useMuseum) centre(index, false);
+          }}
+          onClose={() => {
+            // PhotoView returns focus to the print it opened from. That is not a new navigation
+            // request: keep the camera where it was across the view instead of steering to it again.
+            if (useMuseum) {
+              internalFocus.current = true;
+              requestAnimationFrame(() => {
+                internalFocus.current = false;
+              });
+            }
+            setOpen(null);
+          }}
           sourceFor={(index) =>
             document.querySelector<HTMLImageElement>(`.wall-frame[data-frame-index="${index}"] img`) ??
             document.querySelectorAll<HTMLImageElement>(".list-row img")[index] ??
