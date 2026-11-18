@@ -175,62 +175,68 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
       />
 
       <div
-        ref={mapWrapRef}
-        className="relative h-[70dvh] min-h-80 w-full scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:h-[80dvh]"
+        className={
+          showDetail
+            ? "grid w-full gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]"
+            : "w-full"
+        }
       >
-        {mapOn ? (
-          <MapView
-            places={places}
-            focusId={selectedId}
-            visibleIds={visibleIds}
-            route={route}
-            detailOpen={showDetail}
-            onSelect={select}
-            onOpenDetail={openDetail}
-            onResetView={resetView}
-            labels={labels}
-            lang={lang}
-          />
-        ) : (
-          <div className="relative size-full bg-sand">
-            {preview && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={preview.src}
-                srcSet={preview.srcSet}
-                sizes="100vw"
-                width={preview.width}
-                height={preview.height}
-                alt={labels.previewAlt}
-                fetchPriority="high"
-                className="size-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/30 p-4 text-center">
-              <button
-                type="button"
-                onClick={() => setMapOn(true)}
-                className="rounded-full bg-crimson px-6 py-3 text-lg font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick"
-              >
-                <span aria-hidden="true">🗺 </span>
-                {labels.showMap}
-              </button>
-              <p className="rounded-md bg-cream/90 px-2 py-1 text-sm text-ink">{labels.showMapNote}</p>
+        <div
+          ref={mapWrapRef}
+          className="relative h-[70dvh] min-h-80 w-full scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:h-[80dvh]"
+        >
+          {mapOn ? (
+            <MapView
+              places={places}
+              focusId={selectedId}
+              visibleIds={visibleIds}
+              route={route}
+              detailOpen={showDetail}
+              onSelect={select}
+              onOpenDetail={openDetail}
+              onResetView={resetView}
+              labels={labels}
+              lang={lang}
+            />
+          ) : (
+            <div className="relative size-full bg-sand">
+              {preview && (
+                // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
+                <img
+                  src={preview.src}
+                  srcSet={preview.srcSet}
+                  sizes="100vw"
+                  width={preview.width}
+                  height={preview.height}
+                  alt={labels.previewAlt}
+                  fetchPriority="high"
+                  className="size-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/30 p-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setMapOn(true)}
+                  className="rounded-full bg-crimson px-6 py-3 text-lg font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick"
+                >
+                  <span aria-hidden="true">🗺 </span>
+                  {labels.showMap}
+                </button>
+                <p className="rounded-md bg-cream/90 px-2 py-1 text-sm text-ink">{labels.showMapNote}</p>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {showDetail && selectedPlace && (
-        <div className="w-full">
+        {showDetail && selectedPlace && (
           <PlaceDetailPanel
             place={selectedPlace}
             labels={labels}
             lang={lang}
             onClose={() => setDetailOpen(false)}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

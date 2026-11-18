@@ -19,7 +19,7 @@ interface PlaceDetailPanelProps {
 /**
  * The full story of one place: photo, introduction, quick facts, the sections written in
  * content/heritage/*.md (History, Legends & Beliefs, …) and photos. (No sources list, as on the heritage pages.)
- * A side column on extra-wide screens, below the map at intermediate widths, and a bottom sheet on phones.
+ * A side column beside the map on desktop, and a bottom sheet on phones.
  * Everything shown comes from the place data; nothing here is hard-coded per site.
  */
 export default function PlaceDetailPanel({ place, labels, lang, onClose, footer }: PlaceDetailPanelProps) {
@@ -39,7 +39,7 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
       aria-modal="false"
       aria-labelledby="map-detail-title"
       aria-label={fill(t.label, { name: place.name })}
-      className="fixed inset-x-0 bottom-0 z-20 flex max-h-[48dvh] flex-col overflow-hidden rounded-t-2xl bg-cream shadow-2xl ring-1 ring-gold/60 lg:static lg:z-auto lg:max-h-none lg:h-[75vh] lg:rounded-xl lg:shadow-md"
+      className="fixed inset-x-0 bottom-0 z-20 flex max-h-[48dvh] flex-col overflow-hidden rounded-t-2xl bg-cream shadow-2xl ring-1 ring-gold/60 lg:static lg:z-auto lg:max-h-none lg:h-[80dvh] lg:rounded-xl lg:shadow-md"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <header className="flex items-start justify-between gap-3 border-b border-gold/40 bg-cream p-4">

@@ -4,6 +4,7 @@ import { localized } from "@/types/common";
 import { HERITAGE_SLUGS } from "@/types/heritage";
 
 const latLng = z.tuple([z.number(), z.number()]); // [lat, lng], like all coordinates in content/
+const routeStop = z.union([z.enum(HERITAGE_SLUGS), z.literal("ward-office")]);
 
 /**
  * One walked section between two consecutive stops, from a pedestrian router
@@ -11,8 +12,8 @@ const latLng = z.tuple([z.number(), z.number()]); // [lat, lng], like all coordi
  * numbers, never typed by hand.
  */
 export const routeLegSchema = z.object({
-  from: z.enum(HERITAGE_SLUGS),
-  to: z.enum(HERITAGE_SLUGS),
+  from: routeStop,
+  to: routeStop,
   distanceMeters: z.number().positive(),
   durationSeconds: z.number().positive(),
   path: z.array(latLng).min(2),
@@ -20,9 +21,9 @@ export const routeLegSchema = z.object({
 
 /**
  * content/routes.json — predefined walking routes.
- * `stops` is the suggested order and may only name heritage sites. Stops that are
- * drafts (or have no coordinates) are skipped at build time, so a route never
- * mentions a site that is not published.
+ * `stops` is the suggested order of heritage sites, optionally including the ward office.
+ * Heritage stops that are drafts or have no coordinates and the office without coordinates
+ * are skipped at build time.
  * `walking` stays null until real pedestrian-route data has been fetched; until then
  * the map draws a dashed straight line and shows no walking distance or time.
  */
@@ -30,7 +31,7 @@ export const routeSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: localized,
   intro: localized.optional(),
-  stops: z.array(z.enum(HERITAGE_SLUGS)).min(2),
+  stops: z.array(routeStop).min(2),
   walking: z
     .object({
       /** e.g. "OpenStreetMap data, routed with OSRM foot profile" */

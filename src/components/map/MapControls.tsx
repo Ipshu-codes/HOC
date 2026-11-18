@@ -33,10 +33,10 @@ export default function MapControls(props: MapControlsProps) {
 
   return (
     <div className="w-full rounded-xl bg-sand/70 p-3 ring-1 ring-gold/40 sm:p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4">
         {allKinds.length > 1 && (
-          <section aria-label={t.filters.label} className="shrink-0">
-            <div role="group" className="flex flex-wrap gap-2">
+          <section aria-label={t.filters.label}>
+            <div role="group" aria-label={t.filters.label} className="flex flex-wrap gap-2">
               <button
                 type="button"
                 aria-pressed={kinds.size === 0}
@@ -68,7 +68,7 @@ export default function MapControls(props: MapControlsProps) {
           </section>
         )}
 
-        <section aria-labelledby="map-places-title" className="min-w-0 flex-1">
+        <section aria-labelledby="map-places-title" className="min-w-0">
           <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <h2 id="map-places-title" className="text-xl font-bold text-brick">
               {t.placesHeading}
