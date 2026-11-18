@@ -1,9 +1,15 @@
 // Small helpers shared by the map components. No server-only imports: client components use this file.
 import type { Locale } from "@/types/locale";
 
+function localizeDigits(value: string, lang: Locale): string {
+  return lang === "ne"
+    ? value.replace(/[0-9]/g, (digit) => String.fromCharCode(0x0966 + Number(digit)))
+    : value;
+}
+
 /** 3 → "3" on English pages, "३" on Nepali pages (Devanagari digits, as elsewhere on the site). */
 export function formatNumber(n: number, lang: Locale): string {
-  return new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(n);
+  return localizeDigits(new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(n), lang);
 }
 
 /**
@@ -30,9 +36,12 @@ export function haversineMeters([lat1, lng1]: [number, number], [lat2, lng2]: [n
 /** 640 m → "640 m", 1,234 m → "1.2 km". Nepali pages get Devanagari digits. */
 export function formatDistance(meters: number, lang: Locale, units: { m: string; km: string }): string {
   const nf = (max: number) => new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en", { maximumFractionDigits: max });
-  return meters < 1000 ? `${nf(0).format(Math.round(meters))} ${units.m}` : `${nf(1).format(meters / 1000)} ${units.km}`;
+  const formatted =
+    meters < 1000 ? nf(0).format(Math.round(meters)) : nf(1).format(meters / 1000);
+  return `${localizeDigits(formatted, lang)} ${meters < 1000 ? units.m : units.km}`;
 }
 
 export function formatMinutes(seconds: number, lang: Locale): string {
-  return new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(Math.max(1, Math.round(seconds / 60)));
+  const formatted = new Intl.NumberFormat(lang === "ne" ? "ne-NP" : "en").format(Math.max(1, Math.round(seconds / 60)));
+  return localizeDigits(formatted, lang);
 }

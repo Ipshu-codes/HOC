@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import MapSidebar from "@/components/map/MapSidebar";
+import MapControls from "@/components/map/MapControls";
 import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
 import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
 import { isMobile } from "@/lib/breakpoints";
@@ -58,11 +58,8 @@ export function MapExplorerFromUrl(props: Omit<MapExplorerProps, "requestedId">)
   return <MapExplorer {...props} requestedId={searchParams.get("site")} />;
 }
 
-/** Lower-cases and normalises text so "Nanak Math" and "nanak math" match; Nepali is unaffected. */
-const normalise = (text: string) => text.normalize("NFC").toLocaleLowerCase().trim();
-
 /**
- * The heritage map page: sidebar (search, filters and places), the 3D map, and a detail panel.
+ * The heritage map page: place/category controls above the full-width 3D map and a detail panel.
  * This component owns all the state; MapView only draws it.
  *   selectedId  which place is highlighted / flown to
  *   detailOpen  whether its full story is open
@@ -72,7 +69,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
     places.some((place) => place.id === requestedId) ? requestedId : null,
   );
   // The map (~800 KB of JavaScript plus ~3.5 MB of tiles) is the heaviest thing on the site. On mobile
-  // screens (MOBILE_QUERY: under 1024 px, where the map sits above the list) a direct visit first shows
+  // screens (MOBILE_QUERY: under 1024 px, where the map sits below the controls) a direct visit first shows
   // a still picture and a "Show 3D map" button; null = not decided yet (the prerendered HTML and the
   // first render show the picture). Choosing a place loads it too.
   const [mapOn, setMapOn] = useState<boolean | null>(null);
@@ -85,28 +82,23 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
     return () => cancelAnimationFrame(frame);
   }, []);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [kinds, setKinds] = useState<ReadonlySet<PlaceKind>>(new Set());
   const mapWrapRef = useRef<HTMLDivElement>(null);
 
-  // ---- search + filters (work on the same place data the markers use, in both languages) ----
-  const results = useMemo(() => {
-    const q = normalise(query);
-    return places.filter(
-      (place) =>
-        (kinds.size === 0 || kinds.has(place.kind)) &&
-        (q === "" || normalise(place.name).includes(q) || normalise(place.nameAlt).includes(q)),
-    );
-  }, [places, query, kinds]);
+  // Place/category controls and map markers use the same filtered place set.
+  const results = useMemo(
+    () => places.filter((place) => kinds.size === 0 || kinds.has(place.kind)),
+    [places, kinds],
+  );
 
-  // Markers shown on the map are the places that pass the current search and filters.
+  // Markers shown on the map are the places that pass the current category filters.
   const visibleIds = useMemo(() => {
     return new Set(results.map((place) => place.id));
   }, [results]);
 
   const selectedPlace = places.find((place) => place.id === selectedId) ?? null;
 
-  /** On phones the map sits above the controls: bring it back into view after a choice. */
+  /** On phones, bring the map into view after a place choice. */
   const showMap = useCallback(() => {
     if (isMobile()) mapWrapRef.current?.scrollIntoView({ block: "start" });
   }, []);
@@ -151,7 +143,6 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   }, []);
 
   const clearFilters = useCallback(() => {
-    setQuery("");
     setKinds(new Set());
   }, []);
 
@@ -170,20 +161,12 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   const showDetail = detailOpen && selectedPlace !== null;
 
   return (
-    <div
-      className={`flex flex-col gap-4 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-6 ${
-        showDetail ? "2xl:grid-cols-[19rem_minmax(0,1fr)_25rem]" : ""
-      }`}
-    >
-      <MapSidebar
-        // lg:px-1 keeps focus rings visible inside the scrolling list; -mx-1 keeps its text on the content edge.
-        className="order-2 lg:order-1 lg:-mx-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
+    <div className="flex w-full flex-col gap-4">
+      <MapControls
         places={places}
         results={results}
         selectedId={selectedId}
-        query={query}
         kinds={kinds}
-        onQueryChange={setQuery}
         onToggleKind={toggleKind}
         onClearFilters={clearFilters}
         onSelect={selectFromList}
@@ -193,7 +176,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
 
       <div
         ref={mapWrapRef}
-        className="relative order-1 h-[60dvh] min-h-80 scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[75vh]"
+        className="relative h-[70dvh] min-h-80 w-full scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:h-[80dvh]"
       >
         {mapOn ? (
           <MapView
@@ -215,7 +198,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
               <img
                 src={preview.src}
                 srcSet={preview.srcSet}
-                sizes="(min-width: 64rem) 75vw, 100vw"
+                sizes="100vw"
                 width={preview.width}
                 height={preview.height}
                 alt={labels.previewAlt}
@@ -239,7 +222,7 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
       </div>
 
       {showDetail && selectedPlace && (
-        <div className="order-3 lg:col-start-2 2xl:col-start-3">
+        <div className="w-full">
           <PlaceDetailPanel
             place={selectedPlace}
             labels={labels}
