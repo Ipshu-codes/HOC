@@ -11,7 +11,11 @@ export function hasWebGL(): boolean {
   if (typeof document === "undefined") return false;
   try {
     const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+    // Release the probe context: browsers cap simultaneous WebGL contexts, and Phase 2
+    // will create the real one. Losing this one keeps the budget free on mobile.
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    return Boolean(gl);
   } catch {
     return false;
   }
