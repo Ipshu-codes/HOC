@@ -5,7 +5,7 @@ slug: "mhepi-ajima"
 summary: "The temple of Yogambar Jnaneshwari, known to all as Mhepi Ajima, on a small wooded hill in Naya Bazar: the northern seat among Kathmandu's Ashtamatrika goddesses, honoured by Buddhists and Hindus alike."
 location: "On a small wooded hill in Naya Bazar, Kathmandu Metropolitan City Ward No. 16"
 coordinates: [27.727614400718654, 85.30859929776761]
-established: "Not recorded; the temple's tradition traces it to the Swayambhu Purana. Most images in the grounds date from before VS 2030."
+established: "Not recorded; the temple's tradition traces it to the Swayambhu Purana. Most images in the grounds date from before B.S. 2030."
 deity_or_tradition: "Yogambar Jnaneshwari, the principal seat (mool peeth) of the Ashtamatrikas, in the Vajrayana Buddhist tradition; worshipped by Buddhists and Hindus, and the lineage deity (kul devata) of many Bajracharya and Shakya families of Patan."
 festivals:
   - name: "Charhe (Krishna Paksha Chaturdashi)"
@@ -30,13 +30,13 @@ gallery:
   - src: "/images/mhepi-ajima/brass-offering-enclosure.webp"
     alt: "Brass railing enclosure holding flower and rice offerings on a marble floor"
   - src: "/images/mhepi-ajima/brass-inscription-with-nagas.webp"
-    alt: "Brass inscription plate dated Nepal Sambat 1120 (VS 2056) above three embossed cobra heads"
+    alt: "Brass inscription plate dated Nepal Sambat 1120 (B.S. 2056) above three embossed cobra heads"
   - src: "/images/mhepi-ajima/marble-dedication-inscription.webp"
-    alt: "Marble dedication plaque in Devanagari dated Nepal Sambat 1120 (VS 2057), with flower offerings below"
+    alt: "Marble dedication plaque in Devanagari dated Nepal Sambat 1120 (B.S. 2057), with flower offerings below"
   - src: "/images/mhepi-ajima/brass-donor-plate.webp"
     alt: "Brass plate recording a donation to the main temple, dated Nepal Sambat 1121"
   - src: "/images/mhepi-ajima/brass-donor-plate-2070.webp"
-    alt: "Brass plate recording a donation by a family from Balaju, dated Nepal Sambat 1134 (VS 2070)"
+    alt: "Brass plate recording a donation by a family from Balaju, dated Nepal Sambat 1134 (B.S. 2070)"
   - src: "/images/mhepi-ajima/bhajan-plaque.webp"
     alt: "Marble plaque with the temple bhajan in red Devanagari letters, placed by the Mhepi conservation and management committee"
   - src: "/images/mhepi-ajima/ganesh-shrine.webp"
@@ -83,19 +83,19 @@ In the temple's story (see Legends & Beliefs), the body of a holy man's son was 
 ### What the inscriptions record {#inscriptions}
 
 <!-- source: mhepi-inscriptions | 20261104_084315.heic -->
-- **Nepal Sambat 1120, Pohelathwa 12 (VS 2056, Magh 4)**: Shri Amrit Man Shrestha and Prithvi Kumari Shrestha, residents of Mhepi, offered a **two-tiered brass roof** to Shri Shri Shri Yogambar Jnaneshwari Mhepi Ajima in memory of their ancestors, on the auspicious day of their Janku ceremony.
+- **Nepal Sambat 1120, Pohelathwa 12 (B.S. 2056, Magh 4)**: Shri Amrit Man Shrestha and Prithvi Kumari Shrestha, residents of Mhepi, offered a **two-tiered brass roof** to Shri Shri Shri Yogambar Jnaneshwari Mhepi Ajima in memory of their ancestors, on the auspicious day of their Janku ceremony.
 
 <!-- source: mhepi-inscriptions | 20261104_083749.heic -->
-- **Nepal Sambat 1120, Gunlathwa Navami, Tuesday (VS 2057, Shrawan)**: in memory of the late Mathuradas Shrestha and the late Vishnu Devi Shrestha, the family of Rajendra Das Shrestha laid white stone (marble) in the temple of Shri Yogambar Jnaneshwari.
+- **Nepal Sambat 1120, Gunlathwa Navami, Tuesday (B.S. 2057, Shrawan)**: in memory of the late Mathuradas Shrestha and the late Vishnu Devi Shrestha, the family of Rajendra Das Shrestha laid white stone (marble) in the temple of Shri Yogambar Jnaneshwari.
 
 <!-- source: mhepi-inscriptions | 20261104_084318.heic -->
 - **Nepal Sambat 1121, Thinla Dwadashi**: in memory of the late Gyanmaya Shakya, Buddharatna Shakya and Gyandevi Shakya, Shri Chaitya Ratna Shakya and Sanu Chhori Shakya offered metal-sheet work for the middle part of the main temple of Shri Yogambar Mhepi Ajima.
 
 <!-- source: mhepi-inscriptions | 20261104_083919.heic -->
-- **Nepal Sambat 1134, Thilla Dwadashi (VS 2070, Mangsir 29)**: Tirtharam Timila and Manik Laxmi Timila of Balaju offered metal-sheet work on both sides of Mhepi Ajima.
+- **Nepal Sambat 1134, Thilla Dwadashi (B.S. 2070, Mangsir 29)**: Tirtharam Timila and Manik Laxmi Timila of Balaju offered metal-sheet work on both sides of Mhepi Ajima.
 
 <!-- source: mhepi-inscriptions | 20261104_084559.heic (marble plaque, first panel) -->
-- **The bhajan house**: a bhajan house was built in the Mhepi temple complex in **VS 2029**. When it fell into disrepair and rainwater began to disturb the daily bhajan-kirtan, the bhajan mandal decided on **VS 2068 Kartik 30** to rebuild it with the support of devotees. The renovation was completed under the bhajan mandal's chair, Shri Ashtalal Maharjan; the commemorative plaque is dated **VS 2069 Jestha 6**.
+- **The bhajan house**: a bhajan house was built in the Mhepi temple complex in **B.S. 2029**. When it fell into disrepair and rainwater began to disturb the daily bhajan-kirtan, the bhajan mandal decided on **B.S. 2068 Kartik 30** to rebuild it with the support of devotees. The renovation was completed under the bhajan mandal's chair, Shri Ashtalal Maharjan; the commemorative plaque is dated **B.S. 2069 Jestha 6**.
 
 ## Legends & Beliefs {#legends}
 
@@ -107,7 +107,7 @@ The priest tells the temple's story through the Swayambhu Purana:
 - **The son given to the goddess.** During his practice the goddess asked him for what he loved most, and he gave his only son. She said the boy was a form of a Bodhisattva: his body was to be laid in one place, while she took his soul. The soul was later born as the 555th son of King Yaksharaj Shashi and Queen Maya, and came to Nepal as **Rato Machhindranath**. The boy's body was buried here, and the peeth was established above it.
 
 <!-- source: mhepi-interview | para 8 -->
-Because of this link, when the Rato Machhindranath of Bungamati has to be rebuilt, its priests (panju) come here, perform puja and take soil from the temple. The priest remembers them coming after the earthquake of VS 1990, in VS 2054, 2056 and 2066, and, after the earthquake of VS 2072, in VS 2078. The ground is held so sacred that an image of a god is said to be complete only when soil from here is mixed in.
+Because of this link, when the Rato Machhindranath of Bungamati has to be rebuilt, its priests (panju) come here, perform puja and take soil from the temple. The priest remembers them coming after the earthquake of B.S. 1990, in B.S. 2054, 2056 and 2066, and, after the earthquake of B.S. 2072, in B.S. 2078. The ground is held so sacred that an image of a god is said to be complete only when soil from here is mixed in.
 
 <!-- source: mhepi-interview | paras 9–10 -->
 Buddhists and Hindus both worship here, and lamas of the Mahayana tradition from Tibet worship the goddess as a yogini. Because of her part in bringing Rato Machhindranath to Nepal, many Bajracharya, Shakya and other families of Patan worship her as their **kul devata** (lineage deity), more so than families in Kathmandu.
@@ -140,7 +140,7 @@ The temple bhajan, displayed on a marble plaque by the Mhepi Conservation and Ma
 <!-- source: mhepi-interview | paras 15, 17–18 -->
 The temple stands on a **small wooded hill** (thumko), a patch of forest in the middle of the city. At its centre is Jnaneshwari, the principal seat of the Ashtamatrikas, in the form of stones and the peeth rather than an image.
 
-The grounds also hold Mahadev, Vishnu, Krishna and the Buddha. According to the priest, most of these images were placed before VS 2030; an inscription dates the Saraswati image to around VS 2005. Below the hill, on the Gunal side, a Narayan temple was established on an empty site about three years ago (as of 2026), and devotees have placed a small Hanuman image.
+The grounds also hold Mahadev, Vishnu, Krishna and the Buddha. According to the priest, most of these images were placed before B.S. 2030; an inscription dates the Saraswati image to around B.S. 2005. Below the hill, on the Gunal side, a Narayan temple was established on an empty site about three years ago (as of 2026), and devotees have placed a small Hanuman image.
 
 The donor inscriptions (above) record a **two-tiered brass roof** and metal-sheet work offered to the temple.
 
@@ -155,7 +155,7 @@ The temple is looked after by the **Mhepi Conservation and Management Committee*
 - The committee asks that **no stalls** be set up in front of the temple door.
 
 <!-- source: mhepi-interview | paras 1, 14–15 -->
-- The **Mhepi Conservation and Management Committee** was founded in **VS 2054 (1997/98 AD)**. It looks after the old images, the daily puja, the forest on the hill, security and cleaning, and runs on donations.
+- The **Mhepi Conservation and Management Committee** was founded in **B.S. 2054 (1997/98 AD)**. It looks after the old images, the daily puja, the forest on the hill, security and cleaning, and runs on donations.
 - The daily puja starts at **4:00 am** and ends by **5:30 am**, earlier than at many temples, so that devotees coming for darshan are not disturbed.
 - The priest notes that, although the temple appears on online maps, few people know its history or what the name Mhepi means.
 

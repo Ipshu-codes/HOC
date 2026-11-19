@@ -23,10 +23,10 @@ export default function GlobalNotFound() {
             404
           </p>
           <h1 className="mt-2 text-3xl font-bold">{en.notFound.title}</h1>
-          <p className="mt-2 text-lg">{en.notFound.body}</p>
+          <p className="justified mt-2 text-lg">{en.notFound.body}</p>
           <div lang="ne" className="mt-6 border-t border-gold/50 pt-6">
             <h2 className="text-2xl font-bold">{ne.notFound.title}</h2>
-            <p className="mt-2 text-lg">{ne.notFound.body}</p>
+            <p className="justified mt-2 text-lg">{ne.notFound.body}</p>
           </div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/en/" className="rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick">

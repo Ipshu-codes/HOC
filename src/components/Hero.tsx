@@ -1,64 +1,35 @@
 import Link from "next/link";
 
 import HeroSlides, { type HeroSlide } from "@/components/HeroSlides";
+import type { Locale } from "@/types/heritage";
 
 interface HeroProps {
-  /** content/home.json → heroSlides, visible sites only; the first one loads with the page. */
-  slides: HeroSlide[];
-  /** content/home.json → heroIntervalMs. */
-  intervalMs: number;
-  slideLabels: { pause: string; play: string };
+  lang: Locale;
   title: string;
   subtitle: string;
-  primary: { href: string; label: string };
-  secondary: { href: string; label: string };
+  mapLabel: string;
+  eyebrow: string;
+  slides: HeroSlide[];
+  intervalMs: number;
 }
 
-/** Full-width photos (a slideshow) under a dark-red gradient, with title, subtitle and two buttons. */
-export default function Hero({
-  slides,
-  intervalMs,
-  slideLabels,
-  title,
-  subtitle,
-  primary,
-  secondary,
-}: HeroProps) {
+/** Homepage hero with a photographic introduction and a link to the 3D map. */
+export default function Hero({ lang, title, subtitle, mapLabel, eyebrow, slides, intervalMs }: HeroProps) {
   return (
-    <section className="relative isolate flex min-h-[26rem] items-end overflow-hidden md:min-h-[34rem]">
-      <HeroSlides
-        slides={slides}
-        intervalMs={intervalMs}
-        labels={slideLabels}
-      />
-      {/* Strong at the bottom where the text sits, so white text keeps AA contrast over any photo. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-linear-to-t from-brick via-brick/75 to-brick/10"
-      />
-
-      <div className="mx-auto w-full max-w-6xl px-4 pt-24 pb-10 md:pb-14">
-        <h1 className="max-w-3xl text-4xl leading-tight font-bold text-white md:text-6xl">
-          {title}
-        </h1>
-        <p className="mt-3 max-w-2xl text-lg text-cream md:text-xl">
-          {subtitle}
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href={primary.href}
-            className="rounded-xl bg-crimson px-5 py-3 font-bold text-white shadow-lg hover:bg-brick focus-visible:outline-cream"
-          >
-            {primary.label}
-          </Link>
-          <Link
-            href={secondary.href}
-            className="rounded-xl border-2 border-cream px-5 py-3 font-bold text-cream hover:bg-cream hover:text-brick focus-visible:outline-cream"
-          >
-            {secondary.label}
-          </Link>
-        </div>
+    <section className="home-hero" aria-labelledby="home-title">
+      <div className="home-hero__intro">
+        <HeroSlides
+          slides={slides}
+          intervalMs={intervalMs}
+        />
+        <p className="eyebrow">{eyebrow}</p>
+        <h1 id="home-title">{title}</h1>
+        <p className="home-hero__lead justified">{subtitle}</p>
+        <Link className="button button--light home-hero__map-link" href={`/${lang}/map/`}>
+          <span>{mapLabel}</span><span aria-hidden="true">↗</span>
+        </Link>
       </div>
+
     </section>
   );
 }

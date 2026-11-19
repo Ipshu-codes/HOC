@@ -32,10 +32,10 @@
     }
   ],
   "suggestions": [
-    "nanak-where",
-    "nanak-reach",
+    "mhepi-what",
     "nanak-what",
-    "nanak-age"
+    "mhepi-festivals",
+    "nanak-where"
   ],
   "entries": [
     {
@@ -123,7 +123,7 @@
       "priority": 1,
       "q_en": "What is the Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj (Nanak Math)?",
       "q_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ) के हो?",
-      "a_en": "Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, who lived in tapasya at this math from VS 1450 to VS 1664, realised the soul and the Supreme through mahayoga sadhana, and so he took samadhi in this very math. That is why the math is called the Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj.",
+      "a_en": "Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, who lived in tapasya at this math from B.S. 1450 to B.S. 1664, realised the soul and the Supreme through mahayoga sadhana, and so he took samadhi in this very math. That is why the math is called the Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj.",
       "a_ne": "यस मठमा वि.सं. १४५० देखि १६६४ सम्म रहनुभएका तपस्यारत समाधि सिद्ध महायोगी श्री ब्रह्महरिदासजी महाराजले महायोग साधनाको माध्यमबाट आत्मा र परमात्माको साक्षात्कार गर्नुभएको हुनाले यसै मठमा उहाँले समाधि लिनुभयो। त्यसैले यस मठलाई महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधिस्थल भनिएको हो ।",
       "link": "/heritage/nanak-math/#history"
     },
@@ -178,7 +178,7 @@
       "priority": 6,
       "q_en": "What is the living bhu-samadhi?",
       "q_ne": "जीवित भू-समाधि भनेको के हो?",
-      "a_en": "Nanak Math is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi in VS 1664, together with his disciples Gothalramdas and Yathiramdas. The samadhi temple built in VS 1664 marks the spot.",
+      "a_en": "Nanak Math is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi in B.S. 1664, together with his disciples Gothalramdas and Yathiramdas. The samadhi temple built in B.S. 1664 marks the spot.",
       "a_ne": "नानक मठ महायोगी श्री ब्रह्महरिदास महाराजले आफ्ना शिष्य गोथलरामदास र यथिरामदाससहित वि.सं. १६६४ मा जीवित भू-समाधि लिनुभएको स्थलका रूपमा परिचित छ। त्यहाँ वि.सं. १६६४ मा बनेको समाधि मन्दिर छ।",
       "link": "/heritage/nanak-math/#brahmaharidas"
     },
@@ -189,7 +189,7 @@
       "priority": 7,
       "q_en": "Who was Brahmaharidas Maharaj?",
       "q_ne": "ब्रह्महरिदास महाराज को हुनुहुन्थ्यो?",
-      "a_en": "Mahayogi Shri Brahmaharidas Maharaj was born in VS 1432 on Baishakh Purnima. His guru was Jagatguru Shri Narharyanandacharya. According to the math, he lived on air alone until the age of 232 and entered living bhu-samadhi here in VS 1664.",
+      "a_en": "Mahayogi Shri Brahmaharidas Maharaj was born in B.S. 1432 on Baishakh Purnima. His guru was Jagatguru Shri Narharyanandacharya. According to the math, he lived on air alone until the age of 232 and entered living bhu-samadhi here in B.S. 1664.",
       "a_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जन्म वि.सं. १४३२ वैशाख पूर्णिमामा भएको हो। उहाँका सद्गुरु जगतगुरु श्री नरहर्यानन्दाचार्यजी हुनुहुन्थ्यो। मठका अनुसार उहाँ हावा मात्र लिएर २३२ वर्षसम्म बस्नुभयो र वि.सं. १६६४ मा यहीँ जीवित भू-समाधि लिनुभयो।",
       "link": "/heritage/nanak-math/#brahmaharidas"
     },
@@ -222,7 +222,7 @@
       "priority": 10,
       "q_en": "What happens on Akshaya Tritiya?",
       "q_ne": "अक्षय तृतीयामा के हुन्छ?",
-      "a_en": "On Akshaya Tritiya (Baishakh) an annual puja is held at the samadhi temple. The living bhu-samadhi took place on Baishakh Akshaya Tritiya in VS 1664.",
+      "a_en": "On Akshaya Tritiya (Baishakh) an annual puja is held at the samadhi temple. The living bhu-samadhi took place on Baishakh Akshaya Tritiya in B.S. 1664.",
       "a_ne": "अक्षय तृतीया (वैशाख) मा समाधि मन्दिरमा वार्षिक पूजा हुन्छ। जीवित भू-समाधि वि.सं. १६६४ वैशाख अक्षय तृतीयामा भएको थियो।",
       "link": "/heritage/nanak-math/#festivals"
     },
@@ -388,7 +388,7 @@
       "priority": 2,
       "q_en": "How old is it?",
       "q_ne": "यो कति पुरानो हो?",
-      "a_en": "Its founding date is not recorded. The temple's tradition traces it to the Swayambhu Purana. Most images in the grounds were placed before VS 2030, and the donor inscriptions date from NS 1120–1134 (about VS 2056–2070).",
+      "a_en": "Its founding date is not recorded. The temple's tradition traces it to the Swayambhu Purana. Most images in the grounds were placed before B.S. 2030, and the donor inscriptions date from NS 1120–1134 (about B.S. 2056–2070).",
       "a_ne": "स्थापना मिति अभिलेखमा छैन। मन्दिरको परम्पराले यसको इतिहास स्वयम्भू पुराणसँग जोड्छ। परिसरका धेरैजसो मूर्ति वि.सं. २०३० अगाडि राखिएका हुन्, र दाता अभिलेखहरू ने.सं. ११२०–११३४ (करिब वि.सं. २०५६–२०७०) का हुन्।",
       "link": "/heritage/mhepi-ajima/#history"
     },
@@ -443,7 +443,7 @@
       "priority": 7,
       "q_en": "What do the inscriptions record?",
       "q_ne": "अभिलेखमा के लेखिएको छ?",
-      "a_en": "They record donations between Nepal Sambat 1120 and 1134, including a two-tiered brass roof offered in NS 1120 (VS 2056) and metal-sheet work on the main temple.",
+      "a_en": "They record donations between Nepal Sambat 1120 and 1134, including a two-tiered brass roof offered in NS 1120 (B.S. 2056) and metal-sheet work on the main temple.",
       "a_ne": "तिनमा नेपाल संवत् ११२० देखि ११३४ सम्मका दानको विवरण छ, जसमा ने.सं. ११२० (वि.सं. २०५६) मा चढाइएको पित्तलको दुईतह छाना र मूल मन्दिरमा छाइएको धातुको पाता पर्छन्।",
       "link": "/heritage/mhepi-ajima/#inscriptions"
     },
@@ -454,7 +454,7 @@
       "priority": 8,
       "q_en": "When was the bhajan house built?",
       "q_ne": "भजन घर कहिले बनेको हो?",
-      "a_en": "The bhajan house in the Mhepi temple complex was built in VS 2029 and rebuilt with devotees' support; the plaque marking the renovation is dated VS 2069 Jestha 6.",
+      "a_en": "The bhajan house in the Mhepi temple complex was built in B.S. 2029 and rebuilt with devotees' support; the plaque marking the renovation is dated B.S. 2069 Jestha 6.",
       "a_ne": "म्हेपी मन्दिर परिसरको भजन घर वि.सं. २०२९ मा बनेको थियो र श्रद्धालुहरूको सहयोगमा जीर्णोद्धार गरियो; जीर्णोद्धारको शिलालेख वि.सं. २०६९ जेठ ६ को हो।",
       "link": "/heritage/mhepi-ajima/#inscriptions"
     },

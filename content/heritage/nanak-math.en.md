@@ -41,7 +41,7 @@ gallery:
   - src: "/images/nanak-math/nandi-and-shivalinga.webp"
     alt: "The Nandeshwar Mahadev temple, Shivalaya and Nandi statue in the eastern part of the grounds of Mahayogi Shri Brahmaharidas Ji Maharaj"
   # - src: "/images/nanak-math/brahmaharidas-plaque.webp"
-  #   alt: "Painted plaque giving the birth (VS 1432) and living-samadhi (VS 1664) dates of Mahayogi Shri Brahmaharidasji Maharaj"
+  #   alt: "Painted plaque giving the birth (B.S. 1432) and living-samadhi (B.S. 1664) dates of Mahayogi Shri Brahmaharidasji Maharaj"
   # - src: "/images/nanak-math/disciples-plaque.webp"
   #   alt: "Painted plaque with the details of Mahayogi Shri Yathiramdasji and Shri Gothalramdasji Maharaj"
   - src: "/images/nanak-math/heritage-signboard.webp"
@@ -100,23 +100,23 @@ Under the math's rules, the outgoing mahant recommends his successor to the Guth
 ### The Living Bhu-Samadhi Temple {#brahmaharidas}
 
 <!-- source: nanak-account, nanak-signboards | Plaque 20261103_135817.heic; DOCX para 4 -->
-<!-- - **Born:** VS 1432, Baishakh Purnima
+<!-- - **Born:** B.S. 1432, Baishakh Purnima
 - **Parents:** Dev Kumari Wastola and Ram Prasad Wastola
 - **Guru:** Jagatguru Shri Narharyanandacharya Ji Maharaj
-- **Living samadhi:** VS 1664, Baishakh Akshaya Tritiya
+- **Living samadhi:** B.S. 1664, Baishakh Akshaya Tritiya
 
-As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at this math from 1450 onwards, lived on air alone until the age of 232, and guided three disciples to samadhi. Taking two of them — **Shri Gothalramdas Ji** and **Shri Yathiramdas Ji** — with him, he entered living bhu-samadhi in VS 1664 in the presence of sadhus and devotees. His third disciple, **Shri Hareram Das Ji Maharaj**, was taught mahayoga and instructed to carry the tradition forward. This account was told by Guru Buddhidas Maharaj to Nem Muni Das Maharaj. -->
+As handed down from guru to disciple, Brahmaharidas Maharaj practised sadhana at this math from 1450 onwards, lived on air alone until the age of 232, and guided three disciples to samadhi. Taking two of them — **Shri Gothalramdas Ji** and **Shri Yathiramdas Ji** — with him, he entered living bhu-samadhi in B.S. 1664 in the presence of sadhus and devotees. His third disciple, **Shri Hareram Das Ji Maharaj**, was taught mahayoga and instructed to carry the tradition forward. This account was told by Guru Buddhidas Maharaj to Nem Muni Das Maharaj. -->
 
 <!-- source: nanak-signboards | Plaque 20261103_135842.heic -->
 | Detail | Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj (guru) | Mahayogi Shri Yathiramdas Ji Maharaj (disciple) | Mahayogi Shri Gothalramdas Ji Maharaj (disciple) |
 |---|---|---|---|
-| Born | VS 1432, Baishakh Purnima | VS 1511, Shivaratri | VS 1517, Janai Purnima |
+| Born | B.S. 1432, Baishakh Purnima | B.S. 1511, Shivaratri | B.S. 1517, Janai Purnima |
 | Mother | Dev Kumari Wastola | Revati Upadhyay | Harimaya Upreti |
 | Father | Ram Prasad Wastola | Manorath Upadhyay | Shyam Babu Upreti |
-| Living bhu-samadhi | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya | VS 1664, Baishakh Akshaya Tritiya |
+| Living bhu-samadhi | B.S. 1664, Baishakh Akshaya Tritiya | B.S. 1664, Baishakh Akshaya Tritiya | B.S. 1664, Baishakh Akshaya Tritiya |
 | Guru | Jagatguru Shri Narharyanandacharya Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj | Mahayogi Shri Brahmaharidas Ji Maharaj |
 
-In VS 1450 Mahayogi Shri Brahmaharidas Ji Maharaj came to this math, a tapasthali of sadhus since ancient times, and became its mahant (peethadhishwar). He had many disciples after that; among his celibate disciples, Yati Ramdas Ji Maharaj, Gothal Ramdas Ji Maharaj and Hariramdas Ji Maharaj practised mahayoga and became able to take samadhi. In VS 1664 Mahayogi Shri Brahmaharidas Ji Maharaj and two of his disciples took living samadhi. What is written here is the history of the tradition as it came down from mahant to mahant, generation after generation, and as Gurudev Buddhidas Ji Maharaj explained it to Shri Nem Muni Das Ji Maharaj, today the mahant of this math.
+In B.S. 1450 Mahayogi Shri Brahmaharidas Ji Maharaj came to this math, a tapasthali of sadhus since ancient times, and became its mahant (peethadhishwar). He had many disciples after that; among his celibate disciples, Yati Ramdas Ji Maharaj, Gothal Ramdas Ji Maharaj and Hariramdas Ji Maharaj practised mahayoga and became able to take samadhi. In B.S. 1664 Mahayogi Shri Brahmaharidas Ji Maharaj and two of his disciples took living samadhi. What is written here is the history of the tradition as it came down from mahant to mahant, generation after generation, and as Gurudev Buddhidas Ji Maharaj explained it to Shri Nem Muni Das Ji Maharaj, today the mahant of this math.
 
 ### The line of mahants {#mahants}
 
@@ -124,8 +124,8 @@ In VS 1450 Mahayogi Shri Brahmaharidas Ji Maharaj came to this math, a tapasthal
 According to the math, the guru–disciple tradition has come down from Lord Shri Ram, Mother Janaki, Hanumanji, Brahmaji, Sanak, Sanandan, Sanatan, Sanatkumar and Narad, through Brahmaharidas Maharaj, who is in living bhu-samadhi, to this day, and the present, 23rd mahant is **Shri Naval Kishor Das Ji Maharaj**.
 
 1. Jagatguru Shri Narharyanandacharya Ji Maharaj (regarded as an incarnation of Sanak)
-2. Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, VS 1482 to VS 1664
-3. Mahayogi Shri Hariram Das Ji Maharaj, from VS 1664
+2. Samadhi-siddha Mahayogi Shri Brahmaharidas Ji Maharaj, B.S. 1482 to B.S. 1664
+3. Mahayogi Shri Hariram Das Ji Maharaj, from B.S. 1664
 4. Mahant Shri Gokulram Das Ji Maharaj
 5. Mahant Shri Kashiram Das Ji Maharaj
 6. Mahant Shri Mathuraram Das Ji Maharaj
@@ -137,15 +137,15 @@ According to the math, the guru–disciple tradition has come down from Lord Shr
 12. Mahant Shri Rairam Das Ji Maharaj
 13. Mahant Shri Gulab Das Ji Maharaj
 14. Mahant Shri Dhuniram Das Ji Maharaj
-15. Mahant Shri Vasanta Das Ji Maharaj, VS 1891 to VS 1936
-16. Mahant Shri Gambhir Das Ji Maharaj, VS 1936 to VS 1960
-17. Mahant Shri Krishna Das Ji Maharaj, VS 1960 to VS 1980
-18. Mahant Shri Mangal Das Ji Maharaj, VS 1980 to VS 1990
-19. Mahant Shri Hari Das Ji Maharaj, VS 1990 to VS 2003
-20. Mahant Shri Munindranand Das Ji Maharaj, VS 2003 to VS 2026
-21. Mahant Shri Buddhi Das Ji Maharaj, VS 2026 to VS 2045
-22. Mahant Shri Nem Muni Udasin Maharaj, VS 2045 to VS 2080
-23. Mahant Shri Naval Kishor Das Ji Maharaj, from Asoj VS 2080 to the present
+15. Mahant Shri Vasanta Das Ji Maharaj, B.S. 1891 to B.S. 1936
+16. Mahant Shri Gambhir Das Ji Maharaj, B.S. 1936 to B.S. 1960
+17. Mahant Shri Krishna Das Ji Maharaj, B.S. 1960 to B.S. 1980
+18. Mahant Shri Mangal Das Ji Maharaj, B.S. 1980 to B.S. 1990
+19. Mahant Shri Hari Das Ji Maharaj, B.S. 1990 to B.S. 2003
+20. Mahant Shri Munindranand Das Ji Maharaj, B.S. 2003 to B.S. 2026
+21. Mahant Shri Buddhi Das Ji Maharaj, B.S. 2026 to B.S. 2045
+22. Mahant Shri Nem Muni Udasin Maharaj, B.S. 2045 to B.S. 2080
+23. Mahant Shri Naval Kishor Das Ji Maharaj, from Asoj B.S. 2080 to the present
 
 ## Legends & Beliefs {#legends}
 
@@ -215,7 +215,7 @@ The math lists these archaeological, historical and ancient structures and herit
 
 - **55 shaligram stones** worshipped as forms of Vishnu
 - **7 sacred texts** — the Guru Granth Sahib, Veda, Shrimad Bhagavat Mahapuran, Shri Ramcharitmanas, Shrimad Bhagavad Gita and Valmiki Ramayan
-- a **chamar** (ceremonial whisk) given to the Mahanta Math by the queen of Salyankot in **VS 1843**
+- a **chamar** (ceremonial whisk) given to the Mahanta Math by the queen of Salyankot in **B.S. 1843**
 - the **iron chimta** (tongs) used by Brahmaharidas Maharaj
 - an ancient panas lamp, two conch shells, brass images of Hanuman and Ganesh, a stone Shivalinga, a copper Nandi, a wooden Panchayatan temple, and a nagara drum and jhyali cymbals
 

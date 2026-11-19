@@ -24,11 +24,11 @@ export default function QuickFacts({ heritage, dict }: QuickFactsProps) {
   const shown = facts.filter(({ value }) => (Array.isArray(value) ? value.length > 0 : Boolean(value)));
 
   return (
-    <aside aria-labelledby="quick-facts-title" className="rounded-xl bg-sand p-6 shadow-sm ring-1 ring-gold/50">
+    <aside aria-labelledby="quick-facts-title" className="quick-facts">
       <h2 id="quick-facts-title" className="text-2xl font-bold">
         {t.quickFacts}
       </h2>
-      <dl className="mt-4 space-y-4">
+      <dl>
         {shown.map(({ term, value }) => (
           <div key={term}>
             <dt className="text-sm font-bold text-crimson">{term}</dt>

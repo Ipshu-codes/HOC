@@ -94,7 +94,7 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
         {formatCount(shown.length)}
       </p>
 
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+          <ul className="gallery-grid grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
         {shown.map((photo, index) => (
           <li key={photo.thumb.src}>
             <button
@@ -108,23 +108,23 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
               }}
               className="group block w-full text-left"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-              <img
-                src={photo.thumb.src}
-                srcSet={photo.thumb.srcSet}
-                sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw"
-                width={photo.thumb.width}
-                height={photo.thumb.height}
-                alt=""
-                // The first rows are visible right away (and the first photo is the page’s largest
-                // paint), so they load immediately; the rest load as they scroll into view.
-                loading={index < EAGER_THUMBS ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "auto"}
-                decoding="async"
-                className="aspect-square w-full rounded-xl object-cover shadow-sm transition group-hover:opacity-90"
-              />
-              {/* The caption is the button's accessible name; the image itself is alt="" so it is not read twice. */}
-              <span className="mt-1.5 line-clamp-2 block text-sm leading-snug text-ink">{photo.alt}</span>
+              <span className="gallery-grid__frame">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+                <img
+                  src={photo.thumb.src}
+                  srcSet={photo.thumb.srcSet}
+                  sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw"
+                  width={photo.thumb.width}
+                  height={photo.thumb.height}
+                  alt=""
+                  // The first rows are visible right away; the rest load as they scroll into view.
+                  loading={index < EAGER_THUMBS ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                  className="aspect-square w-full object-cover"
+                />
+                <span className="gallery-grid__caption">{photo.alt}</span>
+              </span>
             </button>
           </li>
         ))}

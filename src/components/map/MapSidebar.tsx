@@ -1,109 +1,35 @@
 "use client";
 
-import type { MapPlace, PlaceKind } from "@/components/map/types";
+import type { MapPlace } from "@/components/map/types";
 import { fill } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
 
 interface MapSidebarProps {
   places: MapPlace[];
-  /** Places that pass the current search and filters. */
-  results: MapPlace[];
   selectedId: string | null;
-  query: string;
-  kinds: ReadonlySet<PlaceKind>;
-  onQueryChange: (query: string) => void;
-  onToggleKind: (kind: PlaceKind) => void;
-  onClearFilters: () => void;
   onSelect: (id: string) => void;
   labels: Dictionary["map"];
   lang: Locale;
   className?: string;
 }
 
-const CHIP = "min-h-11 rounded-full px-4 py-2 text-sm font-bold ring-1";
-
-/** Search, category filters and the list of places. */
+/** The map's place list. Search and category filter controls are intentionally omitted. */
 export default function MapSidebar(props: MapSidebarProps) {
-  const { places, results, selectedId, query, kinds, labels, lang } = props;
+  const { places, selectedId, labels, lang } = props;
   const t = labels;
-  const allKinds = [...new Set(places.map((place) => place.kind))];
-  const filtersActive = query.trim() !== "" || kinds.size > 0;
-  const countText = fill(results.length === 1 ? t.search.count.one : t.search.count.other, { n: results.length }, lang);
+  const countText = fill(places.length === 1 ? t.search.count.one : t.search.count.other, { n: places.length }, lang);
 
   return (
-    <div className={`space-y-5 ${props.className ?? ""}`}>
-      {/* ---- Search + filters ---- */}
-      <section aria-label={t.search.label}>
-        <label htmlFor="map-search" className="mb-1 block font-bold">
-          {t.search.label}
-        </label>
-        <div className="relative">
-          <input
-            id="map-search"
-            type="search"
-            value={props.query}
-            onChange={(event) => props.onQueryChange(event.target.value)}
-            placeholder={t.search.placeholder}
-            autoComplete="off"
-            className="min-h-11 w-full rounded-lg border border-gold/60 bg-white px-3 py-2 pr-11 text-base text-ink placeholder:text-ink/60"
-          />
-          {query !== "" && (
-            <button
-              type="button"
-              onClick={() => props.onQueryChange("")}
-              aria-label={t.search.clear}
-              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-ink hover:text-crimson"
-            >
-              <span aria-hidden="true">✕</span>
-            </button>
-          )}
-        </div>
-
-        {allKinds.length > 1 && (
-          <div role="group" aria-label={t.filters.label} className="mt-3 flex flex-wrap gap-2">
-            <button
-              type="button"
-              aria-pressed={kinds.size === 0}
-              onClick={props.onClearFilters}
-              className={`${CHIP} ${kinds.size === 0 ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"}`}
-            >
-              {t.filters.all}
-            </button>
-            {allKinds.map((kind) => (
-              <button
-                key={kind}
-                type="button"
-                aria-pressed={kinds.has(kind)}
-                onClick={() => props.onToggleKind(kind)}
-                className={`${CHIP} ${kinds.has(kind) ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"}`}
-              >
-                {t.kinds[kind]}
-              </button>
-            ))}
-          </div>
-        )}
-        {filtersActive && (
-          <button
-            type="button"
-            onClick={props.onClearFilters}
-            className="mt-2 min-h-11 font-bold text-crimson underline underline-offset-4 hover:text-brick"
-          >
-            {t.filters.clear}
-          </button>
-        )}
-      </section>
-
+    <div className={`map-sidebar space-y-5 ${props.className ?? ""}`}>
       {/* ---- Places ---- */}
-      <section aria-labelledby="map-places-title">
+      <section className="map-sidebar__places" aria-labelledby="map-places-title">
         <h2 id="map-places-title" className="mb-1 text-2xl font-bold">
           {t.placesHeading}
         </h2>
-        <p aria-live="polite" className="mb-2 text-sm text-ink/80">
-          {results.length === 0 ? t.search.noResults : countText}
-        </p>
+        <p className="mb-2 text-sm text-ink/80">{countText}</p>
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          {results.map((place) => {
+          {places.map((place) => {
             const selected = selectedId === place.id;
             return (
               <li key={place.id}>
@@ -112,16 +38,14 @@ export default function MapSidebar(props: MapSidebarProps) {
                   aria-pressed={selected}
                   aria-label={fill(t.showOnMap, { name: place.name })}
                   onClick={() => props.onSelect(place.id)}
-                  className={`flex min-h-11 w-full items-center gap-3 rounded-xl p-3 text-left shadow-sm ring-1 transition-colors ${
-                    selected ? "bg-crimson text-white ring-crimson" : "bg-white text-ink ring-gold/50 hover:bg-sand"
-                  }`}
+                  className={`map-place-row flex min-h-11 w-full items-center gap-3 p-3 text-left transition-colors ${selected ? "map-place-row--selected" : ""}`}
                 >
-                  <span
-                    aria-hidden="true"
-                    className={`size-4 shrink-0 rounded-full border-2 border-white ${
-                      place.kind === "office" ? "bg-brick" : "bg-crimson"
-                    } ${selected ? "ring-2 ring-white" : ""}`}
-                  />
+                  {place.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- prebuilt site photo assets
+                    <img src={place.photo.src} alt="" width={96} height={72} loading="lazy" decoding="async" className="map-place-photo" />
+                  ) : (
+                    <span aria-hidden="true" className={`map-place-marker ${place.kind === "office" ? "map-place-marker--office" : ""}`} />
+                  )}
                   <span>
                     <span className="block font-bold">{place.name}</span>
                     <span lang={lang === "ne" ? "en" : "ne"} className="block text-sm opacity-90">

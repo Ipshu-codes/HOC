@@ -146,19 +146,16 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
     options.push({ key: "not-here", label: labels.didntFind, onClick: notHere, style: "nav" });
   }
 
-  const optionClass = (style?: "nav") =>
-    style === "nav"
-      ? "rounded-full bg-sand px-3 py-1.5 text-left text-sm font-bold text-brick ring-1 ring-gold/60 hover:bg-white"
-      : "rounded-xl bg-white px-3 py-2 text-left text-sm text-ink ring-1 ring-gold/60 hover:bg-sand";
+  const optionClass = (style?: "nav") => `chat-option${style === "nav" ? " chat-option--nav" : ""}`;
 
   return (
     <section
       role="dialog"
       aria-label={labels.dialogLabel}
       // Just above Nani's round face (bottom-right); it grows up and to the left, into the page.
-      className="fixed right-[max(1rem,env(safe-area-inset-right))] bottom-24 z-40 flex max-h-[min(38rem,calc(100dvh-8rem))] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-28"
+      className="chat-panel fixed right-[max(1rem,env(safe-area-inset-right))] bottom-24 z-40 flex w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-28"
     >
-      <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
+      <header className="chat-panel__header flex items-center gap-2 px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />
         <h2 className="flex-1 font-sans text-lg font-bold text-white">{labels.title}</h2>
         <button
@@ -239,7 +236,7 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
         <div ref={endRef} />
       </div>
 
-      <div ref={optionsRef} className="max-h-[45%] overflow-y-auto border-t border-gold/40 bg-cream px-4 py-3">
+      <div ref={optionsRef} className="chat-panel__options max-h-[45%] overflow-y-auto border-t bg-cream px-4 py-3">
         {quick.length > 0 && (
           <>
             <p className="mb-2 text-sm font-bold text-brick">{labels.quickQuestions}</p>

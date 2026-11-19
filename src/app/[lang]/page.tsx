@@ -2,55 +2,43 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import AssistantCallout from "@/components/AssistantCallout";
 import ContactStrip from "@/components/ContactStrip";
 import HeritageCard from "@/components/HeritageCard";
 import Hero from "@/components/Hero";
+import type { HeroSlide } from "@/components/HeroSlides";
 import HomeSection from "@/components/HomeSection";
-import ResponsiveImage from "@/components/ResponsiveImage";
+import PhotoStoryRail from "@/components/PhotoStoryRail";
 import SectionDivider from "@/components/SectionDivider";
-import {
-  getCredits,
-  getHeritageList,
-  getHeroSlideConfig,
-  getHomeConfig,
-  getWard,
-} from "@/lib/content";
+import { getCredits, getHeritageList, getHomeConfig, getWard } from "@/lib/content";
 import { naniCreditText } from "@/lib/credits";
 import { byCount, getDictionary, isLocale, siteNameList } from "@/lib/i18n";
-import {
-  coverImage,
-  findSiteImage,
-  imageSet,
-  type SiteImage,
-} from "@/lib/images";
+import { coverImage, findSiteImage, imageSet, type SiteImage } from "@/lib/images";
 import type { Heritage } from "@/types/heritage";
 
 const GALLERY_PREVIEW_COUNT = 6;
+const HERO_SLIDE_SOURCES = new Set([
+  "/images/nanak-math/courtyard-view.webp",
+  "/images/mhepi-ajima/temple-and-courtyard-shrine.webp",
+  "/images/nanak-math/samadhi-temple.webp",
+  "/images/mhepi-ajima/temple-front.webp",
+]);
 
-/** The 6 preview photos: the preferred list from content/home.json first, then any other photos of visible sites. */
-function galleryPreview(
-  preferred: string[],
-  heritages: Heritage[],
-): SiteImage[] {
+/** Preferred story photos first, followed by other approved images from published sites. */
+function galleryPreview(preferred: string[], heritages: Heritage[]): SiteImage[] {
   const all = [
     ...preferred,
-    ...heritages.flatMap((heritage) =>
-      heritage.gallery.map((image) => image.src),
-    ),
+    ...heritages.flatMap((heritage) => heritage.gallery.map((image) => image.src)),
   ];
-  const unique = [...new Set(all)];
-  return unique
+  return [...new Set(all)]
     .map((src) => findSiteImage(src, heritages))
     .filter((image): image is SiteImage => image !== null)
     .slice(0, GALLERY_PREVIEW_COUNT);
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[lang]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
-  // Title, description and share image come from the layout; add the language alternates.
   return { alternates: { languages: { en: "/en/", ne: "/ne/" } } };
 }
 
@@ -61,233 +49,140 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const dict = getDictionary(lang);
   const ward = getWard();
   const home = getHomeConfig();
-
-  // Everything that names the heritage sites is built from this list, so the
-  // page reads naturally with one site or two (drafts are absent in production).
   const heritages = getHeritageList(lang);
+  const heroSlides = home.heroSlides.flatMap((entry): HeroSlide[] => {
+    const slide = typeof entry === "string" ? { src: entry, position: undefined } : entry;
+    if (!HERO_SLIDE_SOURCES.has(slide.src)) return [];
+    const image = findSiteImage(slide.src, heritages);
+    return image ? [{ ...image, position: slide.position }] : [];
+  });
   const count = heritages.length;
   const sites = siteNameList(heritages, lang, dict);
   const fill = (text: string) => text.replace("{sites}", sites);
-
-  // Hero slideshow: the photos of visible sites only, in content/home.json order; the first cover as a fallback.
-  const heroSlides = getHeroSlideConfig().flatMap(({ src, position }) => {
-    const image = findSiteImage(src, heritages);
-    return image
-      ? [
-          {
-            src: image.src,
-            srcSet: image.srcSet,
-            width: image.width,
-            height: image.height,
-            alt: image.alt,
-            position,
-          },
-        ]
-      : [];
-  });
-  if (heroSlides.length === 0) {
-    const cover = coverImage(heritages[0]);
-    heroSlides.push({
-      src: cover.src,
-      srcSet: cover.srcSet,
-      width: cover.width,
-      height: cover.height,
-      alt: cover.alt,
-      position: undefined,
-    });
-  }
-  const preview = galleryPreview(home.galleryPreview, heritages);
+  const photos = galleryPreview(home.galleryPreview, heritages);
   const credits = getCredits();
-  const illustration = ward.illustration
-    ? imageSet(ward.illustration.files)
-    : null;
-  const overviewImage = ward.overviewImage
-    ? imageSet(ward.overviewImage.files)
-    : null;
+  const illustration = ward.illustration ? imageSet(ward.illustration.files) : null;
+  const overviewImage = ward.overviewImage ? imageSet(ward.overviewImage.files) : null;
   const wardMap = ward.wardMap ? imageSet(ward.wardMap.files) : null;
-  const overviewLogo = ward.overviewLogo
-    ? imageSet(ward.overviewLogo.files)
-    : null;
-  // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
+  const overviewLogo = ward.overviewLogo ? imageSet(ward.overviewLogo.files) : null;
   const naniCredit = naniCreditText(credits, dict, lang);
 
   return (
-    <>
+    <div className="heritage-home">
       <Hero
-        slides={heroSlides}
-        intervalMs={home.heroIntervalMs}
-        slideLabels={{
-          pause: dict.home.slidesPause,
-          play: dict.home.slidesPlay,
-        }}
+        lang={lang}
         title={dict.home.heroTitle}
         subtitle={fill(dict.home.heroSubtitle)}
-        primary={{
-          href: "#heritages",
-          label: fill(byCount(dict.home.explore, count)),
-        }}
-        secondary={{ href: `/${lang}/map/`, label: dict.home.viewMap }}
+        mapLabel={dict.home.viewMap}
+        eyebrow={dict.home.heroEyebrow}
+        slides={heroSlides}
+        intervalMs={home.heroIntervalMs}
       />
 
-      <HomeSection id="overview" title={dict.home.overviewTitle}>
-        {/* Same grid as the About section below: text column + 15rem/18rem image column from 768 px.
-            Nani's namaste sits beside the text there, raised to the heading (md:-mt-16), and below the text on phones. */}
-        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
-          <div className="space-y-4 text-lg">
-            <p className="justified">
-              {fill(byCount(dict.home.overviewIntro, count))}
-            </p>
-            <p className="justified">
-              {byCount(dict.home.overviewNext, count)}
-            </p>
-            {wardMap && (
-              // The whole ward map fills the space under the text; the link opens the largest file to read the labels.
-              <a
-                href={wardMap.src}
-                className="mt-8 block rounded-xl focus-visible:outline-offset-4"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
+      <HomeSection id="overview" title={dict.home.overviewTitle} index="01">
+        <div className="home-intro-layout">
+          <div className="home-intro-copy">
+            <p className="home-intro-lead justified">{fill(byCount(dict.home.overviewIntro, count))}</p>
+            <p className="justified">{byCount(dict.home.overviewNext, count)}</p>
+          </div>
+          {overviewImage && (
+            <figure className="home-intro-image">
+              {/* eslint-disable-next-line @next/next/no-img-element -- prebuilt responsive assets */}
+              <img src={overviewImage.src} srcSet={overviewImage.srcSet} sizes="(min-width: 900px) 28vw, 74vw" width={overviewImage.width} height={overviewImage.height} alt={ward.overviewImage?.alt[lang] ?? ""} className="home-intro-image__nani" loading="lazy" decoding="async" />
+              {overviewLogo && (
+                // eslint-disable-next-line @next/next/no-img-element -- static export: source set is built at optimize time
                 <img
-                  src={wardMap.src}
-                  srcSet={wardMap.srcSet}
-                  sizes="(min-width: 64rem) 48rem, (min-width: 48rem) calc(100vw - 21rem), calc(100vw - 2rem)"
-                  width={wardMap.width}
-                  height={wardMap.height}
-                  alt={ward.wardMap?.alt[lang] ?? ""}
+                  src={overviewLogo.src}
+                  srcSet={overviewLogo.srcSet}
+                  sizes="6rem"
+                  width={overviewLogo.width}
+                  height={overviewLogo.height}
+                  alt={ward.overviewLogo?.alt[lang] ?? ""}
+                  className="home-intro-image__seal"
                   loading="lazy"
                   decoding="async"
-                  className="w-full rounded-xl bg-white shadow-sm ring-1 ring-gold/40"
                 />
-              </a>
-            )}
-          </div>
-          {/* Image column: Nani's namaste, then the ward logo beside the map. */}
-          <div className="mx-auto flex w-full max-w-72 flex-col items-center gap-10 md:mx-0 md:-mt-16 md:max-w-none">
-            {overviewImage && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={overviewImage.src}
-                srcSet={overviewImage.srcSet}
-                sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
-                width={overviewImage.width}
-                height={overviewImage.height}
-                alt={ward.overviewImage?.alt[lang] ?? ""}
-                loading="lazy"
-                decoding="async"
-                className="w-full rounded-xl shadow-sm ring-1 ring-gold/40"
-              />
-            )}
-            {overviewLogo && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={overviewLogo.src}
-                srcSet={overviewLogo.srcSet}
-                sizes="12rem"
-                width={overviewLogo.width}
-                height={overviewLogo.height}
-                alt={ward.overviewLogo?.alt[lang] ?? ""}
-                loading="lazy"
-                decoding="async"
-                className="w-48 max-w-full rounded-full"
-              />
-            )}
-          </div>
+              )}
+              {naniCredit && <figcaption className={`home-intro-caption ${credits.nani.creator ? "text-slate" : "font-bold text-crimson"}`}>{naniCredit}</figcaption>}
+            </figure>
+          )}
         </div>
       </HomeSection>
 
       <SectionDivider />
 
-      <HomeSection id="about" title={dict.home.aboutTitle} tone="sand">
-        {/* Text from the ward team; {sites} keeps draft sites out of production builds. The ward
-            illustration fills the space beside it from 768 px, and sits under it on phones. */}
-        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start lg:grid-cols-[minmax(0,48rem)_18rem] lg:justify-between">
-          <p className="justified text-lg">{fill(dict.home.aboutIntro)}</p>
+      <HomeSection id="about" title={dict.home.aboutTitle} tone="crimson" index="02">
+        <div className="ward-story">
+          <div className="ward-story__copy">
+            <p className="justified text-lg leading-relaxed">{fill(dict.home.aboutIntro)}</p>
+            <dl className="ward-facts">
+              {[
+                { term: dict.home.aboutMunicipality, value: ward.city[lang] },
+                { term: dict.home.aboutWard, value: ward.name[lang] },
+                { term: dict.home.aboutOffice, value: ward.office.address[lang] },
+                { term: byCount(dict.home.aboutSites, count), value: sites },
+              ].map(({ term, value }) => (
+                <div key={term}><dt>{term}</dt><dd>{value}</dd></div>
+              ))}
+            </dl>
+          </div>
           {illustration && (
-            // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-            <img
-              src={illustration.src}
-              srcSet={illustration.srcSet}
-              sizes="(min-width: 64rem) 18rem, (min-width: 48rem) 15rem, 18rem"
-              width={illustration.width}
-              height={illustration.height}
-              alt={ward.illustration?.alt[lang] ?? ""}
-              loading="lazy"
-              decoding="async"
-              className="mx-auto w-full max-w-72 rounded-xl shadow-sm ring-1 ring-gold/40 md:mx-0"
-            />
+            <div className="ward-story__art">
+              {/* eslint-disable-next-line @next/next/no-img-element -- prebuilt responsive assets */}
+              <img src={illustration.src} srcSet={illustration.srcSet} sizes="(min-width: 900px) 36vw, 86vw" width={illustration.width} height={illustration.height} alt={ward.illustration?.alt[lang] ?? ""} className="ward-story__illustration" loading="lazy" decoding="async" />
+            </div>
           )}
         </div>
-        <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { term: dict.home.aboutMunicipality, value: ward.city[lang] },
-            { term: dict.home.aboutWard, value: ward.name[lang] },
-            { term: dict.home.aboutOffice, value: ward.office.address[lang] },
-            { term: byCount(dict.home.aboutSites, count), value: sites },
-          ].map(({ term, value }) => (
-            <div
-              key={term}
-              className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40"
-            >
-              <dt className="text-sm font-bold text-crimson">{term}</dt>
-              <dd className="mt-1 text-lg font-medium">{value}</dd>
-            </div>
-          ))}
-        </dl>
-        {naniCredit && (
-          <p
-            className={`mt-6 text-sm ${credits.nani.creator ? "text-ink/80" : "font-bold text-crimson"}`}
-          >
-            {naniCredit}
-          </p>
-        )}
       </HomeSection>
 
-      <HomeSection
-        id="heritages"
-        title={byCount(dict.home.heritagesTitle, count)}
-      >
-        <div
-          className={
-            count === 1 ? "mx-auto max-w-5xl" : "grid gap-8 md:grid-cols-2"
-          }
-        >
-          {heritages.map((heritage) => (
+      <HomeSection id="heritages" title={byCount(dict.home.heritagesTitle, count)} index="03">
+        <p className="section-lead justified">{fill(dict.home.heroSubtitle)}</p>
+        <div className={count === 1 ? "heritage-index heritage-index--single" : "heritage-index"}>
+          {heritages.map((heritage, index) => (
             <HeritageCard
               key={heritage.slug}
               heritage={heritage}
               cover={coverImage(heritage)}
               lang={lang}
-              dict={dict}
+              labels={dict.home}
               layout={count === 1 ? "horizontal" : "vertical"}
+              index={index + 1}
             />
           ))}
         </div>
       </HomeSection>
 
-      <SectionDivider />
+      <section className="map-invitation" aria-labelledby="map-invitation-title">
+        <div className="map-invitation__copy">
+          <p className="eyebrow">{dict.map.title}</p>
+          <h2 id="map-invitation-title">{dict.home.mapStoryTitle}</h2>
+          <p className="justified">{dict.map.intro}</p>
+          <Link className="button button--light" href={`/${lang}/map/`}>{dict.home.viewMap}<span aria-hidden="true"> ↗</span></Link>
+        </div>
+        {wardMap && (
+          <a href={wardMap.src} className="map-invitation__image-link" aria-label={dict.home.openWardMap}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- map source set is built with the image pipeline */}
+            <img src={wardMap.src} srcSet={wardMap.srcSet} sizes="(min-width: 900px) 48vw, 100vw" width={wardMap.width} height={wardMap.height} alt={ward.wardMap?.alt[lang] ?? ""} loading="lazy" decoding="async" />
+          </a>
+        )}
+      </section>
 
-      <HomeSection id="gallery" title={dict.home.galleryTitle}>
-        <p className="mb-6 text-lg">{fill(dict.home.galleryIntro)}</p>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-          {preview.map((image) => (
-            <li key={image.src}>
-              <ResponsiveImage
-                image={image}
-                sizes="(min-width: 768px) 33vw, 50vw"
-                className="aspect-square w-full rounded-xl object-cover shadow-sm"
-              />
-            </li>
-          ))}
-        </ul>
-        <Link
-          href={`/${lang}/gallery/`}
-          className="mt-6 inline-block font-bold text-crimson underline underline-offset-4 hover:text-brick"
-        >
-          {dict.home.seeAll} <span aria-hidden="true">→</span>
-        </Link>
+      <HomeSection id="gallery" title={dict.home.visualStoryTitle} index="04">
+        <div className="section-heading-row">
+          <p className="section-lead justified">{dict.home.visualStoryIntro}</p>
+          <Link href={`/${lang}/gallery/`} className="text-link">{dict.home.seeAll}<span aria-hidden="true"> ↗</span></Link>
+        </div>
+        <PhotoStoryRail photos={photos} labels={{ previous: dict.home.previousPhoto, next: dict.home.nextPhoto, photos: dict.home.photoSlides }} />
       </HomeSection>
 
+      <AssistantCallout
+        eyebrow={dict.chat.title}
+        title={dict.home.guideTitle}
+        text={dict.home.guideIntro}
+        action={dict.home.guideCta}
+      />
+
       <ContactStrip lang={lang} dict={dict} ward={ward} />
-    </>
+    </div>
   );
 }

@@ -1,5 +1,15 @@
 // Types shared by the map components. Plain data only (no zod, no server code), so the browser bundle stays small.
 
+import type { SiteImage } from "@/lib/images";
+import type { Heritage } from "@/types/heritage";
+
+/** The existing home-page card data for a selected heritage site. */
+export interface MapHeritageCard {
+  heritage: Heritage;
+  cover: SiteImage;
+  index: number;
+}
+
 export type PlaceKind = "heritage" | "office";
 
 /** One h2 section of a heritage page (History, Legends & Beliefs, …), as HTML rendered from our own markdown. */

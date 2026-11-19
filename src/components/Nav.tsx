@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
 import BrandLink from "@/components/BrandLink";
@@ -14,6 +15,7 @@ interface NavProps {
   /** Only the strings this component needs: the whole dictionary would be sent to the browser. */
   labels: Dictionary["nav"];
   languageLabels: Dictionary["language"];
+  assistantLabel: Dictionary["chat"]["navLabel"];
   items: NavItem[];
   /** Ward logo (content/ward.json), shown at the left of the bar once the big header has scrolled away. */
   logoSrc: string;
@@ -34,14 +36,22 @@ export default function Nav({
   lang,
   labels,
   languageLabels,
+  assistantLabel,
   items,
   logoSrc,
   homeLabel,
 }: NavProps) {
   const [open, setOpen] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+  const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
   const menuId = useId();
+  const currentPath = pathname.replace(/\/+$/, "") || "/";
+
+  function isActive(item: NavItem) {
+    if (item.href.includes("#heritages")) return currentPath.startsWith(`/${lang}/heritage/`);
+    return item.href.split("#")[0].replace(/\/+$/, "") === currentPath;
+  }
 
   // IntersectionObserver calls back whenever the header enters or leaves the viewport — no scroll listener needed.
   useEffect(() => {
@@ -67,40 +77,39 @@ export default function Nav({
 
   // Nav links all point at home-page sections. prefetch={false}: prefetching the home page
   // would make the browser preload its hero photo on every page.
-  const linkClass =
-    "block rounded-md px-3 py-2 font-medium text-cream hover:bg-crimson hover:text-white focus-visible:bg-crimson focus-visible:outline-cream";
+  const linkClass = "site-nav__link";
 
   return (
     <nav
       ref={navRef}
       aria-label={labels.label}
-      className="sticky top-0 z-40 bg-brick shadow-md"
+      className="site-nav"
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2">
+      <div className="site-nav__inner">
         <div className="flex min-w-0 items-center gap-1">
           {/* overflow-x-clip hides the logo while its width is 0 without clipping the focus outline above and below. */}
           <div
             inert={!showLogo}
-            className={`flex shrink-0 items-center overflow-x-clip transition-[width,opacity] duration-200 motion-reduce:transition-none ${showLogo ? "w-12 opacity-100" : "w-0 opacity-0"}`}
+            className={`site-nav__mini-brand ${showLogo ? "is-visible" : ""}`}
           >
             <BrandLink
               href={`/${lang}/`}
               label={homeLabel}
-              className="ml-0.5 block shrink-0 rounded-full focus-visible:outline-cream"
+              className="block shrink-0 rounded-full"
             >
               <Image
                 src={logoSrc}
                 alt=""
                 width={128}
                 height={128}
-                className="size-10 rounded-full bg-cream ring-2 ring-cream"
+                className="site-nav__mini-logo"
               />
             </BrandLink>
           </div>
 
           <button
             type="button"
-            className="flex items-center gap-2 rounded-md px-2 py-2 text-cream hover:bg-crimson focus-visible:outline-cream md:hidden"
+            className="site-nav__menu-toggle"
             aria-expanded={open}
             aria-controls={menuId}
             aria-label={open ? labels.closeMenu : labels.openMenu}
@@ -109,7 +118,7 @@ export default function Nav({
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
-              className="size-6"
+              className="size-5"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -123,10 +132,10 @@ export default function Nav({
             <span>{labels.menu}</span>
           </button>
 
-          <ul className="hidden items-center gap-1 md:flex">
+          <ul className="site-nav__links">
             {items.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} prefetch={false} className={linkClass}>
+                <Link href={item.href} prefetch={false} className={linkClass} aria-current={isActive(item) ? "page" : undefined}>
                   {item.label}
                 </Link>
               </li>
@@ -134,14 +143,27 @@ export default function Nav({
           </ul>
         </div>
 
-        <LanguageToggle lang={lang} labels={languageLabels} />
+        <div className="site-nav__actions">
+          <button
+            type="button"
+            className="site-nav__assistant"
+            onClick={() => {
+              window.dispatchEvent(new Event("nani:open"));
+              setOpen(false);
+            }}
+          >
+            <span aria-hidden="true">✳</span>
+            <span>{assistantLabel}</span>
+          </button>
+          <LanguageToggle lang={lang} labels={languageLabels} />
+        </div>
       </div>
 
       {/* Mobile menu: rendered always (hidden when closed) so aria-controls points at a real element. */}
       <ul
         id={menuId}
         hidden={!open}
-        className="space-y-1 border-t border-cream/20 px-4 pt-2 pb-4 md:hidden"
+        className="site-nav__mobile-links"
       >
         {items.map((item) => (
           <li key={item.href}>
@@ -149,12 +171,25 @@ export default function Nav({
               href={item.href}
               prefetch={false}
               className={linkClass}
+              aria-current={isActive(item) ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
               {item.label}
             </Link>
           </li>
         ))}
+        <li>
+          <button
+            type="button"
+            className={linkClass}
+            onClick={() => {
+              window.dispatchEvent(new Event("nani:open"));
+              setOpen(false);
+            }}
+          >
+            {assistantLabel}
+          </button>
+        </li>
       </ul>
     </nav>
   );

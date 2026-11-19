@@ -31,7 +31,7 @@ export default async function ContactPage({
   const mailto = `mailto:${ward.office.email}?subject=${encodeURIComponent(dict.contactPage.mailSubject)}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
+    <div className="contact-page">
       <h1 className="text-4xl font-bold md:text-5xl">
         {dict.contactPage.title}
       </h1>
@@ -39,18 +39,18 @@ export default async function ContactPage({
         aria-hidden="true"
         className="mt-3 mb-6 h-1 w-16 rounded-full bg-gold"
       />
-      <p className="mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
+      <p className="justified mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         {/* No form and no form service: visitors write from their own email app. */}
         <section
           aria-labelledby="write-to-us"
-          className="rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 md:p-8"
+          className="contact-page__write"
         >
           <h2 id="write-to-us" className="text-2xl font-bold">
             {dict.contactPage.writeHeading}
           </h2>
-          <p className="mt-3 text-lg">{dict.contactPage.writeBody}</p>
+          <p className="justified mt-3 text-lg">{dict.contactPage.writeBody}</p>
           <a
             href={mailto}
             className="mt-6 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
@@ -64,7 +64,7 @@ export default async function ContactPage({
           </p>
         </section>
 
-        <aside className="rounded-xl bg-sand p-6 ring-1 ring-gold/50">
+        <aside className="contact-page__office p-6">
           <h2 className="text-2xl font-bold">
             {dict.contactPage.officeHeading}
           </h2>

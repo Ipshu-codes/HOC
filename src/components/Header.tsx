@@ -21,8 +21,8 @@ interface HeaderProps {
 export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
   return (
     <>
-      <header className="border-b-2 border-gold/60 bg-cream">
-        <div className="mx-auto flex max-w-6xl items-center px-4 py-3 md:py-5">
+      <header className="site-header">
+        <div className="site-header__inner">
           <BrandLink href={`/${lang}/`} label={dict.a11y.homeLink}>
             {/* alt="": the link's name ("Ward No. 16, home") already says what it is. */}
             <Image
@@ -31,17 +31,17 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
               width={128}
               height={128}
               priority
-              className="size-14 shrink-0 rounded-full ring-2 ring-crimson ring-offset-2 ring-offset-cream md:size-20"
+              className="site-header__logo"
             />
 
-            <span className="block min-w-0">
-              <span className="block font-heading text-2xl leading-tight font-bold tracking-wide text-brick md:text-4xl">
+            <span className="site-header__wordmark">
+              <span className="site-header__title">
                 {dict.site.headerTitle}
               </span>
-              <span className="block text-base leading-snug font-medium text-crimson md:text-lg">
+              <span className="site-header__subtitle">
                 {dict.site.headerSubtitle}
               </span>
-              <span lang={dict.site.otherLanguage} className="hidden text-sm text-ink/80 sm:block">
+              <span lang={dict.site.otherLanguage} className="site-header__other-language">
                 {dict.site.otherLanguageLine}
               </span>
             </span>
@@ -53,6 +53,7 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
         lang={lang}
         labels={dict.nav}
         languageLabels={dict.language}
+        assistantLabel={dict.chat.navLabel}
         items={navItems}
         logoSrc={ward.logo.src}
         homeLabel={dict.a11y.homeLink}

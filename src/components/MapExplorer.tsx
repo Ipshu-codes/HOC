@@ -6,7 +6,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import MapSidebar from "@/components/map/MapSidebar";
 import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
-import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
+import type { MapHeritageCard, MapPlace, MapRoute } from "@/components/map/types";
+import type { HeritageCardLabels } from "@/components/HeritageCard";
 import { isMobile } from "@/lib/breakpoints";
 import type { Dictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/locale";
@@ -48,6 +49,8 @@ interface MapExplorerProps {
   labels: Dictionary["map"];
   lang: Locale;
   preview: MapPreview | null;
+  heritageCards: MapHeritageCard[];
+  cardLabels: HeritageCardLabels;
   /** Place id requested in the URL (?site=…), see MapExplorerFromUrl. */
   requestedId?: string | null;
 }
@@ -58,16 +61,13 @@ export function MapExplorerFromUrl(props: Omit<MapExplorerProps, "requestedId">)
   return <MapExplorer {...props} requestedId={searchParams.get("site")} />;
 }
 
-/** Lower-cases and normalises text so "Nanak Math" and "nanak math" match; Nepali is unaffected. */
-const normalise = (text: string) => text.normalize("NFC").toLocaleLowerCase().trim();
-
 /**
- * The heritage map page: sidebar (search, filters and places), the 3D map, and a detail panel.
+ * The heritage map page: places list, the 3D map, and a detail panel.
  * This component owns all the state; MapView only draws it.
  *   selectedId  which place is highlighted / flown to
  *   detailOpen  whether its full story is open
  */
-export default function MapExplorer({ places, route, labels, lang, preview, requestedId = null }: MapExplorerProps) {
+export default function MapExplorer({ places, route, labels, lang, preview, heritageCards, cardLabels, requestedId = null }: MapExplorerProps) {
   const [selectedId, setSelectedId] = useState<string | null>(
     places.some((place) => place.id === requestedId) ? requestedId : null,
   );
@@ -85,26 +85,14 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
     return () => cancelAnimationFrame(frame);
   }, []);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [kinds, setKinds] = useState<ReadonlySet<PlaceKind>>(new Set());
   const mapWrapRef = useRef<HTMLDivElement>(null);
-
-  // ---- search + filters (work on the same place data the markers use, in both languages) ----
-  const results = useMemo(() => {
-    const q = normalise(query);
-    return places.filter(
-      (place) =>
-        (kinds.size === 0 || kinds.has(place.kind)) &&
-        (q === "" || normalise(place.name).includes(q) || normalise(place.nameAlt).includes(q)),
-    );
-  }, [places, query, kinds]);
-
-  // Markers shown on the map are the places that pass the current search and filters.
-  const visibleIds = useMemo(() => {
-    return new Set(results.map((place) => place.id));
-  }, [results]);
+  // All published places remain available on the map and in the list.
+  const visibleIds = useMemo(() => new Set(places.map((place) => place.id)), [places]);
 
   const selectedPlace = places.find((place) => place.id === selectedId) ?? null;
+  const selectedCard = selectedPlace?.kind === "heritage"
+    ? heritageCards.find((card) => card.heritage.slug === selectedPlace.id) ?? null
+    : null;
 
   /** On phones the map sits above the controls: bring it back into view after a choice. */
   const showMap = useCallback(() => {
@@ -141,20 +129,6 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
     setDetailOpen(false);
   }, []);
 
-  const toggleKind = useCallback((kind: PlaceKind) => {
-    setKinds((current) => {
-      const next = new Set(current);
-      if (next.has(kind)) next.delete(kind);
-      else next.add(kind);
-      return next;
-    });
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setQuery("");
-    setKinds(new Set());
-  }, []);
-
   // Escape closes the detail panel.
   useEffect(() => {
     if (!detailOpen) return;
@@ -170,84 +144,75 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   const showDetail = detailOpen && selectedPlace !== null;
 
   return (
-    <div
-      className={`flex flex-col gap-4 lg:grid lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-6 ${
-        showDetail ? "2xl:grid-cols-[19rem_minmax(0,1fr)_25rem]" : ""
-      }`}
-    >
+    <div className={`map-explorer ${showDetail ? "map-explorer--story-open" : ""}`}>
       <MapSidebar
-        // lg:px-1 keeps focus rings visible inside the scrolling list; -mx-1 keeps its text on the content edge.
-        className="order-2 lg:order-1 lg:-mx-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
+        className="map-explorer__sidebar lg:-mx-1 lg:max-h-[75vh] lg:overflow-y-auto lg:px-1"
         places={places}
-        results={results}
         selectedId={selectedId}
-        query={query}
-        kinds={kinds}
-        onQueryChange={setQuery}
-        onToggleKind={toggleKind}
-        onClearFilters={clearFilters}
         onSelect={selectFromList}
         labels={labels}
         lang={lang}
       />
 
-      <div
-        ref={mapWrapRef}
-        className="relative order-1 h-[60dvh] min-h-80 scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:order-2 lg:h-[75vh]"
-      >
-        {mapOn ? (
-          <MapView
-            places={places}
-            focusId={selectedId}
-            visibleIds={visibleIds}
-            route={route}
-            detailOpen={showDetail}
-            onSelect={select}
-            onOpenDetail={openDetail}
-            onResetView={resetView}
-            labels={labels}
-            lang={lang}
-          />
-        ) : (
-          <div className="relative size-full bg-sand">
-            {preview && (
-              // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
-              <img
-                src={preview.src}
-                srcSet={preview.srcSet}
-                sizes="(min-width: 64rem) 75vw, 100vw"
-                width={preview.width}
-                height={preview.height}
-                alt={labels.previewAlt}
-                fetchPriority="high"
-                className="size-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/30 p-4 text-center">
-              <button
-                type="button"
-                onClick={() => setMapOn(true)}
-                className="rounded-full bg-crimson px-6 py-3 text-lg font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick"
-              >
-                <span aria-hidden="true">🗺 </span>
-                {labels.showMap}
-              </button>
-              <p className="rounded-md bg-cream/90 px-2 py-1 text-sm text-ink">{labels.showMapNote}</p>
+      <div className="map-explorer__main">
+        <div
+          ref={mapWrapRef}
+          className="map-canvas relative scroll-mt-20 overflow-hidden"
+        >
+          {mapOn ? (
+            <MapView
+              places={places}
+              focusId={selectedId}
+              visibleIds={visibleIds}
+              route={route}
+              detailOpen={showDetail}
+              onSelect={select}
+              onOpenDetail={openDetail}
+              onResetView={resetView}
+              labels={labels}
+              lang={lang}
+            />
+          ) : (
+            <div className="relative size-full bg-sand">
+              {preview && (
+                // eslint-disable-next-line @next/next/no-img-element -- static export: no image server
+                <img
+                  src={preview.src}
+                  srcSet={preview.srcSet}
+                  sizes="(min-width: 64rem) 75vw, 100vw"
+                  width={preview.width}
+                  height={preview.height}
+                  alt={labels.previewAlt}
+                  fetchPriority="high"
+                  className="size-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink/30 p-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setMapOn(true)}
+                  className="rounded-full bg-crimson px-6 py-3 text-lg font-bold text-white shadow-lg ring-2 ring-white hover:bg-brick"
+                >
+                  <span aria-hidden="true">🗺 </span>
+                  {labels.showMap}
+                </button>
+                <p className="rounded-md bg-cream/90 px-2 py-1 text-sm text-ink">{labels.showMapNote}</p>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {showDetail && selectedPlace && (
-        <div className="order-3 lg:col-start-2 2xl:col-start-3">
+        {showDetail && selectedPlace && (
           <PlaceDetailPanel
             place={selectedPlace}
             labels={labels}
             lang={lang}
+            card={selectedCard}
+            cardLabels={cardLabels}
             onClose={() => setDetailOpen(false)}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

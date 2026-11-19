@@ -16,7 +16,6 @@ interface HeroSlidesProps {
   slides: HeroSlide[];
   /** Time each photo stays (content/home.json → heroIntervalMs). */
   intervalMs: number;
-  labels: { pause: string; play: string };
 }
 
 /** The first look-ahead download waits this long, so it never competes with the page's own first load. */
@@ -88,8 +87,7 @@ function useSaveData(): boolean {
  * No blank frame: the new photo fades in ON TOP of the previous one, which stays fully visible
  * underneath until the fade is over (z-order: shown photo, then previous, then the rest).
  *
- * Moving content needs a way to stop it (WCAG 2.2.2), so there is a pause/play button. For
- * visitors who prefer reduced motion the slideshow starts paused and switches without a fade.
+ * For visitors who prefer reduced motion the slideshow starts paused and switches without a fade.
  * Hidden photos are aria-hidden: a screen reader only meets the one on screen.
  *
  * Data use: only the NEXT photo is ever downloaded ahead, never several at once, and nothing ahead
@@ -98,14 +96,11 @@ function useSaveData(): boolean {
 export default function HeroSlides({
   slides,
   intervalMs,
-  labels,
 }: HeroSlidesProps) {
   const [active, setActive] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
-  // null until the visitor presses pause/play; until then reduced-motion visitors start paused.
-  const [userPaused, setUserPaused] = useState<boolean | null>(null);
   const reducedMotion = usePrefersReducedMotion();
-  const paused = userPaused ?? reducedMotion;
+  const paused = reducedMotion;
   // Slides rendered so far (their <img> exists, so the browser downloads them) and slides fully loaded.
   const [mounted, setMounted] = useState<number[]>([0]);
   const [loaded, setLoaded] = useState<number[]>([]);
@@ -128,8 +123,8 @@ export default function HeroSlides({
     };
   }, [active, previous, paused, count]);
 
-  // When the photo on screen appeared (or the slideshow was resumed): the interval counts from here,
-  // so the next photo's download finishing in between does not restart the clock.
+  // When the photo on screen appeared, the interval counts from here, so the next photo's
+  // download finishing in between does not restart the clock.
   const shownAt = useRef(0);
   // Bumped to try again when a switch falls due while the tab is in the background.
   const [retry, setRetry] = useState(0);
@@ -193,36 +188,14 @@ export default function HeroSlides({
             }}
             style={{
               objectPosition: slide.position,
-              // Below the gradient (-z-10): the shown photo on top, the one it replaces just under it.
-              zIndex: shown ? -20 : underneath ? -21 : -22,
+              // Behind the overlay but above the section's background color.
+              zIndex: shown ? 0 : underneath ? -1 : -2,
             }}
             className={`absolute inset-0 size-full object-cover ${shown ? "opacity-100 transition-opacity duration-600 motion-reduce:transition-none" : underneath ? "opacity-100" : "opacity-0"}`}
           />
         );
       })}
 
-      {count > 1 && (
-        <button
-          type="button"
-          onClick={() => setUserPaused(!paused)}
-          aria-label={paused ? labels.play : labels.pause}
-          title={paused ? labels.play : labels.pause}
-          className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-brick/70 text-cream ring-1 ring-cream/60 hover:bg-brick focus-visible:outline-cream md:top-6 md:right-6"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="size-5"
-            fill="currentColor"
-          >
-            {paused ? (
-              <path d="M8 5v14l11-7z" />
-            ) : (
-              <path d="M7 5h4v14H7zM13 5h4v14h-4z" />
-            )}
-          </svg>
-        </button>
-      )}
     </>
   );
 }

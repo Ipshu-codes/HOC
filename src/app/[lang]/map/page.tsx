@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import MapExplorer, { MapExplorerFromUrl } from "@/components/MapExplorer";
+import { getHeritageList } from "@/lib/content";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import { plainImage } from "@/lib/images";
+import { coverImage, plainImage } from "@/lib/images";
 import { getMapData } from "@/lib/map-data";
 
 const MAP_PREVIEW = "/images/map/preview.webp";
@@ -25,15 +26,26 @@ export default async function MapPage({ params }: PageProps<"/[lang]/map">) {
   if (!isLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const { places, route } = getMapData(lang);
+  const heritageCards = getHeritageList(lang).map((heritage, index) => ({
+    heritage,
+    cover: coverImage(heritage),
+    index: index + 1,
+  }));
+  const cardLabels = {
+    heritageLabel: dict.home.heritageLabel,
+    draftBadge: dict.home.draftBadge,
+    location: dict.home.location,
+    readMore: dict.home.readMore,
+  };
   // Still picture for phones until the map is loaded: a screenshot of this map without draft
   // sites (scripts/image-manifest.json, "map/preview").
-  const props = { places, route, labels: dict.map, lang, preview: plainImage(MAP_PREVIEW) };
+  const props = { places, route, labels: dict.map, lang, preview: plainImage(MAP_PREVIEW), heritageCards, cardLabels };
 
   return (
-    <div className="map-page mx-auto max-w-6xl px-4 py-10 md:py-14">
+    <div className="map-page">
       <h1 className="text-4xl font-bold md:text-5xl">{dict.map.title}</h1>
       <div aria-hidden="true" className="mt-3 mb-4 h-1 w-16 rounded-full bg-gold" />
-      <p className="mb-6 max-w-3xl text-lg">{dict.map.intro}</p>
+      <p className="justified mb-6 max-w-3xl text-lg">{dict.map.intro}</p>
 
       {/* Reading ?site= needs a Suspense boundary in a static export. */}
       <Suspense fallback={<MapExplorer {...props} />}>

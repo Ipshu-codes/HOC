@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+import HeritageCard, { type HeritageCardLabels } from "@/components/HeritageCard";
+import type { MapHeritageCard } from "@/components/map/types";
 import type { MapPlace } from "@/components/map/types";
 import { fill } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
@@ -12,6 +14,8 @@ interface PlaceDetailPanelProps {
   labels: Dictionary["map"];
   lang: Locale;
   onClose: () => void;
+  card: MapHeritageCard | null;
+  cardLabels: HeritageCardLabels;
   /** Route navigation shown at the bottom while the visitor is walking the route. */
   footer?: ReactNode;
 }
@@ -22,7 +26,7 @@ interface PlaceDetailPanelProps {
  * A side column on extra-wide screens, below the map at intermediate widths, and a bottom sheet on phones.
  * Everything shown comes from the place data; nothing here is hard-coded per site.
  */
-export default function PlaceDetailPanel({ place, labels, lang, onClose, footer }: PlaceDetailPanelProps) {
+export default function PlaceDetailPanel({ place, labels, lang, onClose, footer, card, cardLabels }: PlaceDetailPanelProps) {
   const t = labels.detail;
   const headingRef = useRef<HTMLHeadingElement>(null);
   const details = place.details;
@@ -39,11 +43,11 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
       aria-modal="false"
       aria-labelledby="map-detail-title"
       aria-label={fill(t.label, { name: place.name })}
-      className="fixed inset-x-0 bottom-0 z-20 flex max-h-[48dvh] flex-col overflow-hidden rounded-t-2xl bg-cream shadow-2xl ring-1 ring-gold/60 lg:static lg:z-auto lg:max-h-none lg:h-[75vh] lg:rounded-xl lg:shadow-md"
+      className="map-detail-panel flex min-w-0 flex-col overflow-hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <header className="flex items-start justify-between gap-3 border-b border-gold/40 bg-cream p-4">
-        <div className="min-w-0">
+      <header className={`map-detail-panel__header flex items-start justify-between gap-3 border-b border-gold/40 bg-cream ${card ? "justify-end p-2" : "p-4"}`}>
+        {!card && <div className="min-w-0">
           <h2
             id="map-detail-title"
             ref={headingRef}
@@ -59,7 +63,12 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
             <span className="rounded-full bg-sand px-2 py-0.5 font-bold text-brick">{labels.kinds[place.kind]}</span>
             {place.approximate && <span className="text-crimson">{labels.approximate}</span>}
           </p>
-        </div>
+        </div>}
+        {card && (
+          <h2 id="map-detail-title" ref={headingRef} tabIndex={-1} className="min-w-0 flex-1 font-heading text-base font-bold text-brick focus:outline-none">
+            {t.viewStory}
+          </h2>
+        )}
         <button
           type="button"
           onClick={onClose}
@@ -72,7 +81,17 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
       </header>
 
       <div key={place.id} className="flex-1 overflow-y-auto overscroll-contain p-4 pb-6">
-        {place.photo && (
+        {card && (
+          <HeritageCard
+            heritage={card.heritage}
+            cover={card.cover}
+            lang={lang}
+            labels={cardLabels}
+            layout="horizontal"
+            index={card.index}
+          />
+        )}
+        {!card && place.photo && (
           // eslint-disable-next-line @next/next/no-img-element -- static export, see ResponsiveImage
           <img
             src={place.photo.src}
@@ -82,7 +101,7 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
             className="mb-3 aspect-video w-full rounded-lg object-cover"
           />
         )}
-        {place.summary && <p className="justified text-base">{place.summary}</p>}
+        {!card && place.summary && <p className="justified text-base">{place.summary}</p>}
 
         {place.contact && (
           <section aria-labelledby="map-contact" className="mt-4">
@@ -175,7 +194,7 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
           </>
         )}
 
-        {place.href && (
+        {!card && place.href && (
           <a
             href={place.href}
             className="mt-5 inline-block rounded-xl bg-crimson px-4 py-3 font-bold text-white hover:bg-brick"

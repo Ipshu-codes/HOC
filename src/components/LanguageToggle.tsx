@@ -1,48 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import type { Dictionary } from "@/lib/i18n";
-import { LOCALES, type Locale } from "@/types/locale";
+import type { Locale } from "@/types/locale";
 
 interface LanguageToggleProps {
   lang: Locale;
   labels: Dictionary["language"];
 }
 
-const SHORT_LABEL: Record<Locale, string> = { en: "EN", ne: "ने" };
-
-/** "EN | ने" switch that keeps you on the same page: /en/gallery/ ⇄ /ne/gallery/. */
+/** Compact switch to the other language, preserving the current route and query string. */
 export default function LanguageToggle({ lang, labels }: LanguageToggleProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const nextLocale: Locale = lang === "en" ? "ne" : "en";
+  const href = pathname.replace(/^\/(en|ne)(?=\/|$)/, `/${nextLocale}`);
 
   return (
-    <ul aria-label={labels.label} className="flex items-center rounded-full border border-cream/40 p-0.5">
-      {LOCALES.map((locale) => {
-        const current = locale === lang;
-        const href = pathname.replace(/^\/(en|ne)(?=\/|$)/, `/${locale}`);
-        return (
-          <li key={locale}>
-            <Link
-              href={href}
-              lang={locale}
-              hrefLang={locale}
-              aria-current={current ? "true" : undefined}
-              className={
-                current
-                  ? "block rounded-full bg-cream px-3 py-1 text-sm font-bold text-brick focus-visible:outline-cream"
-                  : "block rounded-full px-3 py-1 text-sm font-medium text-cream hover:bg-crimson focus-visible:outline-cream"
-              }
-            >
-              {/* Visible "EN" / "ने" plus the full name for screen readers ("EN English"):
-                  the accessible name must contain the visible text. */}
-              {SHORT_LABEL[locale]}
-              <span className="sr-only"> {labels[locale]}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <Link
+      href={href}
+      lang={nextLocale}
+      hrefLang={nextLocale}
+      aria-label={`${labels.label}: ${labels[nextLocale]}`}
+      className="site-language-switch"
+      onClick={(event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const { search, hash } = window.location;
+        if (search || hash) {
+          event.preventDefault();
+          router.push(`${href}${search}${hash}`);
+        }
+      }}
+    >
+      {labels[nextLocale]}
+    </Link>
   );
 }

@@ -3,7 +3,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import type { ChatPanelProps } from "@/components/ChatPanel";
-import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
 
 // The chat window is a separate chunk: it is not needed to show the page,
@@ -13,10 +12,10 @@ const ChatPanel = lazy(loadPanel);
 
 type ChatbotProps = Omit<ChatPanelProps, "onClose"> & { labels: Dictionary["chat"] };
 
-/** Half-body cut-out (scripts/optimize-images.ts): 130 px tall below 768 px, 260 px from 768 px. */
+/** Large cut-out (scripts/optimize-images.ts), used by the floating preview. */
 const FIGURE_SRCSET =
-  "/images/nani/nani-figure-130.webp 104w, /images/nani/nani-figure-260.webp 207w, /images/nani/nani-figure-520.webp 414w";
-const FIGURE_SIZES = "(min-width: 48rem) 207px, 104px";
+  "/images/nani/nani-figure-260.webp 207w, /images/nani/nani-figure-520.webp 414w";
+const FIGURE_SIZES = "120px";
 
 /**
  * Floating "How can I help?" button, bottom-right on every page (swapped with the 3D Map button, which
@@ -53,13 +52,16 @@ export default function Chatbot(props: ChatbotProps) {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const openFromNavigation = () => setOpen(true);
+    window.addEventListener("nani:open", openFromNavigation);
+    return () => window.removeEventListener("nani:open", openFromNavigation);
+  }, []);
+
   function close() {
     setOpen(false);
     buttonRef.current?.focus(); // give focus back to the button that opened the chat
   }
-
-  // While the chat is open, hovering does not bring up the big figure or the bubble.
-  const onHover = open ? "" : "group-hover:block";
 
   return (
     <>
@@ -71,38 +73,40 @@ export default function Chatbot(props: ChatbotProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        className="group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
+        className="nani-chat-button group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
-        {/* invisible (not hidden) on hover: the face keeps its box, so the pointer stays over the button. */}
-        <NaniAvatar
-          size={56}
-          alt=""
-          animated
-          className={`size-14 shadow-lg ring-4 ring-crimson ${open ? "" : "group-hover:invisible"}`}
-        />
-        {/* The big figure stands on the bottom edge of the screen, over the face. display:none until
-            hovered, so phones never download it. */}
-        {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
-        <img
-          src="/images/nani/nani-figure-260.webp"
-          srcSet={FIGURE_SRCSET}
-          sizes={FIGURE_SIZES}
-          width={207}
-          height={260}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className={`nani-figure-animated absolute -right-2 -bottom-4 hidden h-[130px] w-auto max-w-none drop-shadow-lg md:-right-2 md:-bottom-6 md:h-[260px] ${onHover}`}
-        />
-        <span className="sr-only">{props.labels.bubble}</span>
-        {/* The speech bubble, shown with the big figure: above her below 768 px, to the left of her face (into the page) from 768 px. */}
-        <span
-          aria-hidden="true"
-          className={`absolute right-0 bottom-[7.5rem] hidden w-52 rounded-2xl rounded-br-sm bg-brick px-3 py-2 text-sm leading-snug font-bold text-white shadow-lg ring-2 ring-white md:right-[11.5rem] md:bottom-[8rem] md:w-60 md:text-base ${onHover}`}
-        >
-          {props.labels.bubble}
+        <span className="nani-launch relative z-10" aria-hidden="true">
+          {/* The Ward's namaste portrait and number make this a project-specific Nani badge. */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- local responsive portrait for static export */}
+          <img
+            src="/images/nani/nani-namaste-320.webp"
+            srcSet="/images/nani/nani-namaste-320.webp 320w, /images/nani/nani-namaste-480.webp 480w"
+            sizes="64px"
+            width={320}
+            height={480}
+            alt=""
+            decoding="async"
+            className="nani-launch__portrait"
+          />
+          <span className="nani-launch__ward-mark">16</span>
         </span>
+        <span className="nani-hover-preview" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element -- local responsive figure for static export */}
+          <img
+            src="/images/nani/nani-figure-260.webp"
+            srcSet={FIGURE_SRCSET}
+            sizes={FIGURE_SIZES}
+            width={414}
+            height={520}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="nani-figure-animated nani-hover-preview__image"
+          />
+          <span className="nani-hover-preview__message">{props.labels.hoverPrompt}</span>
+        </span>
+        <span className="sr-only">{props.labels.bubble}</span>
       </button>
 
       {open && (

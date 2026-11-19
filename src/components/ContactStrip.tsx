@@ -20,11 +20,11 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
   const linkClass = "font-medium text-crimson underline underline-offset-4 hover:text-brick";
 
   return (
-    <HomeSection id="contact" title={dict.home.contactTitle} tone="sand">
-      <p className="max-w-2xl text-lg">{dict.home.contactIntro}</p>
+    <HomeSection id="contact" title={dict.home.contactTitle} tone="sand" index="05">
+      <p className="justified max-w-2xl text-lg">{dict.home.contactIntro}</p>
 
-      <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
+      <dl className="contact-details mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
           <dt className="font-bold text-brick">{dict.footer.address}</dt>
           <dd className="mt-1">{ward.office.address[lang]}</dd>
           {ward.office.coordinates && (
@@ -35,7 +35,7 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
             </dd>
           )}
         </div>
-        <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
+        <div>
           <dt className="font-bold text-brick">{dict.footer.phone}</dt>
           <dd className="mt-1">
             <a href={phoneHref(ward.office.phone)} className={linkClass}>
@@ -43,7 +43,7 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
             </a>
           </dd>
         </div>
-        <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">
+        <div>
           <dt className="font-bold text-brick">{dict.footer.email}</dt>
           <dd className="mt-1">
             <a href={`mailto:${ward.office.email}`} className={`${linkClass} break-all`}>
@@ -55,7 +55,7 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
 
       <Link
         href={`/${lang}/contact/`}
-        className="mt-8 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
+        className="button button--dark mt-6"
       >
         {dict.contactPage.contactLink} <span aria-hidden="true">→</span>
       </Link>

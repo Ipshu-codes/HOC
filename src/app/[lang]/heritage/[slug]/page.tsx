@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import DraftBanner from "@/components/DraftBanner";
 import HeritageCard from "@/components/HeritageCard";
 import PhotoCredit from "@/components/PhotoCredit";
+import PhotoStoryRail from "@/components/PhotoStoryRail";
 import QuickFacts from "@/components/QuickFacts";
 import ResponsiveImage from "@/components/ResponsiveImage";
 import TableOfContents from "@/components/TableOfContents";
@@ -80,83 +81,59 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
     <>
       <DraftBanner draft={heritage.draft} dict={dict} />
 
-      {/* Cover banner with the name in both languages */}
-      <section className="relative isolate flex min-h-[18rem] items-end overflow-hidden md:min-h-[26rem]">
-        <ResponsiveImage image={cover} sizes="100vw" priority className="absolute inset-0 -z-10 size-full object-cover" />
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-brick via-brick/70 to-brick/10" />
-        <div className="mx-auto w-full max-w-6xl px-4 pt-20 pb-8 md:pb-12">
-          <Link
-            href={`/${lang}/#heritages`}
-            prefetch={false}
-            className="text-sm font-medium text-cream underline-offset-4 hover:underline focus-visible:outline-cream"
-          >
-            <span aria-hidden="true">← </span>
-            {t.backToAll}
+      <section className="heritage-cover" aria-label={name}>
+        <ResponsiveImage image={cover} sizes="100vw" priority className="heritage-cover__image" />
+        <header className="heritage-opening">
+          <Link href={`/${lang}/#heritages`} prefetch={false} className="text-link heritage-opening__back">
+            <span aria-hidden="true">← </span>{t.backToAll}
           </Link>
-          <h1 className="mt-2 text-4xl font-bold text-white md:text-6xl">{name}</h1>
-          <p lang={lang === "ne" ? "en" : "ne"} className="mt-1 text-xl text-cream md:text-2xl">
-            {otherName}
-          </p>
-        </div>
+          <div className="heritage-opening__grid">
+            <div>
+              <p className="eyebrow">{heritage.location}</p>
+              <h1>{name}</h1>
+              <p lang={lang === "ne" ? "en" : "ne"} className="heritage-opening__other">{otherName}</p>
+            </div>
+            <div className="heritage-opening__summary">
+              <p className="justified">{heritage.summary}</p>
+              {heritage.coordinates && (
+                <Link href={`/${lang}/map/?site=${heritage.slug}`} className="button button--dark">
+                  {t.viewOnMap}<span aria-hidden="true"> ↗</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        </header>
       </section>
 
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 lg:py-14">
-        <div>
+      <div className="heritage-reading">
+        <aside className="heritage-reading__navigation">
           <TableOfContents title={t.onThisPage} entries={toc} />
-        </div>
+        </aside>
 
-        <div className="min-w-0">
+        <div className="heritage-reading__body">
           <QuickFacts heritage={heritage} dict={dict} />
+          {/* Rendered from our own Markdown files (trusted, build-time only); the words are unchanged. */}
+          <article className="heritage-prose" dangerouslySetInnerHTML={{ __html: heritage.html }} />
+          {informedBy && <p className="heritage-credit">{t.informationFrom.replace("{people}", informedBy)}</p>}
 
-          {heritage.coordinates && (
-            <Link
-              href={`/${lang}/map/?site=${heritage.slug}`}
-              className="mt-6 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
-            >
-              {t.viewOnMap} <span aria-hidden="true">→</span>
-            </Link>
-          )}
-
-          {/* Rendered from our own markdown files in content/ (trusted, build-time only). */}
-          <article className="heritage-prose mt-10" dangerouslySetInnerHTML={{ __html: heritage.html }} />
-          {/* Who gave the information (content/credits.json → informationFrom). */}
-          {informedBy && <p className="mt-8 text-sm text-ink/80">{t.informationFrom.replace("{people}", informedBy)}</p>}
-
-          <section id="photos" aria-labelledby="photos-title" className="mt-14">
-            <h2 id="photos-title" className="text-3xl font-bold">
-              {t.photos}
-            </h2>
-            <ul className="mt-4 flex snap-x gap-3 overflow-x-auto pb-3">
-              {photos.map((image) => (
-                <li key={image.src} className="w-56 shrink-0 snap-start md:w-64">
-                  <ResponsiveImage
-                    image={image}
-                    sizes="16rem"
-                    className="aspect-4/3 w-full rounded-xl object-cover shadow-sm"
-                  />
-                </li>
-              ))}
-            </ul>
-            <div className="mt-2 flex flex-wrap items-baseline justify-between gap-2">
-              <PhotoCredit credits={credits} dict={dict} lang={lang} />
-              <Link
-                href={`/${lang}/gallery/?site=${heritage.slug}`}
-                className="font-bold text-crimson underline underline-offset-4 hover:text-brick"
-              >
-                {t.seeAllPhotos} <span aria-hidden="true">→</span>
+          <section id="photos" aria-labelledby="photos-title" className="heritage-photos">
+            <div className="heritage-photos__heading">
+              <h2 id="photos-title">{t.photos}</h2>
+              <Link href={`/${lang}/gallery/?site=${heritage.slug}`} className="text-link">
+                {t.seeAllPhotos}<span aria-hidden="true"> ↗</span>
               </Link>
             </div>
+            <PhotoStoryRail photos={photos} labels={{ previous: dict.home.previousPhoto, next: dict.home.nextPhoto, photos: dict.home.photoSlides }} />
+            <PhotoCredit credits={credits} dict={dict} lang={lang} className="mt-5" />
           </section>
-          {/* No Sources section (removed 17 Nov 2026). Sources stay cited in the content's
-              <!-- source: --> comments, which the build still checks. */}
         </div>
       </div>
 
       {others.length > 0 && (
         <section aria-labelledby="other-heritage-title" className="bg-sand">
           {/* Same vertical rhythm as the home page sections (HomeSection). */}
-          <div className="mx-auto max-w-6xl px-4 py-14 md:py-20">
-            <h2 id="other-heritage-title" className="mb-8 text-3xl font-bold">
+          <div className="editorial-section__inner">
+              <h2 id="other-heritage-title" className="section-title">
               {byCount(t.otherHeritage, others.length)}
             </h2>
             <div className={others.length === 1 ? "mx-auto max-w-5xl" : "grid gap-8 md:grid-cols-2"}>
@@ -166,8 +143,9 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
                   heritage={other}
                   cover={coverImage(other)}
                   lang={lang}
-                  dict={dict}
+                  labels={dict.home}
                   layout={others.length === 1 ? "horizontal" : "vertical"}
+                  index={1}
                 />
               ))}
             </div>

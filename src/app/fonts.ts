@@ -1,4 +1,4 @@
-import { Mukta, Playfair_Display } from "next/font/google";
+import { DM_Sans, Mukta, Playfair_Display } from "next/font/google";
 
 // next/font downloads the fonts at build time and serves them from our own
 // domain, so there is no request to Google from the visitor's browser.
@@ -14,6 +14,14 @@ export const mukta = Mukta({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-mukta",
+  display: "swap",
+});
+
+/** Modern English interface and body face. Nepali pages use Mukta through the lang selector. */
+export const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 

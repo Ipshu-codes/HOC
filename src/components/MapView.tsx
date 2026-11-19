@@ -62,7 +62,7 @@ const TERRAIN_ATTRIBUTION =
 const FALLBACK_CENTER: [number, number] = [85.3075, 27.7216];
 const START_VIEW = { zoom: 16, pitch: 60, bearing: -20 };
 const ROUTE_SOURCE = "walking-route";
-const ROUTE_COLORS = { done: "#b9a79b", active: "#c8102e", todo: "#8b1e1e" }; // sand-grey, crimson, brick
+const ROUTE_COLORS = { done: "#b9a79b", active: "#a51d36", todo: "#641e2b" }; // sand-grey, crimson, brick
 
 /** WebGL check, done before creating the map (MapLibre cannot draw without it). */
 function hasWebGL(): boolean {

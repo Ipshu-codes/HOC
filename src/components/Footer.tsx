@@ -29,7 +29,7 @@ export default function Footer({
     "underline-offset-4 hover:text-white hover:underline focus-visible:outline-cream";
 
   return (
-    <footer className="mt-auto bg-brick text-cream">
+    <footer className="footer-editorial mt-auto">
       <SectionDivider className="text-gold" />
 
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
