@@ -17,7 +17,7 @@
  *   real walking paths, a dashed one for straight lines between stops). MapLibre drapes
  *   them over the terrain.
  *
- * What this component does NOT own: which place is selected, the search/filter state and
+ * What this component does NOT own: which place is selected, the place-filter state and
  * the walking-route step. MapExplorer holds those and passes them in as props; this
  * component only draws them (marker highlight, numbered route stops, camera moves).
  *
@@ -41,7 +41,7 @@ interface MapViewProps {
   places: MapPlace[];
   /** Selected place (from ?site=, the list, a marker or the route). Highlighted, flown to, popup shown. */
   focusId: string | null;
-  /** Places that pass the current search and filters; the others are hidden. */
+  /** Places that pass the current category filters; the others are hidden. */
   visibleIds: ReadonlySet<string>;
   route: MapRoute | null;
   /** While the detail panel is open the popup is hidden and the camera leaves room for the panel. */

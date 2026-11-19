@@ -9,9 +9,9 @@
  * and makes no routing requests while visitors use it.
  *
  * Data: OpenStreetMap, routed by the free community OSRM "foot" server (routing.openstreetmap.de).
- * It is a demo server: keep it to occasional use. The route runs between the coordinates stored in
- * content/heritage/*.md, which are only approximate for some sites (coordinatesApproximate), so the
- * ends of each walking path are approximate too. Check the result on the map before publishing.
+ * It is a demo server: keep it to occasional use. The route runs between coordinates stored in
+ * content/heritage/*.md or content/ward.json. Some are approximate (coordinatesApproximate), so the
+ * ends of those walking paths are approximate too. Check the result on the map before publishing.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -26,6 +26,13 @@ interface OsrmResponse {
 }
 
 function coordinatesOf(slug: string): [number, number] {
+  if (slug === "ward-office") {
+    const ward = JSON.parse(fs.readFileSync(path.join("content", "ward.json"), "utf8")) as {
+      office: { coordinates: [number, number] | null };
+    };
+    if (!ward.office.coordinates) throw new Error("ward-office has no coordinates in content/ward.json");
+    return ward.office.coordinates;
+  }
   const { data } = matter(fs.readFileSync(path.join("content", "heritage", `${slug}.en.md`), "utf8"));
   const coordinates = data.coordinates as [number, number] | null;
   if (!coordinates) throw new Error(`${slug} has no coordinates in its frontmatter`);

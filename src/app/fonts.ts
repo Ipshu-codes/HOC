@@ -1,4 +1,4 @@
-import { Mukta, Playfair_Display } from "next/font/google";
+import { JetBrains_Mono, Mukta, Playfair_Display } from "next/font/google";
 
 // next/font downloads the fonts at build time and serves them from our own
 // domain, so there is no request to Google from the visitor's browser.
@@ -22,5 +22,13 @@ export const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["700"],
   variable: "--font-playfair",
+  display: "swap",
+});
+
+/** Small labels, counters and buttons in the gallery: the museum signage voice (English only). */
+export const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-jetbrains",
   display: "swap",
 });

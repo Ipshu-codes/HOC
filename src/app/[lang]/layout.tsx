@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { mukta, playfair } from "@/app/fonts";
+import { jetbrains, mukta, playfair } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -61,7 +61,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const navItems = getNavItems(lang, dict);
 
   return (
-    <html lang={lang} className={`${mukta.variable} ${playfair.variable}`}>
+    <html lang={lang} className={`${mukta.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="flex min-h-screen flex-col">
         <a
           href="#main-content"

@@ -39,7 +39,7 @@ export default async function ContactPage({
         aria-hidden="true"
         className="mt-3 mb-6 h-1 w-16 rounded-full bg-gold"
       />
-      <p className="mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
+      <p className="justified mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         {/* No form and no form service: visitors write from their own email app. */}
@@ -50,7 +50,7 @@ export default async function ContactPage({
           <h2 id="write-to-us" className="text-2xl font-bold">
             {dict.contactPage.writeHeading}
           </h2>
-          <p className="mt-3 text-lg">{dict.contactPage.writeBody}</p>
+          <p className="justified mt-3 text-lg">{dict.contactPage.writeBody}</p>
           <a
             href={mailto}
             className="mt-6 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
