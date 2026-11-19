@@ -21,7 +21,7 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
 
   return (
     <HomeSection id="contact" title={dict.home.contactTitle} tone="sand">
-      <p className="max-w-2xl text-lg">{dict.home.contactIntro}</p>
+      <p className="justified max-w-2xl text-lg">{dict.home.contactIntro}</p>
 
       <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-xl bg-cream p-5 shadow-sm ring-1 ring-gold/40">

@@ -117,6 +117,20 @@
       "one": "{n} photo",
       "other": "{n} photos"
     },
+    "view": {
+      "label": "View as",
+      "grid": "Gallery",
+      "hanging": "Hanging gallery",
+      "list": "List"
+    },
+    "museumLoading": "Loading 3D gallery…",
+    "museumHelp": "Drag to look around. Pinch out or in to walk. Tap a photo to open it.",
+    "museumForward": "Walk forward",
+    "museumBack": "Walk back",
+    "museumTurnLeft": "Turn left",
+    "museumTurnRight": "Turn right",
+    "museumNoWebGL": "Your browser cannot display the 3D gallery. The hanging gallery is shown instead.",
+    "empty": "No photos to show here yet.",
     "lightbox": {
       "Previous": "Previous photo",
       "Next": "Next photo",
