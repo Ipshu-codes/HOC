@@ -36,7 +36,7 @@ const HERITAGE_DIR = path.join(process.cwd(), "content", "heritage");
 
 const markdownToHtml = unified()
   .use(remarkParse)
-  .use(remarkGfm) // tables in the Nanak Math page
+  .use(remarkGfm) // tables in the Nanak matha page
   .use(remarkHeadingIds) // "## इतिहास {#history}" → <h2 id="history">
   .use(remarkRehype) // HTML comments in markdown (source notes) are dropped here
   .use(rehypeStringify);

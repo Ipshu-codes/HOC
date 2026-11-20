@@ -1,5 +1,5 @@
 {
-  "fullBleed": ["nanak-math/courtyard-view", "nanak-math/samadhi-temple", "mhepi-ajima/temple-front", "map/preview"],
+  "fullBleed": ["nanak-matha/courtyard-view", "nanak-matha/samadhi-temple", "mhepi-ajima/temple-front", "map/preview"],
   "images": [
     {
       "site": "map",
@@ -117,157 +117,157 @@
       "source": "Mhepi Ajima/Photo/20261104_090806.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "samadhi-temple",
       "source": "Guru Nanak Mantha/Photo/20261103_134731.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "entrance-signboard",
       "source": "Guru Nanak Mantha/Photo/20261103_133906.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "entrance-steps",
       "source": "Guru Nanak Mantha/Photo/20261103_133925.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "main-courtyard",
       "source": "Guru Nanak Mantha/Photo/20261104_095136.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "courtyard-view",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_100539.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "carved-windows",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_095207.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "traditional-building",
       "source": "Guru Nanak Mantha/Photo/IMG_20261103_141750.jpg"
     },
     {
-      "site": "nanak-math",
-      "name": "tulsi-math",
+      "site": "nanak-matha",
+      "name": "tulsi-matha",
       "source": "Guru Nanak Mantha/Photo/20261103_145037.heic"
     },
     {
-      "site": "nanak-math",
-      "name": "tulsi-math-niche",
+      "site": "nanak-matha",
+      "name": "tulsi-matha-niche",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_095359.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "sadhu-statue",
       "source": "Guru Nanak Mantha/Photo/20261103_145045.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "vishnu-paduka",
       "source": "Guru Nanak Mantha/Photo/20261103_140128.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "shrine-under-tree",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_100008.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "nandi-and-shivalinga",
       "source": "Guru Nanak Mantha/Photo/IMG_20261103_141531.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "brahmaharidas-plaque",
       "source": "Guru Nanak Mantha/Photo/20261103_135817.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "disciples-plaque",
       "source": "Guru Nanak Mantha/Photo/20261103_135842.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "heritage-signboard",
       "source": "Guru Nanak Mantha/Photo/20261103_145350.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "painting-brahmaharidas",
       "source": "Guru Nanak Mantha/Photo/20261103_143303.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "painting-gothalramdas",
       "source": "Guru Nanak Mantha/Photo/20261103_143258.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "painting-yathiramdas",
       "source": "Guru Nanak Mantha/Photo/20261103_143307.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "dhuni-signboard",
       "source": "Guru Nanak Mantha/Photo/20261103_140505.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "akhanda-dhuni",
       "source": "Guru Nanak Mantha/Photo/20261104_095716.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "gaushala-cow",
       "source": "Guru Nanak Mantha/Photo/20261103_140839.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "gaushala-poster",
       "source": "Guru Nanak Mantha/Photo/20261104_101942.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "wooden-paduka",
       "source": "Guru Nanak Mantha/Photo/20261104_100736.heic"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "shrine-room",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_095005.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "gilded-shrine",
       "source": "Guru Nanak Mantha/Photo/20261103_143358.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "three-stone-platforms",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_100327.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "archival-photograph",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_094838.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "satsang-hall",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_100859.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "paddy-field",
       "source": "Guru Nanak Mantha/Photo/20261103_141418.jpg"
     },
     {
-      "site": "nanak-math",
+      "site": "nanak-matha",
       "name": "sadhus-at-veranda",
       "source": "Guru Nanak Mantha/Photo/IMG_20261104_101147.jpg"
     }

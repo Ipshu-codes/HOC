@@ -64,7 +64,7 @@ const toLngLat = ([lat, lng]: [number, number]): [number, number] => [lng, lat];
 function midpoint(points: [number, number][]): [number, number] {
   const lngs = points.map(([lng]) => lng);
   const lats = points.map(([, lat]) => lat);
-  return [(Math.min(...lngs) + Math.max(...lngs)) / 2, (Math.min(...lats) + Math.max(...lats)) / 2];
+  return [(matha.min(...lngs) + matha.max(...lngs)) / 2, (matha.min(...lats) + matha.max(...lats)) / 2];
 }
 
 /** Popup content built with DOM methods (textContent), so no text from content is parsed as HTML. */

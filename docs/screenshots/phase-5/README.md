@@ -4,13 +4,13 @@ Captured on 12 Nov 2026 in Microsoft Edge.
 
 | File | What it shows |
 |---|---|
-| `nanak-math-en-375.jpg`, `nanak-math-en-768.jpg`, `nanak-math-en-1440.jpg` | Nanak Math detail page in English, from `npm run build:preview` |
-| `nanak-math-ne-375.jpg`, `nanak-math-ne-768.jpg`, `nanak-math-ne-1440.jpg` | The same in Nepali |
+| `nanak-matha-en-375.jpg`, `nanak-matha-en-768.jpg`, `nanak-matha-en-1440.jpg` | Nanak matha detail page in English, from `npm run build:preview` |
+| `nanak-matha-ne-375.jpg`, `nanak-matha-ne-768.jpg`, `nanak-matha-ne-1440.jpg` | The same in Nepali |
 | `dev-mhepi-ajima-en-1440.jpg` | Mhepi Ajima detail page in `npm run dev`. It has the red Draft banner, placeholder text and the placeholder photo credit. This page does not exist in any build. |
 
 What the build pages deliberately leave out:
 
-- **"View on 3D Map" button**: Nanak Math has no coordinates yet.
+- **"View on 3D Map" button**: Nanak matha has no coordinates yet.
 - **"Other heritage" section**: there is no other non-draft site.
 - **Photo credit line**: the team name is not confirmed yet (`content/credits.json`).
 - **Entry fee** in the quick facts: there is no data.

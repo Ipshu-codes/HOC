@@ -4,7 +4,7 @@ Captured on 12 Nov 2026 in Microsoft Edge. Unless noted otherwise, they are from
 
 | File | What it shows |
 |---|---|
-| `gallery-en-375.jpg`, `gallery-en-768.jpg`, `gallery-en-1440.jpg` | Gallery page in English: 31 Nanak Math photos with captions |
+| `gallery-en-375.jpg`, `gallery-en-768.jpg`, `gallery-en-1440.jpg` | Gallery page in English: 31 Nanak matha photos with captions |
 | `gallery-ne-375.jpg`, `gallery-ne-768.jpg`, `gallery-ne-1440.jpg` | The same in Nepali |
 | `lightbox-en-375.jpg`, `lightbox-ne-375.jpg` | The lightbox open on a phone, with the caption and the photo credit |
 | `dev-gallery-two-sites-en-1440.jpg` | `npm run dev` with both sites at `/en/gallery/?site=mhepi-ajima`. The filter tabs appear only when two or more sites are on the build. |

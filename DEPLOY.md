@@ -28,7 +28,7 @@ While Mhepi Ajima is a draft, the strict `npm run build` stops on purpose, so th
 7. **Save and Deploy.** The first build takes a few minutes. The log should end with `✔ verify-output: no placeholders; 1 draft site(s) fully excluded; … images free of metadata.` If you change an environment variable later, redeploy: **Deployments** → latest → **⋯** → **Retry deployment**.
 8. **Check the preview** at `https://<project>.pages.dev`:
    - `/` redirects to `/en/`; the EN | ने switch works.
-   - Only Nanak Math appears (no Mhepi Ajima anywhere).
+   - Only Nanak matha appears (no Mhepi Ajima anywhere).
    - The section below (*Prefetch files on Windows builds*).
    - On a phone, open `/en/map/` directly: you should see the still picture with **Show 3D map**. Tap the floating **3D Map** button from another page: the map loads at once.
    - Run Lighthouse (Chrome DevTools → Lighthouse → Mobile) on the live URL; local scores on Windows are noisy (see below).
@@ -43,7 +43,7 @@ Mobile, simulated slow 4G, measured locally on 13 Nov 2026 (Windows, Edge, `npm 
 |---|---|---|---|---|
 | `/en/` | 88 (86–90) | 100 | 96 | 100 |
 | `/ne/` | 91 (85–92) | 100 | 96 | 100 |
-| `/en/heritage/nanak-math/` | 87 (87–88) | 100 | 96 | 100 |
+| `/en/heritage/nanak-matha/` | 87 (87–88) | 100 | 96 | 100 |
 | `/en/gallery/` | 85 (83–85) | 100 | 96 | 100 |
 | `/en/map/` | 88 (86–89) | 100 | 96 | 100 |
 | `/en/contact/` | 100 (99–100) | 100 | 96 | 100 |

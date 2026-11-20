@@ -39,7 +39,7 @@ export const faqSchema = z
         q_ne: z.string().min(1),
         a_en: z.string().min(1),
         a_ne: z.string().min(1),
-        /** Path without the language prefix, e.g. "/heritage/nanak-math/#history". */
+        /** Path without the language prefix, e.g. "/heritage/nanak-matha/#history". */
         link: z.string().startsWith("/").nullable().default(null),
       }),
     ),
@@ -83,7 +83,7 @@ export interface ChatLink {
 /** A question and answer as sent to the browser, in the page language. */
 export interface ChatEntry {
   id: string;
-  /** Id of the topic it is listed under, e.g. "nanak-math-visit"; null = related-only. */
+  /** Id of the topic it is listed under, e.g. "nanak-matha-visit"; null = related-only. */
   topic: string | null;
   site: string | null;
   question: string;

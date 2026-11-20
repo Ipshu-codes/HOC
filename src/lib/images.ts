@@ -8,7 +8,7 @@ import type { Heritage, HeritageSlug } from "@/types/heritage";
 
 /** A photo ready to render: file variants, intrinsic size and localized alt text. */
 export interface SiteImage {
-  /** Default file (1280 px), e.g. /images/nanak-math/tulsi-math.webp */
+  /** Default file (1280 px), e.g. /images/nanak-matha/tulsi-matha.webp */
   src: string;
   /** "…-480.webp 480w, …-640.webp 640w, …-960.webp 960w, ….webp 1280w, …-1920.webp 1920w" — only files that exist. */
   srcSet: string;

@@ -16,7 +16,7 @@ A bilingual (English / नेपाली) website for **Ward No. 16, Kathmandu 
 two heritage sites:
 
 1. **Mhepi Ajima** (म्हेपी अजिमा)
-2. **Nanak Math** (नानक मठ)
+2. **Nanak matha** (नानक मठ)
 
 - **Theme:** red
 - **Budget:** Rs. 0 — every tool, library, service and host must be **free** with no paid tier needed,
@@ -105,12 +105,12 @@ ward16-heritage/
 │   ├── heritage/
 │   │   ├── mhepi-ajima.en.md
 │   │   ├── mhepi-ajima.ne.md
-│   │   ├── nanak-math.en.md
-│   │   └── nanak-math.ne.md
+│   │   ├── nanak-matha.en.md
+│   │   └── nanak-matha.ne.md
 │   ├── ward.json                 # ward info, office contact, opening hours
 │   └── faq.json                  # chatbot Q&A (EN + NE)
 ├── public/
-│   ├── images/{logo,mhepi-ajima,nanak-math}/
+│   ├── images/{logo,mhepi-ajima,nanak-matha}/
 │   └── favicon.svg
 ├── scripts/optimize-images.ts
 └── src/
@@ -208,7 +208,7 @@ Nav links scroll smoothly to these sections on the home page.
 - `generateMetadata` for title, description and Open Graph image
 
 ### Phase 6 — Gallery
-- `/[lang]/gallery` with filter tabs: All · Mhepi Ajima · Nanak Math
+- `/[lang]/gallery` with filter tabs: All · Mhepi Ajima · Nanak matha
 - Responsive grid, lazy-loaded WebP images, lightbox with captions and keyboard navigation
 
 ### Phase 7 — 3D Map
@@ -230,9 +230,9 @@ Nav links scroll smoothly to these sections on the home page.
 2. Opens a small chat panel (red header, cream body). Client component, mounted in the `[lang]` layout.
 3. Build `content/faq.json` from the heritage content: at least **30 Q&A pairs** in both languages, e.g.
    ```json
-   { "id": "nanak-built", "q_en": ["When was Nanak Math built?", "age of nanak math"],
+   { "id": "nanak-built", "q_en": ["When was Nanak matha built?", "age of nanak matha"],
      "q_ne": ["नानक मठ कहिले बनेको हो?"], "a_en": "…", "a_ne": "…",
-     "link": "/heritage/nanak-math#history" }
+     "link": "/heritage/nanak-matha#history" }
    ```
    Cover: history, location, how to reach, opening hours, festivals, entry fee, photography rules, contact.
 4. Matching: Fuse.js over the questions (threshold ~0.4). Detect Nepali by Devanagari characters and reply in the same language.
@@ -300,7 +300,7 @@ Only do this phase if I ask for it.
 
 ```markdown
 # Ward 16 Heritage Website
-- Sites: Mhepi Ajima, Nanak Math — Ward No. 16, Kathmandu Metropolitan City
+- Sites: Mhepi Ajima, Nanak matha — Ward No. 16, Kathmandu Metropolitan City
 - Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'). Hosting: Cloudflare Pages.
 - No server features: no API routes, server actions, middleware or ISR.
 - Everything must be FREE. No paid services, no API keys needing billing.

@@ -30,16 +30,16 @@ This matches PLAN.md §2. No ward logo image file is included.
 
 ---
 
-## 2. Nanak Math (`Guru Nanak Mantha/`)
+## 2. Nanak matha (`Guru Nanak Mantha/`)
 
 ### 2.1 Text — `Nanak Mantha.docx`
 
 This is the main written source. It is in Nepali, about 47 KB of text, in the PalanquinDark font, with no images. In order, it contains:
 
 1. **Title and address:** "महायोगी श्री ब्रह्महरीदास महाराजको जीवित भू समाधिस्थल … प्राचीन उदासीन विष्णुमती नानकमठ कामपा१६, विष्णुमती खोला, बालाजु काठमाडौँ"
-2. **Heritage list (16 items):** the Vishnu Panchayatan temple, Hanuman temple, gaushala, Shivalaya, akhanda dhuni (~700 yrs), Tulsi math, Nandeshwar Mahadev, Vishnu paduka (~1000 yrs), sadhu residence and kitchen, public toilet, Brahma Kunda, guru gaddi, garden, and the samadhi of the three saints "418 years ago". This list appears twice.
+2. **Heritage list (16 items):** the Vishnu Panchayatan temple, Hanuman temple, gaushala, Shivalaya, akhanda dhuni (~700 yrs), Tulsi matha, Nandeshwar Mahadev, Vishnu paduka (~1000 yrs), sadhu residence and kitchen, public toilet, Brahma Kunda, guru gaddi, garden, and the samadhi of the three saints "418 years ago". This list appears twice.
 3. **Main narrative:**
-   - the names of the math (Nandi Ban, Tapoban, Shankha Ban, Sangat Ban, Mahanta Math) and the legend behind each
+   - the names of the matha (Nandi Ban, Tapoban, Shankha Ban, Sangat Ban, Mahanta matha) and the legend behind each
    - the guru–shishya mahant tradition and how mahants are declared
    - daily worship
    - the lineage from Shri Ram to the 23rd mahant
@@ -50,8 +50,8 @@ This is the main written source. It is in Nepali, about 47 KB of text, in the Pa
    - opening hours (**7 am – 6 pm**)
    - Brahmaharidas: born **1432**, practised from **1450**, lived to **232**, living bhu-samadhi in **VS 1664** with two disciples
    - how the account was passed down (Buddhidas → Nem Muni Das → Naval Kishor Das)
-   - produce from the math's land
-6. **The math's rules (17 items):** succession, daily puja duties, rules for servants and the committee, and the **annual programme** (8 festival or tithi days).
+   - produce from the matha's land
+6. **The matha's rules (17 items):** succession, daily puja duties, rules for servants and the committee, and the **annual programme** (8 festival or tithi days).
 7. **Inventory of 69 kinds of objects**, including:
    - 55 shaligram
    - 7 sacred texts, including the Guru Granth Sahib
@@ -60,7 +60,7 @@ This is the main written source. It is in Nepali, about 47 KB of text, in the Pa
    - the aim of setting up a museum
 8. **"Additional info"** in English and romanised Nepali:
    - the Vedic granth gaddi is the pile of books upstairs
-   - the four deities of the Tulsi math by direction
+   - the four deities of the Tulsi matha by direction
    - the Vishnu paduka at the peepal tree, where sadhus meditate
    - the hall is used for satsang
    - a yajnashala is under construction (in the upper part, not the lower)
@@ -70,7 +70,7 @@ This is the main written source. It is in Nepali, about 47 KB of text, in the Pa
 **Left out on purpose** (editorial or internal content, not visitor heritage information — you can review this choice):
 
 - criticism of the Government of Nepal and the Guthi Sansthan
-- statements that people who oppose the math or its mahants, or encroach on its land, have been punished by the samadhi saints
+- statements that people who oppose the matha or its mahants, or encroach on its land, have been punished by the samadhi saints
 - rules for dismissing servants and committee members
 - the full 69-item inventory of kitchen utensils and tools
 
@@ -79,7 +79,7 @@ This is the main written source. It is in Nepali, about 47 KB of text, in the Pa
 | File | Text |
 |---|---|
 | `20261103_133906.heic` (street banner) | प्राचिन उदासिन नानक मठ · महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल · बिगत ५००० बर्ष देखि अनवरत रुपमा चलि आएको नेपाली गुरु शिष्य महन्त परम्पराको सिद्ध गुरुगद्दी · 1 जिवित भू-समाधि मन्दिर, 2 बिष्णु पञ्चायन मन्दिर, 3 भक्त शिरोमणी श्री संकटमोचन सिद्ध हनुमानजी, 4 ७०० बर्ष पुर्व देखि चलिरहेको अखण्ड धुनी, 5 नन्दीले तपस्या गरी शिवजीको साक्षात्कार गरेको र वाहन हुन पाउँ भनी आशिर्वाद लिएको स्थान नन्दीश्वर महादेव, 6 शिवालय, 7 तुलसी मठ, 8 विष्णु पादुका, 9 प्राचिन गौशाला (गौ सेवा पूजा) · नन्दीवन, तपोवन, शंखवन, साधुकुटी, संगत वन, महन्त वनले प्रसिद्ध समाधि मन्दिर · नयाँ बजार, विष्णुमती पुल, का.म.न.पा १६, काठमाडौं |
-| `20261103_145350.heic` (building signboard) | Same heading as the banner, plus the caption under each portrait: समाधि सिद्ध महायोगी श्री ब्रह्महरिदासजी / श्री गोथलरामदासजी / श्री यथिरामदासजी महाराज; महन्त श्री मुनिन्द्रानन्ददासजी / श्री बुद्धिदासजी / श्री नेममुनिदासजी महाराज · १. बि.सं. १६६४ मा बनेको जिवित भू-समाधि मन्दिर, २. बिष्णु पञ्चायतन मन्दिर एवं गुरुग्रन्थ साहिब, ३. … हनुमानजी, ४. ७०० बर्ष … अखण्ड धुनी, ५. शिवालय, ६. तुलसी मठ, ७. विष्णु पादुका · English: "Prachin Udashin Nanak Math" |
+| `20261103_145350.heic` (building signboard) | Same heading as the banner, plus the caption under each portrait: समाधि सिद्ध महायोगी श्री ब्रह्महरिदासजी / श्री गोथलरामदासजी / श्री यथिरामदासजी महाराज; महन्त श्री मुनिन्द्रानन्ददासजी / श्री बुद्धिदासजी / श्री नेममुनिदासजी महाराज · १. बि.सं. १६६४ मा बनेको जिवित भू-समाधि मन्दिर, २. बिष्णु पञ्चायतन मन्दिर एवं गुरुग्रन्थ साहिब, ३. … हनुमानजी, ४. ७०० बर्ष … अखण्ड धुनी, ५. शिवालय, ६. तुलसी मठ, ७. विष्णु पादुका · English: "Prachin Udashin Nanak matha" |
 | `20261103_135817.heic` (samadhi temple plaque) | महायोगी श्री ब्रह्महरि दासजी महाराज · जन्म: वि.सं. १४३२ वैशाख पूर्णिमा · जीवित समाधि: वि.सं. १६६४ वैशाख अक्षय तृतीया · माता: देव कुमारी वास्तोला · पिता: राम प्रसाद वास्तोला · सदगुरुदेव: जगतगुरु श्री नरहर्यानन्दाचार्यजी महाराज |
 | `20261103_135842.heic` (samadhi temple plaque) | महायोगी श्री यथिराम दास जी महाराज · जन्म: वि.सं. १५११ शिवरात्री · जीवित भू-समाधि १६६४ वैशाख अक्षय तृतीया · माता: रेवती उपाध्याय · पिता: मनोरथ उपाध्याय — महायोगी श्री गोथलराम दास जी महाराज · जन्म: वि.स. १५१७ जनै पूर्णिमा · जीवित भू-समाधि १६६४ वैशाख अक्षय तृतीया · माता: हरिमाया उप्रेती · पिता: श्याम बाबु उप्रेती · सदगुरुदेव (both): महायोगी श्री ब्रह्महरि दास जी महाराज |
 | `20261103_140505.heic` (dhuni) | महायोगी श्री ब्रह्महरिदास महाराजले नित्य हवन गर्ने यज्ञ कुण्ड · ७०० बर्ष पूर्वदेखि जलिरहेको अखण्ड धुनी |
@@ -89,7 +89,7 @@ This is the main written source. It is in Nepali, about 47 KB of text, in the Pa
 
 ### 2.3 Audio — `Audio/nanak mantha 1–10.m4a`
 
-These are 10 clips totalling about 32 min: 21 s, 10 min 4 s, 1 min 52 s, 4 min 38 s, 4 min 7 s, 2 min 42 s, 4 min 12 s, 1 min 21 s, 2 min 22 s and 45 s. They are probably interviews at the math. **They have not been transcribed**, so their content is unknown.
+These are 10 clips totalling about 32 min: 21 s, 10 min 4 s, 1 min 52 s, 4 min 38 s, 4 min 7 s, 2 min 42 s, 4 min 12 s, 1 min 21 s, 2 min 22 s and 45 s. They are probably interviews at the matha. **They have not been transcribed**, so their content is unknown.
 
 ### 2.4 Video — `Video/*.mp4`
 
@@ -188,7 +188,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 **Covers:**
 
 - `mhepi-ajima/cover.webp` is made from `IMG_20261104_084425.jpg`, the temple front (same photo as `temple-front.webp`).
-- `nanak-math/cover.webp` is made from `20261103_134731.heic`, the samadhi temple (same photo as `samadhi-temple.webp`).
+- `nanak-matha/cover.webp` is made from `20261103_134731.heic`, the samadhi temple (same photo as `samadhi-temple.webp`).
 
 #### Mhepi Ajima/Photo/
 
@@ -240,13 +240,13 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 | Construction site (yajnashala?) | 20261103_141205.heic, IMG_20261103_141210.jpg | — |
 | Paddy field | 20261103_141418.jpg, IMG-20261104-WA0046.jpg | paddy-field.webp |
 | Open-air shrine platform: Nandi, shivalinga, trident | 20261103_141447.jpg, 20261103_141457.jpg, 20261103_141512.jpg, 20261103_141515.jpg, 20261103_141531.jpg, 20261103_141536.jpg, 20261103_141540.jpg, 20261103_141609.jpg, 20261103_141611.jpg, 20261103_141718.heic, IMG-20261104-WA0037.jpg, IMG_20261103_141506.jpg, IMG_20261103_141531.jpg, IMG_20261103_141706.jpg | nandi-and-shivalinga.webp |
-| Lane beside math building | 20261103_142118.heic | — |
+| Lane beside matha building | 20261103_142118.heic | — |
 | Shrine room with pink canopy and draped platform | 20261103_143155.jpg, 20261103_143208.heic, 20261103_143211.jpg, 20261103_143301.jpg, IMG_20261103_143309.jpg, IMG_20261104_094611.jpg, IMG_20261104_094947.jpg, IMG_20261104_095005.jpg, IMG_20261104_095010.jpg, IMG_20261104_095012.jpg | shrine-room.webp |
 | Paintings of the three samadhi saints | 20261103_143258.heic, 20261103_143303.heic, 20261103_143307.heic, IMG_20261103_143349.jpg, IMG_20261104_094511.jpg, IMG_20261104_094522.jpg, IMG_20261104_094535.jpg | painting-gothalramdas.webp, painting-brahmaharidas.webp, painting-yathiramdas.webp |
 | Framed religious pictures and portraits (Guru Nanak, Shiva, Krishna, saints) | 20261103_143306.jpg, 20261103_143312.heic, 20261103_143318.jpg, 20261103_143328.jpg, 20261103_143332.jpg, 20261103_143336.jpg, 20261103_143340.jpg, 20261103_143343.jpg, IMG_20261104_094739.jpg, IMG_20261104_094807.jpg, IMG_20261104_094817.jpg | — |
 | Interior staircase | 20261103_143312.jpg | — |
 | Gilded shrine with deity images | 20261103_143358.jpg, IMG_20261104_094637.jpg, IMG_20261104_094648.jpg | gilded-shrine.webp |
-| Tulsi math | 20261103_145037.heic, 20261103_145045.jpg, IMG_20261104_095319.jpg | tulsi-math.webp |
+| Tulsi matha | 20261103_145037.heic, 20261103_145045.jpg, IMG_20261104_095319.jpg | tulsi-matha.webp |
 | Sadhu statue under metal canopy | 20261103_145045.heic, 20261103_145049.jpg, IMG_20261104_095514.jpg | sadhu-statue.webp |
 | Heritage signboard on building | 20261103_145345.heic, 20261103_145346.jpg, 20261103_145350.heic, 20261104_095534.heic, IMG_20261103_145357.jpg, IMG_20261104_101308.jpg, IMG_20261104_102644.jpg | heritage-signboard.webp |
 | Main courtyard | 20261104_095136.heic, 20261104_095544.heic, IMG_20261103_134237.jpg, IMG_20261104_100539.jpg, IMG_20261104_101117.jpg | main-courtyard.webp, courtyard-view.webp |
@@ -271,7 +271,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 | Portrait of an elderly sadhu | IMG_20261104_095808.jpg, IMG_20261104_095816.jpg, IMG_20261104_095816_1.jpg | — |
 | Photo collages on wall | IMG_20261104_095910.jpg, IMG_20261104_095927.jpg, IMG_20261104_095932.jpg | — |
 | Sindoor-covered image in shrine under tree | IMG_20261104_100008.jpg | shrine-under-tree.webp |
-| Tulsi math niches with shaligram stones | IMG_20261104_095335.jpg, IMG_20261104_095359.jpg, IMG_20261104_095403.jpg, IMG_20261104_095404.jpg, IMG_20261104_095423.jpg, IMG_20261104_095431.jpg, IMG_20261104_095453.jpg | tulsi-math-niche.webp |
+| Tulsi matha niches with shaligram stones | IMG_20261104_095335.jpg, IMG_20261104_095359.jpg, IMG_20261104_095403.jpg, IMG_20261104_095404.jpg, IMG_20261104_095423.jpg, IMG_20261104_095431.jpg, IMG_20261104_095453.jpg | tulsi-matha-niche.webp |
 | Hall with benches and painted frieze | IMG_20261104_100859.jpg | satsang-hall.webp |
 | Grain drying on floor | IMG_20261104_101034.jpg | — |
 | Three sadhus at veranda | IMG_20261104_101147.jpg, IMG_20261104_101154.jpg | sadhus-at-veranda.webp |

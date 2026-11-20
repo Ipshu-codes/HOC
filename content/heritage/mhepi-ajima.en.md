@@ -76,7 +76,7 @@ gallery:
 - **Nepal Sambat 1120, Pohelathwa 12 (VS 2056, Magh 4)**: Shri Amrit Man Shrestha and Prithvi Kumari Shrestha, residents of Mhepi, offered a **two-tiered brass roof** to Shri Shri Shri Yogambar Jnaneshwari Mhepi Ajima in memory of their ancestors, on the auspicious day of their Janku ceremony.
 
 <!-- source: mhepi-inscriptions | 20261104_083749.heic -->
-- **Nepal Sambat 1120, Gunlathwa Navami, Tuesday (VS 2057, Shrawan)**: in memory of the late Mathuradas Shrestha and the late Vishnu Devi Shrestha, the family of Rajendra Das Shrestha laid white stone (marble) in the temple of Shri Yogambar Jnaneshwari.
+- **Nepal Sambat 1120, Gunlathwa Navami, Tuesday (VS 2057, Shrawan)**: in memory of the late mathauradas Shrestha and the late Vishnu Devi Shrestha, the family of Rajendra Das Shrestha laid white stone (marble) in the temple of Shri Yogambar Jnaneshwari.
 
 <!-- source: mhepi-inscriptions | 20261104_084318.heic -->
 - **Nepal Sambat 1121, Thinla Dwadashi**: in memory of the late Gyanmaya Shakya, Buddharatna Shakya and Gyandevi Shakya, Shri Chaitya Ratna Shakya and Sanu Chhori Shakya offered metal-sheet work for the middle part of the main temple of Shri Yogambar Mhepi Ajima.

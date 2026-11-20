@@ -43,7 +43,7 @@ export function byCount(forms: CountForms, count: number): string {
   return count === 1 ? forms.one : forms.other;
 }
 
-/** "Nanak Math" or "Mhepi Ajima and Nanak Math", in the page language, from the sites on this build. */
+/** "Nanak matha" or "Mhepi Ajima and Nanak matha", in the page language, from the sites on this build. */
 export function siteNameList(heritages: Heritage[], lang: Locale, dict: Dictionary): string {
   return joinList(
     heritages.map((heritage) => (lang === "ne" ? heritage.nameNe : heritage.name)),

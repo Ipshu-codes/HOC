@@ -8,7 +8,7 @@ Captured on 12 Nov 2026 in Microsoft Edge. Unless noted otherwise, they are from
 | `dev-map-mhepi-en-1440.jpg` | `npm run dev`, opened at `/en/map/?site=mhepi-ajima`. The map flies to Mhepi Ajima and opens its popup (photo, summary, "Read more"). |
 | `floating-map-button-en-375.jpg`, `floating-map-button-ne-375.jpg` | The floating "🗺 3D Map" button, bottom-right as in the sketch. The headless browser has no colour-emoji font, so 🗺 shows as a plain glyph; phones show the emoji. |
 
-Why Nanak Math is not on the map: the coordinates supplied for it point to a temple in Nagarjun Municipality, outside Ward 16 (see MISSING_INFO.md). It will appear once a corrected point is set in its content files.
+Why Nanak matha is not on the map: the coordinates supplied for it point to a temple in Nagarjun Municipality, outside Ward 16 (see MISSING_INFO.md). It will appear once a corrected point is set in its content files.
 
 Checked:
 

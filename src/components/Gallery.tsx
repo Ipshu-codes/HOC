@@ -45,7 +45,7 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
   const pathname = usePathname();
   const showFilter = sites.length > 1;
 
-  // ?site=nanak-math preselects a tab (links from the detail pages use it).
+  // ?site=nanak-matha preselects a tab (links from the detail pages use it).
   const preselected =
     showFilter && requestedSite && sites.some((site) => site.slug === requestedSite) ? requestedSite : "all";
   const [filter, setFilter] = useState<string>(preselected);
@@ -132,7 +132,7 @@ export default function Gallery({ lang, photos, sites, credit, labels, requested
 
       <Lightbox
         open={openIndex >= 0}
-        index={Math.max(openIndex, 0)}
+        index={matha.max(openIndex, 0)}
         close={() => setOpenIndex(-1)}
         on={{
           view: ({ index }) => {

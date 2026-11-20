@@ -10,7 +10,7 @@ const ID_SUFFIX = /\s*\{#([a-z0-9-]+)\}\s*$/;
  * remark plugin: `## इतिहास {#history}` → `<h2 id="history">इतिहास</h2>`.
  *
  * Every h2/h3 must carry an explicit English id so that anchors such as
- * /ne/heritage/nanak-math/#history work in both languages (an id generated
+ * /ne/heritage/nanak-matha/#history work in both languages (an id generated
  * from the Nepali text would differ per language). A missing id fails the build.
  */
 export default function remarkHeadingIds() {

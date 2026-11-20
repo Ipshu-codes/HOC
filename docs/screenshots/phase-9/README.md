@@ -12,9 +12,9 @@ Captured on 13 Nov 2026 in Microsoft Edge from `npm run build:preview`.
 
 | File | What it shows |
 |---|---|
-| `chat-start-en-1440.jpg`, `chat-start-ne-1440.jpg` | The opening view: four quick questions, then "Visiting Nanak Math", "About Nanak Math", "Contact the ward office", "About this website" and "My question isn't here" last |
+| `chat-start-en-1440.jpg`, `chat-start-ne-1440.jpg` | The opening view: four quick questions, then "Visiting Nanak matha", "About Nanak matha", "Contact the ward office", "About this website" and "My question isn't here" last |
 | `chat-directions-en-1440.jpg`, `chat-directions-ne-1440.jpg` | "How do I get there?": the location in words, the approximate note, "View on 3D Map", the OpenStreetMap directions link and "Read more" |
-| `chat-about-topic-en-1440.jpg`, `chat-about-topic-ne-1440.jpg` | "About Nanak Math", with questions ordered by `priority` |
+| `chat-about-topic-en-1440.jpg`, `chat-about-topic-ne-1440.jpg` | "About Nanak matha", with questions ordered by `priority` |
 | `nani-round-home-hero-1440.jpg`, `nani-round-home-hero-375.jpg` | Round Nani while the home hero is on screen |
 | `nani-big-home-scrolled-1440.jpg`, `nani-big-home-scrolled-375.jpg` | The big figure once the hero has scrolled away |
 | `nani-round-detail-1440.jpg`, `nani-round-gallery-1440.jpg`, `nani-round-contact-1440.jpg`, `nani-round-map-1440.jpg` | Round Nani on the other pages (the big figure covered the TOC, the first photos, the form and the map) |
@@ -29,7 +29,7 @@ Mobile, simulated slow 4G, measured locally on 13 Nov 2026 (Windows, Edge, `npm 
 |---|---|---|---|---|
 | `/en/` | 88 (86–90) | 100 | 96 | 100 |
 | `/ne/` | 91 (85–92) | 100 | 96 | 100 |
-| `/en/heritage/nanak-math/` | 87 (87–88) | 100 | 96 | 100 |
+| `/en/heritage/nanak-matha/` | 87 (87–88) | 100 | 96 | 100 |
 | `/en/gallery/` | 85 (83–85) | 100 | 96 | 100 |
 | `/en/map/` | 88 (86–89) | 100 | 96 | 100 |
 | `/en/contact/` | 100 (99–100) | 100 | 96 | 100 |

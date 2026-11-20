@@ -1,7 +1,7 @@
 @AGENTS.md
 
 # Ward 16 Heritage Website
-- Sites: Mhepi Ajima, Nanak Math — Ward No. 16, Kathmandu Metropolitan City
+- Sites: Mhepi Ajima, Nanak matha — Ward No. 16, Kathmandu Metropolitan City
 - Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'). Hosting: Cloudflare Pages.
 - No server features: no API routes, server actions, middleware or ISR.
 - Everything must be FREE. No paid services, no API keys needing billing.

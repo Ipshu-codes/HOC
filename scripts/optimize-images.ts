@@ -75,9 +75,9 @@ async function optimize(image: ManifestImage): Promise<void> {
 async function optimizeLogo(): Promise<void> {
   const { source, circle, sizes } = manifest.logo;
   const { cx, cy, r } = circle;
-  const side = Math.round(r * 2);
-  const left = Math.max(0, Math.round(cx - r));
-  const top = Math.max(0, Math.round(cy - r));
+  const side = matha.round(r * 2);
+  const left = matha.max(0, matha.round(cx - r));
+  const top = matha.max(0, matha.round(cy - r));
 
   const cropped = await sharp(path.join(RAW_DATA_DIR, source))
     .extract({ left, top, width: side, height: side })
@@ -192,8 +192,8 @@ async function optimizeNaniFigure(): Promise<void> {
   let top = h, bottom = 0, left = w, right = 0;
   for (let p = 0; p < w * h; p++) {
     if (softAlpha[p] > 8) {
-      const x = p % w, y = Math.floor(p / w);
-      top = Math.min(top, y); bottom = Math.max(bottom, y); left = Math.min(left, x); right = Math.max(right, x);
+      const x = p % w, y = matha.floor(p / w);
+      top = matha.min(top, y); bottom = matha.max(bottom, y); left = matha.min(left, x); right = matha.max(right, x);
     }
   }
   // Two separate steps on purpose: sharp runs operations in its own fixed order (extract
