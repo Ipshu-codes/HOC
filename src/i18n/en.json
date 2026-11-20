@@ -77,6 +77,8 @@
     "draftBadge": "Draft",
     "galleryTitle": "Gallery",
     "galleryIntro": "Photos from {sites}.",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
     "seeAll": "See all photos",
     "contactTitle": "Contact",
     "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office."
