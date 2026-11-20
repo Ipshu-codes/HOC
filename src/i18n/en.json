@@ -5,7 +5,7 @@
     "headerSubtitle": "Kathmandu Metropolitan City",
     "otherLanguageLine": "वडा नं. १६, काठमाडौं महानगरपालिका",
     "otherLanguage": "ne",
-    "description": "Discover the heritage of Ward No. 16, Kathmandu Metropolitan City: {sites}.",
+    "description": "Explore the heritage sites of Ward No. 16, Kathmandu Metropolitan City - {sites}.",
     "and": "and"
   },
   "a11y": {
@@ -99,8 +99,8 @@
       "other": "Other heritage sites"
     },
     "sources": "Sources",
-    "sourcesIntro": "The information on this page comes from:",
-    "sourcesNote": "Signboards, plaques and inscriptions were read from photographs taken at the site in November 2026."
+    "sourcesIntro": "Details were gathered from Mahanta Shri Nemmuni Dasji Maharaj of this math and his disciple Shri Nawal kishor Dasji Maharaj.",
+    "sourcesNote": "Signboards, plaques, and inscriptions were transcribed from photographs taken on-site in November 2026."
   },
   "credits": {
     "photos": "Photos: {team}, {year}",
