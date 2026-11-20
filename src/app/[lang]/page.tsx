@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import ContactStrip from "@/components/ContactStrip";
 import HeritageCard from "@/components/HeritageCard";
 import Hero from "@/components/Hero";
+import HomeGalleryCarousel from "@/components/HomeGalleryCarousel";
 import HomeSection from "@/components/HomeSection";
-import ResponsiveImage from "@/components/ResponsiveImage";
 import SectionDivider from "@/components/SectionDivider";
 import {
   getCredits,
@@ -268,17 +268,14 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       <HomeSection id="gallery" title={dict.home.galleryTitle}>
         <p className="mb-6 text-lg">{fill(dict.home.galleryIntro)}</p>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-          {preview.map((image) => (
-            <li key={image.src}>
-              <ResponsiveImage
-                image={image}
-                sizes="(min-width: 768px) 33vw, 50vw"
-                className="aspect-square w-full rounded-xl object-cover shadow-sm"
-              />
-            </li>
-          ))}
-        </ul>
+        <HomeGalleryCarousel
+          images={preview}
+          labels={{
+            title: dict.home.galleryTitle,
+            previousPhoto: dict.home.previousPhoto,
+            nextPhoto: dict.home.nextPhoto,
+          }}
+        />
         <Link
           href={`/${lang}/gallery/`}
           className="mt-6 inline-block font-bold text-crimson underline underline-offset-4 hover:text-brick"
