@@ -1307,10 +1307,28 @@ html[lang="ne"] .gallery-page .wall-placard {
   }
 }
 
-/* ---- List view: rows on the cream page, a small print beside the caption on phones ---- */
+/* ---- List view: rows on the cream page, a small print beside the caption on tablets/phones ----
+   The 3rd column (site name + year) used to be `auto`, which sizes to its own content with no
+   upper bound: for a long site name ("Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas
+   Maharaj (Nanak Math)") that grew to 350px+ and left the caption's `minmax(0, 1fr)` column almost
+   no space, so the grid's safe-shrink floor (0, not min-content) let it collapse to a sliver —
+   narrower than most single words, wrapping the caption one word per line. A capped-but-still-
+   content-sized column (`fit-content(14rem)`, tried first) still grows to that whole cap for any
+   long name, which is most of the row's remaining width once the fixed image column is paid for —
+   the caption read as a narrow strip of 2–3 words per line even once it could no longer collapse to
+   nothing. The metadata (site name, year) is secondary to the photo and its caption, so it gets a
+   small FIXED width instead — enough for 3–4 short wrapped lines of any real site name, same width
+   whether the name is short or long, which also keeps every row's metadata column aligned. The
+   caption's `minmax(0, 1fr)` then gets the lion's share of whatever is left. The row's own container
+   (`ul.wrap.max-w-...` in Gallery.tsx) was also widened, so that "whatever is left" is a genuinely
+   wide reading column rather than being capped well inside the viewport for no reason.
+   Below MOBILE_QUERY (src/lib/breakpoints.ts, 1024 px, the same cutover the map and the 3D museum
+   use): even with a narrow fixed meta column, the fixed-width image plus three gaps leave too little
+   room for a two-column row, so it stacks instead — the same layout this already used below 768 px,
+   now starting a little earlier. */
 .gallery-page .list-row {
   display: grid;
-  grid-template-columns: 20.4rem minmax(0, 1fr) auto auto;
+  grid-template-columns: 20.4rem minmax(0, 1fr) 9rem auto;
   align-items: center;
   gap: 2.2rem;
   width: 100%;
@@ -1319,7 +1337,7 @@ html[lang="ne"] .gallery-page .wall-placard {
   text-align: left;
   transition: background-color 0.16s;
 }
-@media (max-width: 47.99rem) {
+@media (max-width: 63.99rem) {
   .gallery-page .list-row {
     grid-template-columns: 8rem minmax(0, 1fr);
     align-items: start;
