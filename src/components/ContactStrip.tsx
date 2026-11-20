@@ -57,7 +57,7 @@ export default function ContactStrip({ lang, dict, ward }: ContactStripProps) {
         href={`/${lang}/contact/`}
         className="mt-8 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
       >
-        {dict.contactPage.contactLink} <span aria-hidden="true">→</span>
+        {dict.contactPage.sendMessageLink} <span aria-hidden="true">→</span>
       </Link>
     </HomeSection>
   );

@@ -309,5 +309,17 @@
       "pocketTolerance": 24,
       "minPocket": 400
     }
+  },
+  "wardIllustration": {
+    "source": "wardlogo1.png",
+    "widths": [320, 480, 640]
+  },
+  "wardMap": {
+    "source": "ward 16.jpg",
+    "widths": [480, 640, 960]
+  },
+  "naniNamaste": {
+    "source": "Naninamaste.jpeg",
+    "widths": [320, 480, 640]
   }
 }
