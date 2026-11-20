@@ -5,12 +5,12 @@
     "headerSubtitle": "Kathmandu Metropolitan City",
     "otherLanguageLine": "वडा नं. १६, काठमाडौं महानगरपालिका",
     "otherLanguage": "ne",
-    "description": "Discover the heritage of Ward No. 16, Kathmandu Metropolitan City: {sites}.",
+    "description": "Explore the heritage sites of Ward No. 16, Kathmandu Metropolitan City - {sites}.",
     "and": "and"
   },
   "a11y": {
     "skipToContent": "Skip to main content",
-    "homeLink": "Ward No. 16, home"
+    "homeLink": "Ward No. 16 Heritage — home"
   },
   "nav": {
     "label": "Main navigation",
@@ -81,7 +81,9 @@
     "nextPhoto": "Next photo",
     "seeAll": "See all photos",
     "contactTitle": "Contact",
-    "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office."
+    "contactIntro": "Questions about the heritage sites or this website? Contact the Ward No. 16 office.",
+    "openInOsm": "Open in OpenStreetMap",
+    "opensInNewTab": "(opens in a new tab)"
   },
   "heritage": {
     "backToAll": "All heritage sites",
@@ -102,7 +104,10 @@
     "otherHeritage": {
       "one": "Other heritage site",
       "other": "Other heritage sites"
-    }
+    },
+    "sources": "Sources",
+    "sourcesIntro": "Details were gathered from Mahanta Shri Nemmuni Dasji Maharaj of this matha and his disciple Shri Nawal kishor Dasji Maharaj.",
+    "sourcesNote": "Signboards, plaques, and inscriptions were transcribed from photographs taken on-site in November 2026."
   },
   "credits": {
     "photos": "Photos: {team}, {year}",
@@ -146,7 +151,7 @@
   },
   "map": {
     "title": "3D Map",
-    "intro": "Explore Ward No. 16 in 3D. Select a place to read its story and see its photos, or follow the walking route from stop to stop. Drag to move, right-drag or two-finger drag to tilt and turn.",
+    "intro": "Explore Ward No. 16 in 3D. Drag to move, right-drag or two-finger drag to tilt and turn, and select a place to see it up close.",
     "floatingButton": "3D Map",
     "floatingButtonShort": "Map",
     "placesHeading": "Places",
@@ -262,18 +267,26 @@
     "naniAlt": "Nani, the Ward 16 heritage guide",
     "quickQuestions": "Popular questions",
     "viewOnMap": "View on 3D Map",
+    "openOsm": "Open in OpenStreetMap (directions)",
     "approximateNote": "The location on the map is approximate.",
     "newTab": "(opens in a new tab)"
   },
   "contactPage": {
     "title": "Contact",
-    "intro": "We would love to hear from you. Write to the Ward No. 16 office with your questions, your stories and memories of the heritage sites, or any information that could help us record them.",
-    "writeHeading": "Write to us",
-    "writeBody": "Send an email to the ward office. Questions, family stories, old photographs and corrections about the ward's heritage are all welcome.",
-    "emailButton": "Email the ward office",
+    "intro": "Send a message to the Ward No. 16 office about the heritage sites or this website.",
+    "name": "Your name",
+    "email": "Your email",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending…",
+    "success": "Thank you! Your message has been sent to the Ward No. 16 office.",
+    "error": "Sorry, the message could not be sent. Please try again, or email us directly.",
+    "required": "Required",
+    "emailInstead": "Prefer email? Write to {email}.",
+    "formUnavailable": "The contact form is not available at the moment. Please email the ward office at {email} or call {phone}.",
     "mailSubject": "Ward 16 heritage website",
     "officeHeading": "Ward Office",
-    "contactLink": "Contact the ward office"
+    "sendMessageLink": "Send a message"
   },
   "notFound": {
     "title": "Page not found",

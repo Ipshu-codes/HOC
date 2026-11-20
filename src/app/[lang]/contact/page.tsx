@@ -48,14 +48,16 @@ export default async function ContactPage({
           className="rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 md:p-8"
         >
           <h2 id="write-to-us" className="text-2xl font-bold">
-            {dict.contactPage.writeHeading}
+            {dict.contactPage.sendMessageLink}
           </h2>
-          <p className="justified mt-3 text-lg">{dict.contactPage.writeBody}</p>
+          <p className="justified mt-3 text-lg">
+            {dict.contactPage.emailInstead.replace("{email}", ward.office.email)}
+          </p>
           <a
             href={mailto}
             className="mt-6 inline-block rounded-xl bg-crimson px-5 py-3 font-bold text-white hover:bg-brick"
           >
-            {dict.contactPage.emailButton} <span aria-hidden="true">→</span>
+            {dict.contactPage.sendMessageLink} <span aria-hidden="true">→</span>
           </a>
           <p className="mt-4">
             <a href={mailto} className={`${linkClass} text-lg break-all`}>
