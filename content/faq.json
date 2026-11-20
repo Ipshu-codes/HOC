@@ -40,18 +40,18 @@
   "entries": [
     {
       "id": "nanak-where",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 1,
       "q_en": "Where is Nanak matha?",
       "q_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ) कहाँ छ?",
       "a_en": "Nanak matha is on the bank of the Bishnumati in Naya Bazar, next to the Bishnumati bridge, in the Balaju area of Ward No. 16, Kathmandu Metropolitan City.",
       "a_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ) काठमाडौं महानगरपालिका वडा नं. १६, बालाजु क्षेत्रको नयाँ बजारमा विष्णुमती पुलछेउ विष्णुमती किनारमा छ ।",
-      "link": "/heritage/nanak-matha/#how-to-visit"
+      "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-reach",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 2,
       "directions": true,
@@ -59,22 +59,22 @@
       "q_ne": "त्यहाँ कसरी पुग्ने?",
       "a_en": "Go to Naya Bazar, next to the Bishnumati bridge in the Balaju area. Look for the signboard reading “प्राचिन उदासिन नानक मठ” above the entrance gate; stone steps lead up from the gate.",
       "a_ne": "बालाजु क्षेत्रको नयाँ बजारमा विष्णुमती पुलछेउ पुग्नुहोस् । प्रवेशद्वारमाथि “महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल, प्राचीन उदासीन नानक मठ” लेखिएको साइनबोर्ड छ; ढोकाबाट ढुङ्गे सिँढी उक्लिनुपर्छ ।",
-      "link": "/heritage/nanak-matha/#how-to-visit"
+      "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-hours",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 3,
       "q_en": "When is it open?",
       "q_ne": "कति बजे खुल्छ?",
       "a_en": "Nanak matha is open from 7:00 am to 6:00 pm, to everyone, for darshan, seva and worship.",
       "a_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ) बिहान ७ बजेदेखि बेलुका ६ बजेसम्म दर्शन, सेवा र पूजाका लागि सबैका लागि खुला रहन्छ ।",
-      "link": "/heritage/nanak-matha/#how-to-visit"
+      "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-entry-fee",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 4,
       "q_en": "Is there an entry fee?",
@@ -85,7 +85,7 @@
     },
     {
       "id": "nanak-photography",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 5,
       "q_en": "Can I take photos?",
@@ -96,223 +96,223 @@
     },
     {
       "id": "nanak-tips",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 6,
       "q_en": "Any tips before visiting?",
       "q_ne": "जानुअघि के थाहा पाउनुपर्छ?",
       "a_en": "The matha is open to everyone from 7:00 am to 6:00 pm for darshan, seva and worship. The entrance is the gate below the signboard, with stone steps up. If you want to feed the cows at the gaushala, bring green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt; never stale, rotten or leftover food.",
       "a_ne": "मठ बिहान ७ बजेदेखि बेलुका ६ बजेसम्म दर्शन, सेवा र पूजाका लागि सबैका लागि खुला छ । प्रवेशद्वार साइनबोर्डमुनिको ढोका हो, जहाँबाट ढुङ्गे सिँढी उक्लिनुपर्छ । गौशालाका गाईलाई खुवाउन चाहनुहुन्छ भने हरियो घाँसपात, पराल, मकैको पिठो, चोकर, दुटो, पिना, शख्खर वा नुन लानुहोस्; जुठो, सडेको वा कुहिएको कुरा नदिनुहोस् ।",
-      "link": "/heritage/nanak-matha/#how-to-visit"
+      "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-gaushala",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "visit",
       "priority": 7,
       "q_en": "Can I feed the cows?",
       "q_ne": "गाईलाई खुवाउन मिल्छ?",
       "a_en": "Yes. The matha's gaushala welcomes green fodder, straw, maize flour, bran, husk, oil cake, jaggery or salt. Never give stale, rotten or leftover food.",
       "a_ne": "मिल्छ । मठको गौशालाका गाईलाई हरियो घाँसपात, पराल, मकैको पिठो, चोकर, दुटो, पिना, शख्खर र नुन खुवाउन सकिन्छ । जुठो, सडेको वा कुहिएको कुरा खुवाउनु हुँदैन।",
-      "link": "/heritage/nanak-matha/#how-to-visit"
+      "link": "/heritage/nanak-math/#how-to-visit"
     },
     {
       "id": "nanak-what",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 1,
       "q_en": "What is Nanak matha?",
       "q_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल (नानक मठ) के हो?",
       "a_en": "Nanak matha is an ancient Udasin matha on the bank of the Bishnumati in Naya Bazar, Balaju. It is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi, and it has always been run by mahants of the Nepali guru–disciple tradition.",
       "a_ne": "यस मठमा वि.सं. १४५० देखि १६६४ सम्म रहनुभएका तपस्यारत समाधि सिद्ध महायोगी श्री ब्रह्महरिदासजी महाराजले महायोग साधनाको माध्यमबाट आत्मा र परमात्माको साक्षात्कार गर्नुभएको हुनाले यसै मठमा उहाँले समाधि लिनुभयो। त्यसैले यस मठलाई महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधिस्थल भनिएको हो ।",
-      "link": "/heritage/nanak-matha/#history"
+      "link": "/heritage/nanak-math/#history"
     },
     {
       "id": "nanak-age",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 2,
       "q_en": "How old is it?",
       "q_ne": "यो कति पुरानो हो?",
       "a_en": "The sources differ. The matha’s written account says its guru gaddi is a thousand years old; its signboards speak of a 5,000-year tradition; published accounts of Sikh tradition place Guru Nanak Dev’s believed visit around 1516. The living bhu-samadhi temple dates to VS 1664.",
       "a_ne": "यो मठ करिब ५००० वर्ष पुरानो मानिन्छ, तथापि समाधिको हिसाबले हेर्ने हो भने पनि यो ५०० वर्षभन्दा पुरानो मानिन्छ ।",
-      "link": "/heritage/nanak-matha/#history"
+      "link": "/heritage/nanak-math/#history"
     },
     {
       "id": "nanak-name",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 3,
       "q_en": "What is its link to Guru Nanak?",
       "q_ne": "गुरु नानकसँग यसको के सम्बन्ध छ?",
       "a_en": "Sikh tradition associates the matha with Guru Nanak Dev, who is believed to have visited and meditated here (around 1516, according to some accounts). The matha’s own written account does not explain the name, and no local source has confirmed this association yet.",
       "a_ne": "एक किंवदन्तीअनुसार सिख परम्पराका गुरु नानक नेपाल यात्राका क्रममा यहाँ आउनुभएको भन्ने भनाइ रहेको छ, तथापि हामीसँग कुनै प्रामाणिक आधारहरू छैनन् । यहाँ सिख परम्पराका अनुयायीहरूले मान्ने गुरु ग्रन्थ साहिब अध्ययनका लागि ल्याइएको हुनाले उहाँका भक्तजनहरू यहाँ आउने गर्छन् । त्यसैले त्यस आधारमा यो सम्बन्ध देखिन्छ ।",
-      "link": "/heritage/nanak-matha/#history"
+      "link": "/heritage/nanak-math/#history"
     },
     {
       "id": "nanak-festivals",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 4,
       "q_en": "What festivals are held there?",
       "q_ne": "यहाँ कुन कुन चाड मनाइन्छ?",
       "a_en": "The matha's annual programme includes Akshaya Tritiya, Basanta Panchami, Kojagrat Purnima, Teej, Asar Shashthi, Vijaya Dashami, Sharadiya Navaratri and the flag-changing (dhwajarohan) with a bhandara at the start of Sorha Shraddha.",
       "a_ne": "यस मठमा वार्षिक कार्यक्रमहरू मनाइन्छन् — जस्तै: शिवरात्रि, हनुमान जयन्ती, तीज, विजया दशमी, कोजाग्रत पूर्णिमा, वासन्ती नवरात्र, वसन्त पञ्चमी, कृष्ण अष्टमी लगायतका विभिन्न उत्सव-महोत्सवहरू एवं प्रत्येक शनिबार भण्डारा तथा सत्सङ्गहरू पनि आयोजना गरिन्छन् ।",
-      "link": "/heritage/nanak-matha/#festivals"
+      "link": "/heritage/nanak-math/#festivals"
     },
     {
       "id": "nanak-see",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 5,
       "q_en": "What can I see there?",
       "q_ne": "त्यहाँ के के हेर्न सकिन्छ?",
       "a_en": "The living bhu-samadhi temple, the Vishnu Panchayatan temple, the Hanuman temple beneath the ancient peepal tree, the akhanda dhuni (a sacred fire said to have burned for about 700 years), the Tulsi matha, the stone Nandi of Nandeshwar Mahadev, the Vishnu paduka and the gaushala.",
       "a_ne": "जीवित भू-समाधि मन्दिर, विष्णु पञ्चायतन मन्दिर, प्राचीन पिपलमुनिको हनुमान मन्दिर, अखण्ड धुनी (करिब ७०० वर्षदेखि बलिरहेको मानिने पवित्र आगो), तुलसी मठ, नन्दीश्वर महादेवको ढुङ्गे नन्दी, विष्णुपादुका र गौशाला।",
-      "link": "/heritage/nanak-matha/#architecture"
+      "link": "/heritage/nanak-math/#architecture"
     },
     {
       "id": "nanak-samadhi",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 6,
       "q_en": "What is the living bhu-samadhi?",
       "q_ne": "जीवित भू-समाधि भनेको के हो?",
       "a_en": "Nanak matha is known as the place where Mahayogi Shri Brahmaharidas Maharaj entered living bhu-samadhi in VS 1664, together with his disciples Gothalramdas and Yathiramdas. The samadhi temple built in VS 1664 marks the spot.",
       "a_ne": "नानक मठ महायोगी श्री ब्रह्महरिदास महाराजले आफ्ना शिष्य गोथलरामदास र यथिरामदाससहित वि.सं. १६६४ मा जीवित भू-समाधि लिनुभएको स्थलका रूपमा परिचित छ। त्यहाँ वि.सं. १६६४ मा बनेको समाधि मन्दिर छ।",
-      "link": "/heritage/nanak-matha/#brahmaharidas"
+      "link": "/heritage/nanak-math/#brahmaharidas"
     },
     {
       "id": "nanak-brahmaharidas",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 7,
       "q_en": "Who was Brahmaharidas Maharaj?",
       "q_ne": "ब्रह्महरिदास महाराज को हुनुहुन्थ्यो?",
       "a_en": "Mahayogi Shri Brahmaharidas Maharaj was born in VS 1432 on Baishakh Purnima. His guru was Jagatguru Shri Narharyanandacharya. According to the matha, he lived on air alone until the age of 232 and entered living bhu-samadhi here in VS 1664.",
       "a_ne": "महायोगी श्री ब्रह्महरिदास महाराजको जन्म वि.सं. १४३२ वैशाख पूर्णिमामा भएको हो। उहाँका सद्गुरु जगतगुरु श्री नरहर्यानन्दाचार्यजी हुनुहुन्थ्यो। मठका अनुसार उहाँ हावा मात्र लिएर २३२ वर्षसम्म बस्नुभयो र वि.सं. १६६४ मा यहीँ जीवित भू-समाधि लिनुभयो।",
-      "link": "/heritage/nanak-matha/#brahmaharidas"
+      "link": "/heritage/nanak-math/#brahmaharidas"
     },
     {
       "id": "nanak-mahant",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 8,
       "q_en": "Who runs it today?",
       "q_ne": "अहिले यसलाई कसले चलाउँछ?",
       "a_en": "The matha is run by its mahant, Shri Naval Kishor Das Ji Maharaj, the 23rd in the line of mahants.",
       "a_ne": "मठको सञ्चालन तेइसौँ महन्त श्री नवल किशोर दासजी महाराजले गर्नुहुन्छ।",
-      "link": "/heritage/nanak-matha/#mahants"
+      "link": "/heritage/nanak-math/#mahants"
     },
     {
       "id": "nanak-dhuni",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 9,
       "q_en": "What is the akhanda dhuni?",
       "q_ne": "अखण्ड धुनी के हो?",
       "a_en": "The akhanda dhuni is a sacred fire said to have burned without a break for about 700 years. It is kept alive with dry, fallen wood from the trees in the matha grounds.",
       "a_ne": "अखण्ड धुनी करिब ७०० वर्षदेखि निरन्तर बलिरहेको मानिने पवित्र आगो हो। मठ परिसरका सुकेका, लडेका रूखको दाउराले यसलाई बालिराखिन्छ।",
-      "link": "/heritage/nanak-matha/#architecture"
+      "link": "/heritage/nanak-math/#architecture"
     },
     {
       "id": "nanak-akshaya-tritiya",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 10,
       "q_en": "What happens on Akshaya Tritiya?",
       "q_ne": "अक्षय तृतीयामा के हुन्छ?",
       "a_en": "On Akshaya Tritiya (Baishakh) an annual puja is held at the samadhi temple. The living bhu-samadhi took place on Baishakh Akshaya Tritiya in VS 1664.",
       "a_ne": "अक्षय तृतीया (वैशाख) मा समाधि मन्दिरमा वार्षिक पूजा हुन्छ। जीवित भू-समाधि वि.सं. १६६४ वैशाख अक्षय तृतीयामा भएको थियो।",
-      "link": "/heritage/nanak-matha/#festivals"
+      "link": "/heritage/nanak-math/#festivals"
     },
     {
       "id": "nanak-tradition",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 11,
       "q_en": "What tradition does it follow?",
       "q_ne": "यो कुन परम्परा मान्छ?",
       "a_en": "Nanak matha is an Udasin matha run in the Nepali guru–disciple (mahant) tradition. Vishnu Panchayatan, Hanuman, Nandeshwar Mahadev, Tulsi and Gau Mata are worshipped there.",
       "a_ne": "नानक मठ नेपाली गुरु शिष्य महन्त परम्पराअनुसार सञ्चालित उदासीन मठ हो। यहाँ विष्णु पञ्चायतन, हनुमानजी, नन्दीश्वर महादेव, तुलसी माता र गौ माताको पूजा हुन्छ।",
-      "link": "/heritage/nanak-matha/#history"
+      "link": "/heritage/nanak-math/#history"
     },
     {
       "id": "nanak-other-names",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 12,
       "q_en": "What other names does it have?",
       "q_ne": "यसका अरू नाम के के हुन्?",
       "a_en": "It is also known as Nandi Ban, Tapoban, Shankha Ban, Shankhabari, Mahanta Ban (Mahanta matha), Sangat Ban and Sadhukuti. Each name comes from a story or tradition of the place.",
       "a_ne": "यसलाई नन्दी वन, तपोवन, शङ्ख वन, शङ्खबारी, महन्त वन (महन्त मठ), संगत वन र साधुकुटी पनि भनिन्छ। हरेक नामको आफ्नै कथा वा परम्परा छ।",
-      "link": "/heritage/nanak-matha/#legends"
+      "link": "/heritage/nanak-math/#legends"
     },
     {
       "id": "nanak-nandi",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 13,
       "q_en": "What is the story of Nandi?",
       "q_ne": "नन्दीको कथा के हो?",
       "a_en": "According to the matha, Nandi did penance here, received Lord Shiva's darshan and asked to become his vahana. An ancient stone Nandi still stands here, and the place is called Nandeshwar Mahadev.",
       "a_ne": "मठका अनुसार नन्दीले यहाँ तपस्या गरी शिवजीको दर्शन पाए र वाहन हुन पाउँ भनी वरदान मागे। यहाँ अहिले पनि नन्दीको प्राचीन शिला मूर्ति छ र यो ठाउँ नन्दीश्वर महादेव कहलाउँछ।",
-      "link": "/heritage/nanak-matha/#legends"
+      "link": "/heritage/nanak-math/#legends"
     },
     {
       "id": "nanak-tulsi-matha",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 14,
       "q_en": "What is the Tulsi matha?",
       "q_ne": "तुलसी मठ के हो?",
       "a_en": "The Tulsi matha is a shrine worshipped since ancient times, with Bhimsen on the east, Pashupatinath on the south, Narsingh Bhagwan on the west and Shiva–Parvati on the north, together with shaligram stones.",
       "a_ne": "तुलसी मठ प्राचीनकालदेखि पूजा हुँदै आएको देवस्थल हो, जसको पूर्वमा भीमसेन, दक्षिणमा पशुपतिनाथ, पश्चिममा नरसिंह भगवान र उत्तरमा शिव पार्वतीसहित शालिग्राम विराजमान छन्।",
-      "link": "/heritage/nanak-matha/#architecture"
+      "link": "/heritage/nanak-math/#architecture"
     },
     {
       "id": "nanak-paduka",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 15,
       "q_en": "What is the Vishnu paduka?",
       "q_ne": "विष्णुपादुका के हो?",
       "a_en": "The Vishnu paduka are stone footprints beneath the peepal tree, said to be about 1,000 years old. Sadhus meditate there.",
       "a_ne": "विष्णुपादुका पिपलको रूखमुनि रहेका करिब १००० वर्ष पुराना मानिने ढुङ्गे पाउ हुन्। साधुहरू त्यहाँ ध्यान गर्छन्।",
-      "link": "/heritage/nanak-matha/#architecture"
+      "link": "/heritage/nanak-math/#architecture"
     },
     {
       "id": "nanak-guru-granth",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 17,
       "q_en": "Does it have the Guru Granth Sahib?",
       "q_ne": "यहाँ गुरुग्रन्थ साहिब छ?",
       "a_en": "Yes. The matha's gurus brought the Guru Granth Sahib for study. It is kept with the Vedas, Puranas, Ramayana, Bhagavat and other texts, which are worshipped and read in daily satsang.",
       "a_ne": "छ। मठका गुरुहरूले अध्ययनका लागि गुरुग्रन्थ साहिब ल्याएका थिए। यो वेद, पुराण, रामायण, भागवत आदि ग्रन्थसँगै राखिन्छ, जसको पूजा र नित्य सत्संगमा पाठ हुन्छ।",
-      "link": "/heritage/nanak-matha/#legends"
+      "link": "/heritage/nanak-math/#legends"
     },
     {
       "id": "nanak-daily",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 18,
       "q_en": "What worship happens every day?",
       "q_ne": "दैनिक पूजा के के हुन्छ?",
       "a_en": "Every day there is puja, reading and morning and evening aarti for the Vishnu Panchayatan and the sacred texts, care of the cows, puja at the samadhi temple, abhishek of Hanuman and the Shivalinga, and tending of the akhanda dhuni.",
       "a_ne": "हरेक दिन विष्णु पञ्चायतन र ग्रन्थहरूको पूजा, पाठ र प्रातः सन्ध्या आरती, गौसेवा, समाधि मन्दिरमा पूजा, हनुमान र शिवलिङ्गको अभिषेक तथा अखण्ड धुनीको हेरचाह हुन्छ।",
-      "link": "/heritage/nanak-matha/#daily-worship"
+      "link": "/heritage/nanak-math/#daily-worship"
     },
     {
       "id": "nanak-sources",
-      "site": "nanak-matha",
+      "site": "nanak-math",
       "topic": "about",
       "priority": 19,
       "q_en": "Where does this information come from?",
       "q_ne": "यो जानकारी कहाँबाट लिइएको हो?",
       "a_en": "From the matha’s own written account, its signboards and plaques (read from photos taken in November 2026), and published sources on its association with Guru Nanak Dev (Spotlight, Nepali Times and Wikipedia). Each page lists its sources at the end.",
       "a_ne": "मठको आफ्नै लिखित विवरण, २०२६ नोभेम्बरमा खिचिएका तस्बिरबाट पढिएका साइनबोर्ड र पाटी, र गुरु नानक देवसँगको सम्बन्धबारे प्रकाशित स्रोतहरू (स्पटलाइट, नेपाली टाइम्स र विकिपिडिया) बाट। प्रत्येक पृष्ठको अन्त्यमा स्रोतहरू दिइएका छन्।",
-      "link": "/heritage/nanak-matha/#sources"
+      "link": "/heritage/nanak-math/#sources"
     },
     {
       "id": "mhepi-where",

@@ -188,7 +188,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 **Covers:**
 
 - `mhepi-ajima/cover.webp` is made from `IMG_20261104_084425.jpg`, the temple front (same photo as `temple-front.webp`).
-- `nanak-matha/cover.webp` is made from `20261103_134731.heic`, the samadhi temple (same photo as `samadhi-temple.webp`).
+- `nanak-math/cover.webp` is made from `20261103_134731.heic`, the samadhi temple (same photo as `samadhi-temple.webp`).
 
 #### Mhepi Ajima/Photo/
 
@@ -246,7 +246,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 | Framed religious pictures and portraits (Guru Nanak, Shiva, Krishna, saints) | 20261103_143306.jpg, 20261103_143312.heic, 20261103_143318.jpg, 20261103_143328.jpg, 20261103_143332.jpg, 20261103_143336.jpg, 20261103_143340.jpg, 20261103_143343.jpg, IMG_20261104_094739.jpg, IMG_20261104_094807.jpg, IMG_20261104_094817.jpg | — |
 | Interior staircase | 20261103_143312.jpg | — |
 | Gilded shrine with deity images | 20261103_143358.jpg, IMG_20261104_094637.jpg, IMG_20261104_094648.jpg | gilded-shrine.webp |
-| Tulsi matha | 20261103_145037.heic, 20261103_145045.jpg, IMG_20261104_095319.jpg | tulsi-matha.webp |
+| Tulsi matha | 20261103_145037.heic, 20261103_145045.jpg, IMG_20261104_095319.jpg | tulsi-math.webp |
 | Sadhu statue under metal canopy | 20261103_145045.heic, 20261103_145049.jpg, IMG_20261104_095514.jpg | sadhu-statue.webp |
 | Heritage signboard on building | 20261103_145345.heic, 20261103_145346.jpg, 20261103_145350.heic, 20261104_095534.heic, IMG_20261103_145357.jpg, IMG_20261104_101308.jpg, IMG_20261104_102644.jpg | heritage-signboard.webp |
 | Main courtyard | 20261104_095136.heic, 20261104_095544.heic, IMG_20261103_134237.jpg, IMG_20261104_100539.jpg, IMG_20261104_101117.jpg | main-courtyard.webp, courtyard-view.webp |
@@ -271,7 +271,7 @@ The alt text (EN + NE) is in each content file's `gallery` frontmatter.
 | Portrait of an elderly sadhu | IMG_20261104_095808.jpg, IMG_20261104_095816.jpg, IMG_20261104_095816_1.jpg | — |
 | Photo collages on wall | IMG_20261104_095910.jpg, IMG_20261104_095927.jpg, IMG_20261104_095932.jpg | — |
 | Sindoor-covered image in shrine under tree | IMG_20261104_100008.jpg | shrine-under-tree.webp |
-| Tulsi matha niches with shaligram stones | IMG_20261104_095335.jpg, IMG_20261104_095359.jpg, IMG_20261104_095403.jpg, IMG_20261104_095404.jpg, IMG_20261104_095423.jpg, IMG_20261104_095431.jpg, IMG_20261104_095453.jpg | tulsi-matha-niche.webp |
+| Tulsi matha niches with shaligram stones | IMG_20261104_095335.jpg, IMG_20261104_095359.jpg, IMG_20261104_095403.jpg, IMG_20261104_095404.jpg, IMG_20261104_095423.jpg, IMG_20261104_095431.jpg, IMG_20261104_095453.jpg | tulsi-math-niche.webp |
 | Hall with benches and painted frieze | IMG_20261104_100859.jpg | satsang-hall.webp |
 | Grain drying on floor | IMG_20261104_101034.jpg | — |
 | Three sadhus at veranda | IMG_20261104_101147.jpg, IMG_20261104_101154.jpg | sadhus-at-veranda.webp |

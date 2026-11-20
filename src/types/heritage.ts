@@ -4,7 +4,7 @@ import type { Locale } from "@/types/locale";
 
 export { LOCALES, type Locale } from "@/types/locale";
 
-export const HERITAGE_SLUGS = ["mhepi-ajima", "nanak-matha"] as const;
+export const HERITAGE_SLUGS = ["mhepi-ajima", "nanak-math"] as const;
 export type HeritageSlug = (typeof HERITAGE_SLUGS)[number];
 
 /**
