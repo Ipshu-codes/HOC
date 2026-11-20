@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 
 import type { MapPlace } from "@/components/map/types";
@@ -163,12 +164,13 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
                   ))}
                 </ul>
                 {details.credit && <p className="text-sm text-ink/80">{details.credit}</p>}
-                <a
+                <Link
                   href={details.galleryHref}
+                  prefetch={false}
                   className="mt-1 inline-block font-bold text-crimson underline underline-offset-4 hover:text-brick"
                 >
                   {t.seeAllPhotos} <span aria-hidden="true">→</span>
-                </a>
+                </Link>
               </section>
             )}
 
@@ -176,12 +178,13 @@ export default function PlaceDetailPanel({ place, labels, lang, onClose, footer 
         )}
 
         {place.href && (
-          <a
+          <Link
             href={place.href}
+            prefetch={false}
             className="mt-5 inline-block rounded-xl bg-crimson px-4 py-3 font-bold text-white hover:bg-brick"
           >
             {t.openPage} <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         )}
       </div>
 

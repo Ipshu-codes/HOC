@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import MapControls from "@/components/map/MapControls";
 import PlaceDetailPanel from "@/components/map/PlaceDetailPanel";
+import RouteNav from "@/components/map/RouteNav";
 import type { MapPlace, MapRoute, PlaceKind } from "@/components/map/types";
 import { isMobile } from "@/lib/breakpoints";
 import type { Dictionary } from "@/lib/i18n";
@@ -83,7 +84,11 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   }, []);
   const [detailOpen, setDetailOpen] = useState(false);
   const [kinds, setKinds] = useState<ReadonlySet<PlaceKind>>(new Set());
+  const [routeActive, setRouteActive] = useState(false);
+  const [routeStep, setRouteStep] = useState(-1);
   const mapWrapRef = useRef<HTMLDivElement>(null);
+
+  const stops = useMemo(() => route?.stops ?? [], [route]);
 
   // Place/category controls and map markers use the same filtered place set.
   const results = useMemo(
@@ -93,8 +98,10 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
 
   // Markers shown on the map are the places that pass the current category filters.
   const visibleIds = useMemo(() => {
-    return new Set(results.map((place) => place.id));
-  }, [results]);
+    const ids = new Set(results.map((place) => place.id));
+    if (routeActive) for (const id of stops) ids.add(id);
+    return ids;
+  }, [results, routeActive, stops]);
 
   const selectedPlace = places.find((place) => place.id === selectedId) ?? null;
 
@@ -106,9 +113,10 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   const select = useCallback(
     (id: string) => {
       setSelectedId(id);
+      if (routeActive) setRouteStep(stops.indexOf(id));
       setMapOn(true);
     },
-    [],
+    [routeActive, stops],
   );
 
   const selectFromList = useCallback(
@@ -131,6 +139,33 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
   const resetView = useCallback(() => {
     setSelectedId(null);
     setDetailOpen(false);
+    setRouteStep(-1);
+  }, []);
+
+  const goToStop = useCallback(
+    (index: number) => {
+      const id = stops[index];
+      if (!id) return;
+      setRouteActive(true);
+      setRouteStep(index);
+      setSelectedId(id);
+      setDetailOpen(false);
+      setMapOn(true);
+      showMap();
+    },
+    [showMap, stops],
+  );
+
+  const routeOverview = useCallback(() => {
+    setRouteStep(-1);
+    setSelectedId(null);
+    setDetailOpen(false);
+    showMap();
+  }, [showMap]);
+
+  const exitRoute = useCallback(() => {
+    setRouteActive(false);
+    setRouteStep(-1);
   }, []);
 
   const toggleKind = useCallback((kind: PlaceKind) => {
@@ -173,6 +208,40 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
         labels={labels}
         lang={lang}
       />
+
+      {route && (
+        <section aria-label={route.name} className="flex flex-col gap-2 sm:items-start">
+          {routeActive ? (
+            <>
+              <RouteNav
+                route={route}
+                places={places}
+                step={routeStep}
+                labels={labels}
+                lang={lang}
+                onPrevious={() => goToStop(routeStep - 1)}
+                onNext={() => goToStop(routeStep + 1)}
+                onOverview={routeOverview}
+              />
+              <button
+                type="button"
+                onClick={exitRoute}
+                className="min-h-11 rounded-lg px-3 py-2 font-bold text-crimson underline underline-offset-4 hover:text-brick"
+              >
+                {labels.route.exit}
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => goToStop(0)}
+              className="min-h-11 rounded-lg bg-crimson px-4 py-2 font-bold text-white hover:bg-brick"
+            >
+              {labels.route.start}
+            </button>
+          )}
+        </section>
+      )}
 
       <div
         className={
