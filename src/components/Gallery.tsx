@@ -537,7 +537,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       {shown.length === 0 ? (
         <p className="wrap rule py-16 text-center text-lg">{labels.empty}</p>
       ) : view === "list" ? (
-        <ul className="wrap mx-auto max-w-[56rem]">
+        <ul className="wrap mx-auto max-w-[72rem]">
           {shown.map((photo, index) => (
             <li key={photo.thumb.src}>
               <button type="button" className="list-row" onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"))}>
