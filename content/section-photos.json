@@ -14,7 +14,7 @@
       "8": "/images/nanak-math/gaushala-cow.webp",
       "9": "/images/nanak-math/samadhi-temple.webp",
       "10": {
-        "photo": "/images/nanak-math/shivalinga-niche.webp",
+        "photo": "/images/nanak-math/shivalaya.webp",
         "description": false
       },
       "11": "/images/nanak-math/main-courtyard.webp",
@@ -23,15 +23,11 @@
         "description": false
       },
       "13": {
-        "photo": "/images/nanak-math/courtyard-view.webp",
+        "photo": "/images/nanak-math/sadhusanta-niwas.webp",
         "description": false
       },
-      "15": {
-        "photo": "/images/nanak-math/yajnashala-construction.webp",
-        "description": false
-      },
-      "16": {
-        "photo": "/images/nanak-math/satsang-hall-construction.webp",
+      "14": {
+        "photo": "/images/nanak-math/brahmakunda.webp",
         "description": false
       }
     }
