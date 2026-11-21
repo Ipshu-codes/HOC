@@ -22,7 +22,7 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
   return (
     <>
       <header className="border-b-2 border-gold/60 bg-cream">
-        <div className="mx-auto flex max-w-6xl items-center px-4 py-3 md:py-5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:py-5">
           <BrandLink href={`/${lang}/`} label={dict.a11y.homeLink}>
             {/* alt="": the link's name ("Ward No. 16, home") already says what it is. */}
             <Image
@@ -46,6 +46,18 @@ export default function Header({ lang, dict, ward, navItems }: HeaderProps) {
               </span>
             </span>
           </BrandLink>
+
+          {/* RatnaInTech logo on the right, vertically centered */}
+          <div className="ml-4 shrink-0 md:ml-8">
+            <Image
+              src="/images/logo/Ratna.png"
+              alt="RatnaInTech"
+              width={120}
+              height={60}
+              className="h-auto max-h-14 w-auto md:max-h-20"
+              style={{ objectFit: "contain" }}
+            />
+          </div>
         </div>
       </header>
 

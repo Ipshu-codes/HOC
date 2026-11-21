@@ -6,6 +6,7 @@ import ContactStrip from "@/components/ContactStrip";
 import HeritageCard from "@/components/HeritageCard";
 import Hero from "@/components/Hero";
 import HomeGalleryCarousel from "@/components/HomeGalleryCarousel";
+import HomeHeritageMuseum from "@/components/HomeHeritageMuseum";
 import HomeSection from "@/components/HomeSection";
 import SectionDivider from "@/components/SectionDivider";
 import {
@@ -16,10 +17,12 @@ import {
   getWard,
 } from "@/lib/content";
 import { naniCreditText } from "@/lib/credits";
+import { photoCreditText } from "@/lib/credits";
 import { byCount, getDictionary, isLocale, siteNameList } from "@/lib/i18n";
 import {
   coverImage,
   findSiteImage,
+  galleryPhotos,
   imageSet,
   type SiteImage,
 } from "@/lib/images";
@@ -126,7 +129,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           href: "#heritages",
           label: fill(byCount(dict.home.explore, count)),
         }}
-        secondary={{ href: `/${lang}/map/`, label: dict.home.viewMap }}
+        secondary={{ href: `/${lang}/gallery/`, label: dict.home.viewMuseum }}
       />
 
       <HomeSection id="overview" title={dict.home.overviewTitle}>
@@ -263,6 +266,21 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           ))}
         </div>
       </HomeSection>
+
+      <SectionDivider />
+
+      <HomeHeritageMuseum
+        lang={lang}
+        photos={galleryPhotos(heritages)}
+        sites={heritages.map((heritage) => ({
+          slug: heritage.slug,
+          name: lang === "ne" ? heritage.nameNe : heritage.name,
+        }))}
+        credit={photoCreditText(credits, dict, lang)}
+        year={credits.photos.year}
+        labels={dict.gallery}
+        dictHome={dict.home}
+      />
 
       <SectionDivider />
 
