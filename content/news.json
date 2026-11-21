@@ -1,0 +1,133 @@
+{
+  "notices": [
+    {
+      "id": "sample-office-hours",
+      "title": { "en": "Ward office information", "ne": "वडा कार्यालयसम्बन्धी जानकारी" },
+      "date": "2026-11-01",
+      "description": {
+        "en": "Sample notice content for previewing the portal. Replace this record with a verified ward office update before publication.",
+        "ne": "पोर्टलको नमुना हेर्न राखिएको सूचना। प्रकाशनअघि यो सामग्री प्रमाणित वडा कार्यालयको जानकारीले बदल्नुहोस्।"
+      },
+      "category": "notice",
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "sample-community-update",
+      "title": { "en": "Community update sample", "ne": "सामुदायिक जानकारीको नमुना" },
+      "date": "2026-10-18",
+      "description": {
+        "en": "A second clearly marked sample record showing how a short community update will appear.",
+        "ne": "छोटो सामुदायिक जानकारी कसरी देखिन्छ भन्ने देखाउने अर्को नमुना सामग्री।"
+      },
+      "category": "community",
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "draft-service-notice",
+      "title": { "en": "Draft service notice", "ne": "सेवासम्बन्धी मस्यौदा सूचना" },
+      "date": "2026-11-10",
+      "description": {
+        "en": "Unpublished sample content, intentionally hidden from visitors.",
+        "ne": "अप्रकाशित नमुना सामग्री, आगन्तुकबाट लुकाइएको।"
+      },
+      "category": "announcement",
+      "status": "draft",
+      "demo": true
+    }
+  ],
+  "events": [
+    {
+      "id": "demo-community-cleanup",
+      "title": { "en": "Community gathering · sample", "ne": "सामुदायिक भेला · नमुना" },
+      "type": "event",
+      "date": "2026-12-05",
+      "description": {
+        "en": "Demonstration entry only. The date and activity are not an official ward schedule.",
+        "ne": "नमुना प्रविष्टि मात्र। यो मिति र गतिविधि वडाको आधिकारिक कार्यक्रम होइन।"
+      },
+      "important": false,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "demo-public-discussion",
+      "title": { "en": "Ward discussion · sample", "ne": "वडास्तरीय छलफल · नमुना" },
+      "type": "event",
+      "date": "2026-12-18",
+      "description": {
+        "en": "Demonstration entry only. Replace with a confirmed event before publication.",
+        "ne": "नमुना प्रविष्टि मात्र। प्रकाशनअघि पुष्टि भएको कार्यक्रम राख्नुहोस्।"
+      },
+      "important": true,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "demo-local-observance",
+      "title": { "en": "Local observance · sample", "ne": "स्थानीय पर्व · नमुना" },
+      "type": "festival",
+      "date": "2027-01-14",
+      "description": {
+        "en": "Calendar demonstration only; no festival date is being announced.",
+        "ne": "पात्रो प्रदर्शनका लागि मात्र; कुनै पर्वको मिति घोषणा गरिएको होइन।"
+      },
+      "important": true,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "demo-jatra-entry",
+      "title": { "en": "Jatra listing · sample", "ne": "जात्रा प्रविष्टि · नमुना" },
+      "type": "jatra",
+      "date": "2027-01-14",
+      "description": {
+        "en": "A second sample on the same date demonstrates multiple calendar entries.",
+        "ne": "एउटै मितिमा अर्को नमुना राखेर पात्रोमा धेरै कार्यक्रम देखाइएको छ।"
+      },
+      "important": false,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "demo-cultural-programme",
+      "title": { "en": "Cultural programme · sample", "ne": "सांस्कृतिक कार्यक्रम · नमुना" },
+      "type": "event",
+      "date": "2027-02-06",
+      "description": {
+        "en": "Demonstration entry only. Confirm the date and details before publishing.",
+        "ne": "नमुना प्रविष्टि मात्र। प्रकाशनअघि मिति र विवरण पुष्टि गर्नुहोस्।"
+      },
+      "important": false,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "demo-community-day",
+      "title": { "en": "Community day · sample", "ne": "सामुदायिक दिवस · नमुना" },
+      "type": "other",
+      "date": "2027-03-15",
+      "description": {
+        "en": "Demonstration entry only. This does not indicate an official ward event.",
+        "ne": "नमुना प्रविष्टि मात्र। यसले वडाको आधिकारिक कार्यक्रम जनाउँदैन।"
+      },
+      "important": false,
+      "status": "published",
+      "demo": true
+    },
+    {
+      "id": "past-demo-event",
+      "title": { "en": "Past sample date", "ne": "बितेको नमुना मिति" },
+      "type": "other",
+      "date": "2026-01-15",
+      "description": {
+        "en": "Past sample record to demonstrate automatic filtering.",
+        "ne": "स्वचालित छनोट देखाउन राखिएको बितेको नमुना प्रविष्टि।"
+      },
+      "important": false,
+      "status": "published",
+      "demo": true
+    }
+  ]
+}

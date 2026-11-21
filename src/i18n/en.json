@@ -19,6 +19,7 @@
     "heritages": "Heritages",
     "gallery": "Gallery",
     "contact": "Contact",
+    "news": "News / Notices",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "menu": "Menu"
@@ -292,6 +293,35 @@
     "title": "Page not found",
     "body": "Sorry, we could not find that page. It may have moved, or the address may be mistyped.",
     "home": "Go to the English home page"
+  },
+  "news": {
+    "title": "News & notices",
+    "intro": "Ward updates, community dates and local observances in one place.",
+    "newsTitle": "News & notices",
+    "upcomingTitle": "Upcoming events",
+    "calendarTitle": "Events calendar",
+    "demoLabel": "Sample content",
+    "noNews": "There are no published notices yet.",
+    "noEvents": "There are no upcoming events at this time.",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "calendarHelp": "Choose a date to see all events scheduled for that day.",
+    "selectDate": "Events on {date}",
+    "noEventsOnDate": "No events on this date.",
+    "moreEvents": "+{count} more",
+    "today": "Today",
+    "categories": {
+      "notice": "Notice",
+      "announcement": "Announcement",
+      "community": "Community",
+      "festival": "Festival",
+      "jatra": "Jatra",
+      "event": "Event",
+      "other": "Other"
+    },
+    "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   },
   "draft": {
     "banner": "Draft content — this page contains placeholder text and cannot be published."

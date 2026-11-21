@@ -65,8 +65,7 @@ export default function Nav({
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Nav links all point at home-page sections. prefetch={false}: prefetching the home page
-  // would make the browser preload its hero photo on every page.
+  // prefetch={false}: avoid preloading the home page hero photo from every navigation link.
   const linkClass =
     "block rounded-md px-3 py-2 font-medium text-cream hover:bg-crimson hover:text-white focus-visible:bg-crimson focus-visible:outline-cream";
 

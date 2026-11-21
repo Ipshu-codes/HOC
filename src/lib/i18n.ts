@@ -28,7 +28,10 @@ export function joinList(items: string[], and: string): string {
 /** Section links shared by the header nav and the footer. They point at sections of the home page. */
 export function getNavItems(lang: Locale, dict: Dictionary) {
   const sections = ["overview", "about", "heritages", "gallery", "contact"] as const;
-  return sections.map((id) => ({ href: `/${lang}/#${id}`, label: dict.nav[id] }));
+  return [
+    ...sections.map((id) => ({ href: `/${lang}/#${id}`, label: dict.nav[id] })),
+    { href: `/${lang}/news/`, label: dict.nav.news },
+  ];
 }
 
 export type NavItem = ReturnType<typeof getNavItems>[number];
