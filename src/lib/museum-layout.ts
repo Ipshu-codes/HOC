@@ -24,17 +24,18 @@ export const COMPACT_CORRIDOR_WIDTH = 7.6;
 
 export const MUSEUM = {
   corridorWidth: 10.4,
-  corridorHeight: 4.6,
+  /** Tall enough for the large prints with their labels underneath. */
+  corridorHeight: 5,
   wallThickness: 0.24,
   /** The entrance is an open threshold; the shell continues this far behind the camera. */
   entryOverhang: 3.2,
   eyeHeight: 1.65,
-  /** Larger prints are hung a little higher so the label below still clears the floor. */
-  artCentreY: 2.32,
-  /** Site plaques stay at their original absolute height whichever artwork size is built. */
-  markerCentreY: 3.09,
-  /** Bigger prints get longer slots: the hall extends instead of crowding neighbouring works. */
-  artSpacing: 3.6,
+  /** Every frame stands on this line, so all labels start at the same height right under their picture. */
+  frameBaseY: 1.38,
+  /** Site plaques sit at about the middle of the prints. */
+  markerCentreY: 3,
+  /** Prints alternate walls, so neighbours on the same wall are two slots (7.8 m) apart. */
+  artSpacing: 3.9,
   siteGap: 2.4,
   startInset: 4.4,
   endInset: 4.2,
@@ -44,23 +45,27 @@ export const MUSEUM = {
   maxTurn: 0.9,
   /** Shell resolution; artwork/marker positions are also inserted as exact sample points. */
   shellSampleStep: 0.6,
-  /** Photograph height; width is 2.05 × the photo's own aspect ratio (≈1.38–2.93 m here). */
-  artHeight: 2.05,
-  minArtWidth: 1.35,
-  maxArtWidth: 3.5,
+  /** Photograph height; width follows the photo's own aspect ratio (never stretched or cropped). */
+  artHeight: 2.6,
+  minArtWidth: 1.7,
+  maxArtWidth: 4,
   matBorder: 0.16,
   frameBorder: 0.09,
   frameDepth: 0.1,
   plaqueWidth: 1.9,
   plaqueHeight: 0.78,
   plaqueDepth: 0.06,
-  /** Wall-facing caption panel below each frame. Width follows the frame; the face texture wraps
-   *  EN/NE text and shrinks its type if an unusually long description needs it. */
-  descriptionGap: 0.1,
-  descriptionHeight: 0.44,
-  descriptionMinWidth: 2.7,
-  descriptionMaxWidth: 3.7,
+  /** Wall label right under each frame: at least as wide as the frame, with type of a fixed, readable
+   *  size; a longer description makes the label taller rather than the words smaller. */
+  descriptionGap: 0.12,
+  descriptionMinWidth: 2.6,
+  descriptionMaxWidth: 4.2,
   descriptionDepth: 0.03,
+  descriptionFont: 0.105,
+  descriptionLeading: 1.42,
+  descriptionPadding: 0.1,
+  /** Lowest point a label may reach above the floor. */
+  descriptionFloor: 0.15,
   walkRadius: 0.36,
   frameClearance: 0.14,
 } as const;
@@ -73,6 +78,8 @@ export interface MuseumPath {
   curvature: number;
   start: number;
   end: number;
+  /** Straight for s < 0, curved after: a wing then meets the hall it opens from at a clean corner. */
+  straightStart?: boolean;
 }
 
 /** A local frame on the curve. `right` is the visitor's right when looking along `tangent`. */
@@ -96,6 +103,36 @@ export interface MuseumDescriptionPanel {
   width: number;
   height: number;
   offsetY: number;
+  /** Type size and inner padding in metres, so the texture draws exactly what the layout planned. */
+  font: number;
+  padding: number;
+}
+
+/**
+ * Size the label under a frame of the given outer size. The number of lines is estimated from the
+ * text (average glyph width ≈ half the type size; Devanagari a little wider), generously, so the
+ * texture rarely has to shrink anything. The label hangs from the frame and never reaches the floor.
+ */
+export function descriptionPanel(text: string, frameWidth: number, frameHeight: number, lang: Locale): MuseumDescriptionPanel {
+  const { descriptionFont: font, descriptionPadding: padding, descriptionLeading: leading } = MUSEUM;
+  const width = Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth));
+  const glyph = font * (lang === "ne" ? 0.6 : 0.54);
+  const perLine = Math.max(8, Math.floor((width - 2 * padding) / glyph));
+  const words = text.split(/\s+/).filter(Boolean);
+  let lines = words.length > 0 ? 1 : 0;
+  let used = 0;
+  for (const word of words) {
+    const length = Array.from(word).length;
+    if (used > 0 && used + 1 + length > perLine) {
+      lines += 1;
+      used = length;
+    } else {
+      used += (used > 0 ? 1 : 0) + length;
+    }
+  }
+  const room = MUSEUM.frameBaseY - MUSEUM.descriptionGap - MUSEUM.descriptionFloor;
+  const height = Math.min(room, Math.max(1, lines) * font * leading + 2 * padding);
+  return { width, height, offsetY: -(frameHeight / 2 + MUSEUM.descriptionGap + height / 2), font, padding };
 }
 
 export interface MuseumArtwork {
@@ -145,6 +182,22 @@ export interface MuseumLayout {
   markers: MuseumMarker[];
   lights: Vec3[];
   urls: string[];
+  /** Walkable area starts here instead of at the shell start (a wing's floor reaches back into the junction). */
+  walkStart?: number;
+}
+
+export interface MuseumLayoutOptions {
+  /** Added to every artwork index, so a wing's frames keep their place in the flat photo list. */
+  indexOffset?: number;
+  start?: number;
+  end?: number;
+  startInset?: number;
+  /** Signed curvature; omitted = the gentle automatic curve. */
+  curvature?: number;
+  curveSign?: 1 | -1;
+  straightStart?: boolean;
+  walkStart?: number;
+  maxLights?: number;
 }
 
 export interface MuseumRoomInput {
@@ -181,7 +234,7 @@ export function normalizeHeading(angle: number): number {
 /** Evaluate the hall centreline and its local frame at arc length `s`. */
 export function pathFrame(layout: MuseumLayout, s: number): PathFrame {
   const curvature = layout.path.curvature;
-  if (Math.abs(curvature) < 1e-7) {
+  if (Math.abs(curvature) < 1e-7 || (layout.path.straightStart && s < 0)) {
     return {
       x: 0,
       z: -s,
@@ -214,7 +267,19 @@ export function pathPoint(layout: MuseumLayout, s: number, lateral = 0, y = 0): 
 
 /** Absolute world yaw for a camera facing along the path at `s`. */
 export function pathYaw(layout: MuseumLayout, s: number): number {
-  return layout.path.curvature * s;
+  return layout.path.curvature * (layout.path.straightStart ? Math.max(0, s) : s);
+}
+
+/** Inverse of pathPoint on the floor plane: path coordinates of a local point (x, z). */
+export function pathCoordinates(layout: MuseumLayout, x: number, z: number): WalkPoint {
+  const k = layout.path.curvature;
+  // The straight part (the whole path when k = 0, or s < 0 with straightStart) runs along -z.
+  if (Math.abs(k) < 1e-7 || (layout.path.straightStart && -z < 0)) return { s: -z, lateral: x };
+  // Otherwise the centreline is a circle around (-1/k, 0); the signed radius gives the lateral offset.
+  const dx = x + 1 / k;
+  const r = Math.sign(1 / k) * Math.hypot(dx, z);
+  const theta = Math.atan2(-z / r, dx / r);
+  return { s: theta / k, lateral: r - 1 / k };
 }
 
 function artSize(photo: GalleryPhoto): { width: number; height: number } {
@@ -240,11 +305,7 @@ function artwork(
   const border = MUSEUM.matBorder + MUSEUM.frameBorder;
   const frameHeight = height + 2 * border;
   const frameWidth = width + 2 * border;
-  const description: MuseumDescriptionPanel = {
-    width: Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth)),
-    height: MUSEUM.descriptionHeight,
-    offsetY: -(frameHeight / 2 + MUSEUM.descriptionGap + MUSEUM.descriptionHeight / 2),
-  };
+  const description = descriptionPanel(entry.photo.alt, frameWidth, frameHeight, lang);
   const lateral = entry.side * (layout.innerHalfWidth + MUSEUM.frameDepth / 2 - MOUNT_CLEARANCE);
   return {
     key: `art-${entry.index}`,
@@ -253,7 +314,7 @@ function artwork(
     s: entry.s,
     side: entry.side,
     lateral,
-    position: pathPoint(layout, entry.s, lateral, MUSEUM.artCentreY),
+    position: pathPoint(layout, entry.s, lateral, MUSEUM.frameBaseY + frameHeight / 2),
     rotationY: pathYaw(layout, entry.s) - entry.side * Math.PI / 2,
     width,
     height,
@@ -278,8 +339,11 @@ export function buildMuseumLayout(
   photos: GalleryPhoto[],
   lang: Locale,
   compact = false,
+  options: MuseumLayoutOptions = {},
 ): MuseumLayout {
-  const { artSpacing, siteGap, startInset, endInset, minLength } = MUSEUM;
+  const { artSpacing, siteGap, endInset, minLength } = MUSEUM;
+  const startInset = options.startInset ?? MUSEUM.startInset;
+  const indexOffset = options.indexOffset ?? 0;
   const width = compact ? COMPACT_CORRIDOR_WIDTH : MUSEUM.corridorWidth;
   const innerHalfWidth = width / 2 - MUSEUM.wallThickness / 2;
   const roomBySlug = new Map(rooms.map((room) => [room.slug, room]));
@@ -292,7 +356,7 @@ export function buildMuseumLayout(
   photos.forEach((photo, index) => {
     if (previousSite !== null && photo.site !== previousSite) cursorS += siteGap;
     const side: -1 | 1 = index % 2 === 0 ? -1 : 1;
-    const slot: PhotoSlot = { photo, index, s: cursorS, side };
+    const slot: PhotoSlot = { photo, index: index + indexOffset, s: cursorS, side };
     if (previousSite !== photo.site) {
       const room = roomBySlug.get(photo.site);
       const number = room?.number ?? twoDigits([...roomBySlug.keys()].indexOf(photo.site) + 1, lang);
@@ -308,11 +372,12 @@ export function buildMuseumLayout(
     cursorS += artSpacing;
   });
 
-  const start = -MUSEUM.entryOverhang;
+  const start = options.start ?? -MUSEUM.entryOverhang;
   const lastS = slots.length > 0 ? slots[slots.length - 1].s : startInset;
-  const end = Math.max(lastS + endInset, start + minLength);
+  const end = options.end ?? Math.max(lastS + endInset, start + minLength);
   const hallLength = end - start;
-  const curvature = Math.min(MUSEUM.maxCurvature, MUSEUM.maxTurn / hallLength);
+  const curvature =
+    options.curvature ?? (options.curveSign ?? 1) * Math.min(MUSEUM.maxCurvature, MUSEUM.maxTurn / hallLength);
 
   const sampleSet = new Set<number>([start, 0, end]);
   for (let s = start + MUSEUM.shellSampleStep; s < end; s += MUSEUM.shellSampleStep) {
@@ -324,12 +389,13 @@ export function buildMuseumLayout(
   const layout: MuseumLayout = {
     corridorWidth: width,
     innerHalfWidth,
-    path: { curvature, start, end },
+    path: { curvature, start, end, straightStart: options.straightStart },
     sampleS,
     artworks: [],
     markers: [],
     lights: [],
     urls: [],
+    walkStart: options.walkStart,
   };
 
   layout.artworks = slots.map((slot) => artwork(slot, layout, lang));
@@ -353,7 +419,7 @@ export function buildMuseumLayout(
     ];
   });
 
-  const lightCount = Math.min(9, Math.max(3, Math.ceil(hallLength / 10)));
+  const lightCount = Math.min(options.maxLights ?? 9, Math.max(3, Math.ceil(hallLength / 10)));
   layout.lights = Array.from({ length: lightCount }, (_, index) => {
     const s = start + ((index + 0.5) * hallLength) / lightCount;
     const lateral = index % 2 === 0 ? 0.8 : -0.8;
@@ -390,7 +456,7 @@ interface WalkBounds {
 function walkBounds(layout: MuseumLayout, radius = MUSEUM.walkRadius): WalkBounds {
   const margin = radius + MUSEUM.frameClearance;
   return {
-    sMin: layout.path.start + margin,
+    sMin: (layout.walkStart ?? layout.path.start) + margin,
     sMax: layout.path.end - margin,
     lateralMin: -layout.innerHalfWidth + margin,
     lateralMax: layout.innerHalfWidth - margin,

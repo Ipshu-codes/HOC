@@ -41,16 +41,17 @@
     "copyright": "© Ward No. 16, KMC"
   },
   "home": {
-    "heroTitle": "Heritage of Ward No. 16",
-    "slidesPause": "Pause the photo slideshow",
-    "slidesPlay": "Play the photo slideshow",
-    "heroSubtitle": "Discover {sites} in Ward No. 16, Kathmandu Metropolitan City.",
-    "explore": {
-      "one": "Explore {sites}",
-      "other": "Explore Heritages"
+    "museumLandingTitle": "Ward No.16 Heritages",
+    "startExploring": "Start Exploring",
+    "museumHint": "Use the arrow keys or scroll to walk, and drag to look around. Click a picture to look closer.",
+    "aboutWard16": "About Ward 16 →",
+    "museumSigns": {
+      "mhepi-ajima": "Mhepi Ajima",
+      "nanak-math": "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj\nPrachin Udashin Nanak matha"
     },
+    "museumReadAbout": "Read About →",
+    "museumReadAboutLabel": "Read about {name}",
     "viewMap": "View 3D Map",
-    "viewMuseum": "View Heritage Museum",
     "overviewTitle": "Overview",
     "overviewIntro": {
       "one": "Ward No. 16 of Kathmandu Metropolitan City is home to {sites}. This website brings together its history, legends, festivals and photographs, in English and Nepali.",
@@ -76,9 +77,6 @@
     "location": "Location",
     "readMore": "Read more",
     "draftBadge": "Draft",
-    "museumTitle": "A Heritage You Can Walk Through",
-    "museumIntro": "Step inside and explore the photographs, places, and memories that preserve the heritage of Ward No. 16.",
-    "museumCta": "Enter the Heritage Museum",
     "galleryTitle": "Gallery",
     "galleryIntro": "Photos from {sites}.",
     "previousPhoto": "Previous photo",
@@ -124,6 +122,10 @@
     "intro": "Photos from {sites}. Select a photo to see it larger.",
     "filterLabel": "Show photos from",
     "all": "All",
+    "siteSubtitles": {
+      "mhepi-ajima": "",
+      "nanak-math": "Prachin Udaseen Nanak Math"
+    },
     "count": {
       "one": "{n} photo",
       "other": "{n} photos"

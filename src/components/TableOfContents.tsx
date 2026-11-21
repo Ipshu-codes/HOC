@@ -24,14 +24,14 @@ export default function TableOfContents({ title, entries }: TableOfContentsProps
 
   return (
     <>
-      <details className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gold/40 lg:hidden">
+      <details className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gold/40 @4xl:hidden">
         <summary className="cursor-pointer font-bold text-brick">{title}</summary>
         <nav aria-label={title} className="mt-3">
           {list}
         </nav>
       </details>
 
-      <nav aria-label={title} className="sticky top-20 hidden lg:block">
+      <nav aria-label={title} className="sticky top-20 hidden @4xl:block">
         <p className="mb-2 px-2 font-bold text-brick">{title}</p>
         {list}
       </nav>

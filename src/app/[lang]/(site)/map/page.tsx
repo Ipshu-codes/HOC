@@ -30,8 +30,8 @@ export default async function MapPage({ params }: PageProps<"/[lang]/map">) {
   const props = { places, route, labels: dict.map, lang, preview: plainImage(MAP_PREVIEW) };
 
   return (
-    <div className="map-page mx-auto w-full max-w-6xl px-4 py-10 md:py-14">
-      <h1 className="text-4xl font-bold md:text-5xl">{dict.map.title}</h1>
+    <div className="map-page mx-auto w-full max-w-6xl px-4 py-10 @2xl:py-14">
+      <h1 className="text-4xl font-bold @2xl:text-5xl">{dict.map.title}</h1>
       <div aria-hidden="true" className="mt-3 mb-4 h-1 w-16 rounded-full bg-gold" />
       <p className="justified mb-6 max-w-3xl text-lg">{dict.map.intro}</p>
 

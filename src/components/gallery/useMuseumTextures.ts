@@ -127,11 +127,13 @@ export function useMuseumTextTexture(text: MuseumPlaqueText, active: boolean): T
   return texture;
 }
 
-/** Canvas resolution per metre of wall panel. The face is drawn once per photo and mapped back
- *  onto the same physical size, so text stays crisp without a texture per word. */
-const DESCRIPTION_PX_PER_METRE = 600;
-const DESCRIPTION_FACE = "#f4efe4";
-const DESCRIPTION_INK = "#3a241f";
+/** Canvas resolution per metre of wall label: about 74 px per line of type, sharp up close and,
+ *  with mipmaps and anisotropic filtering, clean at an angle too. */
+const DESCRIPTION_PX_PER_METRE = 700;
+const DESCRIPTION_MAX_PX = 4096;
+const DESCRIPTION_FACE = "#f6f1e6";
+const DESCRIPTION_INK = "#2e1c17";
+const DESCRIPTION_GOLD = "#a8823a";
 
 function breakLongWord(ctx: CanvasRenderingContext2D, word: string, maxWidth: number): string[] {
   const chunks: string[] = [];
@@ -154,8 +156,7 @@ function wrapDescription(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   const lines: string[] = [];
   let line = "";
   for (const word of text.split(/\s+/).filter(Boolean)) {
-    const pieces =
-      ctx.measureText(word).width > maxWidth ? breakLongWord(ctx, word, maxWidth) : [word];
+    const pieces = ctx.measureText(word).width > maxWidth ? breakLongWord(ctx, word, maxWidth) : [word];
     pieces.forEach((piece, pieceIndex) => {
       if (pieceIndex > 0) {
         if (line) lines.push(line);
@@ -173,9 +174,18 @@ function wrapDescription(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   return lines;
 }
 
+export interface DescriptionLayout {
+  /** Metres, as planned by museum-layout's descriptionPanel(). */
+  width: number;
+  height: number;
+  font: number;
+  padding: number;
+}
+
 /**
- * Draw an existing photo description into a cream wall label. Exported so the glyph/wrap check can
- * drive the same code path as the museum. No text is invented: `description` is the photo's own alt.
+ * Draw an existing photo description into a cream wall label with a thin antique-gold rule. The type
+ * size is the one the layout planned; only text that would not fit is set a little smaller. Exported
+ * so the glyph/wrap check can drive the same code path. No text is invented: it is the photo's own alt.
  */
 export function drawMuseumDescription(
   ctx: CanvasRenderingContext2D,
@@ -183,40 +193,42 @@ export function drawMuseumDescription(
   fontFamily: string,
   width: number,
   height: number,
+  fontPx: number,
+  paddingPx: number,
 ): void {
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = DESCRIPTION_FACE;
   ctx.fillRect(0, 0, width, height);
+  const rule = Math.max(2, Math.round(fontPx * 0.05));
+  const inset = Math.round(paddingPx * 0.35);
+  ctx.strokeStyle = DESCRIPTION_GOLD;
+  ctx.lineWidth = rule;
+  ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset);
 
-  const maxWidth = width - Math.round(width * 0.07);
-  const availableHeight = height - Math.round(height * 0.14);
-  let size = Math.round(height * 0.125);
-  const minSize = Math.round(height * 0.06);
+  const maxWidth = width - 2 * paddingPx;
+  const available = height - 2 * paddingPx;
+  let size = fontPx;
   let lines: string[] = [];
-  let leading = size * 1.22;
-  while (size >= minSize) {
+  let leading = size * 1.42;
+  while (size >= fontPx * 0.6) {
     ctx.font = `400 ${size}px ${fontFamily}`;
     lines = wrapDescription(ctx, description, maxWidth);
-    leading = size * 1.22;
-    if (lines.length * leading <= availableHeight) break;
+    leading = size * 1.42;
+    if (lines.length * leading <= available + 1) break;
     size -= 1;
   }
 
-  ctx.textAlign = "center";
+  ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillStyle = DESCRIPTION_INK;
   const firstY = height / 2 - ((lines.length - 1) * leading) / 2;
-  lines.forEach((text, index) => ctx.fillText(text, width / 2, firstY + index * leading));
+  lines.forEach((text, index) => ctx.fillText(text, paddingPx, firstY + index * leading));
 }
 
 /** One wall-facing caption texture per mounted photo; created with the same page fonts as the DOM. */
-export function useMuseumDescriptionTexture(
-  description: string,
-  widthMetres: number,
-  heightMetres: number,
-  active: boolean,
-): THREE.CanvasTexture | null {
+export function useMuseumDescriptionTexture(description: string, panel: DescriptionLayout, active: boolean): THREE.CanvasTexture | null {
   const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  const { width, height, font, padding } = panel;
   useEffect(() => {
     if (!active || !description) return;
     let cancelled = false;
@@ -225,22 +237,24 @@ export function useMuseumDescriptionTexture(
       const fonts = fontFamilies();
       await waitForFonts([fonts.sans], description);
       if (cancelled) return;
+      // Very wide labels keep their proportions within the canvas size limit.
+      const scale = Math.min(DESCRIPTION_PX_PER_METRE, DESCRIPTION_MAX_PX / Math.max(width, height));
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(widthMetres * DESCRIPTION_PX_PER_METRE);
-      canvas.height = Math.round(heightMetres * DESCRIPTION_PX_PER_METRE);
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      drawMuseumDescription(ctx, description, fonts.sans, canvas.width, canvas.height);
+      drawMuseumDescription(ctx, description, fonts.sans, canvas.width, canvas.height, Math.round(font * scale), Math.round(padding * scale));
       created = new THREE.CanvasTexture(canvas);
       created.colorSpace = THREE.SRGBColorSpace;
-      created.anisotropy = 4;
+      created.anisotropy = 8;
       setTexture(created);
     })();
     return () => {
       cancelled = true;
       created?.dispose();
     };
-  }, [description, widthMetres, heightMetres, active]);
+  }, [description, width, height, font, padding, active]);
   return texture;
 }
 
@@ -325,4 +339,314 @@ export function useMuseumImageTexture(src: string, active: boolean): THREE.Textu
   }, [src, active]);
   // Once decoded, a texture stays on its frame. Only a different photo (`src`) or unmount clears it.
   return loaded?.src === src ? loaded.texture : null;
+}
+
+/* ---- Directional signboards: an engraved brass plate (after the Patan Museum plaque style) ---- */
+
+const SIGN_PX_PER_METRE = 380;
+
+/** Draw one signboard face. The words are exactly the given label; the arrow is drawn, not typed. */
+export function drawMuseumSign(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  dir: -1 | 1,
+  fontFamily: string,
+  width: number,
+  height: number,
+): void {
+  // Warm brass, brushed horizontally, a little darker towards the edges.
+  const base = ctx.createLinearGradient(0, 0, width, height);
+  base.addColorStop(0, "#9c7629");
+  base.addColorStop(0.35, "#d6b765");
+  base.addColorStop(0.6, "#b98f3c");
+  base.addColorStop(1, "#8f6a24");
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, width, height);
+  for (let i = 0; i < 520; i += 1) {
+    const y = Math.random() * height;
+    ctx.fillStyle = i % 2 ? "rgb(255 240 200 / 0.05)" : "rgb(60 40 10 / 0.05)";
+    ctx.fillRect(0, y, width, 1 + Math.random() * 1.5);
+  }
+  // Age: soft patches of tarnish.
+  for (let i = 0; i < 7; i += 1) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const r = height * (0.25 + Math.random() * 0.4);
+    const patch = ctx.createRadialGradient(x, y, 0, x, y, r);
+    patch.addColorStop(0, "rgb(70 48 14 / 0.16)");
+    patch.addColorStop(1, "rgb(70 48 14 / 0)");
+    ctx.fillStyle = patch;
+    ctx.fillRect(0, 0, width, height);
+  }
+  const vignette = ctx.createRadialGradient(width / 2, height / 2, height * 0.3, width / 2, height / 2, width * 0.62);
+  vignette.addColorStop(0, "rgb(0 0 0 / 0)");
+  vignette.addColorStop(1, "rgb(40 26 6 / 0.35)");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, width, height);
+
+  // Engraving: a dark cut with a light lower edge, for the border, arrow and letters alike.
+  const engrave = (draw: () => void) => {
+    ctx.save();
+    ctx.translate(0, height * 0.006);
+    ctx.fillStyle = "rgb(255 236 180 / 0.55)";
+    ctx.strokeStyle = "rgb(255 236 180 / 0.55)";
+    draw();
+    ctx.restore();
+    ctx.fillStyle = "rgb(52 34 8 / 0.88)";
+    ctx.strokeStyle = "rgb(52 34 8 / 0.88)";
+    draw();
+  };
+  const inset = height * 0.08;
+  ctx.lineWidth = height * 0.012;
+  engrave(() => ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset));
+
+  // Screws in the corners.
+  for (const [x, y] of [
+    [inset * 0.5, inset * 0.5],
+    [width - inset * 0.5, inset * 0.5],
+    [inset * 0.5, height - inset * 0.5],
+    [width - inset * 0.5, height - inset * 0.5],
+  ]) {
+    const screw = ctx.createRadialGradient(x - 2, y - 2, 1, x, y, height * 0.028);
+    screw.addColorStop(0, "#f3dc9a");
+    screw.addColorStop(1, "#5c4214");
+    ctx.fillStyle = screw;
+    ctx.beginPath();
+    ctx.arc(x, y, height * 0.026, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Arrow on the side it points to.
+  const arrowW = height * 0.44;
+  const arrowH = height * 0.28;
+  const cy = height / 2;
+  const ax = dir === 1 ? width - inset * 2.2 - arrowW : inset * 2.2;
+  engrave(() => {
+    ctx.beginPath();
+    if (dir === 1) {
+      ctx.moveTo(ax, cy - arrowH * 0.16);
+      ctx.lineTo(ax + arrowW * 0.58, cy - arrowH * 0.16);
+      ctx.lineTo(ax + arrowW * 0.58, cy - arrowH / 2);
+      ctx.lineTo(ax + arrowW, cy);
+      ctx.lineTo(ax + arrowW * 0.58, cy + arrowH / 2);
+      ctx.lineTo(ax + arrowW * 0.58, cy + arrowH * 0.16);
+      ctx.lineTo(ax, cy + arrowH * 0.16);
+    } else {
+      ctx.moveTo(ax + arrowW, cy - arrowH * 0.16);
+      ctx.lineTo(ax + arrowW * 0.42, cy - arrowH * 0.16);
+      ctx.lineTo(ax + arrowW * 0.42, cy - arrowH / 2);
+      ctx.lineTo(ax, cy);
+      ctx.lineTo(ax + arrowW * 0.42, cy + arrowH / 2);
+      ctx.lineTo(ax + arrowW * 0.42, cy + arrowH * 0.16);
+      ctx.lineTo(ax + arrowW, cy + arrowH * 0.16);
+    }
+    ctx.closePath();
+    ctx.fill();
+  });
+
+  // The label, as large as the plate allows beside the arrow. A line break in the label starts a
+  // second, slightly smaller part (e.g. a site's popular name); long parts wrap between words.
+  const textLeft = dir === 1 ? inset * 1.5 : ax + arrowW + inset * 0.7;
+  const textRight = dir === 1 ? ax - inset * 0.7 : width - inset * 1.5;
+  const maxWidth = textRight - textLeft;
+  const availableHeight = height - inset * 3;
+  const parts = label.split("\n");
+  const fontAt = (px: number) => `700 ${Math.round(px)}px ${fontFamily}`;
+  const wrap = (text: string, px: number): string[] => {
+    ctx.font = fontAt(px);
+    const lines: string[] = [];
+    let line = "";
+    for (const word of text.split(/\s+/).filter(Boolean)) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (!line || ctx.measureText(candidate).width <= maxWidth) line = candidate;
+      else {
+        lines.push(line);
+        line = word;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+  // The largest type that fits, with each part on one line (wrapped = false) or wrapped between words.
+  const layout = (wrapped: boolean) => {
+    let size = Math.round(height * (parts.length > 1 ? 0.3 : 0.42));
+    let lines: { text: string; px: number }[] = [];
+    let total = 0;
+    while (size > 8) {
+      lines = parts.flatMap((part, index) => {
+        const px = index === 0 ? size : size * 0.8;
+        return (wrapped ? wrap(part, px) : [part]).map((text) => ({ text, px }));
+      });
+      total = lines.reduce((sum, line) => sum + line.px * 1.18, 0);
+      const fits = lines.every((line) => {
+        ctx.font = fontAt(line.px);
+        return ctx.measureText(line.text).width <= maxWidth;
+      });
+      if (fits && total <= availableHeight) break;
+      size -= 2;
+    }
+    return { size, lines, total };
+  };
+  // Keep each part on one line unless wrapping makes the letters clearly larger (a long name).
+  const single = layout(false);
+  const wrappedLayout = layout(true);
+  const { lines, total } = wrappedLayout.size > single.size * 1.35 ? wrappedLayout : single;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  let y = cy - total / 2;
+  for (const line of lines) {
+    const lineHeight = line.px * 1.18;
+    const lineY = y + lineHeight / 2 + line.px * 0.04;
+    engrave(() => {
+      ctx.font = fontAt(line.px);
+      ctx.fillText(line.text, (textLeft + textRight) / 2, lineY);
+    });
+    y += lineHeight;
+  }
+}
+
+export function useMuseumSignTexture(
+  label: string,
+  dir: -1 | 1,
+  widthMetres: number,
+  heightMetres: number,
+): THREE.CanvasTexture | null {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    let created: THREE.CanvasTexture | null = null;
+    (async () => {
+      const fonts = fontFamilies();
+      // Playfair (serif, like engraved museum lettering) for English; the heading stack falls back to
+      // Mukta for Devanagari, so the Nepali signs use the page's own face too.
+      if (typeof document !== "undefined" && document.fonts) {
+        await document.fonts.load(`700 72px ${fonts.heading}`, label).catch(() => undefined);
+        await document.fonts.ready.catch(() => undefined);
+      }
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(widthMetres * SIGN_PX_PER_METRE);
+      canvas.height = Math.round(heightMetres * SIGN_PX_PER_METRE);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      drawMuseumSign(ctx, label, dir, fonts.heading, canvas.width, canvas.height);
+      created = new THREE.CanvasTexture(canvas);
+      created.colorSpace = THREE.SRGBColorSpace;
+      created.anisotropy = 8;
+      setTexture(created);
+    })();
+    return () => {
+      cancelled = true;
+      created?.dispose();
+    };
+  }, [label, dir, widthMetres, heightMetres]);
+  return texture;
+}
+
+/* ---- Red carpet: one woven tile, repeated along the walking path ---- */
+
+/** Metres of carpet per texture repeat. */
+export const CARPET_TILE = 2;
+
+export function useCarpetTexture(): THREE.CanvasTexture | null {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    // Deep burgundy (between the site's brick and ink), a soft pile, and muted gold border bands.
+    ctx.fillStyle = "#6c1820";
+    ctx.fillRect(0, 0, w, h);
+    for (let i = 0; i < 2600; i += 1) {
+      ctx.fillStyle = i % 2 ? "rgb(150 40 48 / 0.18)" : "rgb(30 6 8 / 0.18)";
+      ctx.fillRect(Math.random() * w, Math.random() * h, 1, 2 + Math.random() * 3);
+    }
+    for (let y = 0; y < h; y += 4) {
+      ctx.fillStyle = "rgb(0 0 0 / 0.05)";
+      ctx.fillRect(0, y, w, 1);
+    }
+    const band = (x: number, width: number, color: string) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, 0, width, h);
+      ctx.fillRect(w - x - width, 0, width, h);
+    };
+    band(0, 7, "#4a0f15");
+    band(12, 9, "#a8823a");
+    band(25, 3, "#a8823a");
+    const created = new THREE.CanvasTexture(canvas);
+    created.colorSpace = THREE.SRGBColorSpace;
+    created.wrapT = THREE.RepeatWrapping;
+    created.anisotropy = 8;
+    // The canvas is ready synchronously; a microtask keeps setState out of the effect body.
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) setTexture(created);
+    });
+    return () => {
+      cancelled = true;
+      created.dispose();
+    };
+  }, []);
+  return texture;
+}
+
+/* ---- "Read About →" plaques: crimson, a thin antique-gold rule, cream lettering ---- */
+
+const LINK_PX_PER_METRE = 420;
+
+export function drawMuseumLinkPlaque(ctx: CanvasRenderingContext2D, text: string, fontFamily: string, width: number, height: number): void {
+  const face = ctx.createLinearGradient(0, 0, 0, height);
+  face.addColorStop(0, "#b3142c");
+  face.addColorStop(1, "#8b1e1e");
+  ctx.fillStyle = face;
+  ctx.fillRect(0, 0, width, height);
+  const inset = height * 0.11;
+  ctx.strokeStyle = "#d4a017";
+  ctx.lineWidth = Math.max(2, height * 0.035);
+  ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset);
+  let size = Math.round(height * 0.46);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  while (size > height * 0.2) {
+    ctx.font = `700 ${size}px ${fontFamily}`;
+    if (ctx.measureText(text).width <= width - 4 * inset) break;
+    size -= 2;
+  }
+  ctx.fillStyle = "#fff8f0";
+  ctx.fillText(text, width / 2, height / 2 + size * 0.04);
+}
+
+export function useMuseumLinkTexture(text: string, widthMetres: number, heightMetres: number): THREE.CanvasTexture | null {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    let created: THREE.CanvasTexture | null = null;
+    (async () => {
+      const fonts = fontFamilies();
+      if (typeof document !== "undefined" && document.fonts) {
+        await document.fonts.load(`700 72px ${fonts.sans}`, text).catch(() => undefined);
+        await document.fonts.ready.catch(() => undefined);
+      }
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(widthMetres * LINK_PX_PER_METRE);
+      canvas.height = Math.round(heightMetres * LINK_PX_PER_METRE);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      drawMuseumLinkPlaque(ctx, text, fonts.sans, canvas.width, canvas.height);
+      created = new THREE.CanvasTexture(canvas);
+      created.colorSpace = THREE.SRGBColorSpace;
+      created.anisotropy = 8;
+      setTexture(created);
+    })();
+    return () => {
+      cancelled = true;
+      created?.dispose();
+    };
+  }, [text, widthMetres, heightMetres]);
+  return texture;
 }

@@ -82,28 +82,28 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
       <DraftBanner draft={heritage.draft} dict={dict} />
 
       {/* Cover banner with the name in both languages */}
-      <section className="relative isolate flex min-h-[24rem] items-end overflow-hidden md:min-h-[34rem]">
+      <section className="relative isolate flex min-h-[16rem] items-end overflow-hidden @2xl:min-h-[22rem]">
         <ResponsiveImage image={cover} sizes="100vw" priority className="absolute inset-0 -z-10 size-full object-cover" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-linear-to-t from-brick via-brick/70 to-brick/10" />
-        <div className="mx-auto w-full max-w-6xl px-4 pt-20 pb-8 md:pb-12">
+        <div className="mx-auto w-full max-w-6xl px-5 pt-14 pb-6 @2xl:px-8 @2xl:pb-8">
           <Link
-            href={`/${lang}/#heritages`}
+            href={`/${lang}/heritages/`}
             prefetch={false}
             className="text-sm font-medium text-cream underline-offset-4 hover:underline focus-visible:outline-cream"
           >
             <span aria-hidden="true">← </span>
             {t.backToAll}
           </Link>
-          <h1 className="mt-2 text-4xl font-bold text-white md:text-6xl">{name}</h1>
-          <p lang={lang === "ne" ? "en" : "ne"} className="mt-1 text-xl text-cream md:text-2xl">
+          <h1 className="mt-2 text-4xl font-bold text-white @2xl:text-6xl">{name}</h1>
+          <p lang={lang === "ne" ? "en" : "ne"} className="mt-1 text-xl text-cream @2xl:text-2xl">
             {otherName}
           </p>
         </div>
       </section>
 
       <div
-        className={`mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 lg:py-14 ${
-          others.length === 0 ? "pb-32 md:pb-14" : ""
+        className={`mx-auto grid max-w-6xl gap-8 px-4 py-10 @4xl:grid-cols-[15rem_minmax(0,1fr)] @4xl:gap-12 @4xl:py-14 ${
+          others.length === 0 ? "pb-32 @2xl:pb-14" : ""
         }`}
       >
         <div>
@@ -133,7 +133,7 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
             </h2>
             <ul className="mt-4 flex snap-x gap-3 overflow-x-auto pb-3">
               {photos.map((image) => (
-                <li key={image.src} className="w-56 shrink-0 snap-start md:w-64">
+                <li key={image.src} className="w-56 shrink-0 snap-start @2xl:w-64">
                   <ResponsiveImage
                     image={image}
                     sizes="16rem"
@@ -160,11 +160,11 @@ export default async function HeritagePage({ params }: PageProps<"/[lang]/herita
       {others.length > 0 && (
         <section aria-labelledby="other-heritage-title" className="bg-sand">
           {/* Same vertical rhythm as the home page sections (HomeSection). */}
-          <div className="mx-auto max-w-6xl px-4 pt-14 pb-32 md:py-20">
+          <div className="mx-auto max-w-6xl px-5 py-10 @2xl:px-8 @2xl:py-12">
             <h2 id="other-heritage-title" className="mb-8 text-3xl font-bold">
               {byCount(t.otherHeritage, others.length)}
             </h2>
-            <div className={others.length === 1 ? "mx-auto max-w-5xl" : "grid gap-8 md:grid-cols-2"}>
+            <div className={others.length === 1 ? "mx-auto max-w-5xl" : "grid gap-8 @2xl:grid-cols-2"}>
               {others.map((other) => (
                 <HeritageCard
                   key={other.slug}

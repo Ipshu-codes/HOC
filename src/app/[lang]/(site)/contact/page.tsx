@@ -31,8 +31,8 @@ export default async function ContactPage({
   const mailto = `mailto:${ward.office.email}?subject=${encodeURIComponent(dict.contactPage.mailSubject)}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 md:py-14">
-      <h1 className="text-4xl font-bold md:text-5xl">
+    <div className="mx-auto max-w-6xl px-4 py-10 @2xl:py-14">
+      <h1 className="text-4xl font-bold @2xl:text-5xl">
         {dict.contactPage.title}
       </h1>
       <div
@@ -41,11 +41,11 @@ export default async function ContactPage({
       />
       <p className="justified mb-8 max-w-3xl text-lg">{dict.contactPage.intro}</p>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid gap-10 @4xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         {/* No form and no form service: visitors write from their own email app. */}
         <section
           aria-labelledby="write-to-us"
-          className="rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 md:p-8"
+          className="rounded-xl bg-cream p-6 shadow-sm ring-1 ring-gold/40 @2xl:p-8"
         >
           <h2 id="write-to-us" className="text-2xl font-bold">
             {dict.contactPage.sendMessageLink}

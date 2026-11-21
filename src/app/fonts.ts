@@ -1,4 +1,4 @@
-import { JetBrains_Mono, Mukta, Playfair_Display } from "next/font/google";
+import { Alegreya, Alegreya_Sans, JetBrains_Mono, Mukta, Playfair_Display } from "next/font/google";
 
 // next/font downloads the fonts at build time and serves them from our own
 // domain, so there is no request to Google from the visitor's browser.
@@ -23,6 +23,25 @@ export const playfair = Playfair_Display({
   weight: ["700"],
   variable: "--font-playfair",
   display: "swap",
+});
+
+/** Gallery headings (heritage voice). Latin only; Nepali text falls back to Mukta. */
+export const alegreya = Alegreya({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-alegreya",
+  display: "swap",
+  // Only the gallery uses it: no preload, so other pages never download it.
+  preload: false,
+});
+
+/** Gallery filters, captions and photo details. Alegreya Sans has no 600: "semibold" renders as 700. */
+export const alegreyaSans = Alegreya_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-alegreya-sans",
+  display: "swap",
+  preload: false,
 });
 
 /** Small labels, counters and buttons in the gallery: the museum signage voice (English only). */

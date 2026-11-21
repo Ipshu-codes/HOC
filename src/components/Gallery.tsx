@@ -10,7 +10,9 @@ import { MUSEUM_COMPACT_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "@/lib
 import { formatNumber, formatYear } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
-import { INITIAL_POSE, type CameraPose, type ScreenRect } from "@/lib/museum-layout";
+import { INITIAL_POSE } from "@/lib/museum-layout";
+import type { WorldPose } from "@/lib/museum-world";
+import type { MuseumApi } from "@/components/gallery/MuseumCanvas";
 import type { Locale } from "@/types/locale";
 import { useWebGL } from "@/lib/webgl";
 
@@ -23,8 +25,9 @@ const MuseumCanvas = dynamic(() => import("@/components/gallery/MuseumCanvas"), 
 interface GalleryProps {
   lang: Locale;
   photos: GalleryPhoto[];
-  /** Sites with photos on this build, in display order. Filter tabs appear only when there are 2+. */
-  sites: { slug: string; name: string }[];
+  /** Sites with photos on this build, in display order. Filter tabs appear only when there are 2+.
+   *  `subtitle` is a second line under the site's name on its filter (e.g. the math's popular name). */
+  sites: { slug: string; name: string; subtitle?: string }[];
   /** "Photos: Samyojan, 2026", shown in the photo view and on the wall; null when there is no credit to show. */
   credit: string | null;
   /** Year the photos were taken (content/credits.json → photos.year), shown in List view; null hides it. */
@@ -33,6 +36,11 @@ interface GalleryProps {
   labels: Dictionary["gallery"];
   /** Site slug from ?site=…, if any (see GalleryFromUrl). */
   requestedSite?: string | null;
+  /** "Read more": the 3D close-up links each photograph to its site's page. */
+  readMore?: string;
+  /** False when the page already sits in front of the site's 3D museum: no second museum (or WebGL
+   *  renderer) is started, and the hanging line and list views are offered instead. */
+  museum?: boolean;
 }
 
 /** Reads ?site= from the URL. Must sit inside <Suspense> (static export requirement). */
@@ -51,8 +59,6 @@ let memoryView: View | null = null;
 interface OpenState {
   index: number;
   from: HTMLElement | null;
-  /** Empty FLIP sources projected from the 3D frames while the canvas is frozen behind PhotoView. */
-  sources?: Map<number, HTMLElement>;
 }
 
 // The chosen view lives outside React (sessionStorage), so the component subscribes to it with
@@ -114,23 +120,6 @@ function MuseumLoading() {
   );
 }
 
-/** An empty, inert box whose rect PhotoView can use as a FLIP source for a canvas frame. */
-function placeProxy(rect: ScreenRect): HTMLElement {
-  const element = document.createElement("span");
-  element.setAttribute("aria-hidden", "true");
-  Object.assign(element.style, {
-    position: "fixed",
-    left: `${rect.left}px`,
-    top: `${rect.top}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-    pointerEvents: "none",
-    opacity: "0",
-  });
-  document.body.appendChild(element);
-  return element;
-}
-
 /**
  * The gallery (Shutabug's collection page, docs/ui-match/reference-notes.md §2).
  *
@@ -144,7 +133,7 @@ function placeProxy(rect: ScreenRect): HTMLElement {
  * The chosen view is remembered for the visit. No new words are introduced: the third view control
  * uses existing DOM text plus numerals, which the text lock does not count as words.
  */
-export default function Gallery({ lang, photos, sites, credit, year, labels, requestedSite = null }: GalleryProps) {
+export default function Gallery({ lang, photos, sites, credit, year, labels, requestedSite = null, readMore, museum = true }: GalleryProps) {
   const pathname = usePathname();
   const showFilter = sites.length > 1;
 
@@ -178,11 +167,14 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
     chooseView(next);
   }, []);
   const galleryView = view !== "list";
-  const useMuseum = webgl && view === "grid" && !museumFailed;
+  const useMuseum = museum && webgl && view === "grid" && !museumFailed;
   const hanging = galleryView && !useMuseum;
-  // Camera state lives here so PhotoView open/close and layout switches never reset the view.
-  const poseRef = useRef<CameraPose>({ ...INITIAL_POSE });
-  const projectionRef = useRef<(() => Record<number, ScreenRect>) | null>(null);
+  // Camera state lives here so layout switches never reset the view.
+  const poseRef = useRef<WorldPose>({ seg: 0, ...INITIAL_POSE });
+  const museumApi = useRef<MuseumApi | null>(null);
+  const setMuseumApi = useCallback((api: MuseumApi | null) => {
+    museumApi.current = api;
+  }, []);
   const [activeIndex, setActiveIndex] = useState(0);
   const [focusNonce, setFocusNonce] = useState(0);
   const [lineCurrent, setLineCurrent] = useState(0);
@@ -221,13 +213,10 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
   const zooming = useRef(false);
 
   /** A frame grows briefly under the finger/cursor, then hands off to the existing gliding photo view. */
-  const openPhoto = (index: number, from: HTMLElement | null, zoom?: HTMLElement | null, sources?: Map<number, HTMLElement>) => {
+  const openPhoto = (index: number, from: HTMLElement | null, zoom?: HTMLElement | null) => {
     if (zooming.current) return;
     if (!zoom || !from || reducedMotion()) {
-      setOpen((previous) => {
-        previous?.sources?.forEach((element) => element.remove());
-        return { index, from, sources };
-      });
+      setOpen({ index, from });
       return;
     }
     zooming.current = true;
@@ -240,10 +229,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       { duration: 230, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
     );
     animation.onfinish = () => {
-      setOpen((previous) => {
-        previous?.sources?.forEach((element) => element.remove());
-        return { index, from, sources };
-      });
+      setOpen({ index, from });
       // The view has measured the enlarged frame; settle it back so closing glides to its usual place.
       requestAnimationFrame(() => animation.cancel());
     };
@@ -251,23 +237,6 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       zooming.current = false;
     };
   };
-
-  /** A raycast hit routes through the same open path, with empty rects standing in for the hidden DOM frames. */
-  const openMuseumArtwork = useCallback((index: number) => {
-    const rects = projectionRef.current?.() ?? {};
-    const sources = new Map<number, HTMLElement>();
-    Object.entries(rects).forEach(([key, rect]) => sources.set(Number(key), placeProxy(rect)));
-    const from =
-      sources.get(index) ??
-      placeProxy({ left: window.innerWidth / 2 - 2, top: window.innerHeight / 2 - 2, width: 4, height: 4 });
-    lastIndexRef.current = index;
-    setActiveIndex(index);
-    setLineCurrent(index);
-    setOpen((previous) => {
-      previous?.sources?.forEach((element) => element.remove());
-      return { index, from, sources };
-    });
-  }, []);
 
   /** Bring a frame to the middle; paging is instant when the visitor asked for less motion. */
   const stepTo = useCallback((index: number, behavior?: ScrollBehavior) => {
@@ -304,15 +273,6 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       internalFocus.current = false;
     });
   }, []);
-
-  /** Keyboard navigation in the 3D hall returns focus to the matching accessible DOM frame. */
-  const focusArtwork = useCallback(
-    (index: number) => {
-      setActiveIndex(index);
-      focusDomFrame(index);
-    },
-    [focusDomFrame],
-  );
 
   // Returning from List, a filter change, or a layout switch restores the print of the last visit.
   useEffect(() => {
@@ -420,6 +380,8 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         const drop = 4 * SAG * clamped * (1 - clamped);
         const slope = (4 * SAG * (1 - 2 * clamped)) / width;
         button.style.transform = `translateY(${drop}px) rotate(${(Math.atan(slope) * 180) / Math.PI}deg)`;
+        // A description hung under its print follows the print down the sagging line.
+        items[index].style.setProperty("--drop", `${drop}px`);
         const distance = Math.abs(x - 0.5);
         if (distance < best) {
           best = distance;
@@ -465,12 +427,15 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
       buttons.forEach((button) => button.style.removeProperty("transform"));
-      items.forEach((item) => item.removeAttribute("data-current"));
+      items.forEach((item) => {
+        item.removeAttribute("data-current");
+        item.style.removeProperty("--drop");
+      });
     };
   }, [filter, hanging, centre]);
 
-  const tabs = [{ slug: "all", name: labels.all }, ...sites];
-  const threeView = webgl && !museumFailed;
+  const tabs: { slug: string; name: string; subtitle?: string }[] = [{ slug: "all", name: labels.all }, ...sites];
+  const threeView = museum && webgl && !museumFailed;
 
   return (
     <>
@@ -478,9 +443,11 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
           Phones: the filter on its own row above. Site tabs show the real site names from content, so
           they are understandable without decoding room numbers. The third view control reuses the
           existing Gallery word and a numeral, so the text lock stays at zero. */}
-      <div className="wrap mb-1 grid grid-cols-[1fr_auto] items-center gap-x-4 md:grid-cols-[1fr_auto_1fr]">
+      {/* The filters stay on one line (scrolling sideways on narrow screens), the photo count and the
+          view switch beside them. */}
+      <div className="wrap gallery-toolbar">
         {showFilter && (
-          <div role="group" aria-label={labels.filterLabel} className="filter-tabs col-span-2 flex flex-wrap justify-center gap-x-2 md:col-span-1 md:col-start-2 md:row-start-1">
+          <div role="group" aria-label={labels.filterLabel} className="filter-tabs">
             {tabs.map((tab) => (
               <button
                 key={tab.slug}
@@ -488,15 +455,21 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                 aria-pressed={filter === tab.slug}
                 onClick={() => choose(tab.slug)}
               >
-                {tab.name}
+                <span className="filter-name">{tab.name}</span>
+                {/* Roman-script Nepali, so the language tag says so. */}
+                {tab.subtitle && (
+                  <span className="filter-sub" lang="ne-Latn">
+                    {tab.subtitle}
+                  </span>
+                )}
               </button>
             ))}
           </div>
         )}
-        <p className="mono muted whitespace-nowrap md:col-start-1 md:row-start-1" aria-live="polite">
-          {formatCount(shown.length)}
-        </p>
-        <div className="md:col-start-3 md:row-start-1 md:justify-self-end">
+        <div className="gallery-tools">
+          <p className="gallery-count muted" aria-live="polite">
+            {formatCount(shown.length)}
+          </p>
           <div role="group" aria-label={labels.view.label} className="view-pill">
             {/* With the third control hidden, Gallery represents the hanging-memory presentation. */}
             <button
@@ -578,7 +551,7 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
         </ul>
       ) : (
         <>
-          {view === "grid" && (museumFailed || !webgl) && (
+          {museum && view === "grid" && (museumFailed || !webgl) && (
             <p className="wrap museum-note">{labels.museumNoWebGL}</p>
           )}
           <div className={`wall-stage${useMuseum ? " museum-active" : ""}${hanging ? " hanging-active" : ""}`}>
@@ -593,19 +566,34 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                 reducedMotion={reduced}
                 activeIndex={activeIndex}
                 compact={compact}
-                help={labels.museumHelp}
-                forwardLabel={labels.museumForward}
-                backLabel={labels.museumBack}
-                leftLabel={labels.museumTurnLeft}
-                rightLabel={labels.museumTurnRight}
+                labels={{
+                  help: labels.museumHelp,
+                  forward: labels.museumForward,
+                  back: labels.museumBack,
+                  left: labels.museumTurnLeft,
+                  right: labels.museumTurnRight,
+                  close: labels.lightbox.Close,
+                  previous: labels.lightbox.Previous,
+                  next: labels.lightbox.Next,
+                  readMore,
+                }}
+                heritageBase={`/${lang}/heritage/`}
+                credit={credit}
                 poseRef={poseRef}
                 focusNonce={focusNonce}
+                onApi={setMuseumApi}
                 onReady={readyMuseum}
                 onActiveIndex={setActiveIndex}
-                onFocusArtwork={focusArtwork}
-                onOpenArtwork={openMuseumArtwork}
+                onFocusChange={(index) => {
+                  // Stepping back returns focus to the frame that opened the close-up; that focus
+                  // must not steer the camera away from where the visitor stood.
+                  if (index !== null) return;
+                  internalFocus.current = true;
+                  requestAnimationFrame(() => {
+                    internalFocus.current = false;
+                  });
+                }}
                 onFail={failMuseum}
-                projectionRef={projectionRef}
               />
             </MuseumErrorBoundary>
           )}
@@ -657,7 +645,11 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                       className="wall-frame"
                       data-frame-index={index}
                       aria-labelledby={`${captionId}-${index}`}
-                      onClick={(event) => openPhoto(index, event.currentTarget.querySelector("img"), event.currentTarget)}
+                      onClick={(event) => {
+                        // In the 3D museum the camera walks up to the photograph instead of opening a view.
+                        if (useMuseum && museumApi.current) museumApi.current.open(index);
+                        else openPhoto(index, event.currentTarget.querySelector("img"), event.currentTarget);
+                      }}
                       onFocus={() => {
                         setActiveIndex(index);
                         if (internalFocus.current) return;
@@ -717,7 +709,6 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
           }}
           onClose={() => {
             const closingIndex = open.index;
-            const closingSources = open.sources;
             // PhotoView's FLIP source is an empty proxy here; return focus to the accessible frame.
             // Set the guard now: PhotoView also restores focus synchronously before our deferred call,
             // and neither focus event may steer the camera away from where the visitor walked.
@@ -726,10 +717,8 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
               requestAnimationFrame(() => focusDomFrame(closingIndex));
             }
             setOpen(null);
-            if (closingSources) requestAnimationFrame(() => closingSources.forEach((element) => element.remove()));
           }}
           sourceFor={(index) =>
-            open.sources?.get(index) ??
             document.querySelector<HTMLImageElement>(`.wall-frame[data-frame-index="${index}"] img`) ??
             document.querySelectorAll<HTMLImageElement>(".list-row img")[index] ??
             null
