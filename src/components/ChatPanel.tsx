@@ -3,19 +3,25 @@
 /**
  * The chat window. Visitors cannot type: they tap a topic, then a question, and
  * the prepared answer from content/faq.json appears in a chat-style transcript.
- * Everything is already in the page, so the chat works offline and makes no
- * network requests (its links do not prefetch).
+ * Answers are local; map tiles are loaded only for answers that include a location map.
+ * The chat's links do not prefetch.
  */
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import ChatLocationMap from "@/components/ChatLocationMap";
 import NaniAvatar from "@/components/NaniAvatar";
+import ResponsiveImage from "@/components/ResponsiveImage";
 import type { Dictionary } from "@/lib/i18n";
+import { fill } from "@/lib/format";
 import type { ChatData, ChatEntry, ChatLink, ChatTopic } from "@/types/faq";
+import type { Locale } from "@/types/locale";
 
 export interface ChatPanelProps {
   data: ChatData;
   labels: Dictionary["chat"];
+  mapLabels: Dictionary["map"];
+  lang: Locale;
   /** Ward office contact for the "My question isn't here" reply (phone shown in the page's digits). */
   contact: { phone: string; phoneHref: string; email: string };
   onClose: () => void;
@@ -28,6 +34,8 @@ interface Message {
   links?: ChatLink[];
   /** Show the ward office phone and email links under the text. */
   contact?: boolean;
+  location?: ChatEntry["location"];
+  photo?: ChatEntry["photo"];
 }
 
 type View =
@@ -46,7 +54,7 @@ function relatedTo(entry: ChatEntry, entries: ChatEntry[]): ChatEntry[] {
   return [...new Map([...sameTopic, ...sameSite].map((e) => [e.id, e])).values()].slice(0, MAX_RELATED);
 }
 
-export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelProps) {
+export default function ChatPanel({ data, labels, mapLabels, lang, contact, onClose }: ChatPanelProps) {
   const greeting: Message = { from: "bot", text: labels.greeting };
   const [messages, setMessages] = useState<Message[]>([greeting]);
   const [view, setView] = useState<View>({ kind: "topics" });
@@ -83,7 +91,17 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
   }
 
   function chooseQuestion(entry: ChatEntry) {
-    say({ from: "user", text: entry.question }, { from: "bot", text: entry.answer, note: entry.note, links: entry.links });
+    say(
+      { from: "user", text: entry.question },
+      {
+        from: "bot",
+        text: entry.answer,
+        note: entry.note,
+        links: entry.links,
+        location: entry.location,
+        photo: entry.photo,
+      },
+    );
     const topic = data.topics.find((t) => t.id === entry.topic);
     if (topic) setLastTopic(topic);
     setView({ kind: "answer", entryId: entry.id });
@@ -193,6 +211,13 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
             >
               <span className="sr-only">{message.from === "user" ? labels.you : labels.bot}: </span>
               {message.text}
+              {message.photo && (
+                <ResponsiveImage
+                  image={message.photo}
+                  sizes="min(20rem, 70vw)"
+                  className="mt-2 block h-auto w-full rounded-lg"
+                />
+              )}
               {message.contact && (
                 <span className="mt-2 block space-y-1 whitespace-normal">
                   <span className="block">
@@ -232,6 +257,14 @@ export default function ChatPanel({ data, labels, contact, onClose }: ChatPanelP
                     {link.label}
                   </Link>
                 ),
+              )}
+              {message.location && (
+                <ChatLocationMap
+                  location={message.location}
+                  locationLabel={fill(labels.locationMap, { name: message.location.name }, lang)}
+                  labels={mapLabels}
+                  lang={lang}
+                />
               )}
             </div>
           </div>

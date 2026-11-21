@@ -46,6 +46,8 @@ interface MapViewProps {
   route: MapRoute | null;
   /** While the detail panel is open the popup is hidden and the camera leaves room for the panel. */
   detailOpen: boolean;
+  /** Smaller, top-down map used in a chatbot location answer. */
+  compact?: boolean;
   onSelect: (id: string) => void;
   onOpenDetail: (id: string) => void;
   /** The "reset view" button was used: the parent clears the selection. */
@@ -183,6 +185,7 @@ export default function MapView({
   visibleIds,
   route,
   detailOpen,
+  compact = false,
   onSelect,
   onOpenDetail,
   onResetView,
@@ -234,6 +237,7 @@ export default function MapView({
         style: STYLE_URL,
         center: startCenter,
         ...START_VIEW, // tilted so terrain and 3D buildings are visible
+        pitch: compact ? 0 : START_VIEW.pitch,
         maxPitch: 75,
         attributionControl: { compact: false, customAttribution: TERRAIN_ATTRIBUTION },
         // Translated labels for the canvas and the built-in buttons (screen readers read these).
@@ -267,30 +271,37 @@ export default function MapView({
       }
     }
     // "Reset view" returns here.
-    const startView = { center: map.getCenter(), zoom: map.getZoom(), pitch: START_VIEW.pitch, bearing: START_VIEW.bearing };
+    const startView = {
+      center: map.getCenter(),
+      zoom: map.getZoom(),
+      pitch: compact ? 0 : START_VIEW.pitch,
+      bearing: START_VIEW.bearing,
+    };
 
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
-    // Asks the browser for permission only when the visitor presses the button.
-    map.addControl(
-      new maplibregl.GeolocateControl({
-        positionOptions: { enableHighAccuracy: true },
-        trackUserLocation: false,
-        showUserLocation: true,
-      }),
-      "top-right",
-    );
-    map.addControl(
-      new ResetViewControl(labels.controls.resetView, () => {
-        if (!readyRef.current) return;
-        for (const popup of popups.values()) popup.remove();
-        onResetViewRef.current();
-        const target = startView;
-        if (reduceMotion) map.jumpTo(target);
-        else map.flyTo({ ...target, duration: 2000, essential: true });
-      }),
-      "top-right",
-    );
-    map.addControl(new maplibregl.FullscreenControl(), "top-right");
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: !compact }), "top-right");
+    if (!compact) {
+      // Asks the browser for permission only when the visitor presses the button.
+      map.addControl(
+        new maplibregl.GeolocateControl({
+          positionOptions: { enableHighAccuracy: true },
+          trackUserLocation: false,
+          showUserLocation: true,
+        }),
+        "top-right",
+      );
+      map.addControl(
+        new ResetViewControl(labels.controls.resetView, () => {
+          if (!readyRef.current) return;
+          for (const popup of popups.values()) popup.remove();
+          onResetViewRef.current();
+          const target = startView;
+          if (reduceMotion) map.jumpTo(target);
+          else map.flyTo({ ...target, duration: 2000, essential: true });
+        }),
+        "top-right",
+      );
+      map.addControl(new maplibregl.FullscreenControl(), "top-right");
+    }
 
     // The map container changes size when the detail panel opens or the window rotates.
     const resizeObserver = new ResizeObserver(() => map.resize());
@@ -455,18 +466,20 @@ export default function MapView({
     //  - popup open: below centre, leaving room for the popup above the pin;
     //  - panel open on a phone: above centre, because the panel covers the bottom of the screen;
     //  - panel open on a desktop: centre the place in the available map area.
-    const offset: [number, number] = detailOpen
-      ? mobile
-        ? [0, -Math.round(map.getContainer().clientHeight * 0.22)]
-        : [0, 0]
-      : [0, 140];
-    const target = { center: toLngLat(place.coordinates), zoom: 17.5, pitch: 60, offset };
+    const offset: [number, number] = compact
+      ? [0, 0]
+      : detailOpen
+        ? mobile
+          ? [0, -Math.round(map.getContainer().clientHeight * 0.22)]
+          : [0, 0]
+        : [0, 140];
+    const target = { center: toLngLat(place.coordinates), zoom: 17.5, pitch: compact ? 0 : 60, offset };
     const changed = prevFocusRef.current !== place.id;
     prevFocusRef.current = place.id;
     if (reduceMotion) map.jumpTo(target);
     else map.flyTo({ ...target, duration: changed ? 2500 : 900, essential: true });
     if (!detailOpen) popupsRef.current.get(place.id)?.addTo(map);
-  }, [focusId, places, ready, detailOpen]);
+  }, [focusId, places, ready, detailOpen, compact]);
 
   if (!supported) {
     return <p className="flex h-full items-center justify-center bg-sand p-6 text-center text-lg">{labels.noWebGL}</p>;

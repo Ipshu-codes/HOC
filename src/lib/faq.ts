@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { getCredits, getHeritageList, getWard } from "@/lib/content";
 import { getDictionary, siteNameList } from "@/lib/i18n";
+import { coverImage } from "@/lib/images";
 import { faqSchema, type ChatData, type ChatLink } from "@/types/faq";
 import type { Heritage } from "@/types/heritage";
 import { LOCALES, type Locale } from "@/types/locale";
@@ -67,6 +68,41 @@ export function getChatData(lang: Locale): ChatData {
       const links: ChatLink[] = [];
       let note: string | null = null;
       const heritage = heritages.find((h) => h.slug === entry.site);
+      const photo = entry.photo && heritage ? coverImage(heritage) : null;
+      const mapTarget = entry.link?.match(/^\/map\/\?site=([a-z0-9-]+)$/)?.[1];
+      const mapHeritage = mapTarget ? heritages.find((h) => h.slug === mapTarget) : undefined;
+      const officeLocation =
+        mapTarget === "ward-office" && ward.office.coordinates
+          ? {
+              id: "ward-office",
+              kind: "office" as const,
+              name: dict.map.wardOffice,
+              nameAlt: getDictionary(lang === "ne" ? "en" : "ne").map.wardOffice,
+              coordinates: ward.office.coordinates,
+              approximate: ward.office.coordinatesApproximate,
+            }
+          : null;
+      const mapHeritageLocation = mapHeritage?.coordinates
+        ? {
+            id: mapHeritage.slug,
+            kind: "heritage" as const,
+            name: siteName(mapHeritage),
+            nameAlt: lang === "ne" ? mapHeritage.name : mapHeritage.nameNe,
+            coordinates: mapHeritage.coordinates,
+            approximate: mapHeritage.coordinatesApproximate,
+          }
+        : null;
+      const location =
+        entry.directions && heritage?.coordinates
+          ? {
+              id: heritage.slug,
+              kind: "heritage" as const,
+              name: siteName(heritage),
+              nameAlt: lang === "ne" ? heritage.name : heritage.nameNe,
+              coordinates: heritage.coordinates,
+              approximate: heritage.coordinatesApproximate,
+            }
+          : mapHeritageLocation ?? officeLocation;
       if (entry.directions && heritage?.coordinates) {
         // Our own 3D map only; the site never links to external map services.
         links.push({ href: `/${lang}/map/?site=${heritage.slug}`, label: dict.chat.viewOnMap, external: false });
@@ -87,6 +123,8 @@ export function getChatData(lang: Locale): ChatData {
         answer: fill(lang === "ne" ? entry.a_ne : entry.a_en),
         note,
         links,
+        location,
+        photo,
       };
     });
   const priority = new Map(faq.entries.map((entry) => [entry.id, entry.priority]));

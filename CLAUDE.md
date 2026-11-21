@@ -1,6 +1,7 @@
 @AGENTS.md
 
 # Ward 16 Heritage Website
+
 - Sites: Mhepi Ajima, Nanak Math — Ward No. 16, Kathmandu Metropolitan City
 - Stack: Next.js (App Router) + TypeScript + Tailwind, static export (output: 'export'; devIndicators off so the dev "N" badge doesn't cover the 3D Map button). Hosting: Cloudflare Pages.
 - No server features: no API routes, server actions, middleware or ISR.
@@ -35,8 +36,8 @@
 - Justified text: only running paragraphs (`.justified`, `.heritage-prose > p`, `.heritage-prose .item-desc`, `.map-detail-prose > p`), last line left, English `hyphens: auto`. Justified only from 1024 px (lg); phones and tablets stay left-aligned. The heritage list descriptions (`.item-desc`, beside photos) wait until 1280 px (xl) in their own block. The one switch is the `@media` line under "ONE SETTING" in globals.css: `(width >= 64rem)` (chosen), `all` = justified everywhere.
 - useEffect bodies must be blocks, never `() => el.method()`: some browsers return Promises from DOM methods (e.g. scrollIntoView) and React then crashes.
 - Floating buttons: Nani/chatbot bottom-RIGHT, 3D Map bottom-LEFT (swapped from the sketch on 14 Nov 2026). Side offsets are `max(gap, env(safe-area-inset-…))`; the chat panel opens above Nani, growing up and to the left.
-- Nani (chatbot guide): the floating button is the 56 px round face on every page; only hovering over it with a mouse shows the big half-body cut-out (nani-figure-*.webp, 130 px below md / 260 px from md, gentle CSS sway, off under reduced motion) and her speech bubble (not while the chat is open). Touch screens never show or download the big figure; the chat header and message avatars use the round face via <NaniAvatar>. All are built by optimize-images. Avatars beside messages are static with alt="" (the sr-only "Nani:" prefix names her).
-- Contact: no form and no form service (Web3Forms removed 17 Nov 2026). /contact/ shows a welcoming message and the ward office email as a mailto: link (with a subject), plus the office details; strings under `contactPage` in src/i18n/*.json.
+- Nani (chatbot guide): the floating button is the 56 px round face on every page; only hovering over it with a mouse shows the big half-body cut-out (nani-figure-\*.webp, 130 px below md / 260 px from md, gentle CSS sway, off under reduced motion) and her speech bubble (not while the chat is open). Touch screens never show or download the big figure; the chat header and message avatars use the round face via <NaniAvatar>. All are built by optimize-images. Avatars beside messages are static with alt="" (the sr-only "Nani:" prefix names her).
+- Contact: no form and no form service (Web3Forms removed 17 Nov 2026). /contact/ shows a welcoming message and the ward office email as a mailto: link (with a subject), plus the office details; strings under `contactPage` in src/i18n/\*.json.
 - Ward details (address, phone, email, logo) live in content/ward.json — never hard-code them in components.
 - Raw data is in ward16-heritageraw-data/HOC/ (git-ignored, ~1.5 GB). Web images are built from it by `npm run optimize-images` using scripts/image-manifest.json (480/640/960/1280/1920 px; `fullBleed` photos get stronger compression); alt text lives in content frontmatter.
 - Bilingual EN/NE via app/[lang]/. UI strings in src/i18n/. Font: Mukta for Devanagari.
@@ -45,4 +46,4 @@
 - Mobile-first, accessible, every image has alt text.
 - Work one phase of PLAN.md at a time; commit and stop for review after each.
 - Walking route: content/routes.json lists stops (heritage slugs, in order). Unpublished (draft) stops are dropped in src/lib/map-data.ts, and a route with fewer than two published stops is not shown at all. Without a `walking` block the map draws a dashed straight line and shows straight-line distances only, labelled as such; never type walking distances or times by hand, run `npm run fetch-route` instead.
-- Map state lives in src/components/MapExplorer.tsx (selection, search, filters, route step); MapView.tsx only draws it. Map UI strings live under `map` in src/i18n/*.json; Nepali strings there need a native-speaker check.
+- Map state lives in src/components/MapExplorer.tsx (selection, search, filters, route step); MapView.tsx only draws it. Map UI strings live under `map` in src/i18n/\*.json; Nepali strings there need a native-speaker check.

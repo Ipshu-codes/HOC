@@ -267,6 +267,7 @@
     "naniAlt": "Nani, the Ward 16 heritage guide",
     "quickQuestions": "Popular questions",
     "viewOnMap": "View on 3D Map",
+    "locationMap": "Map showing {name}",
     "openOsm": "Open in OpenStreetMap (directions)",
     "approximateNote": "The location on the map is approximate.",
     "newTab": "(opens in a new tab)"

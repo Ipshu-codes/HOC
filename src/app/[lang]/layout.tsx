@@ -79,6 +79,8 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         <Chatbot
           data={getChatData(lang)}
           labels={dict.chat}
+          mapLabels={dict.map}
+          lang={lang}
           contact={{
             // Devanagari digits on Nepali pages ("०१-४९८१६५३"); the tel: link keeps Latin digits.
             phone: lang === "ne" ? toDevanagariDigits(ward.office.phone) : ward.office.phone,
