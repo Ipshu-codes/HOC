@@ -95,6 +95,8 @@ export default function MuseumLanding({ lang, photos, sites, credit, year, galle
                 left: galleryLabels.museumTurnLeft,
                 right: galleryLabels.museumTurnRight,
                 close: galleryLabels.lightbox.Close,
+                videoPlay: galleryLabels.videoPlay,
+                videoPause: galleryLabels.videoPause,
                 previous: galleryLabels.lightbox.Previous,
                 next: galleryLabels.lightbox.Next,
                 hint: labels.hint,

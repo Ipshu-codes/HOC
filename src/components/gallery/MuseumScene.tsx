@@ -1,7 +1,8 @@
 "use client";
 
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { createPortal } from "react-dom";
 import * as THREE from "three";
 
 import type { GalleryPhoto } from "@/lib/images";
@@ -50,6 +51,8 @@ interface SceneProps {
   onHover: (key: string | null) => void;
   /** "art-<index>", "map", "logo" or "sign-<slug>". */
   onSelect: (key: string) => void;
+  /** Wing video screen controls (Play/Pause/Close). */
+  videoLabels?: { play?: string; pause?: string; close?: string };
 }
 
 interface GeometryData {
@@ -175,7 +178,196 @@ function buildEndCap(layout: MuseumLayout): THREE.BufferGeometry {
  * identical vertex positions: no box seams, disconnected sections or intersecting floor/ceiling.
  * Wall spans leave the entrance open where a wing joins it.
  */
-function CurvedShell({ segment }: { segment: MuseumSegment }) {
+/** One ambient video per heritage wing, on the end wall's panel: public/videos/<slug>-video.webm. */
+const WING_VIDEOS: Record<string, string> = {
+  "nanak-math": "/videos/nanak-math-video.webm",
+  "mhepi-ajima": "/videos/mhepi-ajima-video.webm",
+};
+
+/**
+ * A wall-mounted display on a wing's end wall playing the site's video loop. The museum renders
+ * on demand, so useFrame ticks the invalidate at ~30 fps only while the video actually plays.
+ * Under reduced motion the screen stays dark (bezel only) rather than animating.
+ */
+function WingScreen({
+  segment,
+  reducedMotion,
+  interactive,
+  gesture,
+  videoLabels,
+}: {
+  segment: MuseumSegment;
+  reducedMotion: boolean;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  videoLabels?: { play?: string; pause?: string; close?: string };
+}) {
+  const src = segment.site ? WING_VIDEOS[segment.site] : undefined;
+  const invalidate = useThree((state) => state.invalidate);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const lastFrame = useRef(0);
+  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!src || reducedMotion) return;
+    const video = document.createElement("video");
+    video.src = src;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    videoRef.current = video;
+    const tex = new THREE.VideoTexture(video);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.minFilter = THREE.LinearFilter;
+    // Show the screen once the first frame is ready; the listener keeps this out of the
+    // effect body (setState there would cascade renders).
+    const show = () => setTexture(tex);
+    video.addEventListener("canplay", show, { once: true });
+    void video.play().catch(() => undefined);
+    invalidate();
+    return () => {
+      video.pause();
+      video.removeEventListener("canplay", show);
+      tex.dispose();
+      videoRef.current = null;
+      setTexture(null);
+    };
+  }, [src, reducedMotion, invalidate]);
+
+  useFrame(() => {
+    const video = videoRef.current;
+    if (!video || video.paused || video.readyState < 2) return;
+    const now = performance.now();
+    if (now - lastFrame.current < 33) return;
+    lastFrame.current = now;
+    invalidate();
+  });
+
+  if (!src) return null;
+  const vl = videoLabels ?? { play: "Play", pause: "Pause", close: "Close" };
+  // Nearly fill the end panel: small gap at every edge, 16:9 kept, never wider than the panel.
+  const panelWidth = segment.layout.corridorWidth * 0.42;
+  const panelHeight = MUSEUM.corridorHeight * 0.58;
+  const gap = 0.18;
+  const frameWidth = Math.min(panelWidth - 2 * gap, ((panelHeight - 2 * gap) * 16) / 9);
+  const frameHeight = (frameWidth * 9) / 16;
+  const bezel = 0.07;
+  // Centred on the end panel's face; local +z faces the visitor (same as signs).
+  const position = pathPoint(segment.layout, segment.layout.path.end - 0.12, 0, MUSEUM.corridorHeight / 2 - 0.05);
+  const yaw = pathYaw(segment.layout, segment.layout.path.end);
+  return (
+    <>
+      <group
+        position={position}
+        rotation={[0, yaw, 0]}
+        onClick={(event: ThreeEvent<MouseEvent>) => {
+          // Always swallow the click so it cannot fall through to the canvas/gallery;
+          // a look-around drag ends in a click too, so the gesture flag gates expanding.
+          event.stopPropagation();
+          if (!interactive || gesture.current.moved) return;
+          setExpanded((value) => !value);
+        }}
+      >
+        <mesh>
+          <boxGeometry args={[frameWidth + bezel, frameHeight + bezel, 0.08]} />
+          <meshStandardMaterial color="#1c1a18" roughness={0.6} metalness={0.2} />
+        </mesh>
+        <mesh position={[0, 0, 0.045]}>
+          <planeGeometry args={[frameWidth, frameHeight]} />
+          <meshBasicMaterial
+            map={texture ?? undefined}
+            color={texture ? "#ffffff" : "#0d0b0a"}
+            toneMapped={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      </group>
+      {expanded && <WingVideoOverlay src={src} labels={vl} onClose={() => setExpanded(false)} />}
+    </>
+  );
+}
+
+/** The lightbox view for a wing video: just the video, Play/Pause and a close (X) — no text. */
+function WingVideoOverlay({
+  src,
+  labels,
+  onClose,
+}: {
+  src: string;
+  labels: { play?: string; pause?: string; close?: string };
+  onClose: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(true);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+    void video.play().catch(() => setPlaying(false));
+    return () => {
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
+    };
+  }, []);
+  const toggle = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) void video.play().catch(() => setPlaying(false));
+    else video.pause();
+  };
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4" onClick={onClose}>
+      <div className="relative w-[min(60rem,92vw)]" onClick={(event) => event.stopPropagation()}>
+        <video
+          ref={videoRef}
+          src={src}
+          muted
+          loop
+          playsInline
+          autoPlay
+          className="aspect-video w-full rounded-lg bg-black"
+        />
+        <div className="absolute right-2 top-2 flex gap-2">
+          <button
+            type="button"
+            onClick={toggle}
+            className="rounded-full bg-ink/80 px-3 py-1.5 text-sm font-bold text-white"
+          >
+            {playing ? (labels.pause ?? "Pause") : (labels.play ?? "Play")}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={labels.close ?? "Close"}
+            className="rounded-full bg-ink/80 px-3 py-1.5 text-sm font-bold text-white"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function CurvedShell({
+  segment,
+  reducedMotion,
+  interactive,
+  gesture,
+  videoLabels,
+}: {
+  segment: MuseumSegment;
+  reducedMotion: boolean;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  videoLabels?: { play?: string; pause?: string; close?: string };
+}) {
   const { layout, wallSpans, endPanel } = segment;
   const geometry = useMemo(() => {
     const { start, end } = layout.path;
@@ -224,6 +416,9 @@ function CurvedShell({ segment }: { segment: MuseumSegment }) {
             <meshStandardMaterial color={PANEL} roughness={0.94} metalness={0} />
           </mesh>
         </group>
+      )}
+      {endPanel && segment.site && (
+        <WingScreen segment={segment} reducedMotion={reducedMotion} interactive={interactive} gesture={gesture} videoLabels={videoLabels} />
       )}
     </>
   );
@@ -570,6 +765,7 @@ export default function MuseumScene({
   gesture,
   onHover,
   onSelect,
+  videoLabels,
 }: SceneProps) {
   const item = { interactive, gesture, onHover, onSelect };
   return (
@@ -583,7 +779,7 @@ export default function MuseumScene({
         const lights = compact ? segment.layout.lights.filter((_, index) => index % 2 === 0) : segment.layout.lights;
         return (
           <group key={segment.key} position={[segment.x, 0, segment.z]} rotation={[0, segment.yaw, 0]}>
-            <CurvedShell segment={segment} />
+            <CurvedShell segment={segment} reducedMotion={reducedMotion} interactive={interactive} gesture={gesture} videoLabels={videoLabels} />
             <Carpet segment={segment} compact={compact} />
             {segment.layout.artworks.map((art) => (
               <FramedArtwork

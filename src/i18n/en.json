@@ -136,6 +136,8 @@
     "museumBack": "Walk back",
     "museumTurnLeft": "Turn left",
     "museumTurnRight": "Turn right",
+    "videoPlay": "Play",
+    "videoPause": "Pause",
     "museumNoWebGL": "Your browser cannot display the 3D gallery. The hanging gallery is shown instead.",
     "empty": "No photos to show here yet.",
     "lightbox": {

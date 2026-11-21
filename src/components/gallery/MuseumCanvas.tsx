@@ -52,6 +52,9 @@ export interface MuseumLabels {
   aboutWard?: string;
   /** The link from a photograph's close-up to its site's page. */
   readMore?: string;
+  /** Wing video screen controls. */
+  videoPlay?: string;
+  videoPause?: string;
 }
 
 export type MuseumPhase = "intro" | "explore";
@@ -1086,6 +1089,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             compact={compact}
             reducedMotion={props.reducedMotion}
             gesture={gesture}
+            videoLabels={{ play: labels.videoPlay, pause: labels.videoPause, close: labels.close }}
             onHover={setHoverKey}
             onSelect={select}
           />
