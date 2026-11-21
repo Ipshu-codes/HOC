@@ -1442,18 +1442,32 @@ html[lang="ne"] .gallery-page .wall-placard {
 }
 
 /* ==========================================================================
-   Home page: the online museum is the landing (MuseumLanding.tsx).
-   The stage fills the screen under the sticky menu (4rem). Colours are the site's own tokens.
+   Home page: the online museum is the landing (MuseumLanding.tsx) — a fixed
+   fullscreen layer; the sections below it are reached through #anchors.
+   Colours are the site's own tokens.
    ========================================================================== */
 .museum-landing {
-  position: relative;
-  scroll-margin-top: 4rem;
+  /* A fixed fullscreen layer: the home page is only the museum — no sections below it,
+     no scrolling. The header (z-index 50) stays visible on top of it (z-index 40). */
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
   background: #f3ede2;
+}
+/* The landing page shows no footer: display:none also removes its height, so the
+   document is exactly one viewport and there is nothing to scroll to. */
+body:has(.museum-landing) > footer {
+  display: none;
+}
+/* No-WebGL fallback: let the gallery flow normally again. */
+.museum-landing.is-fallback {
+  position: static;
+  overflow: visible;
 }
 .museum-landing-stage {
   position: relative;
-  /* The museum is the whole landing screen; the logo/nav row floats on top of it. */
-  height: 100svh;
+  height: 100%;
   min-height: 30rem;
   overflow: hidden;
   outline: none;
@@ -1602,48 +1616,100 @@ html[lang="ne"] .museum-landing-exit {
 }
 
 /* ==========================================================================
-   Landing page chrome (LandingHeader.tsx): one transparent row over the museum.
-   On this page only, the standard header/nav bar and the floating Map/chat
-   buttons step aside — they stay on every other page.
+   Site header (SiteHeader.tsx): one transparent sticky row on every page —
+   ward logo, section links, language switch, RatnaInTech logo. Sticky (not fixed)
+   so it keeps its place in the flow: no page content is ever hidden under it.
+   On the landing page only, the floating Map/chat buttons step aside.
    ========================================================================== */
-body:has(.museum-landing) > header,
-body:has(.museum-landing) > nav.sticky,
 body:has(.museum-landing) .map-fab,
 body:has(.museum-landing) .nani-fab {
   display: none;
 }
 
-.landing-header {
-  position: absolute;
-  inset-inline: 0;
+.site-header {
+  /* Fallback for the scroll-progress variable SiteHeader writes inline. */
+  --header-p: 0;
+  position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 50;
   padding-top: env(safe-area-inset-top);
 }
-/* A soft shadow keeps the white text readable over both the dark intro and the pale museum. */
-.landing-header :is(a, button) {
-  text-shadow: 0 1px 10px rgb(43 26 26 / 0.65);
-}
-.landing-nav-link {
+.site-nav-link {
   display: inline-block;
   padding: 0.4rem 0.65rem;
-  border-radius: 0.5rem;
   font-weight: 600;
-  color: var(--color-white);
+  white-space: nowrap;
+  color: var(--color-crimson);
+  /* A soft light halo plus a faint red glow: keeps the red readable over the pale
+     museum and cream pages without a background or a heavy blur. */
+  text-shadow:
+    0 1px 6px rgb(255 248 240 / 0.55),
+    0 0 14px rgb(200 16 46 / 0.28);
   transition:
     color 0.25s var(--ease-std),
     transform 0.25s var(--ease-out);
 }
-.landing-nav-link:hover {
-  color: var(--color-crimson);
+/* Hover and the current-page state share one clean look: ink text (white would not read
+   over the cream pages and pale museum behind the transparent header), slightly larger,
+   no shadow and no background. */
+.site-nav-link:hover,
+.site-nav-link.is-active {
+  color: var(--color-ink);
+  text-shadow: none;
   transform: scale(1.06);
 }
-.landing-nav-link:focus-visible {
+.site-nav-link:focus-visible {
   outline: 3px solid var(--color-gold);
   outline-offset: 2px;
 }
+
+/* The Overview/About/Heritages pages get a solid crimson header: white links that turn
+   ink (the same near-black as the transparent header's hover) on hover/active. The
+   header stays sticky, so it remains visible while scrolling and never covers content. */
+/* The morph lives on the inner card, not the sticky header itself: margins,
+   radius, shadow and translate interpolate cleanly there. --header-p goes 0 → 1
+   over the first ~120 px of scroll (SiteHeader writes it per frame), so the bar
+   physically becomes a floating card with no threshold and no jump; scrolling
+   back up reverses it exactly. translateY creates the top gap without moving
+   layout, so nothing below the header ever jumps. */
+.site-header--solid .site-header-card {
+  background: var(--color-crimson);
+  margin-inline: calc(2.5rem * var(--header-p));
+  border-radius: calc(1rem * var(--header-p));
+  box-shadow:
+    0 calc(12px * var(--header-p))
+    calc(32px * var(--header-p))
+    calc(-12px * var(--header-p))
+    rgb(43 26 26 / calc(0.5 * var(--header-p)));
+  transform: translateY(calc(0.75rem * var(--header-p)));
+}
+.site-header--solid .site-nav-link {
+  color: var(--color-white);
+  text-shadow: none;
+}
+.site-header--solid .site-nav-link:hover,
+.site-header--solid .site-nav-link.is-active {
+  color: var(--color-ink);
+}
+/* Language switch on the red header: white text, ink hover like the links, and the
+   active language as a white pill with crimson text. */
+.site-header--solid .lang-toggle {
+  border-color: rgb(255 248 240 / 0.45);
+}
+.site-header--solid .lang-toggle a {
+  color: var(--color-white);
+}
+.site-header--solid .lang-toggle a:hover {
+  color: var(--color-ink);
+  background: transparent;
+}
+.site-header--solid .lang-toggle a[aria-current] {
+  color: var(--color-crimson);
+  background: var(--color-white);
+}
 @media (prefers-reduced-motion: reduce) {
-  .landing-nav-link {
+  .site-header,
+  .site-nav-link {
     transition: none;
   }
 }

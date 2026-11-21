@@ -26,8 +26,10 @@ interface MuseumLandingProps {
   galleryLabels: Dictionary["gallery"];
   labels: { title: string; start: string; hint: string; aboutWard: string; overview: string; readMore: string };
   exhibit: ExhibitInput;
-  /** Where "About Ward 16 →" and the way out of the museum lead: the Overview section below. */
+  /** Where "Overview ↓" leads: the top of the About page, which opens with the Overview content. */
   overviewHref: string;
+  /** Where the logo card's "About Ward 16 →" leads: the About section of the About page. */
+  aboutHref?: string;
 }
 
 /**
@@ -39,7 +41,7 @@ interface MuseumLandingProps {
  * wing per site; any picture can be approached for a closer look, all without leaving the page.
  * Without WebGL, "Start Exploring" opens the gallery's hanging line instead.
  */
-export default function MuseumLanding({ lang, photos, sites, credit, year, galleryLabels, labels, exhibit, overviewHref }: MuseumLandingProps) {
+export default function MuseumLanding({ lang, photos, sites, credit, year, galleryLabels, labels, exhibit, overviewHref, aboutHref }: MuseumLandingProps) {
   const titleId = useId();
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -65,7 +67,7 @@ export default function MuseumLanding({ lang, photos, sites, credit, year, galle
     // Bring the whole museum into view under the sticky menu, and give it the keyboard.
     const section = sectionRef.current;
     if (section) {
-      const menu = document.querySelector<HTMLElement>("nav.sticky")?.offsetHeight ?? 0;
+      const menu = document.querySelector<HTMLElement>(".site-header")?.offsetHeight ?? 0;
       window.scrollTo({ top: section.getBoundingClientRect().top + window.scrollY - menu, behavior: reduced ? "auto" : "smooth" });
     }
     stageRef.current?.focus({ preventScroll: true });
@@ -107,7 +109,7 @@ export default function MuseumLanding({ lang, photos, sites, credit, year, galle
               onFail={fail}
               exhibit={exhibit}
               phase={phase}
-              aboutHref={overviewHref}
+              aboutHref={aboutHref ?? overviewHref}
               heritageBase={`/${lang}/heritage/`}
             />
           </MuseumErrorBoundary>

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { jetbrains, mukta, playfair } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
 import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import SiteHeader from "@/components/SiteHeader";
 import MapButton from "@/components/MapButton";
 import { getHeritageList, getHeroSlideConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
@@ -69,7 +69,13 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         >
           {dict.a11y.skipToContent}
         </a>
-        <Header lang={lang} dict={dict} ward={ward} navItems={navItems} />
+        {/* One sticky header row on every page: logos + Home/About/Heritages + language switch. */}
+        <SiteHeader
+          lang={lang}
+          navLabels={dict.nav}
+          languageLabels={dict.language}
+          logoSrc={ward.logo.src}
+        />
         <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
           {children}
         </main>

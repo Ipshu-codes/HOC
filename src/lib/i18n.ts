@@ -25,10 +25,20 @@ export function joinList(items: string[], and: string): string {
   return `${items.slice(0, -1).join(", ")} ${and} ${items.at(-1)}`;
 }
 
-/** Section links shared by the header nav and the footer. They point at sections of the home page. */
+/** Nav/footer links. Home/About/Heritages are real pages now (the home page is only the museum). */
 export function getNavItems(lang: Locale, dict: Dictionary) {
-  const sections = ["overview", "about", "heritages", "gallery", "contact"] as const;
-  return sections.map((id) => ({ href: `/${lang}/#${id}`, label: dict.nav[id] }));
+  const routes = {
+    // "Home" is the museum landing itself; the Overview content lives at the top of /about/.
+    overview: `/${lang}/`,
+    about: `/${lang}/about/`,
+    heritages: `/${lang}/heritages/`,
+    gallery: `/${lang}/gallery/`,
+    contact: `/${lang}/contact/`,
+  } as const;
+  return (Object.keys(routes) as (keyof typeof routes)[]).map((id) => ({
+    href: routes[id],
+    label: dict.nav[id],
+  }));
 }
 
 export type NavItem = ReturnType<typeof getNavItems>[number];
