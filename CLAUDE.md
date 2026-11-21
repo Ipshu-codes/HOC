@@ -46,6 +46,7 @@
 - Strict TypeScript, no `any`. Client components only where needed (map, chatbot, gallery, nav toggle).
 - Team knows JS/TS, React, Next.js, PostgreSQL — explain anything new (MapLibre, Fuse.js) in comments.
 - Mobile-first, accessible, every image has alt text.
+- Standing rules (user, 21 Nov 2026): work only on the current branch — never create or switch branches; never pull, fetch, merge, or push unless explicitly asked; never commit unless explicitly asked. Every user-facing change must be fully responsive (desktop, tablet, mobile) and implemented in both English and Nepali via the existing localization system (content/ EN+NE, src/i18n/*.json).
 - Work one phase of PLAN.md at a time; commit and stop for review after each.
 - Walking route: content/routes.json lists stops (heritage slugs, in order). Unpublished (draft) stops are dropped in src/lib/map-data.ts, and a route with fewer than two published stops is not shown at all. Without a `walking` block the map draws a dashed straight line and shows straight-line distances only, labelled as such; never type walking distances or times by hand, run `npm run fetch-route` instead.
 - Map state lives in src/components/MapExplorer.tsx (selection, search, filters, route step); MapView.tsx only draws it. Map UI strings live under `map` in src/i18n/\*.json; Nepali strings there need a native-speaker check.

@@ -7,6 +7,7 @@ import HeritageCard from "@/components/HeritageCard";
 import MuseumLanding from "@/components/MuseumLanding";
 import HomeGalleryCarousel from "@/components/HomeGalleryCarousel";
 import HomeSection from "@/components/HomeSection";
+import LandingHeader from "@/components/LandingHeader";
 import SectionDivider from "@/components/SectionDivider";
 import {
   getCredits,
@@ -95,46 +96,57 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      {/* The online museum is the landing: ward map and logo in the entrance, a wing per visible site. */}
-      <MuseumLanding
-        lang={lang}
-        photos={galleryPhotos(heritages)}
-        sites={museumSites}
-        credit={photoCredit}
-        year={credits.photos.year}
-        galleryLabels={dict.gallery}
-        labels={{
-          title: dict.home.museumLandingTitle,
-          start: dict.home.startExploring,
-          hint: dict.home.museumHint,
-          aboutWard: dict.home.aboutWard16,
-          overview: dict.nav.overview,
-          readMore: dict.home.readMore,
-        }}
-        exhibit={{
-          map:
-            ward.wardMap && wardMap
-              ? {
-                  // The 640 px file on the wall; the 960 px one only for the close look.
-                  src: ward.wardMap.files.find((file) => file.endsWith("-640.webp")) ?? wardMap.src,
-                  hiSrc: wardMap.src,
-                  width: wardMap.width,
-                  height: wardMap.height,
-                  alt: ward.wardMap.alt[lang],
-                }
-              : null,
-          logo:
-            ward.overviewLogo && overviewLogo
-              ? { src: overviewLogo.src, width: overviewLogo.width, height: overviewLogo.height, alt: ward.overviewLogo.alt[lang] }
-              : null,
-          wings: heritages.map((heritage) => ({
-            slug: heritage.slug,
-            label: dict.home.museumSigns[heritage.slug],
-            side: WING_SIDE[heritage.slug],
-          })),
-        }}
-        overviewHref={`/${lang}/#overview`}
-      />
+      {/* The online museum is the landing: ward map and logo in the entrance, a wing per visible site.
+          The transparent logo/nav row floats on top of it; the sections below stay reachable through
+          the nav links and the museum's own exit link. */}
+      <div className="relative">
+        <LandingHeader
+          lang={lang}
+          navLabels={dict.nav}
+          languageLabels={dict.language}
+          homeLabel={dict.a11y.homeLink}
+          logoSrc={ward.logo.src}
+        />
+        <MuseumLanding
+          lang={lang}
+          photos={galleryPhotos(heritages)}
+          sites={museumSites}
+          credit={photoCredit}
+          year={credits.photos.year}
+          galleryLabels={dict.gallery}
+          labels={{
+            title: dict.home.museumLandingTitle,
+            start: dict.home.startExploring,
+            hint: dict.home.museumHint,
+            aboutWard: dict.home.aboutWard16,
+            overview: dict.home.overviewTitle,
+            readMore: dict.home.readMore,
+          }}
+          exhibit={{
+            map:
+              ward.wardMap && wardMap
+                ? {
+                    // The 640 px file on the wall; the 960 px one only for the close look.
+                    src: ward.wardMap.files.find((file) => file.endsWith("-640.webp")) ?? wardMap.src,
+                    hiSrc: wardMap.src,
+                    width: wardMap.width,
+                    height: wardMap.height,
+                    alt: ward.wardMap.alt[lang],
+                  }
+                : null,
+            logo:
+              ward.overviewLogo && overviewLogo
+                ? { src: overviewLogo.src, width: overviewLogo.width, height: overviewLogo.height, alt: ward.overviewLogo.alt[lang] }
+                : null,
+            wings: heritages.map((heritage) => ({
+              slug: heritage.slug,
+              label: dict.home.museumSigns[heritage.slug],
+              side: WING_SIDE[heritage.slug],
+            })),
+          }}
+          overviewHref={`/${lang}/#overview`}
+        />
+      </div>
 
       <HomeSection id="overview" title={dict.home.overviewTitle}>
         {/* Same grid as the About section below: text column + 15rem/18rem image column from 768 px.

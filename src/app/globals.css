@@ -1452,9 +1452,9 @@ html[lang="ne"] .gallery-page .wall-placard {
 }
 .museum-landing-stage {
   position: relative;
-  height: calc(100svh - 4rem);
+  /* The museum is the whole landing screen; the logo/nav row floats on top of it. */
+  height: 100svh;
   min-height: 30rem;
-  max-height: 70rem;
   overflow: hidden;
   outline: none;
 }
@@ -1484,7 +1484,8 @@ html[lang="ne"] .gallery-page .wall-placard {
   align-items: center;
   justify-content: center;
   gap: 1.75rem;
-  padding: 0 1.25rem 10vh;
+  /* Extra top padding keeps the title and button clear of the floating logo/nav row. */
+  padding: 7rem 1.25rem 10vh;
   text-align: center;
   background:
     radial-gradient(ellipse 60% 40% at 50% 44%, rgb(251 247 239 / 0.85), rgb(251 247 239 / 0.4) 55%, transparent 82%),
@@ -1560,7 +1561,9 @@ html[lang="ne"] .museum-landing-title {
 /* The way on to the rest of the page while exploring (wheel and touch belong to the museum). */
 .museum-landing-exit {
   position: absolute;
-  top: 1rem;
+  /* Below the floating logo/nav row (the right logo used to share this corner);
+     the row is two lines tall on phones, one line from sm up. */
+  top: calc(7.5rem + env(safe-area-inset-top));
   right: var(--gutter);
   z-index: 6;
   display: inline-flex;
@@ -1588,9 +1591,61 @@ html[lang="ne"] .museum-landing-exit {
 .museum-landing-exit:hover {
   background: var(--color-brick);
 }
+@media (min-width: 40rem) {
+  .museum-landing-exit {
+    top: calc(6rem + env(safe-area-inset-top));
+  }
+}
 .museum-landing-exit:focus-visible {
   outline: 3px solid var(--color-gold);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Landing page chrome (LandingHeader.tsx): one transparent row over the museum.
+   On this page only, the standard header/nav bar and the floating Map/chat
+   buttons step aside — they stay on every other page.
+   ========================================================================== */
+body:has(.museum-landing) > header,
+body:has(.museum-landing) > nav.sticky,
+body:has(.museum-landing) .map-fab,
+body:has(.museum-landing) .nani-fab {
+  display: none;
+}
+
+.landing-header {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 40;
+  padding-top: env(safe-area-inset-top);
+}
+/* A soft shadow keeps the white text readable over both the dark intro and the pale museum. */
+.landing-header :is(a, button) {
+  text-shadow: 0 1px 10px rgb(43 26 26 / 0.65);
+}
+.landing-nav-link {
+  display: inline-block;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: var(--color-white);
+  transition:
+    color 0.25s var(--ease-std),
+    transform 0.25s var(--ease-out);
+}
+.landing-nav-link:hover {
+  color: var(--color-crimson);
+  transform: scale(1.06);
+}
+.landing-nav-link:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-nav-link {
+    transition: none;
+  }
 }
 
 /* ---- Museum overlays shared by the home page and the gallery page ---- */

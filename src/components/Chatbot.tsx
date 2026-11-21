@@ -71,7 +71,7 @@ export default function Chatbot(props: ChatbotProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        className="group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
+        className="nani-fab group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
         {/* invisible (not hidden) on hover: the face keeps its box, so the pointer stays over the button. */}
