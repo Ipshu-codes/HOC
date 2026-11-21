@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { MapPlace } from "@/components/map/types";
+import type { SiteImage } from "@/lib/images";
 import { localized } from "@/types/common";
 import { HERITAGE_SLUGS } from "@/types/heritage";
 
@@ -35,6 +37,8 @@ export const faqSchema = z
         topic: z.string().nullable(),
         priority: z.number().int().positive(),
         directions: z.boolean().default(false),
+        /** Show the site's cover photo with this answer. */
+        photo: z.boolean().default(false),
         q_en: z.string().min(1),
         q_ne: z.string().min(1),
         a_en: z.string().min(1),
@@ -63,6 +67,7 @@ export const faqSchema = z
         issue(`entry "${entry.id}": another question in its topic has priority ${entry.priority}`);
       orderKeys.add(key);
       if (entry.directions && entry.site === null) issue(`entry "${entry.id}": directions need a site`);
+      if (entry.photo && entry.site === null) issue(`entry "${entry.id}": a photo needs a site`);
     }
     for (const id of faq.suggestions) if (!ids.includes(id)) issue(`suggestion "${id}" is not an entry id`);
   });
@@ -91,6 +96,10 @@ export interface ChatEntry {
   /** Small print under the answer, e.g. "The location on the map is approximate." */
   note: string | null;
   links: ChatLink[];
+  /** Map pin shown inline for location and directions answers. */
+  location: Pick<MapPlace, "id" | "kind" | "name" | "nameAlt" | "coordinates" | "approximate"> | null;
+  /** Optimized cover photo shown with selected answers. */
+  photo: SiteImage | null;
 }
 
 export interface ChatData {
