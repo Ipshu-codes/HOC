@@ -1,7 +1,7 @@
 "use client";
 
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 
 import type { GalleryPhoto } from "@/lib/images";
@@ -51,6 +51,10 @@ interface SceneProps {
   onHover: (key: string | null) => void;
   /** "art-<index>", "map", "logo", "sign-<slug>" or "link-<key>". */
   onSelect: (key: string) => void;
+  /** Wings the visitor has headed for: only these load their video. */
+  openWings: ReadonlySet<number>;
+  /** True while a page panel covers the museum: the wing videos wait. */
+  videoPaused: boolean;
 }
 
 interface GeometryData {
@@ -176,6 +180,123 @@ function buildEndCap(layout: MuseumLayout): THREE.BufferGeometry {
  * identical vertex positions: no box seams, disconnected sections or intersecting floor/ceiling.
  * Wall spans leave the entrance open where a wing joins it.
  */
+/** One ambient video per heritage wing, on the end wall's panel: public/videos/<slug>-video.webm. */
+export const WING_VIDEOS: Record<string, string> = {
+  "nanak-math": "/videos/nanak-math-video.webm",
+  "mhepi-ajima": "/videos/mhepi-ajima-video.webm",
+};
+
+/**
+ * A wall-mounted display on a wing's end wall playing the site's video, muted, on a loop. Like the
+ * wing's photographs, the file is only fetched once the visitor heads for that wing (`active`), and it
+ * pauses while a page panel covers the museum. The museum renders on demand, so useFrame redraws at
+ * ~30 fps only while the video plays. Under reduced motion the screen stays dark (bezel only).
+ * A click opens it larger; MuseumCanvas shows that in the page, outside the 3D scene.
+ */
+function WingScreen({
+  segment,
+  active,
+  paused,
+  reducedMotion,
+  hovered,
+  interactive,
+  gesture,
+  onHover,
+  onSelect,
+}: {
+  segment: MuseumSegment;
+  active: boolean;
+  paused: boolean;
+  reducedMotion: boolean;
+  hovered: boolean;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  onHover: (key: string | null) => void;
+  onSelect: (key: string) => void;
+}) {
+  const src = segment.site ? WING_VIDEOS[segment.site] : undefined;
+  const invalidate = useThree((state) => state.invalidate);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const pausedRef = useRef(paused);
+  const lastFrame = useRef(0);
+  const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+
+  useEffect(() => {
+    if (!src || !active || reducedMotion) return;
+    const video = document.createElement("video");
+    video.src = src;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    videoRef.current = video;
+    const tex = new THREE.VideoTexture(video);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.minFilter = THREE.LinearFilter;
+    // Show the screen once the first frame is ready; the listener keeps this out of the
+    // effect body (setState there would cascade renders).
+    const show = () => setTexture(tex);
+    video.addEventListener("canplay", show, { once: true });
+    if (!pausedRef.current) void video.play().catch(() => undefined);
+    invalidate();
+    return () => {
+      video.pause();
+      video.removeEventListener("canplay", show);
+      video.removeAttribute("src");
+      video.load();
+      tex.dispose();
+      videoRef.current = null;
+      setTexture(null);
+    };
+  }, [src, active, reducedMotion, invalidate]);
+
+  // Behind a page panel the museum is a still backdrop: the video waits there.
+  useEffect(() => {
+    pausedRef.current = paused;
+    const video = videoRef.current;
+    if (!video) return;
+    if (paused) video.pause();
+    else void video.play().catch(() => undefined);
+    invalidate();
+  }, [paused, invalidate]);
+
+  useEffect(() => {
+    invalidate();
+  }, [hovered, invalidate]);
+
+  useFrame(() => {
+    const video = videoRef.current;
+    if (!video || video.paused || video.readyState < 2) return;
+    const now = performance.now();
+    if (now - lastFrame.current < 33) return;
+    lastFrame.current = now;
+    invalidate();
+  });
+
+  if (!src || !segment.site) return null;
+  // Nearly fill the end panel: small gap at every edge, 16:9 kept, never wider than the panel.
+  const panelWidth = segment.layout.corridorWidth * 0.42;
+  const panelHeight = MUSEUM.corridorHeight * 0.58;
+  const gap = 0.18;
+  const frameWidth = Math.min(panelWidth - 2 * gap, ((panelHeight - 2 * gap) * 16) / 9);
+  const frameHeight = (frameWidth * 9) / 16;
+  const bezel = 0.07;
+  // Centred on the end panel's face; local +z faces the visitor (same as signs).
+  const position = pathPoint(segment.layout, segment.layout.path.end - 0.12, 0, MUSEUM.corridorHeight / 2 - 0.05);
+  const yaw = pathYaw(segment.layout, segment.layout.path.end);
+  return (
+    <group position={position} rotation={[0, yaw, 0]} {...pointerHandlers(`video-${segment.site}`, interactive, gesture, onHover, onSelect)}>
+      <mesh>
+        <boxGeometry args={[frameWidth + bezel, frameHeight + bezel, 0.08]} />
+        <meshStandardMaterial color={hovered ? "#6b532e" : "#1c1a18"} roughness={0.6} metalness={0.2} />
+      </mesh>
+      <mesh position={[0, 0, 0.045]}>
+        <planeGeometry args={[frameWidth, frameHeight]} />
+        <meshBasicMaterial map={texture ?? undefined} color={texture ? "#ffffff" : "#0d0b0a"} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
 function CurvedShell({ segment }: { segment: MuseumSegment }) {
   const { layout, wallSpans, endPanel } = segment;
   const geometry = useMemo(() => {
@@ -618,6 +739,8 @@ export default function MuseumScene({
   gesture,
   onHover,
   onSelect,
+  openWings,
+  videoPaused,
 }: SceneProps) {
   const item = { interactive, gesture, onHover, onSelect };
   return (
@@ -632,6 +755,16 @@ export default function MuseumScene({
         return (
           <group key={segment.key} position={[segment.x, 0, segment.z]} rotation={[0, segment.yaw, 0]}>
             <CurvedShell segment={segment} />
+            {segment.endPanel && segment.site && (
+              <WingScreen
+                segment={segment}
+                active={openWings.has(seg)}
+                paused={videoPaused}
+                reducedMotion={reducedMotion}
+                hovered={hoverKey === `video-${segment.site}`}
+                {...item}
+              />
+            )}
             <Carpet segment={segment} compact={compact} />
             {segment.layout.artworks.map((art) => (
               <FramedArtwork

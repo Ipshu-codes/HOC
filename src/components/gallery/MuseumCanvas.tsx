@@ -37,7 +37,8 @@ import {
   type WorldPose,
 } from "@/lib/museum-world";
 import type { Locale } from "@/types/locale";
-import MuseumScene from "./MuseumScene";
+import MuseumScene, { WING_VIDEOS } from "./MuseumScene";
+import WingVideo from "./WingVideo";
 
 export interface MuseumLabels {
   help: string;
@@ -54,6 +55,9 @@ export interface MuseumLabels {
   aboutWard?: string;
   /** The link from a photograph's close-up to its site's page. */
   readMore?: string;
+  /** Wing video screen controls. */
+  videoPlay?: string;
+  videoPause?: string;
 }
 
 /** intro: the slow walk before Start Exploring; explore: the visitor walks; backdrop: still and
@@ -589,6 +593,13 @@ function MuseumControls({
       event.preventDefault();
       const notch = Math.max(-1, Math.min(1, event.deltaY / 100));
       if (notch !== 0) moveForward(notch * 0.9);
+      // Trackpads report horizontal swipes as deltaX (mouse wheels usually send 0):
+      // strafe sideways with them, like the forward/back wheel and the arrow buttons.
+      const side = Math.max(-1, Math.min(1, event.deltaX / 100));
+      if (side !== 0) {
+        target.current = moveInWorld(world, target.current, 0, Math.sign(side), Math.abs(side) * 0.9);
+        invalidate();
+      }
     };
 
     element.addEventListener("pointerdown", onPointerDown);
@@ -608,7 +619,7 @@ function MuseumControls({
       activePointers.clear();
       pinch.current = null;
     };
-  }, [gl, movable, invalidate, moveForward, gesture]);
+  }, [gl, movable, invalidate, moveForward, gesture, world]);
 
   const report = useCallback(
     (pose: WorldPose, view: ViewPose) => {
@@ -853,6 +864,9 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   const [arrived, setArrived] = useState(false);
   const [travel, setTravel] = useState<Travel | null>(null);
   const [zoneSeg, setZoneSeg] = useState(0);
+  // The wing video opened large (its site's slug), and what to give focus back to afterwards.
+  const [video, setVideo] = useState<string | null>(null);
+  const videoOpener = useRef<HTMLElement | null>(null);
   // Leaving the museum for another page puts any close-up away (state adjusted during render, React's
   // pattern for resetting state when a prop changes), so it is not still open on the way back.
   const [seenPhase, setSeenPhase] = useState(phase);
@@ -862,6 +876,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
       setFocus(null);
       setArrived(false);
       setHoverKey(null);
+      setVideo(null);
     }
   }
   const router = useRouter();
@@ -902,7 +917,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
 
   const explore = phase === "explore";
   const interactive = props.enabled && explore;
-  const movable = interactive && focus === null;
+  const movable = interactive && focus === null && video === null;
 
   const openFocus = useCallback(
     (next: Focus, from: HTMLElement | null = null) => {
@@ -943,6 +958,10 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
       else if (key.startsWith("sign-")) {
         const sign = world.signs.find((item) => `sign-${item.key}` === key);
         if (sign) goTo(sign.target);
+      } else if (key.startsWith("video-")) {
+        videoOpener.current = null;
+        setHoverKey(null);
+        setVideo(key.slice("video-".length));
       } else if (key.startsWith("link-")) {
         // A "Read About →" plaque: an in-app navigation, so Back returns to the museum.
         const link = world.links.find((item) => `link-${item.key}` === key);
@@ -1099,6 +1118,8 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             compact={compact}
             reducedMotion={props.reducedMotion}
             gesture={gesture}
+            openWings={openWings}
+            videoPaused={phase === "backdrop"}
             onHover={setHoverKey}
             onSelect={select}
           />
@@ -1129,6 +1150,17 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
               {link.label}
             </Link>
           ))}
+          {wing && WING_VIDEOS[wing.key] && (
+            <button
+              type="button"
+              onClick={(event) => {
+                videoOpener.current = event.currentTarget;
+                setVideo(wing.key);
+              }}
+            >
+              {`${labels.videoPlay ?? "Play"}: ${wing.label.replace(/\n/g, " ")}`}
+            </button>
+          )}
           {wingArtworks.map((placed) => (
             <button key={placed.art.key} type="button" onClick={(event) => openFocus({ kind: "art", index: placed.art.index }, event.currentTarget)}>
               {placed.art.caption}
@@ -1197,6 +1229,20 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             </a>
           )}
         </div>
+      )}
+
+      {video && WING_VIDEOS[video] && (
+        <WingVideo
+          src={WING_VIDEOS[video]}
+          title={(world.signs.find((sign) => sign.key === video)?.label ?? video).replace(/\n/g, " ")}
+          labels={{ play: labels.videoPlay, pause: labels.videoPause, close: labels.close }}
+          onClose={() => {
+            setVideo(null);
+            const back = videoOpener.current;
+            videoOpener.current = null;
+            if (back?.isConnected) back.focus({ preventScroll: true });
+          }}
+        />
       )}
 
       {compact && explore && !focus && (
