@@ -246,13 +246,13 @@ export default function MapExplorer({ places, route, labels, lang, preview, requ
       <div
         className={
           showDetail
-            ? "grid w-full gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]"
+            ? "grid w-full gap-4 @4xl:grid-cols-[minmax(0,1.7fr)_minmax(20rem,1fr)]"
             : "w-full"
         }
       >
         <div
           ref={mapWrapRef}
-          className="relative h-[70dvh] min-h-80 w-full scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 lg:h-[80dvh]"
+          className="relative h-[70dvh] min-h-80 w-full scroll-mt-20 overflow-hidden rounded-xl shadow-md ring-1 ring-gold/50 @4xl:h-[65dvh]"
         >
           {mapOn ? (
             <MapView

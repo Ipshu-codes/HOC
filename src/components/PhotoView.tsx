@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
@@ -136,8 +137,12 @@ export default function PhotoView({ photos, index, from, credit, siteName, label
   const related = photos.map((p, i) => ({ p, i })).filter(({ p, i }) => p.site === photo.site && i !== index).slice(0, 4);
   const buttonClass = "btn btn-outline";
 
-  return (
-    <div ref={rootRef} role="dialog" aria-modal="true" aria-label={photo.alt} className="photo-view">
+  // Rendered at the top of the page (a portal), so it really covers the whole screen even when the
+  // gallery sits in the museum's information panel (which would otherwise contain it). The wrapper
+  // keeps the gallery's styles, which are scoped to .gallery-page.
+  return createPortal(
+    <div className="gallery-page">
+      <div ref={rootRef} role="dialog" aria-modal="true" aria-label={photo.alt} className="photo-view">
       <div className="photo-view-grid">
         {/* eslint-disable-next-line @next/next/no-img-element -- static export: no image server */}
         <img
@@ -198,5 +203,7 @@ export default function PhotoView({ photos, index, from, credit, siteName, label
         </div>
       </div>
     </div>
+    </div>,
+    document.body,
   );
 }

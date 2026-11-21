@@ -1,6 +1,8 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 
@@ -54,7 +56,9 @@ export interface MuseumLabels {
   readMore?: string;
 }
 
-export type MuseumPhase = "intro" | "explore";
+/** intro: the slow walk before Start Exploring; explore: the visitor walks; backdrop: still and
+ *  untouchable behind another page's content (the camera keeps its place). */
+export type MuseumPhase = "intro" | "explore" | "backdrop";
 
 /** Lets the gallery's accessible DOM frames ask the 3D view to approach a photograph. */
 export interface MuseumApi {
@@ -179,7 +183,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 /** Real controls keep their own keyboard behaviour; accessible artwork frames stay navigable. */
 function isGuardedControl(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card")) return true;
+  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card, .museum-topbar, .museum-contact")) return true;
   return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame, .museum-a11y");
 }
 
@@ -425,7 +429,7 @@ function MuseumControls({
     if (phase === "intro") {
       intro.current = { t0: performance.now(), from: { ...poseRef.current } };
       invalidate();
-    } else if (previousPhase.current === "intro") {
+    } else if (phase === "explore" && previousPhase.current === "intro") {
       intro.current = null;
       // Portrait phones see a lot of ceiling at eye level; a slight downward gaze shows the walls.
       target.current = { ...poseRef.current, lateral: 0, heading: 0, pitch: compact ? -0.12 : 0 };
@@ -849,6 +853,18 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   const [arrived, setArrived] = useState(false);
   const [travel, setTravel] = useState<Travel | null>(null);
   const [zoneSeg, setZoneSeg] = useState(0);
+  // Leaving the museum for another page puts any close-up away (state adjusted during render, React's
+  // pattern for resetting state when a prop changes), so it is not still open on the way back.
+  const [seenPhase, setSeenPhase] = useState(phase);
+  if (seenPhase !== phase) {
+    setSeenPhase(phase);
+    if (phase !== "explore") {
+      setFocus(null);
+      setArrived(false);
+      setHoverKey(null);
+    }
+  }
+  const router = useRouter();
   const opener = useRef<HTMLElement | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -927,9 +943,13 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
       else if (key.startsWith("sign-")) {
         const sign = world.signs.find((item) => `sign-${item.key}` === key);
         if (sign) goTo(sign.target);
+      } else if (key.startsWith("link-")) {
+        // A "Read About →" plaque: an in-app navigation, so Back returns to the museum.
+        const link = world.links.find((item) => `link-${item.key}` === key);
+        if (link) router.push(link.href);
       }
     },
-    [openFocus, goTo, world],
+    [openFocus, goTo, world, router],
   );
 
   const onZone = useCallback(
@@ -1097,6 +1117,17 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             <button key={sign.key} type="button" onClick={() => goTo(sign.target)}>
               {sign.label}
             </button>
+          ))}
+          {world.links.map((link) => (
+            <Link
+              key={link.key}
+              href={link.href}
+              prefetch={false}
+              onFocus={() => setHoverKey(`link-${link.key}`)}
+              onBlur={() => setHoverKey(null)}
+            >
+              {link.label}
+            </Link>
           ))}
           {wingArtworks.map((placed) => (
             <button key={placed.art.key} type="button" onClick={(event) => openFocus({ kind: "art", index: placed.art.index }, event.currentTarget)}>

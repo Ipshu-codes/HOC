@@ -444,19 +444,65 @@ export function drawMuseumSign(
     ctx.fill();
   });
 
-  // The label, as large as the plate allows beside the arrow.
+  // The label, as large as the plate allows beside the arrow. A line break in the label starts a
+  // second, slightly smaller part (e.g. a site's popular name); long parts wrap between words.
   const textLeft = dir === 1 ? inset * 1.5 : ax + arrowW + inset * 0.7;
   const textRight = dir === 1 ? ax - inset * 0.7 : width - inset * 1.5;
   const maxWidth = textRight - textLeft;
-  let size = Math.round(height * 0.5);
+  const availableHeight = height - inset * 3;
+  const parts = label.split("\n");
+  const fontAt = (px: number) => `700 ${Math.round(px)}px ${fontFamily}`;
+  const wrap = (text: string, px: number): string[] => {
+    ctx.font = fontAt(px);
+    const lines: string[] = [];
+    let line = "";
+    for (const word of text.split(/\s+/).filter(Boolean)) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (!line || ctx.measureText(candidate).width <= maxWidth) line = candidate;
+      else {
+        lines.push(line);
+        line = word;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+  // The largest type that fits, with each part on one line (wrapped = false) or wrapped between words.
+  const layout = (wrapped: boolean) => {
+    let size = Math.round(height * (parts.length > 1 ? 0.3 : 0.42));
+    let lines: { text: string; px: number }[] = [];
+    let total = 0;
+    while (size > 8) {
+      lines = parts.flatMap((part, index) => {
+        const px = index === 0 ? size : size * 0.8;
+        return (wrapped ? wrap(part, px) : [part]).map((text) => ({ text, px }));
+      });
+      total = lines.reduce((sum, line) => sum + line.px * 1.18, 0);
+      const fits = lines.every((line) => {
+        ctx.font = fontAt(line.px);
+        return ctx.measureText(line.text).width <= maxWidth;
+      });
+      if (fits && total <= availableHeight) break;
+      size -= 2;
+    }
+    return { size, lines, total };
+  };
+  // Keep each part on one line unless wrapping makes the letters clearly larger (a long name).
+  const single = layout(false);
+  const wrappedLayout = layout(true);
+  const { lines, total } = wrappedLayout.size > single.size * 1.35 ? wrappedLayout : single;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  while (size > height * 0.16) {
-    ctx.font = `700 ${size}px ${fontFamily}`;
-    if (ctx.measureText(label).width <= maxWidth) break;
-    size -= 2;
+  let y = cy - total / 2;
+  for (const line of lines) {
+    const lineHeight = line.px * 1.18;
+    const lineY = y + lineHeight / 2 + line.px * 0.04;
+    engrave(() => {
+      ctx.font = fontAt(line.px);
+      ctx.fillText(line.text, (textLeft + textRight) / 2, lineY);
+    });
+    y += lineHeight;
   }
-  engrave(() => ctx.fillText(label, (textLeft + textRight) / 2, cy + size * 0.04));
 }
 
 export function useMuseumSignTexture(
@@ -545,5 +591,62 @@ export function useCarpetTexture(): THREE.CanvasTexture | null {
       created.dispose();
     };
   }, []);
+  return texture;
+}
+
+/* ---- "Read About →" plaques: crimson, a thin antique-gold rule, cream lettering ---- */
+
+const LINK_PX_PER_METRE = 420;
+
+export function drawMuseumLinkPlaque(ctx: CanvasRenderingContext2D, text: string, fontFamily: string, width: number, height: number): void {
+  const face = ctx.createLinearGradient(0, 0, 0, height);
+  face.addColorStop(0, "#b3142c");
+  face.addColorStop(1, "#8b1e1e");
+  ctx.fillStyle = face;
+  ctx.fillRect(0, 0, width, height);
+  const inset = height * 0.11;
+  ctx.strokeStyle = "#d4a017";
+  ctx.lineWidth = Math.max(2, height * 0.035);
+  ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset);
+  let size = Math.round(height * 0.46);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  while (size > height * 0.2) {
+    ctx.font = `700 ${size}px ${fontFamily}`;
+    if (ctx.measureText(text).width <= width - 4 * inset) break;
+    size -= 2;
+  }
+  ctx.fillStyle = "#fff8f0";
+  ctx.fillText(text, width / 2, height / 2 + size * 0.04);
+}
+
+export function useMuseumLinkTexture(text: string, widthMetres: number, heightMetres: number): THREE.CanvasTexture | null {
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    let created: THREE.CanvasTexture | null = null;
+    (async () => {
+      const fonts = fontFamilies();
+      if (typeof document !== "undefined" && document.fonts) {
+        await document.fonts.load(`700 72px ${fonts.sans}`, text).catch(() => undefined);
+        await document.fonts.ready.catch(() => undefined);
+      }
+      if (cancelled) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(widthMetres * LINK_PX_PER_METRE);
+      canvas.height = Math.round(heightMetres * LINK_PX_PER_METRE);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      drawMuseumLinkPlaque(ctx, text, fonts.sans, canvas.width, canvas.height);
+      created = new THREE.CanvasTexture(canvas);
+      created.colorSpace = THREE.SRGBColorSpace;
+      created.anisotropy = 8;
+      setTexture(created);
+    })();
+    return () => {
+      cancelled = true;
+      created?.dispose();
+    };
+  }, [text, widthMetres, heightMetres]);
   return texture;
 }

@@ -47,8 +47,10 @@
     "aboutWard16": "About Ward 16 →",
     "museumSigns": {
       "mhepi-ajima": "Mhepi Ajima",
-      "nanak-math": "Nanak Matha"
+      "nanak-math": "Living Bhu-Samadhi Site of Mahayogi Shri Brahmaharidas Maharaj\nPrachin Udashin Nanak matha"
     },
+    "museumReadAbout": "Read About →",
+    "museumReadAboutLabel": "Read about {name}",
     "viewMap": "View 3D Map",
     "overviewTitle": "Overview",
     "overviewIntro": {
@@ -120,6 +122,10 @@
     "intro": "Photos from {sites}. Select a photo to see it larger.",
     "filterLabel": "Show photos from",
     "all": "All",
+    "siteSubtitles": {
+      "mhepi-ajima": "",
+      "nanak-math": "Prachin Udaseen Nanak Math"
+    },
     "count": {
       "one": "{n} photo",
       "other": "{n} photos"

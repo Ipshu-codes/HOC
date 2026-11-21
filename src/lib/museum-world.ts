@@ -79,6 +79,21 @@ export interface MuseumSign {
   target: number;
 }
 
+/** A "Read About →" plaque: part of the signage, and a link to a page of the site. */
+export interface MuseumLink {
+  key: string;
+  /** The visible words ("Read About →"). */
+  text: string;
+  /** Accessible name, which says what it leads to ("Read about Nanak Matha"). */
+  label: string;
+  href: string;
+  seg: number;
+  position: Vec3;
+  rotationY: number;
+  width: number;
+  height: number;
+}
+
 export interface PlacedArtwork {
   art: MuseumArtwork;
   seg: number;
@@ -90,6 +105,7 @@ export interface MuseumWorld {
   segments: MuseumSegment[];
   displays: MuseumDisplay[];
   signs: MuseumSign[];
+  links: MuseumLink[];
   /** Flat, ordered by photo index (the order of the accessible DOM frames and of PhotoView). */
   artworks: PlacedArtwork[];
   /** World floor point between the halls; flights between halls pass over it. */
@@ -116,7 +132,9 @@ export interface ExhibitInput {
   map: { src: string; hiSrc: string; width: number; height: number; alt: string } | null;
   logo: { src: string; width: number; height: number; alt: string } | null;
   /** One wing per visible site, with the words for its signboard and the side it opens to. */
-  wings: { slug: string; label: string; side: -1 | 1 }[];
+  wings: { slug: string; label: string; side: -1 | 1; href?: string; readLabel?: string }[];
+  /** "Read About →" plaques: under each signboard (to the site's page) and beside the emblem (to About). */
+  readAbout?: { text: string; aboutHref: string; aboutLabel: string };
 }
 
 const MOUNT_CLEARANCE = 0.012;
@@ -257,7 +275,7 @@ export function buildHallWorld(rooms: MuseumRoomInput[], photos: GalleryPhoto[],
       carpet: [layout.path.start + 0.4, layout.path.end - 1.2],
     },
   ];
-  return { segments, displays: [], signs: [], artworks: placeArtworks(segments), junction: null, junctionFrom: null };
+  return { segments, displays: [], signs: [], links: [], artworks: placeArtworks(segments), junction: null, junctionFrom: null };
 }
 
 /**
@@ -288,7 +306,8 @@ export function buildExhibitWorld(
   const border = MUSEUM.matBorder + MUSEUM.frameBorder;
   const widest = Math.max(mapWidth, exhibit.logo ? logoSize : 0) + 2 * border;
   // The side walls stop where the junction begins; the junction is one hall-width deep.
-  const junctionStart = displayS + widest / 2 + (compact ? 1.3 : 1.7);
+  // Room after the displays for the emblem's "Read About" plaque before the side walls open into the junction.
+  const junctionStart = displayS + widest / 2 + (compact ? 1.9 : 2.3);
   const end = junctionStart + 2 * half;
   const junctionS = end - half;
 
@@ -314,8 +333,12 @@ export function buildExhibitWorld(
   ];
 
   const signs: MuseumSign[] = [];
-  const signWidth = compact ? 3 : 3.8;
-  const signHeight = compact ? 1.25 : 1.6;
+  const links: MuseumLink[] = [];
+  const plaqueWidth = compact ? 1.8 : 2.2;
+  const plaqueHeight = compact ? 0.44 : 0.52;
+  // Room for a long, two-part name (Nanak Math's); both signs share the size so the pair stays even.
+  const signWidth = compact ? 3.2 : 4.4;
+  const signHeight = compact ? 1.55 : 1.9;
   wings.forEach((wing) => {
     const first = photos.findIndex((photo) => photo.site === wing.slug);
     const sitePhotos = photos.filter((photo) => photo.site === wing.slug);
@@ -353,6 +376,21 @@ export function buildExhibitWorld(
       height: signHeight,
       target,
     });
+    // Its "Read About →" plaque hangs on the same wall just under the signboard (clear of its board).
+    if (exhibit.readAbout && wing.href) {
+      const signY = compact ? 2.7 : 2.95;
+      links.push({
+        key: `read-${wing.slug}`,
+        text: exhibit.readAbout.text,
+        label: wing.readLabel ?? wing.label,
+        href: wing.href,
+        seg: 0,
+        position: pathPoint(entrance, end, (wing.side * half) / 2, signY - signHeight / 2 - 0.1 - 0.16 - plaqueHeight / 2),
+        rotationY: pathYaw(entrance, end),
+        width: plaqueWidth,
+        height: plaqueHeight,
+      });
+    }
   });
 
   const displays: MuseumDisplay[] = [];
@@ -377,11 +415,30 @@ export function buildExhibitWorld(
   };
   if (exhibit.map) place("map", -1, mapWidth, mapHeight, exhibit.map.src, exhibit.map.hiSrc, exhibit.map.alt);
   if (exhibit.logo) place("logo", 1, logoSize, logoSize, exhibit.logo.src, exhibit.logo.src, exhibit.logo.alt);
+  // The emblem's plaque: on the same wall, to the left of its frame as one faces it (towards the
+  // junction), level with the middle of the frame, so it never covers the emblem or its label.
+  const emblem = displays.find((display) => display.key === "logo");
+  if (emblem && exhibit.readAbout) {
+    const s = emblem.s + (logoSize / 2 + border + (compact ? 0.25 : 0.35) + plaqueWidth / 2);
+    links.push({
+      key: "read-about",
+      text: exhibit.readAbout.text,
+      label: exhibit.readAbout.aboutLabel,
+      href: exhibit.readAbout.aboutHref,
+      seg: 0,
+      // Origin on the wall face; the plaque stands off it towards the hall, like the signboards.
+      position: pathPoint(entrance, s, emblem.side * entrance.innerHalfWidth, emblem.position[1]),
+      rotationY: pathYaw(entrance, s) - (emblem.side * Math.PI) / 2,
+      width: plaqueWidth,
+      height: plaqueHeight,
+    });
+  }
 
   return {
     segments,
     displays,
     signs,
+    links,
     artworks: placeArtworks(segments),
     junction: wings.length > 0 ? { x: 0, z: -junctionS } : null,
     junctionFrom: wings.length > 0 ? junctionStart - 2 : null,

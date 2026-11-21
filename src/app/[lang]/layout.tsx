@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { jetbrains, mukta, playfair } from "@/app/fonts";
+import { alegreya, alegreyaSans, jetbrains, mukta, playfair } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import MapButton from "@/components/MapButton";
+import MuseumShell from "@/components/MuseumShell";
 import { getHeritageList, getHeroSlideConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
-import { getDictionary, getNavItems, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
+import { getDictionary, isLocale, joinList, toDevanagariDigits } from "@/lib/i18n";
 import { findSiteImage } from "@/lib/images";
+import { museumShellProps } from "@/lib/museum-shell";
 import { SITE_URL } from "@/lib/site-url";
 import { LOCALES } from "@/types/heritage";
 import "@/app/globals.css";
@@ -58,10 +58,9 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
 
   const dict = getDictionary(lang);
   const ward = getWard();
-  const navItems = getNavItems(lang, dict);
 
   return (
-    <html lang={lang} className={`${mukta.variable} ${playfair.variable} ${jetbrains.variable}`}>
+    <html lang={lang} className={`${mukta.variable} ${playfair.variable} ${jetbrains.variable} ${alegreya.variable} ${alegreyaSans.variable}`}>
       <body className="flex min-h-screen flex-col">
         <a
           href="#main-content"
@@ -69,11 +68,9 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         >
           {dict.a11y.skipToContent}
         </a>
-        <Header lang={lang} dict={dict} ward={ward} navItems={navItems} />
-        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
-          {children}
-        </main>
-        <Footer lang={lang} dict={dict} ward={ward} navItems={navItems} heritages={getHeritageList(lang)} />
+        {/* The museum is the frame of every page, mounted once here so moving between pages never
+            rebuilds it. The home page is the museum itself; the other pages appear in front of it. */}
+        <MuseumShell {...museumShellProps(lang)}>{children}</MuseumShell>
         <MapButton lang={lang} label={dict.map.floatingButton} short={dict.map.floatingButtonShort} />
         {/* Topics and answers for visible sites only, in the page language. */}
         <Chatbot

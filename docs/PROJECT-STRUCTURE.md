@@ -312,12 +312,12 @@ content/heritage/*.md (coordinates) ─→ lib/map-data.ts ─→ MapLibre GeoJS
 
 | Purpose | File |
 |---------|------|
-| **Page Layout** | `src/app/[lang]/layout.tsx` |
+| **Page Layout** | `src/app/[lang]/layout.tsx` (html/body, the museum shell `MuseumShell.tsx` around every page, chatbot, map button); `src/app/[lang]/(site)/layout.tsx` (the cream content surface for every page except home) |
 | **Global Styles** | `src/app/globals.css` |
-| **Home Page** | `src/app/[lang]/page.tsx` |
-| **Heritage Detail** | `src/app/[lang]/heritage/[slug]/page.tsx` |
-| **Gallery** | `src/app/[lang]/gallery/page.tsx`, `src/components/Gallery.tsx` |
-| **3D Map** | `src/app/[lang]/map/page.tsx`, `src/components/MapView.tsx` |
+| **Home Page** | `src/app/[lang]/page.tsx` (the museum itself: `src/components/MuseumShell.tsx`, `src/components/gallery/`) |
+| **Heritage Detail** | `src/app/[lang]/(site)/heritage/[slug]/page.tsx` |
+| **Gallery** | `src/app/[lang]/(site)/gallery/page.tsx`, `src/components/Gallery.tsx` |
+| **3D Map** | `src/app/[lang]/(site)/map/page.tsx`, `src/components/MapView.tsx` |
 | **Chatbot** | `src/components/Chatbot.tsx`, `src/components/ChatPanel.tsx` |
 | **Content Loader** | `src/lib/content.ts` |
 | **Build Check** | `scripts/check-content.ts` |

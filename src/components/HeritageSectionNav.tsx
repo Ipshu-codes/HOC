@@ -9,7 +9,7 @@ export default function HeritageSectionNav({ labels }: HeritageSectionNavProps) 
   return (
     <nav
       aria-label={labels.onThisPage}
-      className="fixed inset-x-0 z-20 mx-auto flex w-[min(calc(100%-2rem),28rem)] gap-1 rounded-full bg-ink/95 p-1.5 shadow-xl ring-1 ring-white/30 backdrop-blur md:hidden"
+      className="fixed inset-x-0 z-20 mx-auto flex w-[min(calc(100%-2rem),28rem)] gap-1 rounded-full bg-ink/95 p-1.5 shadow-xl ring-1 ring-white/30 backdrop-blur @2xl:hidden"
       style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
     >
       <a

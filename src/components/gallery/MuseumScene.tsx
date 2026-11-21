@@ -16,12 +16,13 @@ import {
   type MuseumMarker,
   type Vec3,
 } from "@/lib/museum-layout";
-import type { MuseumDisplay, MuseumSegment, MuseumSign, MuseumWorld } from "@/lib/museum-world";
+import type { MuseumDisplay, MuseumLink, MuseumSegment, MuseumSign, MuseumWorld } from "@/lib/museum-world";
 import {
   CARPET_TILE,
   useCarpetTexture,
   useMuseumDescriptionTexture,
   useMuseumImageTexture,
+  useMuseumLinkTexture,
   useMuseumSignTexture,
   useMuseumTextTexture,
 } from "./useMuseumTextures";
@@ -48,7 +49,7 @@ interface SceneProps {
   reducedMotion: boolean;
   gesture: MutableRefObject<{ moved: boolean }>;
   onHover: (key: string | null) => void;
-  /** "art-<index>", "map", "logo" or "sign-<slug>". */
+  /** "art-<index>", "map", "logo", "sign-<slug>" or "link-<key>". */
   onSelect: (key: string) => void;
 }
 
@@ -533,6 +534,53 @@ function Signboard({
   );
 }
 
+/** "Read About →": a small crimson plaque with a gold rule on a dark mount. It lifts slightly and
+ *  brightens on hover or keyboard focus, so it reads as something to press. */
+function LinkPlaque({
+  link,
+  hovered,
+  interactive,
+  gesture,
+  onHover,
+  onSelect,
+}: {
+  link: MuseumLink;
+  hovered: boolean;
+  interactive: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  onHover: (key: string | null) => void;
+  onSelect: (key: string) => void;
+}) {
+  const texture = useMuseumLinkTexture(link.text, link.width, link.height);
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    invalidate();
+  }, [texture, hovered, invalidate]);
+  const mount = 0.05;
+  const lift = hovered ? 0.03 : 0;
+  return (
+    <group position={link.position} rotation={[0, link.rotationY, 0]} {...pointerHandlers(`link-${link.key}`, interactive, gesture, onHover, onSelect)}>
+      <mesh position={[0, 0, mount / 2]}>
+        <boxGeometry args={[link.width + 0.08, link.height + 0.08, mount]} />
+        <meshStandardMaterial color={hovered ? "#d4a017" : "#3a2a17"} roughness={0.6} metalness={hovered ? 0.3 : 0} />
+      </mesh>
+      {texture && (
+        <mesh position={[0, 0, mount + 0.002 + lift]}>
+          <planeGeometry args={[link.width, link.height]} />
+          <meshStandardMaterial
+            map={texture}
+            emissive="#ffffff"
+            emissiveMap={texture}
+            emissiveIntensity={hovered ? 0.75 : 0.4}
+            roughness={0.5}
+            metalness={0}
+          />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
 /** The site's existing name and number, drawn with the page's own fonts (EN or NE). */
 function SitePlaque({ marker }: { marker: MuseumMarker }) {
   const texture = useMuseumTextTexture({ number: marker.number, name: marker.name, lang: marker.lang }, true);
@@ -618,6 +666,11 @@ export default function MuseumScene({
               .filter((sign) => sign.seg === seg)
               .map((sign) => (
                 <Signboard key={sign.key} sign={sign} hovered={hoverKey === `sign-${sign.key}`} {...item} />
+              ))}
+            {world.links
+              .filter((link) => link.seg === seg)
+              .map((link) => (
+                <LinkPlaque key={link.key} link={link} hovered={hoverKey === `link-${link.key}`} {...item} />
               ))}
             {lights.map((position, index) => (
               <pointLight key={index} position={position} intensity={compact ? 18 : 22} distance={compact ? 14 : 16} decay={2} color="#fff1dc" />

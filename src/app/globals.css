@@ -1442,40 +1442,146 @@ html[lang="ne"] .gallery-page .wall-placard {
 }
 
 /* ==========================================================================
-   Home page: the online museum is the landing (MuseumLanding.tsx).
-   The stage fills the screen under the sticky menu (4rem). Colours are the site's own tokens.
+   The museum shell (MuseumShell.tsx): the online museum is the frame of every page.
+   The stage is fixed to the screen; on the home page it is the page, on the other pages it is a
+   tinted backdrop behind their content. Colours are the site's own tokens.
    ========================================================================== */
-.museum-landing {
+.museum-shell {
   position: relative;
-  scroll-margin-top: 4rem;
-  background: #f3ede2;
+  min-height: 100svh;
 }
-.museum-landing-stage {
-  position: relative;
-  height: calc(100svh - 4rem);
-  min-height: 30rem;
-  max-height: 70rem;
+.museum-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
   outline: none;
+  background: #f3ede2;
 }
-.museum-landing.is-fallback .museum-landing-stage {
-  height: auto;
-  min-height: 0;
+.museum-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgb(43 26 26 / 0.18);
+  pointer-events: none;
 }
-.museum-landing.is-fallback .museum-landing-poster {
-  display: none;
-}
-.museum-landing-poster {
+.museum-poster {
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse 60% 50% at 50% 42%, #fbf7ef, #efe6d6 70%, #e2d6c2);
 }
-.museum-landing-fallback {
-  padding-block: 1.5rem 2.5rem;
+/* Home: the page is the museum. Clicks pass through to the canvas except on the intro itself. */
+.museum-main-home {
+  position: relative;
+  z-index: 2;
+  height: 100svh;
+  min-height: 30rem;
+  pointer-events: none;
+  outline: none;
+}
+.museum-shell.is-fallback .museum-main-home {
+  height: auto;
+  pointer-events: auto;
+}
+.museum-shell.is-fallback .museum-poster {
+  display: none;
+}
+.museum-fallback {
+  position: relative;
+  padding-block: 5.5rem 2.5rem;
+  background: var(--color-cream);
+}
+/* Other pages: an information panel floating over the museum, which stays visible all around it.
+   The panel scrolls inside itself; its content lays itself out for the panel's width (container
+   queries: @2xl / @4xl in the page components). */
+.museum-panel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5rem 1.5rem 1.5rem;
+}
+.museum-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(62vw, 72rem);
+  min-width: min(38rem, 100%);
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 75%, transparent);
+  border-radius: 1rem;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  box-shadow: 0 30px 80px -24px rgb(43 26 26 / 0.7);
+  outline: none;
+  animation: museum-panel-in 0.32s var(--ease-out) both;
+}
+@keyframes museum-panel-in {
+  from {
+    opacity: 0;
+    translate: 0 0.75rem;
+    scale: 0.985;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .museum-panel {
+    animation: none;
+  }
+}
+.museum-panel-body {
+  container-type: inline-size;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.museum-panel-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 70%, transparent);
+  border-radius: 999px;
+  background: rgb(255 248 240 / 0.92);
+  color: var(--color-ink);
+  box-shadow: 0 4px 12px -6px rgb(43 26 26 / 0.5);
+}
+.museum-panel-close:hover {
+  background: var(--color-sand);
+}
+.museum-panel-close:focus-visible {
+  outline: 3px solid var(--color-crimson);
+  outline-offset: 2px;
+}
+/* Tablets: a little wider than on desktop, still with the museum around it. */
+@media (max-width: 63.99rem) {
+  .museum-panel {
+    width: min(100%, 46rem);
+    min-width: 0;
+  }
+}
+/* Phones: nearly the full width; room at the bottom of the scroll for the Map and Nani buttons. */
+@media (max-width: 39.99rem) {
+  .museum-panel-layer {
+    padding: 4.25rem 0.5rem 0.5rem;
+  }
+  .museum-panel {
+    width: 100%;
+  }
+  .museum-panel-body {
+    padding-bottom: 4.5rem;
+  }
 }
 
 /* Intro: a soft cream glow behind the words keeps them readable without hiding the hall. */
-.museum-landing-intro {
+.museum-intro {
   position: absolute;
   inset: 0;
   z-index: 6;
@@ -1489,17 +1595,18 @@ html[lang="ne"] .gallery-page .wall-placard {
   background:
     radial-gradient(ellipse 60% 40% at 50% 44%, rgb(251 247 239 / 0.85), rgb(251 247 239 / 0.4) 55%, transparent 82%),
     linear-gradient(to bottom, rgb(43 26 26 / 0.16), transparent 28%, transparent 72%, rgb(43 26 26 / 0.2));
+  pointer-events: auto;
   transition:
     opacity 0.7s var(--ease-out),
     transform 0.7s var(--ease-out);
 }
-.museum-landing-intro.is-leaving {
+.museum-intro.is-leaving {
   opacity: 0;
   transform: translateY(-1rem);
   pointer-events: none;
 }
 /* After the fade the title stays for screen readers only. */
-.museum-landing-intro.is-gone {
+.museum-intro.is-gone {
   inset: auto;
   width: 1px;
   height: 1px;
@@ -1508,7 +1615,7 @@ html[lang="ne"] .gallery-page .wall-placard {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.museum-landing-title {
+.museum-title {
   max-width: 14ch;
   margin: 0;
   font-family: var(--font-heading);
@@ -1521,11 +1628,11 @@ html[lang="ne"] .gallery-page .wall-placard {
     0 1px 0 rgb(255 255 255 / 0.6),
     0 8px 32px rgb(251 247 239 / 0.95);
 }
-html[lang="ne"] .museum-landing-title {
+html[lang="ne"] .museum-title {
   max-width: 18ch;
   line-height: 1.25;
 }
-.museum-landing-start {
+.museum-start {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1542,55 +1649,19 @@ html[lang="ne"] .museum-landing-title {
     background-color 0.2s,
     transform 0.2s var(--ease-out);
 }
-.museum-landing-start:hover {
+.museum-start:hover {
   background: var(--color-brick);
   transform: translateY(-1px);
 }
-.museum-landing-start:focus-visible {
+.museum-start:focus-visible {
   outline: 3px solid var(--color-ink);
   outline-offset: 3px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .museum-landing-intro,
-  .museum-landing-start {
+  .museum-intro,
+  .museum-start {
     transition: none;
   }
-}
-
-/* The way on to the rest of the page while exploring (wheel and touch belong to the museum). */
-.museum-landing-exit {
-  position: absolute;
-  top: 1rem;
-  right: var(--gutter);
-  z-index: 6;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 2.75rem;
-  padding: 0.5rem 1.05rem;
-  border-radius: 999px;
-  background: rgb(39 37 34 / 0.8);
-  color: var(--color-cream);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-html[lang="ne"] .museum-landing-exit {
-  font-family: var(--font-mukta);
-  font-size: 0.95rem;
-  letter-spacing: 0;
-}
-/* Hidden while a picture is held close, so it never covers the picture. */
-.museum-landing-stage:has(.museum-canvas[data-focus]) .museum-landing-exit {
-  display: none;
-}
-.museum-landing-exit:hover {
-  background: var(--color-brick);
-}
-.museum-landing-exit:focus-visible {
-  outline: 3px solid var(--color-gold);
-  outline-offset: 2px;
 }
 
 /* ---- Museum overlays shared by the home page and the gallery page ---- */
@@ -1612,13 +1683,17 @@ html[lang="ne"] .museum-landing-exit {
   bottom: 8.5rem;
 }
 .gallery-page .museum-place {
+  max-width: min(46rem, 100%);
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-size: clamp(1.2rem, 2.4vw, 2.1rem);
   font-weight: 700;
-  line-height: 1.1;
-  padding: 0.3rem 1.1rem 0.4rem;
-  border-radius: 999px;
+  line-height: 1.15;
+  /* A sign's two-part name shows on two lines, as on the sign. */
+  white-space: pre-line;
+  text-wrap: balance;
+  padding: 0.35rem 1.2rem 0.45rem;
+  border-radius: 1.25rem;
   background: rgb(247 243 234 / 0.88);
   color: var(--color-ink);
 }
@@ -1642,7 +1717,7 @@ html[lang="ne"] .gallery-page .museum-hint {
 }
 
 /* Home page: every 3D action as a real button, invisible until it has keyboard focus. */
-.gallery-page .museum-a11y button {
+.gallery-page .museum-a11y :is(button, a) {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -1650,8 +1725,8 @@ html[lang="ne"] .gallery-page .museum-hint {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.gallery-page .museum-a11y button:focus {
-  top: 1rem;
+.gallery-page .museum-a11y :is(button, a):focus {
+  top: 4.25rem;
   left: var(--gutter);
   z-index: 7;
   width: auto;
@@ -1755,4 +1830,496 @@ html[lang="ne"] .gallery-page .museum-hint {
   .gallery-page .museum-card {
     animation: none;
   }
+}
+
+/* ---- Home page museum: its own control row (menu, contact, logo, language) and contact popup ---- */
+.museum-topbar {
+  position: fixed;
+  inset: max(0.75rem, env(safe-area-inset-top)) var(--gutter) auto;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.museum-topbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.museum-topbar-group > * {
+  pointer-events: auto;
+}
+.museum-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgb(39 37 34 / 0.82);
+  color: var(--color-cream);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color 0.16s;
+}
+html[lang="ne"] .museum-pill {
+  font-family: var(--font-mukta);
+  font-size: 0.95rem;
+  letter-spacing: 0;
+}
+.museum-pill:hover,
+.museum-pill[aria-expanded="true"] {
+  background: var(--color-brick);
+}
+.museum-pill:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.museum-pill-menu {
+  display: none;
+}
+.museum-menu-wrap {
+  position: relative;
+}
+.museum-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 13rem;
+  padding: 0.35rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 0.75rem;
+  background: var(--color-cream);
+  box-shadow: 0 18px 40px -18px rgb(43 26 26 / 0.55);
+}
+.museum-menu :is(a, button) {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.5rem;
+  color: var(--color-ink);
+  font-weight: 500;
+}
+.museum-menu :is(a, button):hover {
+  background: var(--color-sand);
+}
+.museum-menu :is(a, button):focus-visible {
+  outline: 2px solid var(--color-crimson);
+  outline-offset: -2px;
+}
+.museum-menu a[aria-current="page"] {
+  color: var(--color-crimson);
+  font-weight: 700;
+}
+.museum-nav-pills {
+  display: none;
+}
+.museum-nav-pills ul {
+  display: flex;
+  gap: 0.5rem;
+}
+.museum-pill[aria-current="page"] {
+  background: var(--color-crimson);
+}
+/* Wide screens: About, Heritages and Gallery as buttons beside Contact; no dropdown needed. */
+@media (min-width: 60rem) {
+  .museum-nav-pills {
+    display: block;
+  }
+  .museum-menu-wrap {
+    display: none;
+  }
+}
+/* The Ward No. 16 emblem (top left, home link): its own round red-and-white artwork, unchanged. */
+.museum-ward-logo {
+  display: block;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px -6px rgb(43 26 26 / 0.6);
+}
+.museum-ward-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.museum-ward-logo:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+/* The RatnaInTech logo as supplied: blue on a transparent background, straight onto the museum. */
+.museum-logo {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 2.75rem;
+}
+.museum-logo img {
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+}
+.museum-lang {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgb(39 37 34 / 0.82);
+}
+/* Phones: the menu and Contact buttons show their icons (each keeps its name for screen readers),
+   with tighter spacing, so the whole row fits beside the emblem without overlapping. */
+@media (max-width: 39.99rem) {
+  .museum-topbar {
+    inset-inline: 0.75rem;
+  }
+  .museum-topbar-group {
+    gap: 0.4rem;
+  }
+  .museum-ward-logo {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+  .museum-pill {
+    padding-inline: 0.7rem;
+  }
+  .museum-pill-menu {
+    display: block;
+  }
+  .museum-pill-text {
+    display: none;
+  }
+  .museum-logo {
+    height: 2.3rem;
+  }
+}
+/* Very narrow phones: a little smaller still (tap targets stay at least 44 px). */
+@media (max-width: 23.49rem) {
+  .museum-topbar {
+    inset-inline: 0.5rem;
+  }
+  .museum-topbar-group {
+    gap: 0.3rem;
+  }
+  .museum-ward-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .museum-pill {
+    padding-inline: 0.6rem;
+  }
+  .museum-menu-wrap .museum-pill > svg:last-child {
+    display: none;
+  }
+  .museum-logo {
+    height: 1.8rem;
+  }
+  .museum-lang a {
+    padding-inline: 0.55rem;
+  }
+}
+
+.museum-contact {
+  /* It sits inside the click-through control row in the DOM; the popup itself must take clicks. */
+  pointer-events: auto;
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--color-gold);
+  border-radius: 1rem;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  box-shadow: 0 30px 70px -30px rgb(43 26 26 / 0.7);
+}
+.museum-contact::backdrop {
+  background: rgb(43 26 26 / 0.45);
+}
+.museum-contact[open] {
+  animation: museum-contact-in 0.28s var(--ease-out, ease-out);
+}
+@keyframes museum-contact-in {
+  from {
+    opacity: 0;
+    translate: 0 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .museum-contact[open] {
+    animation: none;
+  }
+}
+.museum-contact-box {
+  padding: 1.25rem 1.4rem 1.4rem;
+  border-top: 4px solid var(--color-crimson);
+  border-radius: 1rem;
+}
+.museum-contact-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brick);
+}
+.museum-contact-close {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -0.5rem -0.6rem 0 0;
+  border-radius: 999px;
+  color: var(--color-ink);
+}
+.museum-contact-close:hover {
+  background: var(--color-sand);
+}
+.museum-contact-close:focus-visible {
+  outline: 3px solid var(--color-crimson);
+}
+.museum-contact-org {
+  margin: 0.25rem 0 0;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-cream));
+}
+.museum-contact-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+}
+.museum-contact-list dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-crimson);
+}
+.museum-contact-list dd {
+  margin: 0.1rem 0 0;
+}
+.museum-contact-list a {
+  font-weight: 500;
+  color: var(--color-crimson);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.museum-contact-list a:hover {
+  color: var(--color-brick);
+}
+.museum-contact-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: 2.75rem;
+  margin-top: 1.1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: var(--color-crimson);
+  color: #fff;
+  font-weight: 700;
+}
+.museum-contact-more:hover {
+  background: var(--color-brick);
+}
+.museum-contact-more:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* ---- Gallery: a compact filter row and heritage typography (Alegreya / Alegreya Sans) ----
+   Scoped to the gallery's own elements; Nepali falls back to Mukta (Alegreya has no Devanagari).
+   Alegreya Sans has no 600: "semibold" renders with its 700. */
+.gallery-page {
+  --font-gallery: var(--font-alegreya-sans), var(--font-mukta), system-ui, sans-serif;
+  --font-gallery-heading: var(--font-alegreya), var(--font-mukta), Georgia, serif;
+}
+.museum-panel .gallery-page {
+  --gutter: 1.5rem;
+}
+.gallery-page .gallery-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin-bottom: 0.5rem;
+}
+/* Clear of the panel's close button, top right. */
+.museum-panel .gallery-page .gallery-toolbar {
+  padding-right: 4.25rem;
+}
+.gallery-page .filter-tabs,
+html[lang="ne"] .gallery-page .filter-tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  padding-block: 0.15rem;
+}
+.gallery-page .filter-tabs button,
+html[lang="ne"] .gallery-page .filter-tabs button {
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: auto;
+  min-width: 2.75rem;
+  max-width: none;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+  border-radius: 0.7rem;
+  background: #fffdf9;
+  color: var(--color-ink);
+  font-family: var(--font-gallery);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: normal;
+  text-align: left;
+  text-decoration: none;
+  text-transform: none;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.gallery-page .filter-tabs button:hover,
+html[lang="ne"] .gallery-page .filter-tabs button:hover {
+  border-color: var(--color-gold);
+  background: var(--color-sand);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.gallery-page .filter-tabs button[aria-pressed="true"],
+html[lang="ne"] .gallery-page .filter-tabs button[aria-pressed="true"] {
+  border-color: var(--color-gold);
+  background: var(--color-crimson);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--color-gold);
+}
+.gallery-page .filter-tabs button:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+.gallery-page .filter-tabs .filter-sub {
+  font-size: 14px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+}
+.gallery-page .filter-tabs button[aria-pressed="true"] .filter-sub {
+  color: rgb(255 248 240 / 0.88);
+}
+.gallery-page .gallery-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+.gallery-page .gallery-count {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 72%, var(--color-cream));
+  font-family: var(--font-gallery);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.gallery-page .view-pill button,
+html[lang="ne"] .gallery-page .view-pill button {
+  font-family: var(--font-gallery);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+/* Narrow panels (phones): the filters get the whole first line and scroll sideways; the count and
+   the view switch follow underneath. */
+@container (width < 40rem) {
+  .gallery-page .filter-tabs {
+    flex-basis: 100%;
+  }
+  .gallery-page .gallery-tools {
+    margin-left: 0;
+  }
+}
+
+/* Photographs in the panel: close under the filters, sized to the panel's height, each with its own
+   description directly underneath in a readable block. */
+.museum-panel .gallery-page .wall-stage.hanging-active {
+  /* Photo + its description fit the panel's height; never smaller than 13rem wide (short screens scroll). */
+  --print-w: min(72cqw, clamp(13rem, calc((100svh - 28rem) * 0.75), 24rem));
+  padding-block: 0.25rem 2.5rem;
+}
+.museum-panel .gallery-page .wall-stage.hanging-active .walk-track {
+  padding: 1.6rem calc(50% - var(--print-w) / 2) 2.5rem;
+}
+.museum-panel .gallery-page .wall-stage.hanging-active .wall-item,
+.museum-panel .gallery-page .wall-stage.hanging-active .wall-item:nth-child(3n + 2),
+.museum-panel .gallery-page .wall-stage.hanging-active .wall-item:nth-child(3n) {
+  display: block;
+  flex: 0 0 var(--print-w);
+  max-width: none;
+}
+.museum-panel .gallery-page .wall-stage.hanging-active .wall-placard,
+html[lang="ne"] .museum-panel .gallery-page .wall-stage.hanging-active .wall-placard {
+  margin: 0.9rem 0 0;
+  padding: 0.8rem 1rem;
+  font-family: var(--font-gallery);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  overflow-wrap: break-word;
+  translate: 0 var(--drop, 0px);
+}
+.gallery-page .room-name {
+  font-family: var(--font-gallery-heading);
+  font-weight: 700;
+}
+.gallery-page .line-counter.mono,
+.gallery-page .list-meta.mono {
+  font-family: var(--font-gallery);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.gallery-page .list-caption {
+  font-family: var(--font-gallery);
+  font-size: 17px;
+  font-weight: 500;
+}
+/* The photo view (opened from the gallery): same voice, normal case. */
+.photo-view .mono,
+html[lang="ne"] .gallery-page .photo-view .mono {
+  font-family: var(--font-gallery);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.photo-view .d-4 {
+  font-family: var(--font-gallery);
+  font-weight: 500;
+}
+.photo-view .btn,
+html[lang="ne"] .gallery-page .photo-view .btn {
+  font-family: var(--font-gallery);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
 }

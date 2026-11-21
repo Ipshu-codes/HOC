@@ -47,8 +47,10 @@
     "aboutWard16": "वडा नं. १६ को बारेमा →",
     "museumSigns": {
       "mhepi-ajima": "म्हेपी अजिमा",
-      "nanak-math": "नानक मठ"
+      "nanak-math": "महायोगी श्री ब्रह्महरिदास महाराजको जीवित भू-समाधि स्थल\nप्राचीन उदासिन नानक मठ"
     },
+    "museumReadAbout": "बारेमा पढ्नुहोस् →",
+    "museumReadAboutLabel": "{name}को बारेमा पढ्नुहोस्",
     "viewMap": "थ्रीडी नक्सा हेर्नुहोस्",
     "overviewTitle": "परिचय",
     "overviewIntro": {
@@ -120,6 +122,10 @@
     "intro": "{sites} का तस्बिरहरू। ठूलो गरी हेर्न तस्बिर छान्नुहोस्।",
     "filterLabel": "तस्बिर देखाउनुहोस्",
     "all": "सबै",
+    "siteSubtitles": {
+      "mhepi-ajima": "",
+      "nanak-math": "Prachin Udaseen Nanak Math"
+    },
     "count": {
       "one": "{n} तस्बिर",
       "other": "{n} तस्बिरहरू"

@@ -82,7 +82,7 @@
       "q_ne": "प्रवेश शुल्क लाग्छ?",
       "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन । कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "nanak-photography",
@@ -93,7 +93,7 @@
       "q_ne": "फोटो खिच्न मिल्छ?",
       "a_en": "We don't have this information yet. Please ask at the matha before taking photos, especially of the shrines and of people, or contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। फोटो खिच्नुअघि, विशेषगरी देवस्थल र मानिसहरूको, मठमा सोध्नुहोस् वा वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "nanak-tips",
@@ -348,7 +348,7 @@
       "q_ne": "कति बजे खुल्छ?",
       "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "mhepi-entry-fee",
@@ -359,7 +359,7 @@
       "q_ne": "प्रवेश शुल्क लाग्छ?",
       "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "mhepi-photography",
@@ -370,7 +370,7 @@
       "q_ne": "फोटो खिच्न मिल्छ?",
       "a_en": "We don't have this information yet. Please ask at the temple before taking photos, especially of the shrine and of people, or contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। फोटो खिच्नुअघि, विशेषगरी देवस्थल र मानिसहरूको, मन्दिरमा सोध्नुहोस् वा वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "mhepi-tips",
@@ -415,7 +415,7 @@
       "q_ne": "यहाँ कुन कुन चाड मनाइन्छ?",
       "a_en": "We don't have this information yet. Please contact the ward office: phone {phone}.",
       "a_ne": "यो जानकारी हामीसँग अहिलेसम्म छैन। कृपया वडा कार्यालयमा सम्पर्क गर्नुहोस्: फोन {phone}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "mhepi-see",
@@ -481,7 +481,7 @@
       "q_ne": "वडा कार्यालयमा कसरी सम्पर्क गर्ने?",
       "a_en": "Ward No. 16 office, {address}. Phone: {phone}. Email: {email}.",
       "a_ne": "वडा नं. १६ कार्यालय, {address}। फोन: {phone}। इमेल: {email}।",
-      "link": "/#contact"
+      "link": "/contact/"
     },
     {
       "id": "ward-office-location",
@@ -503,7 +503,7 @@
       "q_ne": "यस वेबसाइटमा कुन कुन सम्पदा छन्?",
       "a_en": "This website covers {sites} in Ward No. 16, Kathmandu Metropolitan City, with their history, festivals, photos and visiting details.",
       "a_ne": "यस वेबसाइटमा काठमाडौं महानगरपालिका वडा नं. १६ का {sites} को इतिहास, चाडपर्व, तस्बिर र भ्रमण जानकारी छ।",
-      "link": "/#heritages"
+      "link": "/heritages/"
     },
     {
       "id": "map",
