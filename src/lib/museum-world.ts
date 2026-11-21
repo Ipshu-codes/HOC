@@ -3,6 +3,7 @@ import {
   COMPACT_CORRIDOR_WIDTH,
   MUSEUM,
   buildMuseumLayout,
+  descriptionPanel,
   isMuseumWalkable,
   normalizeHeading,
   pathCoordinates,
@@ -10,6 +11,7 @@ import {
   pathYaw,
   type CameraPose,
   type MuseumArtwork,
+  type MuseumDescriptionPanel,
   type MuseumLayout,
   type MuseumRoomInput,
   type Vec3,
@@ -60,6 +62,7 @@ export interface MuseumDisplay {
   hiSrc: string;
   /** Existing alt text from content/ward.json; also the wall label and the close-up caption. */
   alt: string;
+  description: MuseumDescriptionPanel;
 }
 
 export interface MuseumSign {
@@ -271,17 +274,17 @@ export function buildExhibitWorld(
 ): MuseumWorld {
   const width = compact ? COMPACT_CORRIDOR_WIDTH : MUSEUM.corridorWidth;
   const half = width / 2 - MUSEUM.wallThickness / 2;
-  const displayS = compact ? 3.4 : 4.2;
+  const displayS = compact ? 4.4 : 5.4;
 
   // Map: as tall as the hall allows, to its own aspect ratio; logo: a square emblem beside it.
-  let mapHeight = compact ? 1.95 : 2.3;
+  let mapHeight = compact ? 2.45 : 2.9;
   let mapWidth = exhibit.map ? (mapHeight * exhibit.map.width) / exhibit.map.height : 0;
-  const maxMapWidth = compact ? 2.9 : 3.4;
+  const maxMapWidth = compact ? 3.5 : 4.2;
   if (mapWidth > maxMapWidth) {
     mapHeight *= maxMapWidth / mapWidth;
     mapWidth = maxMapWidth;
   }
-  const logoSize = compact ? 1.35 : 1.6;
+  const logoSize = compact ? 1.9 : 2.3;
   const border = MUSEUM.matBorder + MUSEUM.frameBorder;
   const widest = Math.max(mapWidth, exhibit.logo ? logoSize : 0) + 2 * border;
   // The side walls stop where the junction begins; the junction is one hall-width deep.
@@ -311,8 +314,8 @@ export function buildExhibitWorld(
   ];
 
   const signs: MuseumSign[] = [];
-  const signWidth = compact ? 2.4 : 2.9;
-  const signHeight = compact ? 0.98 : 1.15;
+  const signWidth = compact ? 3 : 3.8;
+  const signHeight = compact ? 1.25 : 1.6;
   wings.forEach((wing) => {
     const first = photos.findIndex((photo) => photo.site === wing.slug);
     const sitePhotos = photos.filter((photo) => photo.site === wing.slug);
@@ -344,7 +347,7 @@ export function buildExhibitWorld(
       label: wing.label,
       dir: wing.side,
       seg: 0,
-      position: pathPoint(entrance, end, (wing.side * half) / 2, compact ? 2.3 : 2.45),
+      position: pathPoint(entrance, end, (wing.side * half) / 2, compact ? 2.7 : 2.95),
       rotationY: pathYaw(entrance, end),
       width: signWidth,
       height: signHeight,
@@ -355,18 +358,21 @@ export function buildExhibitWorld(
   const displays: MuseumDisplay[] = [];
   const place = (key: "map" | "logo", side: -1 | 1, w: number, h: number, src: string, hiSrc: string, alt: string) => {
     const lateral = side * wallMount(entrance, MUSEUM.frameDepth);
+    // Same hanging as the photographs: frame on the common base line, label right underneath.
+    const frameHeight = h + 2 * border;
     displays.push({
       key,
       seg: 0,
       s: displayS,
       side,
-      position: pathPoint(entrance, displayS, lateral, MUSEUM.artCentreY),
+      position: pathPoint(entrance, displayS, lateral, MUSEUM.frameBaseY + frameHeight / 2),
       rotationY: pathYaw(entrance, displayS) - (side * Math.PI) / 2,
       width: w,
       height: h,
       src,
       hiSrc,
       alt,
+      description: descriptionPanel(alt, w + 2 * border, frameHeight, lang),
     });
   };
   if (exhibit.map) place("map", -1, mapWidth, mapHeight, exhibit.map.src, exhibit.map.hiSrc, exhibit.map.alt);
@@ -396,23 +402,38 @@ export interface FocusItem {
   rotationY: number;
 }
 
+/** The whole exhibit, picture and label together, so a close look always includes the description. */
+function exhibitItem(
+  seg: number,
+  s: number,
+  side: -1 | 1,
+  position: Vec3,
+  rotationY: number,
+  width: number,
+  height: number,
+  label: MuseumDescriptionPanel,
+): FocusItem {
+  const border = 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
+  const frameHeight = height + border;
+  const below = MUSEUM.descriptionGap + label.height;
+  return {
+    seg,
+    s,
+    side,
+    centreY: position[1] - below / 2,
+    width: Math.max(width + border, label.width),
+    height: frameHeight + below,
+    rotationY,
+  };
+}
+
 export function artworkFocusItem(placed: PlacedArtwork): FocusItem {
   const { art } = placed;
-  const border = 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
-  return { seg: placed.seg, s: art.s, side: art.side, centreY: art.position[1], width: art.width + border, height: art.height + border, rotationY: art.rotationY };
+  return exhibitItem(placed.seg, art.s, art.side, art.position, art.rotationY, art.width, art.height, art.description);
 }
 
 export function displayFocusItem(display: MuseumDisplay): FocusItem {
-  const border = 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
-  return {
-    seg: display.seg,
-    s: display.s,
-    side: display.side,
-    centreY: display.position[1],
-    width: display.width + border,
-    height: display.height + border,
-    rotationY: display.rotationY,
-  };
+  return exhibitItem(display.seg, display.s, display.side, display.position, display.rotationY, display.width, display.height, display.description);
 }
 
 export interface FocusViewport {

@@ -11,6 +11,7 @@ import {
   pathPoint,
   pathYaw,
   type MuseumArtwork,
+  type MuseumDescriptionPanel,
   type MuseumLayout,
   type MuseumMarker,
   type Vec3,
@@ -277,8 +278,9 @@ function useAppear(ready: boolean, reducedMotion: boolean) {
 
 /** The photo's own description on a small panel fixed to the wall below its frame. It shares the
  *  artwork's rotation, so it faces the visitor without ever turning to follow the camera. */
-function DescriptionPanel({ text, width, height, offsetY, active }: { text: string; width: number; height: number; offsetY: number; active: boolean }) {
-  const texture = useMuseumDescriptionTexture(text, width, height, active);
+function DescriptionPanel({ text, panel, active }: { text: string; panel: MuseumDescriptionPanel; active: boolean }) {
+  const { width, height, offsetY } = panel;
+  const texture = useMuseumDescriptionTexture(text, panel, active);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     if (texture) invalidate();
@@ -290,13 +292,14 @@ function DescriptionPanel({ text, width, height, offsetY, active }: { text: stri
 
   return (
     <group position={[0, offsetY, panelZ]}>
+      {/* A dark brown mount a little larger than the cream label: a subtle frame, like the prints. */}
       <mesh>
-        <boxGeometry args={[width, height, depth]} />
+        <boxGeometry args={[width + 0.05, height + 0.05, depth]} />
         <meshStandardMaterial color="#3a2a17" roughness={0.82} metalness={0} />
       </mesh>
       {texture && (
         <mesh position={[0, 0, depth / 2 + 0.001]}>
-          <planeGeometry args={[width - 0.03, height - 0.03]} />
+          <planeGeometry args={[width, height]} />
           <meshBasicMaterial map={texture} toneMapped={false} />
         </mesh>
       )}
@@ -338,9 +341,8 @@ function pointerHandlers(
   };
 }
 
-/** The larger file for a close look: 1280 px on large screens, 960 px on phones and tablets. */
-function largerFile(photo: GalleryPhoto, compact: boolean): string {
-  const wanted = compact ? 960 : 1280;
+/** A larger file: `wanted` px wide, or the largest there is. */
+function largerFile(photo: GalleryPhoto, wanted: number): string {
   return (photo.full.find((file) => file.width >= wanted) ?? photo.full.at(-1) ?? photo.thumb).src;
 }
 
@@ -406,6 +408,7 @@ function FramedArtwork({
   active,
   focused,
   closeUp,
+  near,
   hovered,
   interactive,
   compact,
@@ -418,6 +421,8 @@ function FramedArtwork({
   active: boolean;
   focused: boolean;
   closeUp: boolean;
+  /** One of the frames beside the visitor: worth the 960 px file. */
+  near: boolean;
   hovered: boolean;
   interactive: boolean;
   compact: boolean;
@@ -427,13 +432,15 @@ function FramedArtwork({
   onSelect: (key: string) => void;
 }) {
   const thumb = useMuseumImageTexture(art.photo.thumb.src, active);
-  const sharp = useMuseumImageTexture(largerFile(art.photo, compact), closeUp);
+  // The large prints are shown sharper as the visitor comes near; the largest file only for a close look.
+  const nearby = useMuseumImageTexture(largerFile(art.photo, 960), near || closeUp);
+  const sharp = useMuseumImageTexture(largerFile(art.photo, compact ? 960 : 1280), closeUp);
   // Nothing hangs until its photograph has arrived: frames appear with their pictures, never empty.
   if (!thumb) return null;
   return (
     <group position={art.position} rotation={[0, art.rotationY, 0]} {...pointerHandlers(art.key, interactive, gesture, onHover, onSelect)}>
-      <FramedPicture width={art.width} height={art.height} texture={sharp ?? thumb} hovered={hovered} focused={focused} reducedMotion={reducedMotion} />
-      <DescriptionPanel text={art.caption} active={active} {...art.description} />
+      <FramedPicture width={art.width} height={art.height} texture={sharp ?? nearby ?? thumb} hovered={hovered} focused={focused} reducedMotion={reducedMotion} />
+      <DescriptionPanel text={art.caption} panel={art.description} active={active} />
     </group>
   );
 }
@@ -460,9 +467,6 @@ function DisplayFrame({
 }) {
   const texture = useMuseumImageTexture(display.src, true);
   const sharp = useMuseumImageTexture(display.hiSrc, focused && display.hiSrc !== display.src);
-  const frameHeight = display.height + 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
-  const frameWidth = display.width + 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
-  const labelWidth = Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth));
   return (
     <group position={display.position} rotation={[0, display.rotationY, 0]} {...pointerHandlers(display.key, interactive, gesture, onHover, onSelect)}>
       <FramedPicture
@@ -474,13 +478,7 @@ function DisplayFrame({
         transparent={display.key === "logo"}
         reducedMotion={reducedMotion}
       />
-      <DescriptionPanel
-        text={display.alt}
-        width={labelWidth}
-        height={MUSEUM.descriptionHeight}
-        offsetY={-(frameHeight / 2 + MUSEUM.descriptionGap + MUSEUM.descriptionHeight / 2)}
-        active
-      />
+      <DescriptionPanel text={display.alt} panel={display.description} active />
     </group>
   );
 }
@@ -594,6 +592,7 @@ export default function MuseumScene({
                 active={loadingIndices.has(art.index)}
                 focused={art.index === activeIndex}
                 closeUp={focusKey === art.key}
+                near={Math.abs(art.index - activeIndex) <= 1 && loadingIndices.has(art.index)}
                 hovered={hoverKey === art.key}
                 compact={compact}
                 reducedMotion={reducedMotion}

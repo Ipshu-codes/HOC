@@ -50,6 +50,8 @@ export interface MuseumLabels {
   hint?: string;
   /** Exhibit: the button under the ward logo close-up. */
   aboutWard?: string;
+  /** The link from a photograph's close-up to its site's page. */
+  readMore?: string;
 }
 
 export type MuseumPhase = "intro" | "explore";
@@ -91,6 +93,8 @@ interface MuseumCanvasProps {
   phase?: MuseumPhase;
   /** Exhibit: where "About Ward 16 →" leads (the existing overview on the home page). */
   aboutHref?: string;
+  /** "/en/heritage/": a photograph's close-up links to its site's page under this path. */
+  heritageBase?: string;
 }
 
 type Focus = { kind: "art"; index: number } | { kind: "display"; key: "map" | "logo" };
@@ -1118,14 +1122,42 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
           {focusedArt && <p className="mono muted mt-4">{siteName.get(focusedArt.art.photo.site)}</p>}
           <p className="museum-card-caption mt-2">{focusedArt ? focusedArt.art.caption : focusedDisplay?.alt}</p>
           {focusedArt && credit && <p className="mono muted mt-3">{credit}</p>}
-          {focusedArt && siblings.length > 1 && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button type="button" className="btn btn-outline" disabled={position <= 0} onClick={() => step(-1)}>
-                <span aria-hidden="true">←</span> {labels.previous}
-              </button>
-              <button type="button" className="btn btn-outline" disabled={position >= siblings.length - 1} onClick={() => step(1)}>
-                {labels.next} <span aria-hidden="true">→</span>
-              </button>
+          {focusedArt && (siblings.length > 1 || (props.heritageBase && labels.readMore)) && (
+            // Phones: arrow-only buttons (named for screen readers) share one row with "Read more".
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              {siblings.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className={`btn btn-outline${cardSide ? "" : " museum-card-step"}`}
+                    disabled={position <= 0}
+                    aria-label={cardSide ? undefined : labels.previous}
+                    title={cardSide ? undefined : labels.previous}
+                    onClick={() => step(-1)}
+                  >
+                    <span aria-hidden="true">←</span>
+                    {cardSide && ` ${labels.previous}`}
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-outline${cardSide ? "" : " museum-card-step"}`}
+                    disabled={position >= siblings.length - 1}
+                    aria-label={cardSide ? undefined : labels.next}
+                    title={cardSide ? undefined : labels.next}
+                    onClick={() => step(1)}
+                  >
+                    {cardSide && `${labels.next} `}
+                    <span aria-hidden="true">→</span>
+                  </button>
+                </>
+              )}
+              {props.heritageBase && labels.readMore && (
+                <div className={cardSide ? "mt-3 w-full" : undefined}>
+                  <a href={`${props.heritageBase}${focusedArt.art.photo.site}/`} className="museum-card-about">
+                    {labels.readMore} <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              )}
             </div>
           )}
           {focusedDisplay?.key === "logo" && props.aboutHref && labels.aboutWard && (

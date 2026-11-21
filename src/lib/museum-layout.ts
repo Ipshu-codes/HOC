@@ -24,17 +24,18 @@ export const COMPACT_CORRIDOR_WIDTH = 7.6;
 
 export const MUSEUM = {
   corridorWidth: 10.4,
-  corridorHeight: 4.6,
+  /** Tall enough for the large prints with their labels underneath. */
+  corridorHeight: 5,
   wallThickness: 0.24,
   /** The entrance is an open threshold; the shell continues this far behind the camera. */
   entryOverhang: 3.2,
   eyeHeight: 1.65,
-  /** Larger prints are hung a little higher so the label below still clears the floor. */
-  artCentreY: 2.32,
-  /** Site plaques stay at their original absolute height whichever artwork size is built. */
-  markerCentreY: 3.09,
-  /** Bigger prints get longer slots: the hall extends instead of crowding neighbouring works. */
-  artSpacing: 3.6,
+  /** Every frame stands on this line, so all labels start at the same height right under their picture. */
+  frameBaseY: 1.38,
+  /** Site plaques sit at about the middle of the prints. */
+  markerCentreY: 3,
+  /** Prints alternate walls, so neighbours on the same wall are two slots (7.8 m) apart. */
+  artSpacing: 3.9,
   siteGap: 2.4,
   startInset: 4.4,
   endInset: 4.2,
@@ -44,23 +45,27 @@ export const MUSEUM = {
   maxTurn: 0.9,
   /** Shell resolution; artwork/marker positions are also inserted as exact sample points. */
   shellSampleStep: 0.6,
-  /** Photograph height; width is 2.05 × the photo's own aspect ratio (≈1.38–2.93 m here). */
-  artHeight: 2.05,
-  minArtWidth: 1.35,
-  maxArtWidth: 3.5,
+  /** Photograph height; width follows the photo's own aspect ratio (never stretched or cropped). */
+  artHeight: 2.6,
+  minArtWidth: 1.7,
+  maxArtWidth: 4,
   matBorder: 0.16,
   frameBorder: 0.09,
   frameDepth: 0.1,
   plaqueWidth: 1.9,
   plaqueHeight: 0.78,
   plaqueDepth: 0.06,
-  /** Wall-facing caption panel below each frame. Width follows the frame; the face texture wraps
-   *  EN/NE text and shrinks its type if an unusually long description needs it. */
-  descriptionGap: 0.1,
-  descriptionHeight: 0.44,
-  descriptionMinWidth: 2.7,
-  descriptionMaxWidth: 3.7,
+  /** Wall label right under each frame: at least as wide as the frame, with type of a fixed, readable
+   *  size; a longer description makes the label taller rather than the words smaller. */
+  descriptionGap: 0.12,
+  descriptionMinWidth: 2.6,
+  descriptionMaxWidth: 4.2,
   descriptionDepth: 0.03,
+  descriptionFont: 0.105,
+  descriptionLeading: 1.42,
+  descriptionPadding: 0.1,
+  /** Lowest point a label may reach above the floor. */
+  descriptionFloor: 0.15,
   walkRadius: 0.36,
   frameClearance: 0.14,
 } as const;
@@ -98,6 +103,36 @@ export interface MuseumDescriptionPanel {
   width: number;
   height: number;
   offsetY: number;
+  /** Type size and inner padding in metres, so the texture draws exactly what the layout planned. */
+  font: number;
+  padding: number;
+}
+
+/**
+ * Size the label under a frame of the given outer size. The number of lines is estimated from the
+ * text (average glyph width ≈ half the type size; Devanagari a little wider), generously, so the
+ * texture rarely has to shrink anything. The label hangs from the frame and never reaches the floor.
+ */
+export function descriptionPanel(text: string, frameWidth: number, frameHeight: number, lang: Locale): MuseumDescriptionPanel {
+  const { descriptionFont: font, descriptionPadding: padding, descriptionLeading: leading } = MUSEUM;
+  const width = Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth));
+  const glyph = font * (lang === "ne" ? 0.6 : 0.54);
+  const perLine = Math.max(8, Math.floor((width - 2 * padding) / glyph));
+  const words = text.split(/\s+/).filter(Boolean);
+  let lines = words.length > 0 ? 1 : 0;
+  let used = 0;
+  for (const word of words) {
+    const length = Array.from(word).length;
+    if (used > 0 && used + 1 + length > perLine) {
+      lines += 1;
+      used = length;
+    } else {
+      used += (used > 0 ? 1 : 0) + length;
+    }
+  }
+  const room = MUSEUM.frameBaseY - MUSEUM.descriptionGap - MUSEUM.descriptionFloor;
+  const height = Math.min(room, Math.max(1, lines) * font * leading + 2 * padding);
+  return { width, height, offsetY: -(frameHeight / 2 + MUSEUM.descriptionGap + height / 2), font, padding };
 }
 
 export interface MuseumArtwork {
@@ -270,11 +305,7 @@ function artwork(
   const border = MUSEUM.matBorder + MUSEUM.frameBorder;
   const frameHeight = height + 2 * border;
   const frameWidth = width + 2 * border;
-  const description: MuseumDescriptionPanel = {
-    width: Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth)),
-    height: MUSEUM.descriptionHeight,
-    offsetY: -(frameHeight / 2 + MUSEUM.descriptionGap + MUSEUM.descriptionHeight / 2),
-  };
+  const description = descriptionPanel(entry.photo.alt, frameWidth, frameHeight, lang);
   const lateral = entry.side * (layout.innerHalfWidth + MUSEUM.frameDepth / 2 - MOUNT_CLEARANCE);
   return {
     key: `art-${entry.index}`,
@@ -283,7 +314,7 @@ function artwork(
     s: entry.s,
     side: entry.side,
     lateral,
-    position: pathPoint(layout, entry.s, lateral, MUSEUM.artCentreY),
+    position: pathPoint(layout, entry.s, lateral, MUSEUM.frameBaseY + frameHeight / 2),
     rotationY: pathYaw(layout, entry.s) - entry.side * Math.PI / 2,
     width,
     height,

@@ -1711,12 +1711,18 @@ html[lang="ne"] .gallery-page .museum-hint {
 .gallery-page .museum-card-about {
   display: inline-flex;
   align-items: center;
+  gap: 0.4em;
   min-height: 2.75rem;
   padding: 0.65rem 1.3rem;
   border-radius: 999px;
   background: var(--color-crimson);
   color: #fff;
   font-weight: 700;
+}
+.gallery-page .museum-card-step {
+  width: 2.75rem;
+  padding-inline: 0;
+  font-size: 1rem;
 }
 .gallery-page .museum-card-about:hover {
   background: var(--color-brick);

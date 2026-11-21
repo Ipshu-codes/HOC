@@ -40,6 +40,7 @@ export default async function GalleryPage({ params }: PageProps<"/[lang]/gallery
     credit: photoCreditText(credits, dict, lang),
     year: credits.photos.year,
     labels: dict.gallery,
+    readMore: dict.home.readMore,
   };
 
   return (

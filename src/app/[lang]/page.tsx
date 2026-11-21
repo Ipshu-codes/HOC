@@ -109,6 +109,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           hint: dict.home.museumHint,
           aboutWard: dict.home.aboutWard16,
           overview: dict.nav.overview,
+          readMore: dict.home.readMore,
         }}
         exhibit={{
           map:

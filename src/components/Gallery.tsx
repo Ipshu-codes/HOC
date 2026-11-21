@@ -35,6 +35,8 @@ interface GalleryProps {
   labels: Dictionary["gallery"];
   /** Site slug from ?site=…, if any (see GalleryFromUrl). */
   requestedSite?: string | null;
+  /** "Read more": the 3D close-up links each photograph to its site's page. */
+  readMore?: string;
 }
 
 /** Reads ?site= from the URL. Must sit inside <Suspense> (static export requirement). */
@@ -127,7 +129,7 @@ function MuseumLoading() {
  * The chosen view is remembered for the visit. No new words are introduced: the third view control
  * uses existing DOM text plus numerals, which the text lock does not count as words.
  */
-export default function Gallery({ lang, photos, sites, credit, year, labels, requestedSite = null }: GalleryProps) {
+export default function Gallery({ lang, photos, sites, credit, year, labels, requestedSite = null, readMore }: GalleryProps) {
   const pathname = usePathname();
   const showFilter = sites.length > 1;
 
@@ -556,7 +558,9 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
                   close: labels.lightbox.Close,
                   previous: labels.lightbox.Previous,
                   next: labels.lightbox.Next,
+                  readMore,
                 }}
+                heritageBase={`/${lang}/heritage/`}
                 credit={credit}
                 poseRef={poseRef}
                 focusNonce={focusNonce}

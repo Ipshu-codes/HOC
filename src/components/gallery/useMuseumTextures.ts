@@ -127,11 +127,13 @@ export function useMuseumTextTexture(text: MuseumPlaqueText, active: boolean): T
   return texture;
 }
 
-/** Canvas resolution per metre of wall panel. The face is drawn once per photo and mapped back
- *  onto the same physical size, so text stays crisp without a texture per word. */
-const DESCRIPTION_PX_PER_METRE = 600;
-const DESCRIPTION_FACE = "#f4efe4";
-const DESCRIPTION_INK = "#3a241f";
+/** Canvas resolution per metre of wall label: about 74 px per line of type, sharp up close and,
+ *  with mipmaps and anisotropic filtering, clean at an angle too. */
+const DESCRIPTION_PX_PER_METRE = 700;
+const DESCRIPTION_MAX_PX = 4096;
+const DESCRIPTION_FACE = "#f6f1e6";
+const DESCRIPTION_INK = "#2e1c17";
+const DESCRIPTION_GOLD = "#a8823a";
 
 function breakLongWord(ctx: CanvasRenderingContext2D, word: string, maxWidth: number): string[] {
   const chunks: string[] = [];
@@ -154,8 +156,7 @@ function wrapDescription(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   const lines: string[] = [];
   let line = "";
   for (const word of text.split(/\s+/).filter(Boolean)) {
-    const pieces =
-      ctx.measureText(word).width > maxWidth ? breakLongWord(ctx, word, maxWidth) : [word];
+    const pieces = ctx.measureText(word).width > maxWidth ? breakLongWord(ctx, word, maxWidth) : [word];
     pieces.forEach((piece, pieceIndex) => {
       if (pieceIndex > 0) {
         if (line) lines.push(line);
@@ -173,9 +174,18 @@ function wrapDescription(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
   return lines;
 }
 
+export interface DescriptionLayout {
+  /** Metres, as planned by museum-layout's descriptionPanel(). */
+  width: number;
+  height: number;
+  font: number;
+  padding: number;
+}
+
 /**
- * Draw an existing photo description into a cream wall label. Exported so the glyph/wrap check can
- * drive the same code path as the museum. No text is invented: `description` is the photo's own alt.
+ * Draw an existing photo description into a cream wall label with a thin antique-gold rule. The type
+ * size is the one the layout planned; only text that would not fit is set a little smaller. Exported
+ * so the glyph/wrap check can drive the same code path. No text is invented: it is the photo's own alt.
  */
 export function drawMuseumDescription(
   ctx: CanvasRenderingContext2D,
@@ -183,40 +193,42 @@ export function drawMuseumDescription(
   fontFamily: string,
   width: number,
   height: number,
+  fontPx: number,
+  paddingPx: number,
 ): void {
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = DESCRIPTION_FACE;
   ctx.fillRect(0, 0, width, height);
+  const rule = Math.max(2, Math.round(fontPx * 0.05));
+  const inset = Math.round(paddingPx * 0.35);
+  ctx.strokeStyle = DESCRIPTION_GOLD;
+  ctx.lineWidth = rule;
+  ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset);
 
-  const maxWidth = width - Math.round(width * 0.07);
-  const availableHeight = height - Math.round(height * 0.14);
-  let size = Math.round(height * 0.125);
-  const minSize = Math.round(height * 0.06);
+  const maxWidth = width - 2 * paddingPx;
+  const available = height - 2 * paddingPx;
+  let size = fontPx;
   let lines: string[] = [];
-  let leading = size * 1.22;
-  while (size >= minSize) {
+  let leading = size * 1.42;
+  while (size >= fontPx * 0.6) {
     ctx.font = `400 ${size}px ${fontFamily}`;
     lines = wrapDescription(ctx, description, maxWidth);
-    leading = size * 1.22;
-    if (lines.length * leading <= availableHeight) break;
+    leading = size * 1.42;
+    if (lines.length * leading <= available + 1) break;
     size -= 1;
   }
 
-  ctx.textAlign = "center";
+  ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillStyle = DESCRIPTION_INK;
   const firstY = height / 2 - ((lines.length - 1) * leading) / 2;
-  lines.forEach((text, index) => ctx.fillText(text, width / 2, firstY + index * leading));
+  lines.forEach((text, index) => ctx.fillText(text, paddingPx, firstY + index * leading));
 }
 
 /** One wall-facing caption texture per mounted photo; created with the same page fonts as the DOM. */
-export function useMuseumDescriptionTexture(
-  description: string,
-  widthMetres: number,
-  heightMetres: number,
-  active: boolean,
-): THREE.CanvasTexture | null {
+export function useMuseumDescriptionTexture(description: string, panel: DescriptionLayout, active: boolean): THREE.CanvasTexture | null {
   const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
+  const { width, height, font, padding } = panel;
   useEffect(() => {
     if (!active || !description) return;
     let cancelled = false;
@@ -225,22 +237,24 @@ export function useMuseumDescriptionTexture(
       const fonts = fontFamilies();
       await waitForFonts([fonts.sans], description);
       if (cancelled) return;
+      // Very wide labels keep their proportions within the canvas size limit.
+      const scale = Math.min(DESCRIPTION_PX_PER_METRE, DESCRIPTION_MAX_PX / Math.max(width, height));
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(widthMetres * DESCRIPTION_PX_PER_METRE);
-      canvas.height = Math.round(heightMetres * DESCRIPTION_PX_PER_METRE);
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      drawMuseumDescription(ctx, description, fonts.sans, canvas.width, canvas.height);
+      drawMuseumDescription(ctx, description, fonts.sans, canvas.width, canvas.height, Math.round(font * scale), Math.round(padding * scale));
       created = new THREE.CanvasTexture(canvas);
       created.colorSpace = THREE.SRGBColorSpace;
-      created.anisotropy = 4;
+      created.anisotropy = 8;
       setTexture(created);
     })();
     return () => {
       cancelled = true;
       created?.dispose();
     };
-  }, [description, widthMetres, heightMetres, active]);
+  }, [description, width, height, font, padding, active]);
   return texture;
 }
 
@@ -403,8 +417,8 @@ export function drawMuseumSign(
   }
 
   // Arrow on the side it points to.
-  const arrowW = height * 0.5;
-  const arrowH = height * 0.3;
+  const arrowW = height * 0.44;
+  const arrowH = height * 0.28;
   const cy = height / 2;
   const ax = dir === 1 ? width - inset * 2.2 - arrowW : inset * 2.2;
   engrave(() => {
@@ -431,10 +445,10 @@ export function drawMuseumSign(
   });
 
   // The label, as large as the plate allows beside the arrow.
-  const textLeft = dir === 1 ? inset * 1.8 : ax + arrowW + inset * 0.9;
-  const textRight = dir === 1 ? ax - inset * 0.9 : width - inset * 1.8;
+  const textLeft = dir === 1 ? inset * 1.5 : ax + arrowW + inset * 0.7;
+  const textRight = dir === 1 ? ax - inset * 0.7 : width - inset * 1.5;
   const maxWidth = textRight - textLeft;
-  let size = Math.round(height * 0.4);
+  let size = Math.round(height * 0.5);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   while (size > height * 0.16) {

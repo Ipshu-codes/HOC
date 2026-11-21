@@ -24,7 +24,7 @@ interface MuseumLandingProps {
   year: number | null;
   /** Only the gallery strings: the whole dictionary would be sent to the browser. */
   galleryLabels: Dictionary["gallery"];
-  labels: { title: string; start: string; hint: string; aboutWard: string; overview: string };
+  labels: { title: string; start: string; hint: string; aboutWard: string; overview: string; readMore: string };
   exhibit: ExhibitInput;
   /** Where "About Ward 16 →" and the way out of the museum lead: the Overview section below. */
   overviewHref: string;
@@ -97,6 +97,7 @@ export default function MuseumLanding({ lang, photos, sites, credit, year, galle
                 next: galleryLabels.lightbox.Next,
                 hint: labels.hint,
                 aboutWard: labels.aboutWard,
+                readMore: labels.readMore,
               }}
               credit={credit}
               poseRef={poseRef}
@@ -107,6 +108,7 @@ export default function MuseumLanding({ lang, photos, sites, credit, year, galle
               exhibit={exhibit}
               phase={phase}
               aboutHref={overviewHref}
+              heritageBase={`/${lang}/heritage/`}
             />
           </MuseumErrorBoundary>
         ) : (
