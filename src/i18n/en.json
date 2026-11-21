@@ -50,6 +50,7 @@
       "other": "Explore Heritages"
     },
     "viewMap": "View 3D Map",
+    "viewMuseum": "View Heritage Museum",
     "overviewTitle": "Overview",
     "overviewIntro": {
       "one": "Ward No. 16 of Kathmandu Metropolitan City is home to {sites}. This website brings together its history, legends, festivals and photographs, in English and Nepali.",
@@ -75,6 +76,9 @@
     "location": "Location",
     "readMore": "Read more",
     "draftBadge": "Draft",
+    "museumTitle": "A Heritage You Can Walk Through",
+    "museumIntro": "Step inside and explore the photographs, places, and memories that preserve the heritage of Ward No. 16.",
+    "museumCta": "Enter the Heritage Museum",
     "galleryTitle": "Gallery",
     "galleryIntro": "Photos from {sites}.",
     "previousPhoto": "Previous photo",
