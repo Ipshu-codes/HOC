@@ -11,60 +11,93 @@ import {
   INITIAL_POSE,
   MUSEUM,
   artworkPose,
-  buildMuseumLayout,
-  clampPose,
-  moveAlongPath,
   normalizeHeading,
-  orderedArtworks,
-  pathPoint,
-  pathYaw,
-  type CameraPose,
-  type MuseumArtwork,
-  type MuseumLayout,
   type MuseumRoomInput,
-  type ScreenRect,
 } from "@/lib/museum-layout";
+import {
+  EXHIBIT_START_POSE,
+  artworkFocusItem,
+  buildExhibitWorld,
+  buildHallWorld,
+  clampWorldPose,
+  convertPose,
+  displayFocusItem,
+  focusPose,
+  moveInWorld,
+  poseAt,
+  segmentAt,
+  viewOf,
+  wingEntryPose,
+  type ExhibitInput,
+  type FocusItem,
+  type MuseumWorld,
+  type ViewPose,
+  type WorldPose,
+} from "@/lib/museum-world";
 import type { Locale } from "@/types/locale";
 import MuseumScene from "./MuseumScene";
 
+export interface MuseumLabels {
+  help: string;
+  forward: string;
+  back: string;
+  left: string;
+  right: string;
+  close: string;
+  previous: string;
+  next: string;
+  /** Mouse/keyboard hint for large screens; touch screens show `help` with the HUD. */
+  hint?: string;
+  /** Exhibit: the button under the ward logo close-up. */
+  aboutWard?: string;
+}
+
+export type MuseumPhase = "intro" | "explore";
+
+/** Lets the gallery's accessible DOM frames ask the 3D view to approach a photograph. */
+export interface MuseumApi {
+  open: (index: number) => void;
+}
+
 interface MuseumCanvasProps {
-  /** All photos for this build; `filter` picks the flat, shown subset (indices match PhotoView). */
+  /** All photos for this build; `filter` picks the flat, shown subset. */
   photos: GalleryPhoto[];
   sites: { slug: string; name: string }[];
   filter: string;
   lang: Locale;
-  /** False while PhotoView is open: the camera keeps its pose but stops taking input. */
+  /** False while something outside the museum (the 2D photo view) has the page. */
   enabled: boolean;
   reducedMotion: boolean;
   compact: boolean;
   activeIndex: number;
-  help: string;
-  forwardLabel: string;
-  backLabel: string;
-  leftLabel: string;
-  rightLabel: string;
-  /** Lives in Gallery, so opening PhotoView or switching layouts never resets the camera. */
-  poseRef: MutableRefObject<CameraPose>;
-  /** Called once the WebGL renderer exists, so Gallery can clear its loading state. */
+  labels: MuseumLabels;
+  credit: string | null;
+  /** Lives in the parent, so switching layouts never resets the camera. */
+  poseRef: MutableRefObject<WorldPose>;
+  /** Called once the WebGL renderer exists, so the parent can clear its loading state. */
   onReady?: () => void;
   /** Incremented when a DOM frame asks the camera to look at it. */
   focusNonce: number;
+  /** Receives the handle the gallery's DOM frames use to open a close-up (null on unmount). */
+  onApi?: (api: MuseumApi | null) => void;
   onActiveIndex: (index: number) => void;
-  onFocusArtwork: (index: number) => void;
-  /** A raycast hit on a frame opens the gallery's one photo view. */
-  onOpenArtwork: (index: number) => void;
-  /** Context loss or a renderer error switches Gallery to the hanging-memory fallback. */
+  /** The photo being looked at closely, or null when the visitor steps back. */
+  onFocusChange?: (index: number | null) => void;
+  /** Context loss or a renderer error switches the parent to its fallback. */
   onFail: () => void;
-  /** Gallery fills this with a live projection of every mounted frame before opening PhotoView. */
-  projectionRef: MutableRefObject<(() => Record<number, ScreenRect>) | null>;
+  /** Home page: entrance hall with the ward map and logo, signboards, a wing per site. */
+  exhibit?: ExhibitInput;
+  /** Exhibit: "intro" drifts slowly forward and takes no input until Start Exploring. */
+  phase?: MuseumPhase;
+  /** Exhibit: where "About Ward 16 →" leads (the existing overview on the home page). */
+  aboutHref?: string;
 }
 
-interface ControlsProps extends Omit<MuseumCanvasProps, "photos" | "sites" | "lang"> {
-  layout: MuseumLayout;
-  artworks: MuseumArtwork[];
-  gesture: MutableRefObject<MuseumGesture>;
-  /** Touch buttons call into the same camera steering as dragging and keyboard movement. */
-  navRef: MutableRefObject<MuseumNavActions | null>;
+type Focus = { kind: "art"; index: number } | { kind: "display"; key: "map" | "logo" };
+
+interface Travel {
+  seg: number;
+  nonce: number;
 }
 
 interface MuseumNavActions {
@@ -73,13 +106,13 @@ interface MuseumNavActions {
 }
 
 interface MuseumGesture {
-  /** Set once a pointer travels far enough that its release must not count as a frame click. */
+  /** Set once a pointer travels far enough that its release must not count as a click. */
   moved: boolean;
 }
 
-type MoveAction = "forward" | "backward" | "left" | "right";
+type MoveAction = "forward" | "backward" | "left" | "right" | "turnLeft" | "turnRight";
 
-/** Thumbnails start nearest the visitor, then fill the rest of the corridor in small idle batches. */
+/** Thumbnails start nearest the visitor, then fill the rest of the hall in small idle batches. */
 const LOAD_WINDOW = 6;
 const COMPACT_LOAD_WINDOW = 4;
 const BACKGROUND_BATCH = 4;
@@ -87,9 +120,16 @@ const COMPACT_BACKGROUND_BATCH = 2;
 const BACKGROUND_DELAY_MS = 220;
 const COMPACT_BACKGROUND_DELAY_MS = 420;
 const FIRST_BATCH_DELAY_MS = 600;
+/** Exhibit: frames of a wing that load at once when it opens (the ones nearest its doorway). */
+const WING_FIRST = 4;
+
+/** The slow walk before Start Exploring: how far, how long, and how often a frame is drawn. */
+const INTRO_DISTANCE = 3.4;
+const INTRO_SECONDS = 30;
+const INTRO_FPS = 30;
 
 function nearbyArtworkIndices(activeIndex: number, count: number, loadWindow = LOAD_WINDOW): number[] {
-  if (count === 0) return [];
+  if (count === 0 || activeIndex < 0) return [];
   const start = Math.max(0, activeIndex - loadWindow);
   const end = Math.min(count - 1, activeIndex + loadWindow);
   const indices: number[] = [];
@@ -102,7 +142,8 @@ function twoDigits(n: number, lang: Locale): string {
   return text.length < 2 ? `${lang === "ne" ? "०" : "0"}${text}` : text;
 }
 
-/** Codes keep W/A/S/D stable; arrows use `key` because their codes are layout-independent. */
+/** Codes keep W/A/S/D stable; arrows use `key` because their codes are layout-independent.
+ *  ← → turn (so the keyboard alone can look down either wing); A/D step sideways. */
 function movementAction(event: KeyboardEvent): MoveAction | null {
   switch (event.code) {
     case "KeyW":
@@ -120,9 +161,9 @@ function movementAction(event: KeyboardEvent): MoveAction | null {
     case "ArrowDown":
       return "backward";
     case "ArrowLeft":
-      return "left";
+      return "turnLeft";
     case "ArrowRight":
-      return "right";
+      return "turnRight";
   }
   return null;
 }
@@ -134,8 +175,20 @@ function isEditableTarget(target: EventTarget | null): boolean {
 /** Real controls keep their own keyboard behaviour; accessible artwork frames stay navigable. */
 function isGuardedControl(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud")) return true;
-  return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame");
+  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card")) return true;
+  return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame, .museum-a11y");
+}
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+function focusItemFor(world: MuseumWorld, focus: Focus): FocusItem | null {
+  if (focus.kind === "art") {
+    const placed = world.artworks.find((item) => item.art.index === focus.index);
+    return placed ? artworkFocusItem(placed) : null;
+  }
+  const display = world.displays.find((item) => item.key === focus.key);
+  return display ? displayFocusItem(display) : null;
 }
 
 /** Portrait phones need a wider vertical field of view to keep both walls in frame. */
@@ -161,83 +214,165 @@ function ResponsiveCamera({ compact }: { compact: boolean }) {
   return null;
 }
 
+interface Flight {
+  t0: number;
+  duration: number;
+  from: ViewPose;
+  to: ViewPose;
+  /** Within one hall the flight follows the hall's own curve (path coordinates)… */
+  local: { from: WorldPose; fromY: number } | null;
+  /** …between halls it arcs over the junction. */
+  via: { x: number; z: number } | null;
+  end: { pose: WorldPose; y: number; hold: boolean };
+  onDone?: () => void;
+}
+
+interface ControlsProps {
+  world: MuseumWorld;
+  /** Walking, looking and wheel/pinch input are live (explore phase, nothing held close). */
+  movable: boolean;
+  phase: MuseumPhase;
+  reducedMotion: boolean;
+  compact: boolean;
+  activeIndex: number;
+  poseRef: MutableRefObject<WorldPose>;
+  focusNonce: number;
+  focus: Focus | null;
+  travel: Travel | null;
+  reserve: { right: number; bottom: number };
+  visible: boolean;
+  gesture: MutableRefObject<MuseumGesture>;
+  navRef: MutableRefObject<MuseumNavActions | null>;
+  onActiveIndex: (index: number) => void;
+  onZone: (seg: number, nearJunction: boolean) => void;
+  onArrive: () => void;
+  /** Scrolling over a close-up steps back (instead of scrolling the page away from the museum). */
+  onStepBack: () => void;
+}
+
 /**
- * Mouse, wheel, touch and keyboard navigation. All state is in refs: no React render per drag frame.
+ * Mouse, wheel, touch and keyboard navigation, plus the timed camera flights (approaching a picture,
+ * stepping back, walking into a wing) and the slow intro walk. All per-frame state is in refs: no
+ * React render per drag frame. Frames are drawn on demand: only while something moves.
  */
 function MuseumControls({
-  layout,
-  artworks,
-  enabled,
+  world,
+  movable,
+  phase,
   reducedMotion,
-  activeIndex,
   compact,
+  activeIndex,
   poseRef,
   focusNonce,
-  onActiveIndex,
+  focus,
+  travel,
+  reserve,
+  visible,
   gesture,
   navRef,
+  onActiveIndex,
+  onZone,
+  onArrive,
+  onStepBack,
 }: ControlsProps) {
   const camera = useThree((state) => state.camera);
   const invalidate = useThree((state) => state.invalidate);
   const gl = useThree((state) => state.gl);
+  const size = useThree((state) => state.size);
 
   // Refs start from constants; the preserved pose is copied in the mount effect below (reading
   // poseRef.current during render would break React's render rules). No per-frame React state.
-  const target = useRef<CameraPose>({ ...(compact ? COMPACT_INITIAL_POSE : INITIAL_POSE) });
+  const target = useRef<WorldPose>({ seg: 0, ...(compact ? COMPACT_INITIAL_POSE : INITIAL_POSE) });
+  const eyeY = useRef<number>(MUSEUM.eyeHeight);
   const currentIndex = useRef(activeIndex);
   const pointers = useRef(new Map<number, { x: number; y: number; startX: number; startY: number }>());
   const pinch = useRef<number | null>(null);
   const handledNonce = useRef(focusNonce);
+  const handledTravel = useRef(0);
   const pressed = useRef(new Set<MoveAction>());
   const initialised = useRef(false);
+  const flight = useRef<Flight | null>(null);
+  /** True while the camera rests in front of a picture after a close-up flight. */
+  const holding = useRef(false);
+  /** Where to step back to after a close look. */
+  const returnTo = useRef<{ pose: WorldPose; y: number } | null>(null);
+  const intro = useRef<{ t0: number; from: WorldPose } | null>(null);
+  const previousPhase = useRef(phase);
+  const zone = useRef<{ seg: number; near: boolean }>({ seg: -1, near: false });
 
   useEffect(() => {
     currentIndex.current = activeIndex;
   }, [activeIndex]);
 
-  // On first mount, resume the pose Gallery kept while PhotoView or a layout switch unmounted us.
-  // On a later layout change, only clamp the goal when the new hall makes it invalid; damping
-  // then eases the camera back instead of teleporting to the entrance.
+  const apply = useCallback(
+    (view: ViewPose) => {
+      camera.position.set(view.x, view.y, view.z);
+      camera.rotation.set(view.pitch, view.yaw, 0, "YXZ");
+    },
+    [camera],
+  );
+
+  // On first mount, resume the pose the parent kept while a layout switch unmounted us. On a later
+  // world change, only clamp the goal when the new hall makes it invalid; damping then eases the
+  // camera back instead of teleporting to the entrance.
   useEffect(() => {
     if (!initialised.current) {
       initialised.current = true;
-      // Gallery keeps the pose across PhotoView/layout switches. Only its untouched initial value is
-      // replaced on compact screens, so a fresh visit starts a little further back in the same hall.
-      const untouched =
-        poseRef.current.s === INITIAL_POSE.s &&
-        poseRef.current.lateral === INITIAL_POSE.lateral &&
-        poseRef.current.heading === 0 &&
-        poseRef.current.pitch === 0;
-      const pose = clampPose(layout, compact && untouched ? COMPACT_INITIAL_POSE : poseRef.current);
+      const kept = poseRef.current;
+      // Only an untouched initial value is replaced on compact screens, so a fresh gallery visit
+      // starts a little further back in the same hall.
+      const untouched = kept.seg === 0 && kept.s === INITIAL_POSE.s && kept.lateral === 0 && kept.heading === 0 && kept.pitch === 0;
+      const pose = clampWorldPose(world, compact && untouched ? { seg: 0, ...COMPACT_INITIAL_POSE } : kept);
       target.current = { ...pose };
       poseRef.current = { ...pose };
-      const position = pathPoint(layout, pose.s, pose.lateral, MUSEUM.eyeHeight);
-      camera.position.set(position[0], position[1], position[2]);
-      camera.rotation.set(pose.pitch, pathYaw(layout, pose.s) + pose.heading, 0, "YXZ");
+      apply(viewOf(world, pose));
       invalidate();
       return;
     }
-    const clamped = clampPose(layout, target.current);
-    if (clamped.s !== target.current.s || clamped.lateral !== target.current.lateral) {
-      target.current = { ...target.current, s: clamped.s, lateral: clamped.lateral };
+    const clamped = clampWorldPose(world, target.current);
+    if (clamped.seg !== target.current.seg || clamped.s !== target.current.s || clamped.lateral !== target.current.lateral) {
+      target.current = clamped;
+      poseRef.current = clampWorldPose(world, poseRef.current);
       invalidate();
     }
-  }, [layout, poseRef, camera, invalidate, compact]);
+  }, [world, poseRef, apply, invalidate, compact]);
 
-  const steer = useCallback(
-    (pose: CameraPose) => {
-      target.current = { ...clampPose(layout, pose) };
-      invalidate();
-    },
-    [layout, invalidate],
+  const currentView = useCallback(
+    (): ViewPose => ({ x: camera.position.x, y: camera.position.y, z: camera.position.z, yaw: camera.rotation.y, pitch: camera.rotation.x }),
+    [camera],
   );
 
-  const steerToArtwork = useCallback(
-    (index: number) => {
-      const art = artworks.find((item) => item.index === index);
-      if (art) steer(artworkPose(layout, art));
+  /** Glide the camera to a pose. Distance and turn set the duration; reduced motion makes it a cut. */
+  const fly = useCallback(
+    (pose: WorldPose, y: number, hold: boolean, onDone?: () => void) => {
+      const from = currentView();
+      const to = viewOf(world, pose, y);
+      const fromSeg = segmentAt(world, from.x, from.z, pose.seg);
+      const same = fromSeg === pose.seg;
+      const turn = Math.abs(normalizeHeading(to.yaw - from.yaw));
+      const distance = Math.hypot(to.x - from.x, to.z - from.z) + Math.abs(to.y - from.y);
+      flight.current = {
+        t0: performance.now(),
+        duration: reducedMotion ? 0 : Math.min(2.6, Math.max(0.9, 0.75 + distance * 0.07 + turn * 0.3)),
+        from,
+        to,
+        local: same ? { from: poseAt(world, pose.seg, from.x, from.z, from.yaw, from.pitch), fromY: from.y } : null,
+        via: same ? null : world.junction,
+        end: { pose: { ...pose }, y, hold },
+        onDone,
+      };
+      pressed.current.clear();
+      invalidate();
     },
-    [artworks, layout, steer],
+    [currentView, world, reducedMotion, invalidate],
+  );
+
+  const steer = useCallback(
+    (pose: WorldPose) => {
+      target.current = clampWorldPose(world, pose);
+      invalidate();
+    },
+    [world, invalidate],
   );
 
   // A focused DOM frame asks the camera to look at its 3D counterpart. The nonce guard keeps a
@@ -245,13 +380,70 @@ function MuseumControls({
   useEffect(() => {
     if (focusNonce === handledNonce.current) return;
     handledNonce.current = focusNonce;
-    steerToArtwork(activeIndex);
-  }, [focusNonce, activeIndex, steerToArtwork]);
+    const placed = world.artworks.find((item) => item.art.index === activeIndex);
+    if (placed) steer({ seg: placed.seg, ...artworkPose(world.segments[placed.seg].layout, placed.art) });
+  }, [focusNonce, activeIndex, world, steer]);
+
+  // Close-up: walk up to the picture; stepping back returns exactly to where the visitor stood.
+  useEffect(() => {
+    if (focus) {
+      const item = focusItemFor(world, focus);
+      if (!item) return;
+      if (!returnTo.current) returnTo.current = { pose: { ...poseRef.current }, y: eyeY.current };
+      const { pose, y } = focusPose(world, item, {
+        width: size.width,
+        height: size.height,
+        // ResponsiveCamera (an earlier sibling) has already set this size's field of view.
+        fov: (camera as THREE.PerspectiveCamera).fov,
+        reserveRight: reserve.right,
+        reserveBottom: reserve.bottom,
+      });
+      fly(pose, y, true, onArrive);
+    } else if (returnTo.current) {
+      const back = returnTo.current;
+      returnTo.current = null;
+      holding.current = false;
+      fly(back.pose, back.y, false);
+    }
+  }, [focus, world, size.width, size.height, camera, reserve.right, reserve.bottom, fly, onArrive, poseRef]);
+
+  // A signboard was chosen: walk through the junction and a few steps into that wing.
+  useEffect(() => {
+    if (!travel || travel.nonce === handledTravel.current) return;
+    handledTravel.current = travel.nonce;
+    returnTo.current = null;
+    holding.current = false;
+    fly(wingEntryPose(travel.seg), MUSEUM.eyeHeight, false);
+  }, [travel, fly]);
+
+  // Intro: remember where the slow walk starts. Leaving it settles the gaze level, ready to explore.
+  useEffect(() => {
+    if (phase === "intro") {
+      intro.current = { t0: performance.now(), from: { ...poseRef.current } };
+      invalidate();
+    } else if (previousPhase.current === "intro") {
+      intro.current = null;
+      // Portrait phones see a lot of ceiling at eye level; a slight downward gaze shows the walls.
+      target.current = { ...poseRef.current, lateral: 0, heading: 0, pitch: compact ? -0.12 : 0 };
+      invalidate();
+    }
+    previousPhase.current = phase;
+  }, [phase, poseRef, invalidate, compact]);
+
+  // The intro is drawn at a modest frame rate and only while visible: it should feel alive, not
+  // keep the GPU busy. Nothing is drawn while the page is hidden or the museum is scrolled away.
+  useEffect(() => {
+    if (phase !== "intro" || reducedMotion || !visible) return;
+    const id = window.setInterval(() => {
+      if (!document.hidden) invalidate();
+    }, 1000 / INTRO_FPS);
+    return () => window.clearInterval(id);
+  }, [phase, reducedMotion, visible, invalidate]);
 
   // Movement is keyed independently of yaw: strafing never rotates the camera. Modify keys and
   // page controls are ignored, and every release/blur clears held keys so motion cannot stick.
   useEffect(() => {
-    if (!enabled) {
+    if (!movable) {
       pressed.current.clear();
       return;
     }
@@ -288,24 +480,19 @@ function MuseumControls({
       document.removeEventListener("visibilitychange", onVisibility);
       clear();
     };
-  }, [enabled, invalidate]);
+  }, [movable, invalidate]);
 
-  /** Move one discrete step, clipped by the hall footprint. The path-local vector is independent of
-   *  pitch, so strafing never rotates the view. Shared by keys, pinch, wheel and the touch buttons. */
+  /** Move one discrete step, clipped by the walls; through the junction it continues in the next hall.
+   *  Shared by keys, pinch, wheel and the touch buttons. */
   const move = useCallback(
-    (action: MoveAction, step: number) => {
-      const forward = action === "forward" ? 1 : action === "backward" ? -1 : 0;
-      const strafe = action === "right" ? 1 : action === "left" ? -1 : 0;
-      target.current = moveAlongPath(layout, target.current, forward, strafe, step);
+    (action: "forward" | "backward", step: number) => {
+      target.current = moveInWorld(world, target.current, action === "forward" ? 1 : -1, 0, step);
       invalidate();
     },
-    [layout, invalidate],
+    [world, invalidate],
   );
 
-  const moveForward = useCallback(
-    (step: number) => move(step < 0 ? "backward" : "forward", Math.abs(step)),
-    [move],
-  );
+  const moveForward = useCallback((step: number) => move(step < 0 ? "backward" : "forward", Math.abs(step)), [move]);
 
   const turn = useCallback(
     (direction: "left" | "right") => {
@@ -316,27 +503,41 @@ function MuseumControls({
     [invalidate],
   );
 
-  // The compact HUD calls into the same steering as dragging and the keyboard. Ref registration
-  // happens after mount and is cleared when the lightbox disables camera input.
+  // The compact HUD calls into the same steering as dragging and the keyboard.
   useEffect(() => {
-    navRef.current = enabled
-      ? {
-          move: (action) => move(action, 1.45),
-          turn,
-        }
-      : null;
+    navRef.current = movable ? { move: (action) => move(action, 1.45), turn } : null;
     return () => {
       navRef.current = null;
     };
-  }, [enabled, move, turn, navRef]);
+  }, [movable, move, turn, navRef]);
+
+  // While a picture is held close the camera takes no drags, but a fresh press must still count as a
+  // click (on another picture, or on bare wall to step back).
+  useEffect(() => {
+    const element = gl.domElement;
+    if (movable) return;
+    const onPointerDown = () => {
+      gesture.current.moved = false;
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (!focus) return;
+      event.preventDefault();
+      onStepBack();
+    };
+    element.addEventListener("pointerdown", onPointerDown);
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      element.removeEventListener("pointerdown", onPointerDown);
+      element.removeEventListener("wheel", onWheel);
+    };
+  }, [gl, movable, gesture, focus, onStepBack]);
 
   // Pointer: one finger/mouse button looks around; two fingers pinch to walk. Pointer capture keeps
   // a drag alive outside the canvas, and `touch-action: none` (CSS) stops the page scrolling under it.
-  // The drag flag survives pointerup so the click that follows a drag cannot select a frame.
+  // The drag flag survives pointerup so the click that follows a drag cannot select anything.
   useEffect(() => {
     const element = gl.domElement;
-    if (!enabled) return;
-    // Keep a stable local reference so cleanup releases exactly the pointers this effect tracked.
+    if (!movable) return;
     const activePointers = pointers.current;
 
     const onPointerDown = (event: PointerEvent) => {
@@ -399,139 +600,167 @@ function MuseumControls({
       activePointers.clear();
       pinch.current = null;
     };
-  }, [gl, enabled, invalidate, moveForward, gesture]);
+  }, [gl, movable, invalidate, moveForward, gesture]);
 
-  // Damping runs inside useFrame. With frameloop="demand", invalidate() here is what keeps the
-  // transition alive until it settles; once still, the scene costs no frames.
+  const report = useCallback(
+    (pose: WorldPose, view: ViewPose) => {
+      // A wing's floor reaches back across the junction; only past its doorway (s >= 0) is one "in" it.
+      const inWing = pose.seg > 0 && pose.s >= 0;
+      const seg = inWing ? pose.seg : 0;
+      const near = !inWing && world.junctionFrom !== null && (pose.seg > 0 || pose.s > world.junctionFrom);
+      if (zone.current.seg !== seg || zone.current.near !== near) {
+        zone.current = { seg, near };
+        onZone(seg, near);
+      }
+      let nearest = -1;
+      // Larger frames are comfortably viewed from farther back; keep the active index in step.
+      let best = 6.2;
+      for (const placed of world.artworks) {
+        const distance = Math.hypot(view.x - placed.world[0], view.z - placed.world[2]);
+        if (distance < best) {
+          best = distance;
+          nearest = placed.art.index;
+        }
+      }
+      if (nearest >= 0 && nearest !== currentIndex.current) {
+        currentIndex.current = nearest;
+        onActiveIndex(nearest);
+      }
+    },
+    [world, onZone, onActiveIndex],
+  );
+
+  // With frameloop="demand", invalidate() here is what keeps a transition alive until it settles;
+  // once still, the scene costs no frames.
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
+    const now = performance.now();
 
-    if (enabled && pressed.current.size > 0) {
+    const trip = flight.current;
+    if (trip) {
+      const t = trip.duration <= 0 ? 1 : Math.min(1, (now - trip.t0) / (trip.duration * 1000));
+      const e = easeInOut(t);
+      let view: ViewPose;
+      if (trip.local) {
+        const a = trip.local.from;
+        const b = trip.end.pose;
+        const pose: WorldPose = {
+          seg: b.seg,
+          s: lerp(a.s, b.s, e),
+          lateral: lerp(a.lateral, b.lateral, e),
+          heading: a.heading + normalizeHeading(b.heading - a.heading) * e,
+          pitch: lerp(a.pitch, b.pitch, e),
+        };
+        view = viewOf(world, pose, lerp(trip.local.fromY, trip.end.y, e));
+        poseRef.current = pose;
+      } else {
+        const { from, to, via } = trip;
+        const c = via ?? { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
+        const u = 1 - e;
+        view = {
+          x: u * u * from.x + 2 * u * e * c.x + e * e * to.x,
+          z: u * u * from.z + 2 * u * e * c.z + e * e * to.z,
+          y: lerp(from.y, to.y, e),
+          yaw: from.yaw + normalizeHeading(to.yaw - from.yaw) * e,
+          pitch: lerp(from.pitch, to.pitch, e),
+        };
+      }
+      apply(view);
+      eyeY.current = view.y;
+      if (t >= 1) {
+        flight.current = null;
+        poseRef.current = { ...trip.end.pose };
+        target.current = { ...trip.end.pose };
+        eyeY.current = trip.end.y;
+        holding.current = trip.end.hold;
+        report(trip.end.pose, trip.to);
+        trip.onDone?.();
+      } else {
+        invalidate();
+      }
+      return;
+    }
+
+    if (holding.current) return;
+
+    const run = intro.current;
+    if (phase === "intro" && run) {
+      // A slow, eased walk forward with a gentle sway of the gaze, as if strolling in.
+      const seconds = (now - run.t0) / 1000;
+      const travelled = reducedMotion ? 0 : INTRO_DISTANCE * easeInOut(Math.min(1, seconds / INTRO_SECONDS));
+      const sway = reducedMotion ? 0 : 1;
+      const pose: WorldPose = {
+        ...run.from,
+        s: run.from.s + travelled,
+        lateral: run.from.lateral + 0.12 * sway * Math.sin((seconds * Math.PI * 2) / 23),
+        heading: 0.045 * sway * Math.sin((seconds * Math.PI * 2) / 16),
+        pitch: (compact ? -0.1 : -0.012) + 0.01 * sway * Math.sin((seconds * Math.PI * 2) / 11),
+      };
+      poseRef.current = pose;
+      target.current = { ...pose };
+      apply(viewOf(world, pose, eyeY.current));
+      return;
+    }
+
+    if (movable && pressed.current.size > 0) {
       let forward = 0;
       let strafe = 0;
+      let turning = 0;
       if (pressed.current.has("forward")) forward += 1;
       if (pressed.current.has("backward")) forward -= 1;
       if (pressed.current.has("right")) strafe += 1;
       if (pressed.current.has("left")) strafe -= 1;
+      if (pressed.current.has("turnLeft")) turning += 1;
+      if (pressed.current.has("turnRight")) turning -= 1;
+      if (turning !== 0) target.current = { ...target.current, heading: normalizeHeading(target.current.heading + turning * 1.5 * dt) };
       if (forward !== 0 || strafe !== 0) {
         const length = Math.hypot(forward, strafe);
-        target.current = moveAlongPath(layout, target.current, forward / length, strafe / length, 2.7 * dt);
+        target.current = moveInWorld(world, target.current, forward / length, strafe / length, 2.7 * dt);
       }
     }
 
-    const pose = poseRef.current;
     const goal = target.current;
+    const previous = convertPose(world, poseRef.current, goal.seg);
     const k = reducedMotion ? 1 : 1 - Math.exp(-dt * 7);
-    let dheading = goal.heading - pose.heading;
-    while (dheading > Math.PI) dheading -= Math.PI * 2;
-    while (dheading < -Math.PI) dheading += Math.PI * 2;
-    pose.s += (goal.s - pose.s) * k;
-    pose.lateral += (goal.lateral - pose.lateral) * k;
-    pose.heading += dheading * k;
-    pose.pitch += (goal.pitch - pose.pitch) * k;
+    const dheading = normalizeHeading(goal.heading - previous.heading);
+    const pose: WorldPose = {
+      seg: goal.seg,
+      s: previous.s + (goal.s - previous.s) * k,
+      lateral: previous.lateral + (goal.lateral - previous.lateral) * k,
+      heading: previous.heading + dheading * k,
+      pitch: previous.pitch + (goal.pitch - previous.pitch) * k,
+    };
+    poseRef.current = pose;
+    eyeY.current += (MUSEUM.eyeHeight - eyeY.current) * k;
 
-    const position = pathPoint(layout, pose.s, pose.lateral, MUSEUM.eyeHeight);
-    camera.position.set(position[0], position[1], position[2]);
-    camera.rotation.set(pose.pitch, pathYaw(layout, pose.s) + pose.heading, 0, "YXZ");
+    const view = viewOf(world, pose, eyeY.current);
+    apply(view);
 
     const moving =
       pressed.current.size > 0 ||
       Math.abs(goal.s - pose.s) +
         Math.abs(goal.lateral - pose.lateral) +
         Math.abs(dheading) +
-        Math.abs(goal.pitch - pose.pitch) >
+        Math.abs(goal.pitch - pose.pitch) +
+        Math.abs(MUSEUM.eyeHeight - eyeY.current) >
         0.002;
     if (moving) invalidate();
-
-    let nearest = -1;
-    // Larger frames are comfortably viewed from farther back; keep the active index in step.
-    let best = 6.2;
-    const eye = pathPoint(layout, pose.s, pose.lateral);
-    for (const art of artworks) {
-      const distance = Math.hypot(eye[0] - art.position[0], eye[2] - art.position[2]);
-      if (distance < best) {
-        best = distance;
-        nearest = art.index;
-      }
-    }
-    if (nearest >= 0 && nearest !== currentIndex.current) {
-      currentIndex.current = nearest;
-      onActiveIndex(nearest);
-    }
+    report(pose, view);
   });
 
-  return null;
-}
-
-/** Project each mounted frame's world box into canvas pixels, for PhotoView's opening glide. */
-function projectArtworkRects(
-  objects: Map<number, THREE.Object3D>,
-  camera: THREE.Camera,
-  canvas: HTMLCanvasElement,
-): Record<number, ScreenRect> {
-  const box = new THREE.Box3();
-  const point = new THREE.Vector3();
-  const bounds = canvas.getBoundingClientRect();
-  const rects: Record<number, ScreenRect> = {};
-  objects.forEach((object, index) => {
-    box.setFromObject(object);
-    if (box.isEmpty()) return;
-    let left = Infinity;
-    let top = Infinity;
-    let right = -Infinity;
-    let bottom = -Infinity;
-    for (const x of [box.min.x, box.max.x]) {
-      for (const y of [box.min.y, box.max.y]) {
-        for (const z of [box.min.z, box.max.z]) {
-          point.set(x, y, z).project(camera);
-          if (point.z < -1 || point.z > 1) continue;
-          const px = bounds.left + (point.x * 0.5 + 0.5) * bounds.width;
-          const py = bounds.top + (-point.y * 0.5 + 0.5) * bounds.height;
-          left = Math.min(left, px);
-          top = Math.min(top, py);
-          right = Math.max(right, px);
-          bottom = Math.max(bottom, py);
-        }
-      }
-    }
-    if (!Number.isFinite(left) || right - left < 2 || bottom - top < 2) return;
-    rects[index] = { left, top, width: right - left, height: bottom - top };
-  });
-  return rects;
-}
-
-/** Lives inside Canvas so it can read the live camera and canvas without lifting R3F state. */
-function ProjectionBridge({
-  objectsRef,
-  projectionRef,
-}: {
-  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
-  projectionRef: MutableRefObject<(() => Record<number, ScreenRect>) | null>;
-}) {
-  const camera = useThree((state) => state.camera);
-  const gl = useThree((state) => state.gl);
-  useEffect(() => {
-    const project = () => projectArtworkRects(objectsRef.current, camera, gl.domElement);
-    projectionRef.current = project;
-    return () => {
-      if (projectionRef.current === project) projectionRef.current = null;
-    };
-  }, [camera, gl, objectsRef, projectionRef]);
   return null;
 }
 
 /**
- * Client-only entry for the 3D museum. The DOM walk (Gallery.tsx) stays in the page as the
- * accessibility tree and the no-WebGL fallback; this layer is the visual implementation of
- * the same view. Rendered with `dynamic(..., { ssr: false })`, so nothing here is prerendered.
+ * Client-only entry for the 3D museum. On the gallery page the DOM walk (Gallery.tsx) stays in the
+ * page as the accessibility tree and the no-WebGL fallback; on the home page this component renders
+ * its own accessible buttons. Rendered with `dynamic(..., { ssr: false })`, so nothing here is prerendered.
  */
 export default function MuseumCanvas(props: MuseumCanvasProps) {
-  const { photos, filter, lang, activeIndex, compact, onFail } = props;
+  const { photos, filter, lang, activeIndex, compact, onFail, exhibit, labels, credit, onActiveIndex, onFocusChange } = props;
+  const phase: MuseumPhase = props.phase ?? "explore";
   const helpId = useId();
-  const shown = useMemo(
-    () => (filter === "all" ? photos : photos.filter((photo) => photo.site === filter)),
-    [photos, filter],
-  );
+  const shown = useMemo(() => (filter === "all" ? photos : photos.filter((photo) => photo.site === filter)), [photos, filter]);
   const rooms = useMemo<MuseumRoomInput[]>(
     () =>
       props.sites.map((site, index) => ({
@@ -542,11 +771,30 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
       })),
     [props.sites, filter, lang],
   );
-  const layout = useMemo(() => buildMuseumLayout(rooms, shown, lang, compact), [rooms, shown, lang, compact]);
-  const artworks = useMemo(() => orderedArtworks(layout), [layout]);
+  const world = useMemo(
+    () => (exhibit ? buildExhibitWorld(rooms, shown, lang, compact, exhibit) : buildHallWorld(rooms, shown, lang, compact)),
+    [rooms, shown, lang, compact, exhibit],
+  );
+  const siteName = useMemo(() => new Map(props.sites.map((site) => [site.slug, site.name])), [props.sites]);
   const loadWindow = compact ? COMPACT_LOAD_WINDOW : LOAD_WINDOW;
   const backgroundBatch = compact ? COMPACT_BACKGROUND_BATCH : BACKGROUND_BATCH;
   const backgroundDelay = compact ? COMPACT_BACKGROUND_DELAY_MS : BACKGROUND_DELAY_MS;
+  const count = shown.length;
+
+  // Exhibit: a wing's photographs load only once the visitor heads for it (nearing the junction,
+  // choosing its sign, or walking in), so the landing page itself downloads just the map and logo.
+  const [openWings, setOpenWings] = useState<ReadonlySet<number>>(() => new Set());
+  const allowed = useCallback(
+    (index: number) => {
+      if (!exhibit) return true;
+      const placed = world.artworks.find((item) => item.art.index === index);
+      return placed !== undefined && openWings.has(placed.seg);
+    },
+    [exhibit, world, openWings],
+  );
+  const openWing = useCallback((seg: number) => {
+    setOpenWings((previous) => (previous.has(seg) ? previous : new Set([...previous, seg])));
+  }, []);
 
   // Loading priority is a growing set, not a moving window: once a frame has been asked to load it
   // keeps its texture for as long as it is mounted. A new exhibition (filter/language/photo set)
@@ -554,47 +802,52 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   const exhibitionKey = useMemo(() => shown.map((photo) => photo.thumb.src).join("\u0000"), [shown]);
   const [backgroundIndices, setBackgroundIndices] = useState(() => ({
     key: exhibitionKey,
-    indices: new Set(nearbyArtworkIndices(activeIndex, artworks.length, loadWindow)),
+    indices: new Set(exhibit ? [] : nearbyArtworkIndices(activeIndex, count, loadWindow)),
   }));
   const loadingIndices = useMemo(() => {
-    const base =
-      backgroundIndices.key === exhibitionKey
-        ? backgroundIndices.indices
-        : new Set(nearbyArtworkIndices(activeIndex, artworks.length, loadWindow));
+    const next = new Set(backgroundIndices.key === exhibitionKey ? backgroundIndices.indices : []);
     // Derived during render so walking adds the newly nearby frames without a cascading render.
-    const next = new Set(base);
-    for (const index of nearbyArtworkIndices(activeIndex, artworks.length, loadWindow)) next.add(index);
+    for (const index of nearbyArtworkIndices(activeIndex, count, loadWindow)) if (allowed(index)) next.add(index);
+    for (const seg of openWings) {
+      world.artworks
+        .filter((item) => item.seg === seg)
+        .slice(0, WING_FIRST)
+        .forEach((item) => next.add(item.art.index));
+    }
     return next;
-  }, [backgroundIndices, exhibitionKey, activeIndex, artworks.length, loadWindow]);
+  }, [backgroundIndices, exhibitionKey, activeIndex, count, loadWindow, allowed, openWings, world]);
 
   // After the first nearby group has had time to decode, fill the remaining frames a few at a time.
   useEffect(() => {
-    if (loadingIndices.size >= artworks.length) return;
-    const isFirstBatch = loadingIndices.size === nearbyArtworkIndices(activeIndex, artworks.length, loadWindow).length;
+    const pending: number[] = [];
+    for (let index = 0; index < count; index += 1) {
+      if (!loadingIndices.has(index) && allowed(index)) pending.push(index);
+    }
+    if (pending.length === 0) return;
+    const isFirstBatch = loadingIndices.size <= loadWindow * 2 + 1;
+    const from = Math.max(0, activeIndex);
+    pending.sort((a, b) => Math.abs(a - from) - Math.abs(b - from) || a - b);
+    const batch = pending.slice(0, backgroundBatch);
     const timer = window.setTimeout(() => {
       setBackgroundIndices((previous) => {
-        const base = previous.key === exhibitionKey ? previous.indices : loadingIndices;
-        const next = new Set(base);
-        if (next.size >= artworks.length) {
-          return previous.key === exhibitionKey ? previous : { key: exhibitionKey, indices: next };
-        }
-        const pending: number[] = [];
-        for (let index = 0; index < artworks.length; index += 1) {
-          if (!next.has(index)) pending.push(index);
-        }
-        pending.sort((a, b) => Math.abs(a - activeIndex) - Math.abs(b - activeIndex) || a - b);
-        for (const index of pending.slice(0, backgroundBatch)) next.add(index);
-        if (previous.key === exhibitionKey && next.size === base.size) return previous;
+        const next = new Set(previous.key === exhibitionKey ? previous.indices : loadingIndices);
+        batch.forEach((index) => next.add(index));
         return { key: exhibitionKey, indices: next };
       });
     }, isFirstBatch ? FIRST_BATCH_DELAY_MS : backgroundDelay);
     return () => window.clearTimeout(timer);
-  }, [loadingIndices, artworks.length, exhibitionKey, activeIndex, backgroundBatch, backgroundDelay, loadWindow]);
+  }, [loadingIndices, count, allowed, exhibitionKey, activeIndex, backgroundBatch, backgroundDelay, loadWindow]);
 
   const gesture = useRef<MuseumGesture>({ moved: false });
   const navRef = useRef<MuseumNavActions | null>(null);
-  const objectsRef = useRef(new Map<number, THREE.Object3D>());
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [hoverKey, setHoverKey] = useState<string | null>(null);
+  const [focus, setFocus] = useState<Focus | null>(null);
+  const [arrived, setArrived] = useState(false);
+  const [travel, setTravel] = useState<Travel | null>(null);
+  const [zoneSeg, setZoneSeg] = useState(0);
+  const opener = useRef<HTMLElement | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const failed = useRef(false);
   const fail = useCallback(() => {
@@ -602,6 +855,141 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
     failed.current = true;
     onFail();
   }, [onFail]);
+
+  // The card's place (beside the picture on wide screens, a sheet below it otherwise) decides where
+  // the camera frames the picture, so both come from the museum's own measured size.
+  const [box, setBox] = useState({ width: 0, height: 0 });
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    const element = rootRef.current;
+    if (!element) return;
+    const resize = new ResizeObserver(([entry]) => {
+      setBox({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    const seen = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
+    resize.observe(element);
+    seen.observe(element);
+    return () => {
+      resize.disconnect();
+      seen.disconnect();
+    };
+  }, []);
+  const cardSide = box.width >= 900 && box.width / Math.max(1, box.height) >= 1.1;
+  const reserve = useMemo(
+    () => ({ right: cardSide ? Math.min(416, box.width * 0.4) + 48 : 0, bottom: cardSide ? 0 : box.height * 0.52 }),
+    [cardSide, box.width, box.height],
+  );
+
+  const explore = phase === "explore";
+  const interactive = props.enabled && explore;
+  const movable = interactive && focus === null;
+
+  const openFocus = useCallback(
+    (next: Focus, from: HTMLElement | null = null) => {
+      opener.current = from;
+      setFocus(next);
+      setArrived(false);
+      setHoverKey(null);
+      if (next.kind === "art") onActiveIndex(next.index);
+      onFocusChange?.(next.kind === "art" ? next.index : null);
+    },
+    [onActiveIndex, onFocusChange],
+  );
+
+  const closeFocus = useCallback(() => {
+    setFocus(null);
+    setArrived(false);
+    onFocusChange?.(null);
+    const back = opener.current;
+    opener.current = null;
+    if (back?.isConnected) back.focus({ preventScroll: true });
+  }, [onFocusChange]);
+
+  const goTo = useCallback(
+    (seg: number) => {
+      setFocus(null);
+      setArrived(false);
+      setHoverKey(null);
+      openWing(seg);
+      setTravel((previous) => ({ seg, nonce: (previous?.nonce ?? 0) + 1 }));
+    },
+    [openWing],
+  );
+
+  const select = useCallback(
+    (key: string) => {
+      if (key.startsWith("art-")) openFocus({ kind: "art", index: Number(key.slice(4)) });
+      else if (key === "map" || key === "logo") openFocus({ kind: "display", key });
+      else if (key.startsWith("sign-")) {
+        const sign = world.signs.find((item) => `sign-${item.key}` === key);
+        if (sign) goTo(sign.target);
+      }
+    },
+    [openFocus, goTo, world],
+  );
+
+  const onZone = useCallback(
+    (seg: number, near: boolean) => {
+      setZoneSeg(seg);
+      if (seg > 0) openWing(seg);
+      if (near) {
+        world.segments.forEach((_, index) => {
+          if (index > 0) openWing(index);
+        });
+      }
+    },
+    [openWing, world],
+  );
+  const onArrive = useCallback(() => setArrived(true), []);
+
+  const { onApi } = props;
+  useEffect(() => {
+    if (!onApi) return;
+    onApi({ open: (index: number) => openFocus({ kind: "art", index }, document.activeElement as HTMLElement | null) });
+    return () => onApi(null);
+  }, [onApi, openFocus]);
+
+  const focusedArt = focus?.kind === "art" ? world.artworks.find((item) => item.art.index === focus.index) : undefined;
+  const focusedDisplay = focus?.kind === "display" ? world.displays.find((item) => item.key === focus.key) : undefined;
+  const siblings = useMemo(() => (focusedArt ? world.artworks.filter((item) => item.seg === focusedArt.seg) : []), [focusedArt, world]);
+  const position = focusedArt ? siblings.indexOf(focusedArt) : -1;
+  const step = useCallback(
+    (delta: number) => {
+      const next = siblings[position + delta];
+      if (next) openFocus({ kind: "art", index: next.art.index }, opener.current);
+    },
+    [siblings, position, openFocus],
+  );
+
+  // While looking closely: Esc or ↓ steps back, ← → move to the neighbouring photographs.
+  useEffect(() => {
+    if (!focus) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target)) return;
+      if (event.key === "Escape" || event.key === "ArrowDown") {
+        event.preventDefault();
+        closeFocus();
+      } else if (event.key === "ArrowLeft" && focusedArt) {
+        event.preventDefault();
+        step(-1);
+      } else if (event.key === "ArrowRight" && focusedArt) {
+        event.preventDefault();
+        step(1);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focus, focusedArt, step, closeFocus]);
+
+  // Once the camera has arrived, the details are revealed and take the keyboard focus.
+  useEffect(() => {
+    if (arrived) closeRef.current?.focus({ preventScroll: true });
+  }, [arrived]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) canvas.style.cursor = interactive && hoverKey ? "pointer" : "";
+  }, [hoverKey, interactive]);
 
   useEffect(
     () => () => {
@@ -611,11 +999,19 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
     [fail],
   );
 
-  const initialPose = compact ? COMPACT_INITIAL_POSE : INITIAL_POSE;
-  const initialPosition = pathPoint(layout, initialPose.s, initialPose.lateral, MUSEUM.eyeHeight);
+  const startPose = exhibit ? EXHIBIT_START_POSE : { seg: 0, ...(compact ? COMPACT_INITIAL_POSE : INITIAL_POSE) };
+  const startView = viewOf(world, clampWorldPose(world, startPose));
+  const wing = exhibit && zoneSeg > 0 ? world.signs.find((sign) => sign.target === zoneSeg) : undefined;
+  const wingArtworks = exhibit && zoneSeg > 0 ? world.artworks.filter((item) => item.seg === zoneSeg) : [];
+  const focusKey = focusedArt ? focusedArt.art.key : focusedDisplay ? focusedDisplay.key : null;
 
   return (
-    <div className="museum-canvas gallery-museum">
+    <div
+      ref={rootRef}
+      className="museum-canvas gallery-museum"
+      data-phase={phase}
+      data-focus={focus ? (arrived ? "arrived" : "flying") : undefined}
+    >
       <div className="museum-render" aria-hidden="true">
         <Canvas
           frameloop="demand"
@@ -626,11 +1022,11 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             stencil: false,
             powerPreference: compact ? "default" : "high-performance",
           }}
-          // The camera starts at the open entrance and looks along the curved centreline. The
+          // The camera starts at the open entrance and looks along the centreline. The
           // compact pose sits a little further back; ResponsiveCamera widens the field of view.
           camera={{
-            position: initialPosition,
-            rotation: [0, pathYaw(layout, initialPose.s), 0],
+            position: [startView.x, startView.y, startView.z],
+            rotation: [0, startView.yaw, 0],
             fov: compact ? 82 : 66,
             near: 0.1,
             far: 260,
@@ -642,65 +1038,120 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             invalidate();
             props.onReady?.();
           }}
+          onPointerMissed={() => {
+            // A click on bare wall or floor while looking closely steps back.
+            if (focus && !gesture.current.moved) closeFocus();
+          }}
         >
           <color attach="background" args={["#f3ede2"]} />
           <ResponsiveCamera compact={compact} />
-          <MuseumControls {...props} layout={layout} artworks={artworks} gesture={gesture} navRef={navRef} />
+          <MuseumControls
+            world={world}
+            movable={movable}
+            phase={phase}
+            reducedMotion={props.reducedMotion}
+            compact={compact}
+            activeIndex={activeIndex}
+            poseRef={props.poseRef}
+            focusNonce={props.focusNonce}
+            focus={focus}
+            travel={travel}
+            reserve={reserve}
+            visible={visible}
+            gesture={gesture}
+            navRef={navRef}
+            onActiveIndex={onActiveIndex}
+            onZone={onZone}
+            onArrive={onArrive}
+            onStepBack={closeFocus}
+          />
           <MuseumScene
-            layout={layout}
+            world={world}
             loadingIndices={loadingIndices}
             activeIndex={activeIndex}
-            hoverIndex={props.enabled ? hoverIndex : null}
-            interactive={props.enabled}
+            focusKey={focusKey}
+            hoverKey={interactive ? hoverKey : null}
+            interactive={interactive}
             compact={compact}
+            reducedMotion={props.reducedMotion}
             gesture={gesture}
-            objectsRef={objectsRef}
-            onHover={setHoverIndex}
-            onSelect={props.onOpenArtwork}
+            onHover={setHoverKey}
+            onSelect={select}
           />
-          <ProjectionBridge objectsRef={objectsRef} projectionRef={props.projectionRef} />
         </Canvas>
       </div>
-      {compact && (
+
+      {/* Home page: real buttons for everything the 3D view can do, shown when they take keyboard focus. */}
+      {exhibit && explore && (
+        <div className="museum-a11y">
+          {world.displays.map((display) => (
+            <button key={display.key} type="button" onClick={(event) => openFocus({ kind: "display", key: display.key }, event.currentTarget)}>
+              {display.alt}
+            </button>
+          ))}
+          {world.signs.map((sign) => (
+            <button key={sign.key} type="button" onClick={() => goTo(sign.target)}>
+              {sign.label}
+            </button>
+          ))}
+          {wingArtworks.map((placed) => (
+            <button key={placed.art.key} type="button" onClick={(event) => openFocus({ kind: "art", index: placed.art.index }, event.currentTarget)}>
+              {placed.art.caption}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {explore && !focus && (wing || (!compact && labels.hint)) && (
+        <div className="museum-caption" aria-hidden={wing ? undefined : true}>
+          {wing && <p className="museum-place">{wing.label}</p>}
+          {!compact && labels.hint && <p className="museum-hint">{labels.hint}</p>}
+        </div>
+      )}
+
+      {focus && arrived && (focusedArt || focusedDisplay) && (
+        <div className={`museum-card ${cardSide ? "museum-card-side" : "museum-card-sheet"}`} role="group" aria-label={focusedArt?.art.caption ?? focusedDisplay?.alt}>
+          <button ref={closeRef} type="button" className="mono link-slide" onClick={closeFocus}>
+            <span aria-hidden="true">←&nbsp;</span>
+            {labels.close}
+          </button>
+          {focusedArt && <p className="mono muted mt-4">{siteName.get(focusedArt.art.photo.site)}</p>}
+          <p className="museum-card-caption mt-2">{focusedArt ? focusedArt.art.caption : focusedDisplay?.alt}</p>
+          {focusedArt && credit && <p className="mono muted mt-3">{credit}</p>}
+          {focusedArt && siblings.length > 1 && (
+            <div className="mt-5 flex flex-wrap gap-2">
+              <button type="button" className="btn btn-outline" disabled={position <= 0} onClick={() => step(-1)}>
+                <span aria-hidden="true">←</span> {labels.previous}
+              </button>
+              <button type="button" className="btn btn-outline" disabled={position >= siblings.length - 1} onClick={() => step(1)}>
+                {labels.next} <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          )}
+          {focusedDisplay?.key === "logo" && props.aboutHref && labels.aboutWard && (
+            <a href={props.aboutHref} className="museum-card-about mt-5">
+              {labels.aboutWard}
+            </a>
+          )}
+        </div>
+      )}
+
+      {compact && explore && !focus && (
         <div className="museum-hud">
           <p className="museum-help" id={helpId}>
-            {props.help}
+            {labels.help}
           </p>
           <div className="museum-nav" role="group" aria-describedby={helpId}>
-            <button
-              type="button"
-              className="museum-nav-button museum-nav-left"
-              aria-label={props.leftLabel}
-              disabled={!props.enabled}
-              onClick={() => navRef.current?.turn("left")}
-            >
+            <button type="button" className="museum-nav-button museum-nav-left" aria-label={labels.left} disabled={!movable} onClick={() => navRef.current?.turn("left")}>
               <span aria-hidden="true">↶</span>
             </button>
-            <button
-              type="button"
-              className="museum-nav-button museum-nav-forward"
-              aria-label={props.forwardLabel}
-              disabled={!props.enabled}
-              onClick={() => navRef.current?.move("forward")}
-            >
+            <button type="button" className="museum-nav-button museum-nav-forward" aria-label={labels.forward} disabled={!movable} onClick={() => navRef.current?.move("forward")}>
               <span aria-hidden="true">↑</span>
             </button>
-            <button
-              type="button"
-              className="museum-nav-button museum-nav-back"
-              aria-label={props.backLabel}
-              disabled={!props.enabled}
-              onClick={() => navRef.current?.move("backward")}
-            >
+            <button type="button" className="museum-nav-button museum-nav-back" aria-label={labels.back} disabled={!movable} onClick={() => navRef.current?.move("backward")}>
               <span aria-hidden="true">↓</span>
             </button>
-            <button
-              type="button"
-              className="museum-nav-button museum-nav-right"
-              aria-label={props.rightLabel}
-              disabled={!props.enabled}
-              onClick={() => navRef.current?.turn("right")}
-            >
+            <button type="button" className="museum-nav-button museum-nav-right" aria-label={labels.right} disabled={!movable} onClick={() => navRef.current?.turn("right")}>
               <span aria-hidden="true">↷</span>
             </button>
           </div>

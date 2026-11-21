@@ -1,9 +1,10 @@
 "use client";
 
-import { useThree, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, type MutableRefObject } from "react";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 
+import type { GalleryPhoto } from "@/lib/images";
 import {
   MUSEUM,
   pathFrame,
@@ -14,7 +15,15 @@ import {
   type MuseumMarker,
   type Vec3,
 } from "@/lib/museum-layout";
-import { useMuseumDescriptionTexture, useMuseumImageTexture, useMuseumTextTexture } from "./useMuseumTextures";
+import type { MuseumDisplay, MuseumSegment, MuseumSign, MuseumWorld } from "@/lib/museum-world";
+import {
+  CARPET_TILE,
+  useCarpetTexture,
+  useMuseumDescriptionTexture,
+  useMuseumImageTexture,
+  useMuseumSignTexture,
+  useMuseumTextTexture,
+} from "./useMuseumTextures";
 
 /** Gallery-scoped neutral palette (mirrors the CSS tokens in globals.css). No site-specific detail. */
 const STONE = "#f0e9dd";
@@ -23,19 +32,23 @@ const IVORY = "#f7f3ea";
 const PANEL = "#e9dfce";
 const CONCRETE = "#bdb5a8";
 const CHARCOAL = "#272522";
+const WOOD = "#4a2e1c";
 
 interface SceneProps {
-  layout: MuseumLayout;
+  world: MuseumWorld;
   /** Growing set of frames whose thumbnails have been requested; loaded ones never go blank. */
   loadingIndices: ReadonlySet<number>;
   activeIndex: number;
-  hoverIndex: number | null;
+  /** The item being looked at closely ("art-3", "map", "logo"); its sharper file loads. */
+  focusKey: string | null;
+  hoverKey: string | null;
   interactive: boolean;
   compact: boolean;
+  reducedMotion: boolean;
   gesture: MutableRefObject<{ moved: boolean }>;
-  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
-  onHover: (index: number | null) => void;
-  onSelect: (index: number) => void;
+  onHover: (key: string | null) => void;
+  /** "art-<index>", "map", "logo" or "sign-<slug>". */
+  onSelect: (key: string) => void;
 }
 
 interface GeometryData {
@@ -56,13 +69,13 @@ function emptyGeometryData(): GeometryData {
   return { positions: [], normals: [], uvs: [], indices: [] };
 }
 
-function addQuad(data: GeometryData, corners: readonly Vec3[], normals: readonly Vec3[]): void {
+function addQuad(data: GeometryData, corners: readonly Vec3[], normals: readonly Vec3[], uvs = QUAD_UVS): void {
   const base = data.positions.length / 3;
   corners.forEach((corner, index) => {
     data.positions.push(corner[0], corner[1], corner[2]);
     const normal = normals[index];
     data.normals.push(normal[0], normal[1], normal[2]);
-    data.uvs.push(QUAD_UVS[index][0], QUAD_UVS[index][1]);
+    data.uvs.push(uvs[index][0], uvs[index][1]);
   });
   data.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
 }
@@ -77,44 +90,63 @@ function makeGeometry(data: GeometryData): THREE.BufferGeometry {
   return geometry;
 }
 
-/** A ruled ribbon at constant height. The two lateral edges are parallel curves on the same path. */
-function buildHorizontal(layout: MuseumLayout, y: number, normalY: 1 | -1): THREE.BufferGeometry {
+/** The shared sample positions between s0 and s1, with both ends included exactly. */
+function samplesWithin(layout: MuseumLayout, s0: number, s1: number): number[] {
+  return [s0, ...layout.sampleS.filter((s) => s > s0 + 1e-6 && s < s1 - 1e-6), s1];
+}
+
+/** A flat ribbon at height y, `half` metres either side of the centreline, between s0 and s1. */
+function buildRibbon(
+  layout: MuseumLayout,
+  y: number,
+  normalY: 1 | -1,
+  half: number,
+  s0: number,
+  s1: number,
+  tile = 0,
+): THREE.BufferGeometry {
   const data = emptyGeometryData();
-  const half = layout.innerHalfWidth;
   const normal: Vec3 = [0, normalY, 0];
-  const samples = layout.sampleS;
+  const samples = samplesWithin(layout, s0, s1);
   for (let index = 0; index < samples.length - 1; index += 1) {
-    const s0 = samples[index];
-    const s1 = samples[index + 1];
-    const nearLeft = pathPoint(layout, s0, -half, y);
-    const nearRight = pathPoint(layout, s0, half, y);
-    const farRight = pathPoint(layout, s1, half, y);
-    const farLeft = pathPoint(layout, s1, -half, y);
+    const a = samples[index];
+    const b = samples[index + 1];
+    const nearLeft = pathPoint(layout, a, -half, y);
+    const nearRight = pathPoint(layout, a, half, y);
+    const farRight = pathPoint(layout, b, half, y);
+    const farLeft = pathPoint(layout, b, -half, y);
+    // With a tile length, v counts metres along the path so the carpet weave repeats evenly.
+    const v0 = tile ? (a - s0) / tile : 0;
+    const v1 = tile ? (b - s0) / tile : 1;
+    const uvs: ReadonlyArray<readonly [number, number]> = [
+      [0, v0],
+      [1, v0],
+      [1, v1],
+      [0, v1],
+    ];
     // Floor winds near-left → near-right → far-right; ceiling is reversed so its normal points down.
-    if (normalY === 1) addQuad(data, [nearLeft, nearRight, farRight, farLeft], [normal, normal, normal, normal]);
+    if (normalY === 1) addQuad(data, [nearLeft, nearRight, farRight, farLeft], [normal, normal, normal, normal], uvs);
     else addQuad(data, [nearLeft, farLeft, farRight, nearRight], [normal, normal, normal, normal]);
   }
   return makeGeometry(data);
 }
 
 /** A vertical ribbon on one side of the path. Normals follow the curve and point into the hall. */
-function buildWall(layout: MuseumLayout, side: -1 | 1): THREE.BufferGeometry {
+function buildWall(layout: MuseumLayout, side: -1 | 1, s0: number, s1: number): THREE.BufferGeometry {
   const data = emptyGeometryData();
   const lateral = side * layout.innerHalfWidth;
-  const samples = layout.sampleS;
+  const samples = samplesWithin(layout, s0, s1);
   for (let index = 0; index < samples.length - 1; index += 1) {
-    const s0 = samples[index];
-    const s1 = samples[index + 1];
-    const frame0 = pathFrame(layout, s0);
-    const frame1 = pathFrame(layout, s1);
-    const inward0: Vec3 =
-      side === -1 ? [frame0.rightX, 0, frame0.rightZ] : [-frame0.rightX, 0, -frame0.rightZ];
-    const inward1: Vec3 =
-      side === -1 ? [frame1.rightX, 0, frame1.rightZ] : [-frame1.rightX, 0, -frame1.rightZ];
-    const nearBottom = pathPoint(layout, s0, lateral, 0);
-    const nearTop = pathPoint(layout, s0, lateral, MUSEUM.corridorHeight);
-    const farTop = pathPoint(layout, s1, lateral, MUSEUM.corridorHeight);
-    const farBottom = pathPoint(layout, s1, lateral, 0);
+    const a = samples[index];
+    const b = samples[index + 1];
+    const frame0 = pathFrame(layout, a);
+    const frame1 = pathFrame(layout, b);
+    const inward0: Vec3 = side === -1 ? [frame0.rightX, 0, frame0.rightZ] : [-frame0.rightX, 0, -frame0.rightZ];
+    const inward1: Vec3 = side === -1 ? [frame1.rightX, 0, frame1.rightZ] : [-frame1.rightX, 0, -frame1.rightZ];
+    const nearBottom = pathPoint(layout, a, lateral, 0);
+    const nearTop = pathPoint(layout, a, lateral, MUSEUM.corridorHeight);
+    const farTop = pathPoint(layout, b, lateral, MUSEUM.corridorHeight);
+    const farBottom = pathPoint(layout, b, lateral, 0);
     if (side === -1) {
       addQuad(data, [nearBottom, farBottom, farTop, nearTop], [inward0, inward1, inward1, inward0]);
     } else {
@@ -140,18 +172,23 @@ function buildEndCap(layout: MuseumLayout): THREE.BufferGeometry {
 /**
  * One continuous shell. Every surface is generated from the same sampled path, so shared edges have
  * identical vertex positions: no box seams, disconnected sections or intersecting floor/ceiling.
+ * Wall spans leave the entrance open where a wing joins it.
  */
-function CurvedShell({ layout }: { layout: MuseumLayout }) {
-  const geometry = useMemo(
-    () => ({
-      floor: buildHorizontal(layout, 0, 1),
-      ceiling: buildHorizontal(layout, MUSEUM.corridorHeight, -1),
-      left: buildWall(layout, -1),
-      right: buildWall(layout, 1),
+function CurvedShell({ segment }: { segment: MuseumSegment }) {
+  const { layout, wallSpans, endPanel } = segment;
+  const geometry = useMemo(() => {
+    const { start, end } = layout.path;
+    const half = layout.innerHalfWidth;
+    const left = wallSpans?.left ?? [start, end];
+    const right = wallSpans?.right ?? [start, end];
+    return {
+      floor: buildRibbon(layout, 0, 1, half, start, end),
+      ceiling: buildRibbon(layout, MUSEUM.corridorHeight, -1, half, start, end),
+      left: buildWall(layout, -1, left[0], left[1]),
+      right: buildWall(layout, 1, right[0], right[1]),
       end: buildEndCap(layout),
-    }),
-    [layout],
-  );
+    };
+  }, [layout, wallSpans]);
 
   useEffect(
     () => () => {
@@ -179,21 +216,69 @@ function CurvedShell({ layout }: { layout: MuseumLayout }) {
       <mesh geometry={geometry.end}>
         <meshStandardMaterial color={IVORY} roughness={0.98} metalness={0} side={THREE.FrontSide} />
       </mesh>
-      <group position={panelPosition} rotation={[0, pathYaw(layout, layout.path.end), 0]}>
-        <mesh>
-          <boxGeometry args={[layout.corridorWidth * 0.42, MUSEUM.corridorHeight * 0.58, MUSEUM.plaqueDepth]} />
-          <meshStandardMaterial color={PANEL} roughness={0.94} metalness={0} />
-        </mesh>
-      </group>
+      {endPanel && (
+        <group position={panelPosition} rotation={[0, pathYaw(layout, layout.path.end), 0]}>
+          <mesh>
+            <boxGeometry args={[layout.corridorWidth * 0.42, MUSEUM.corridorHeight * 0.58, MUSEUM.plaqueDepth]} />
+            <meshStandardMaterial color={PANEL} roughness={0.94} metalness={0} />
+          </mesh>
+        </group>
+      )}
     </>
   );
 }
 
+/** The red carpet down the middle of a hall: a woven burgundy runner with muted gold borders. */
+function Carpet({ segment, compact }: { segment: MuseumSegment; compact: boolean }) {
+  const texture = useCarpetTexture();
+  const invalidate = useThree((state) => state.invalidate);
+  const [s0, s1] = segment.carpet;
+  const geometry = useMemo(
+    () => buildRibbon(segment.layout, 0.006, 1, (compact ? 1.9 : 2.4) / 2, s0, s1, CARPET_TILE),
+    [segment.layout, compact, s0, s1],
+  );
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(() => {
+    if (texture) invalidate();
+  }, [texture, invalidate]);
+  // Drawn once the weave exists: adding a map to a live material would need a shader rebuild.
+  if (!texture) return null;
+  return (
+    <mesh geometry={geometry}>
+      <meshStandardMaterial map={texture} roughness={1} metalness={0} />
+    </mesh>
+  );
+}
+
+/** Fade a newly loaded picture in, so photographs appear on the wall rather than pop. */
+function useAppear(ready: boolean, reducedMotion: boolean) {
+  const material = useRef<THREE.MeshStandardMaterial>(null);
+  const started = useRef<number | null>(null);
+  const invalidate = useThree((state) => state.invalidate);
+  // Layout effect: the material must be see-through before the first frame that shows it.
+  useLayoutEffect(() => {
+    if (!ready || !material.current) return;
+    material.current.opacity = reducedMotion ? 1 : 0;
+    material.current.transparent = !reducedMotion;
+    started.current = performance.now();
+    invalidate();
+  }, [ready, reducedMotion, invalidate]);
+  useFrame(() => {
+    const item = material.current;
+    if (!item || started.current === null) return;
+    const t = reducedMotion ? 1 : Math.min(1, (performance.now() - started.current) / 520);
+    item.opacity = t;
+    item.transparent = t < 1;
+    if (t < 1) invalidate();
+    else started.current = null;
+  });
+  return material;
+}
+
 /** The photo's own description on a small panel fixed to the wall below its frame. It shares the
  *  artwork's rotation, so it faces the visitor without ever turning to follow the camera. */
-function DescriptionPanel({ art, active }: { art: MuseumArtwork; active: boolean }) {
-  const { width, height, offsetY } = art.description;
-  const texture = useMuseumDescriptionTexture(art.caption, width, height, active);
+function DescriptionPanel({ text, width, height, offsetY, active }: { text: string; width: number; height: number; offsetY: number; active: boolean }) {
+  const texture = useMuseumDescriptionTexture(text, width, height, active);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     if (texture) invalidate();
@@ -219,99 +304,233 @@ function DescriptionPanel({ art, active }: { art: MuseumArtwork; active: boolean
   );
 }
 
-/** A photo under cream mat and dark frame, kept to the photograph's own aspect ratio. */
+interface PointerHandlers {
+  onPointerOver: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerOut: (event: ThreeEvent<PointerEvent>) => void;
+  onClick: (event: ThreeEvent<MouseEvent>) => void;
+}
+
+/** Hover and click for one selectable thing; a look-around drag never counts as a click. */
+function pointerHandlers(
+  key: string,
+  interactive: boolean,
+  gesture: MutableRefObject<{ moved: boolean }>,
+  onHover: (key: string | null) => void,
+  onSelect: (key: string) => void,
+): PointerHandlers {
+  return {
+    onPointerOver: (event) => {
+      if (!interactive || gesture.current.moved) return;
+      event.stopPropagation();
+      onHover(key);
+    },
+    onPointerOut: (event) => {
+      if (!interactive) return;
+      event.stopPropagation();
+      onHover(null);
+    },
+    onClick: (event) => {
+      // A look-around drag ends in a click event too; the gesture flag is the only reliable discriminator.
+      if (!interactive || gesture.current.moved) return;
+      event.stopPropagation();
+      onSelect(key);
+    },
+  };
+}
+
+/** The larger file for a close look: 1280 px on large screens, 960 px on phones and tablets. */
+function largerFile(photo: GalleryPhoto, compact: boolean): string {
+  const wanted = compact ? 960 : 1280;
+  return (photo.full.find((file) => file.width >= wanted) ?? photo.full.at(-1) ?? photo.thumb).src;
+}
+
+/** A picture under cream mat and dark frame, kept to its own aspect ratio. */
+function FramedPicture({
+  width,
+  height,
+  texture,
+  hovered,
+  focused,
+  transparent,
+  reducedMotion,
+}: {
+  width: number;
+  height: number;
+  texture: THREE.Texture | null;
+  hovered: boolean;
+  focused: boolean;
+  transparent?: boolean;
+  reducedMotion: boolean;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+  const material = useAppear(texture !== null, reducedMotion);
+  useEffect(() => {
+    invalidate();
+  }, [focused, hovered, texture, invalidate]);
+  const mat = MUSEUM.matBorder;
+  const frame = MUSEUM.frameBorder;
+  const depth = MUSEUM.frameDepth;
+  const face = depth / 2;
+  return (
+    <>
+      <mesh>
+        <boxGeometry args={[width + 2 * (mat + frame), height + 2 * (mat + frame), depth]} />
+        <meshStandardMaterial color={hovered ? "#6b532e" : focused ? "#3a2a17" : CHARCOAL} roughness={0.52} metalness={0.16} />
+      </mesh>
+      <mesh position={[0, 0, face + 0.001]}>
+        <planeGeometry args={[width + 2 * mat, height + 2 * mat]} />
+        <meshStandardMaterial color={IVORY} roughness={0.95} metalness={0} />
+      </mesh>
+      {texture && (
+        <mesh position={[0, 0, face + 0.002]}>
+          <planeGeometry args={[width, height]} />
+          {/* A little emissive keeps prints legible under gallery light without flattening the shading. */}
+          <meshStandardMaterial
+            ref={material}
+            map={texture}
+            emissive="#ffffff"
+            emissiveMap={texture}
+            emissiveIntensity={hovered ? 0.85 : focused ? 0.62 : 0.3}
+            roughness={0.9}
+            metalness={0}
+            alphaTest={transparent ? 0.02 : 0}
+          />
+        </mesh>
+      )}
+    </>
+  );
+}
+
 function FramedArtwork({
   art,
   active,
   focused,
+  closeUp,
   hovered,
   interactive,
+  compact,
+  reducedMotion,
   gesture,
-  objectsRef,
   onHover,
   onSelect,
 }: {
   art: MuseumArtwork;
   active: boolean;
   focused: boolean;
+  closeUp: boolean;
+  hovered: boolean;
+  interactive: boolean;
+  compact: boolean;
+  reducedMotion: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  onHover: (key: string | null) => void;
+  onSelect: (key: string) => void;
+}) {
+  const thumb = useMuseumImageTexture(art.photo.thumb.src, active);
+  const sharp = useMuseumImageTexture(largerFile(art.photo, compact), closeUp);
+  // Nothing hangs until its photograph has arrived: frames appear with their pictures, never empty.
+  if (!thumb) return null;
+  return (
+    <group position={art.position} rotation={[0, art.rotationY, 0]} {...pointerHandlers(art.key, interactive, gesture, onHover, onSelect)}>
+      <FramedPicture width={art.width} height={art.height} texture={sharp ?? thumb} hovered={hovered} focused={focused} reducedMotion={reducedMotion} />
+      <DescriptionPanel text={art.caption} active={active} {...art.description} />
+    </group>
+  );
+}
+
+/** The ward map or logo: framed like the photographs, with its existing alt text as the wall label. */
+function DisplayFrame({
+  display,
+  focused,
+  hovered,
+  interactive,
+  reducedMotion,
+  gesture,
+  onHover,
+  onSelect,
+}: {
+  display: MuseumDisplay;
+  focused: boolean;
+  hovered: boolean;
+  interactive: boolean;
+  reducedMotion: boolean;
+  gesture: MutableRefObject<{ moved: boolean }>;
+  onHover: (key: string | null) => void;
+  onSelect: (key: string) => void;
+}) {
+  const texture = useMuseumImageTexture(display.src, true);
+  const sharp = useMuseumImageTexture(display.hiSrc, focused && display.hiSrc !== display.src);
+  const frameHeight = display.height + 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
+  const frameWidth = display.width + 2 * (MUSEUM.matBorder + MUSEUM.frameBorder);
+  const labelWidth = Math.min(MUSEUM.descriptionMaxWidth, Math.max(MUSEUM.descriptionMinWidth, frameWidth));
+  return (
+    <group position={display.position} rotation={[0, display.rotationY, 0]} {...pointerHandlers(display.key, interactive, gesture, onHover, onSelect)}>
+      <FramedPicture
+        width={display.width}
+        height={display.height}
+        texture={sharp ?? texture}
+        hovered={hovered}
+        focused={focused}
+        transparent={display.key === "logo"}
+        reducedMotion={reducedMotion}
+      />
+      <DescriptionPanel
+        text={display.alt}
+        width={labelWidth}
+        height={MUSEUM.descriptionHeight}
+        offsetY={-(frameHeight / 2 + MUSEUM.descriptionGap + MUSEUM.descriptionHeight / 2)}
+        active
+      />
+    </group>
+  );
+}
+
+/** A directional sign: an engraved brass plate on an aged wooden board, standing off the end wall. */
+function Signboard({
+  sign,
+  hovered,
+  interactive,
+  gesture,
+  onHover,
+  onSelect,
+}: {
+  sign: MuseumSign;
   hovered: boolean;
   interactive: boolean;
   gesture: MutableRefObject<{ moved: boolean }>;
-  objectsRef: MutableRefObject<Map<number, THREE.Object3D>>;
-  onHover: (index: number | null) => void;
-  onSelect: (index: number) => void;
+  onHover: (key: string | null) => void;
+  onSelect: (key: string) => void;
 }) {
-  const texture = useMuseumImageTexture(art.photo.thumb.src, active);
+  const texture = useMuseumSignTexture(sign.label, sign.dir, sign.width, sign.height);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
-    if (texture) invalidate();
-  }, [texture, invalidate]);
-  useEffect(() => {
     invalidate();
-  }, [focused, hovered, invalidate]);
-
-  const mat = MUSEUM.matBorder;
-  const frame = MUSEUM.frameBorder;
-  const depth = MUSEUM.frameDepth;
-  const face = depth / 2;
-
-  const onPointerOver = (event: ThreeEvent<PointerEvent>) => {
-    if (!interactive || gesture.current.moved) return;
-    event.stopPropagation();
-    onHover(art.index);
-  };
-  const onPointerOut = (event: ThreeEvent<PointerEvent>) => {
-    if (!interactive) return;
-    event.stopPropagation();
-    onHover(null);
-  };
-  const onClick = (event: ThreeEvent<MouseEvent>) => {
-    // A look-around drag ends in a click event too; the gesture flag is the only reliable discriminator.
-    if (!interactive || gesture.current.moved) return;
-    event.stopPropagation();
-    onSelect(art.index);
-  };
-
+  }, [texture, hovered, invalidate]);
+  const board = 0.08;
+  const plate = 0.025;
   return (
-    <group
-      position={art.position}
-      rotation={[0, art.rotationY, 0]}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut}
-      onClick={onClick}
-    >
-      {/* Only the frame is registered for the photo-view FLIP bounds; the label below is part of
-          the same visual unit but must not stretch the opening rectangle for the photograph. */}
-      <group
-        ref={(node) => {
-          if (node) objectsRef.current.set(art.index, node);
-          else objectsRef.current.delete(art.index);
-        }}
-      >
-        <mesh>
-          <boxGeometry args={[art.width + 2 * (mat + frame), art.height + 2 * (mat + frame), depth]} />
-          <meshStandardMaterial color={hovered ? "#6b532e" : focused ? "#3a2a17" : CHARCOAL} roughness={0.52} metalness={0.16} />
+    <group position={sign.position} rotation={[0, sign.rotationY, 0]} {...pointerHandlers(`sign-${sign.key}`, interactive, gesture, onHover, onSelect)}>
+      <mesh position={[0, 0, board / 2]}>
+        <boxGeometry args={[sign.width + 0.2, sign.height + 0.2, board]} />
+        <meshStandardMaterial color={WOOD} roughness={0.78} metalness={0} />
+      </mesh>
+      <mesh position={[0, 0, board + plate / 2]}>
+        <boxGeometry args={[sign.width, sign.height, plate]} />
+        <meshStandardMaterial color="#8f6a24" roughness={0.45} metalness={0.3} />
+      </mesh>
+      {texture && (
+        <mesh position={[0, 0, board + plate + 0.001]}>
+          <planeGeometry args={[sign.width, sign.height]} />
+          <meshStandardMaterial
+            map={texture}
+            emissive="#ffffff"
+            emissiveMap={texture}
+            emissiveIntensity={hovered ? 0.5 : 0.24}
+            roughness={0.4}
+            metalness={0.22}
+          />
         </mesh>
-        <mesh position={[0, 0, face + 0.001]}>
-          <planeGeometry args={[art.width + 2 * mat, art.height + 2 * mat]} />
-          <meshStandardMaterial color={IVORY} roughness={0.95} metalness={0} />
-        </mesh>
-        {texture && (
-          <mesh position={[0, 0, face + 0.002]}>
-            <planeGeometry args={[art.width, art.height]} />
-            {/* A little emissive keeps prints legible under gallery light without flattening the shading. */}
-            <meshStandardMaterial
-              map={texture}
-              emissive="#ffffff"
-              emissiveMap={texture}
-              emissiveIntensity={hovered ? 0.85 : focused ? 0.62 : 0.3}
-              roughness={0.9}
-              metalness={0}
-            />
-          </mesh>
-        )}
-      </group>
-      <DescriptionPanel art={art} active={active} />
+      )}
     </group>
   );
 }
@@ -340,55 +559,73 @@ function SitePlaque({ marker }: { marker: MuseumMarker }) {
   );
 }
 
-/** The curved hall; navigation and raycast selection are owned by MuseumCanvas. */
+/** The halls; navigation and selection are owned by MuseumCanvas. */
 export default function MuseumScene({
-  layout,
+  world,
   loadingIndices,
   activeIndex,
-  hoverIndex,
+  focusKey,
+  hoverKey,
   interactive,
   compact,
+  reducedMotion,
   gesture,
-  objectsRef,
   onHover,
   onSelect,
 }: SceneProps) {
-  // Same lighting design, fewer dynamic lights on the small GPU budget: every other fixture is
-  // enough to keep the hall even because ambient/hemisphere/directional fill stays unchanged.
-  const lights = compact ? layout.lights.filter((_, index) => index % 2 === 0).slice(0, 4) : layout.lights;
+  const item = { interactive, gesture, onHover, onSelect };
   return (
     <>
       <ambientLight intensity={0.7} color="#fff6ea" />
       <hemisphereLight args={["#fff6ea", "#6b6256", 0.5]} />
       <directionalLight position={[2, 6, 4]} intensity={0.6} color="#fff4e4" />
-      <CurvedShell layout={layout} />
-      {layout.artworks.map((art) => (
-        <FramedArtwork
-          key={art.key}
-          art={art}
-          active={loadingIndices.has(art.index)}
-          focused={art.index === activeIndex}
-          hovered={art.index === hoverIndex}
-          interactive={interactive}
-          gesture={gesture}
-          objectsRef={objectsRef}
-          onHover={onHover}
-          onSelect={onSelect}
-        />
-      ))}
-      {layout.markers.map((marker) => (
-        <SitePlaque key={marker.key} marker={marker} />
-      ))}
-      {lights.map((position, index) => (
-        <pointLight
-          key={index}
-          position={position}
-          intensity={compact ? 18 : 22}
-          distance={compact ? 14 : 16}
-          decay={2}
-          color="#fff1dc"
-        />
-      ))}
+      {world.segments.map((segment, seg) => {
+        // Same lighting design, fewer dynamic lights on the small GPU budget: every other fixture is
+        // enough to keep the hall even because ambient/hemisphere/directional fill stays unchanged.
+        const lights = compact ? segment.layout.lights.filter((_, index) => index % 2 === 0) : segment.layout.lights;
+        return (
+          <group key={segment.key} position={[segment.x, 0, segment.z]} rotation={[0, segment.yaw, 0]}>
+            <CurvedShell segment={segment} />
+            <Carpet segment={segment} compact={compact} />
+            {segment.layout.artworks.map((art) => (
+              <FramedArtwork
+                key={art.key}
+                art={art}
+                active={loadingIndices.has(art.index)}
+                focused={art.index === activeIndex}
+                closeUp={focusKey === art.key}
+                hovered={hoverKey === art.key}
+                compact={compact}
+                reducedMotion={reducedMotion}
+                {...item}
+              />
+            ))}
+            {segment.layout.markers.map((marker) => (
+              <SitePlaque key={marker.key} marker={marker} />
+            ))}
+            {world.displays
+              .filter((display) => display.seg === seg)
+              .map((display) => (
+                <DisplayFrame
+                  key={display.key}
+                  display={display}
+                  focused={focusKey === display.key}
+                  hovered={hoverKey === display.key}
+                  reducedMotion={reducedMotion}
+                  {...item}
+                />
+              ))}
+            {world.signs
+              .filter((sign) => sign.seg === seg)
+              .map((sign) => (
+                <Signboard key={sign.key} sign={sign} hovered={hoverKey === `sign-${sign.key}`} {...item} />
+              ))}
+            {lights.map((position, index) => (
+              <pointLight key={index} position={position} intensity={compact ? 18 : 22} distance={compact ? 14 : 16} decay={2} color="#fff1dc" />
+            ))}
+          </group>
+        );
+      })}
     </>
   );
 }

@@ -4,15 +4,13 @@ import { notFound } from "next/navigation";
 
 import ContactStrip from "@/components/ContactStrip";
 import HeritageCard from "@/components/HeritageCard";
-import Hero from "@/components/Hero";
+import MuseumLanding from "@/components/MuseumLanding";
 import HomeGalleryCarousel from "@/components/HomeGalleryCarousel";
-import HomeHeritageMuseum from "@/components/HomeHeritageMuseum";
 import HomeSection from "@/components/HomeSection";
 import SectionDivider from "@/components/SectionDivider";
 import {
   getCredits,
   getHeritageList,
-  getHeroSlideConfig,
   getHomeConfig,
   getWard,
 } from "@/lib/content";
@@ -26,9 +24,12 @@ import {
   imageSet,
   type SiteImage,
 } from "@/lib/images";
-import type { Heritage } from "@/types/heritage";
+import type { Heritage, HeritageSlug } from "@/types/heritage";
 
 const GALLERY_PREVIEW_COUNT = 6;
+
+/** In the home page museum, Nanak Math's wing opens to the left of the junction, Mhepi Ajima's to the right. */
+const WING_SIDE: Record<HeritageSlug, -1 | 1> = { "nanak-math": -1, "mhepi-ajima": 1 };
 
 /** The 6 preview photos: the preferred list from content/home.json first, then any other photos of visible sites. */
 function galleryPreview(
@@ -72,33 +73,6 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const sites = siteNameList(heritages, lang, dict);
   const fill = (text: string) => text.replace("{sites}", sites);
 
-  // Hero slideshow: the photos of visible sites only, in content/home.json order; the first cover as a fallback.
-  const heroSlides = getHeroSlideConfig().flatMap(({ src, position }) => {
-    const image = findSiteImage(src, heritages);
-    return image
-      ? [
-          {
-            src: image.src,
-            srcSet: image.srcSet,
-            width: image.width,
-            height: image.height,
-            alt: image.alt,
-            position,
-          },
-        ]
-      : [];
-  });
-  if (heroSlides.length === 0) {
-    const cover = coverImage(heritages[0]);
-    heroSlides.push({
-      src: cover.src,
-      srcSet: cover.srcSet,
-      width: cover.width,
-      height: cover.height,
-      alt: cover.alt,
-      position: undefined,
-    });
-  }
   const preview = galleryPreview(home.galleryPreview, heritages);
   const credits = getCredits();
   const illustration = ward.illustration
@@ -113,23 +87,52 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
     : null;
   // "Nani character by …"; null in production builds until the creator is set in content/credits.json.
   const naniCredit = naniCreditText(credits, dict, lang);
+  const photoCredit = photoCreditText(credits, dict, lang);
+  const museumSites = heritages.map((heritage) => ({
+    slug: heritage.slug,
+    name: lang === "ne" ? heritage.nameNe : heritage.name,
+  }));
 
   return (
     <>
-      <Hero
-        slides={heroSlides}
-        intervalMs={home.heroIntervalMs}
-        slideLabels={{
-          pause: dict.home.slidesPause,
-          play: dict.home.slidesPlay,
+      {/* The online museum is the landing: ward map and logo in the entrance, a wing per visible site. */}
+      <MuseumLanding
+        lang={lang}
+        photos={galleryPhotos(heritages)}
+        sites={museumSites}
+        credit={photoCredit}
+        year={credits.photos.year}
+        galleryLabels={dict.gallery}
+        labels={{
+          title: dict.home.museumLandingTitle,
+          start: dict.home.startExploring,
+          hint: dict.home.museumHint,
+          aboutWard: dict.home.aboutWard16,
+          overview: dict.nav.overview,
         }}
-        title={dict.home.heroTitle}
-        subtitle={fill(dict.home.heroSubtitle)}
-        primary={{
-          href: "#heritages",
-          label: fill(byCount(dict.home.explore, count)),
+        exhibit={{
+          map:
+            ward.wardMap && wardMap
+              ? {
+                  // The 640 px file on the wall; the 960 px one only for the close look.
+                  src: ward.wardMap.files.find((file) => file.endsWith("-640.webp")) ?? wardMap.src,
+                  hiSrc: wardMap.src,
+                  width: wardMap.width,
+                  height: wardMap.height,
+                  alt: ward.wardMap.alt[lang],
+                }
+              : null,
+          logo:
+            ward.overviewLogo && overviewLogo
+              ? { src: overviewLogo.src, width: overviewLogo.width, height: overviewLogo.height, alt: ward.overviewLogo.alt[lang] }
+              : null,
+          wings: heritages.map((heritage) => ({
+            slug: heritage.slug,
+            label: dict.home.museumSigns[heritage.slug],
+            side: WING_SIDE[heritage.slug],
+          })),
         }}
-        secondary={{ href: `/${lang}/gallery/`, label: dict.home.viewMuseum }}
+        overviewHref={`/${lang}/#overview`}
       />
 
       <HomeSection id="overview" title={dict.home.overviewTitle}>
@@ -266,21 +269,6 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           ))}
         </div>
       </HomeSection>
-
-      <SectionDivider />
-
-      <HomeHeritageMuseum
-        lang={lang}
-        photos={galleryPhotos(heritages)}
-        sites={heritages.map((heritage) => ({
-          slug: heritage.slug,
-          name: lang === "ne" ? heritage.nameNe : heritage.name,
-        }))}
-        credit={photoCreditText(credits, dict, lang)}
-        year={credits.photos.year}
-        labels={dict.gallery}
-        dictHome={dict.home}
-      />
 
       <SectionDivider />
 

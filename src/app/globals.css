@@ -1440,3 +1440,313 @@ html[lang="ne"] .gallery-page .wall-placard {
     opacity: 0;
   }
 }
+
+/* ==========================================================================
+   Home page: the online museum is the landing (MuseumLanding.tsx).
+   The stage fills the screen under the sticky menu (4rem). Colours are the site's own tokens.
+   ========================================================================== */
+.museum-landing {
+  position: relative;
+  scroll-margin-top: 4rem;
+  background: #f3ede2;
+}
+.museum-landing-stage {
+  position: relative;
+  height: calc(100svh - 4rem);
+  min-height: 30rem;
+  max-height: 70rem;
+  overflow: hidden;
+  outline: none;
+}
+.museum-landing.is-fallback .museum-landing-stage {
+  height: auto;
+  min-height: 0;
+}
+.museum-landing.is-fallback .museum-landing-poster {
+  display: none;
+}
+.museum-landing-poster {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 42%, #fbf7ef, #efe6d6 70%, #e2d6c2);
+}
+.museum-landing-fallback {
+  padding-block: 1.5rem 2.5rem;
+}
+
+/* Intro: a soft cream glow behind the words keeps them readable without hiding the hall. */
+.museum-landing-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 0 1.25rem 10vh;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 44%, rgb(251 247 239 / 0.85), rgb(251 247 239 / 0.4) 55%, transparent 82%),
+    linear-gradient(to bottom, rgb(43 26 26 / 0.16), transparent 28%, transparent 72%, rgb(43 26 26 / 0.2));
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+}
+.museum-landing-intro.is-leaving {
+  opacity: 0;
+  transform: translateY(-1rem);
+  pointer-events: none;
+}
+/* After the fade the title stays for screen readers only. */
+.museum-landing-intro.is-gone {
+  inset: auto;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.museum-landing-title {
+  max-width: 14ch;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 7.5vw, 5.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--color-brick);
+  text-shadow:
+    0 1px 0 rgb(255 255 255 / 0.6),
+    0 8px 32px rgb(251 247 239 / 0.95);
+}
+html[lang="ne"] .museum-landing-title {
+  max-width: 18ch;
+  line-height: 1.25;
+}
+.museum-landing-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0.85rem 2.1rem;
+  border-radius: 999px;
+  background: var(--color-crimson);
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 28px -12px rgb(139 30 30 / 0.75);
+  transition:
+    background-color 0.2s,
+    transform 0.2s var(--ease-out);
+}
+.museum-landing-start:hover {
+  background: var(--color-brick);
+  transform: translateY(-1px);
+}
+.museum-landing-start:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .museum-landing-intro,
+  .museum-landing-start {
+    transition: none;
+  }
+}
+
+/* The way on to the rest of the page while exploring (wheel and touch belong to the museum). */
+.museum-landing-exit {
+  position: absolute;
+  top: 1rem;
+  right: var(--gutter);
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.05rem;
+  border-radius: 999px;
+  background: rgb(39 37 34 / 0.8);
+  color: var(--color-cream);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+html[lang="ne"] .museum-landing-exit {
+  font-family: var(--font-mukta);
+  font-size: 0.95rem;
+  letter-spacing: 0;
+}
+/* Hidden while a picture is held close, so it never covers the picture. */
+.museum-landing-stage:has(.museum-canvas[data-focus]) .museum-landing-exit {
+  display: none;
+}
+.museum-landing-exit:hover {
+  background: var(--color-brick);
+}
+.museum-landing-exit:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* ---- Museum overlays shared by the home page and the gallery page ---- */
+
+/* Which wing the visitor is in, and how to move (large screens). Clear of the floating buttons. */
+.gallery-page .museum-caption {
+  position: absolute;
+  inset: auto 0 max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding-inline: 5.5rem;
+  text-align: center;
+  pointer-events: none;
+}
+.gallery-page .museum-canvas:has(.museum-hud) .museum-caption {
+  bottom: 8.5rem;
+}
+.gallery-page .museum-place {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  padding: 0.3rem 1.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgb(247 243 234 / 0.88);
+  color: var(--color-ink);
+}
+.gallery-page .museum-hint {
+  max-width: 44rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(247 243 234 / 0.88);
+  color: var(--color-ink);
+}
+html[lang="ne"] .gallery-page .museum-hint {
+  font-family: var(--font-mukta);
+  font-size: 0.9rem;
+  letter-spacing: 0;
+}
+
+/* Home page: every 3D action as a real button, invisible until it has keyboard focus. */
+.gallery-page .museum-a11y button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.gallery-page .museum-a11y button:focus {
+  top: 1rem;
+  left: var(--gutter);
+  z-index: 7;
+  width: auto;
+  height: auto;
+  max-width: min(36rem, calc(100% - 2 * var(--gutter) - 9rem));
+  padding: 0.6rem 1rem;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  border-radius: 0.5rem;
+  background: var(--color-ink);
+  color: var(--color-cream);
+  text-align: left;
+  outline: 3px solid var(--color-gold);
+}
+
+/* Close-up details: beside the picture on wide screens, a sheet under it on phones. */
+.gallery-page .museum-card {
+  position: absolute;
+  z-index: 6;
+  overflow: auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: rgb(32 20 18 / 0.88);
+  color: var(--color-cream);
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(8px);
+  animation: museum-card-in 0.55s var(--ease-out) both;
+}
+.gallery-page .museum-card .muted {
+  color: rgb(255 248 240 / 0.74);
+}
+.gallery-page .museum-card-side {
+  top: 50%;
+  right: 2rem;
+  width: min(26rem, 40%);
+  max-height: calc(100% - 5rem);
+  transform: translateY(-50%);
+  animation-name: museum-card-in-side;
+}
+.gallery-page .museum-card-sheet {
+  right: 0.75rem;
+  bottom: 4.75rem;
+  left: 0.75rem;
+  max-height: calc(52% - 5.25rem);
+  padding: 0.75rem 1.1rem 1rem;
+}
+.gallery-page .museum-card-sheet .museum-card-caption {
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+.gallery-page .museum-card-caption {
+  margin-bottom: 0;
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.gallery-page .museum-card-about {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: 999px;
+  background: var(--color-crimson);
+  color: #fff;
+  font-weight: 700;
+}
+.gallery-page .museum-card-about:hover {
+  background: var(--color-brick);
+}
+.gallery-page .museum-card-about:focus-visible {
+  outline: 3px solid var(--color-cream);
+  outline-offset: 2px;
+}
+@keyframes museum-card-in {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes museum-card-in-side {
+  from {
+    opacity: 0;
+    translate: 1.25rem 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-page .museum-card {
+    animation: none;
+  }
+}
