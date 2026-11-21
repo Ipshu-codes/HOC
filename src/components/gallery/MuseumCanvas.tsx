@@ -585,6 +585,13 @@ function MuseumControls({
       event.preventDefault();
       const notch = Math.max(-1, Math.min(1, event.deltaY / 100));
       if (notch !== 0) moveForward(notch * 0.9);
+      // Trackpads report horizontal swipes as deltaX (mouse wheels usually send 0):
+      // strafe sideways with them, like the forward/back wheel and the arrow buttons.
+      const side = Math.max(-1, Math.min(1, event.deltaX / 100));
+      if (side !== 0) {
+        target.current = moveInWorld(world, target.current, 0, Math.sign(side), Math.abs(side) * 0.9);
+        invalidate();
+      }
     };
 
     element.addEventListener("pointerdown", onPointerDown);
@@ -604,7 +611,7 @@ function MuseumControls({
       activePointers.clear();
       pinch.current = null;
     };
-  }, [gl, movable, invalidate, moveForward, gesture]);
+  }, [gl, movable, invalidate, moveForward, gesture, world]);
 
   const report = useCallback(
     (pose: WorldPose, view: ViewPose) => {
