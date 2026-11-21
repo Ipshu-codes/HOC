@@ -115,6 +115,14 @@ Most of the missing Mhepi Ajima content, and all ward information, is probably i
 - [x] **Hero photo**: option 1 (`courtyard-view`) chosen in the Phase 4 review. Option 2 (`carved-windows`, which shows identifiable people) is not to be used and has been removed from `heroCandidates`. Since 17 Nov 2026 the hero is a slideshow (`heroSlides`); `carved-windows` is still left out of it.
 - [ ] **Chairperson's name** is in `content/ward.json` but deliberately not shown anywhere until confirmed.
 
+## 3c. Wing videos (museum)
+
+The two museum videos (`public/videos/mhepi-ajima-video.webm`, `nanak-math-video.webm`, added by Luniva Malakar on 22 Nov 2026) were checked frame by frame on 22 Nov 2026: no identifiable people. Their titles are burned into the picture, so please check:
+- [ ] The titles are in English only; Nepali visitors see them in English too.
+- [ ] "Yogamber Gyaneshwori" in the Mhepi video; the site writes "Yogambar Jnaneshwari".
+- [ ] The Mhepi video labels the reclining figure in the water tank "Lord Vishnu"; §1 still lists that figure as unidentified. Confirm, then update the alt text and §1.
+- [ ] The English Mhepi Ajima page now writes dates as "2056 B.S." instead of "VS 2056" (same edit); where a sentence ends with the date it reads "B.S.." (two full stops).
+
 ## 4. Ward information (for `ward.json`, header, footer, contact page)
 
 - [x] **Ward logo**: `wardlogo.png` added to raw data (the KMC emblem); cropped to a circle in `public/images/logo/`
