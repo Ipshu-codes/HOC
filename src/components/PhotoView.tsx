@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
+import { PHOTO_COMPANION_BUTTON, inPhotoChat, usePhotoViewerOpen } from "@/lib/photo-viewer";
 
 interface PhotoViewProps {
   /** The photos of the current filter, in order. */
@@ -43,6 +44,8 @@ export default function PhotoView({ photos, index, from, credit, siteName, label
   const photo = photos[index];
   const largest = photo.full.at(-1) ?? photo.thumb;
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Nani appears (bottom-right) while the view is open.
+  usePhotoViewerOpen(true);
 
   /** Transform that makes the view's photo sit exactly over `source`. */
   const flipFrom = (source: Element, target: HTMLElement) => {
@@ -107,9 +110,13 @@ export default function PhotoView({ photos, index, from, credit, siteName, label
     [index, photos.length, onIndexChange],
   );
 
-  // Keys: ← →, Esc, and Tab kept inside the view.
+  // Keys: ← →, Esc, and Tab kept inside the view (and Nani, who belongs to it). Keys pressed in
+  // Nani's chat stay with the chat; Tab on Nani's own button comes back here while her chat is closed.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      const companion = document.querySelector<HTMLElement>(PHOTO_COMPANION_BUTTON);
+      const intoChat = event.key === "Tab" && event.target === companion && companion?.getAttribute("aria-expanded") === "true";
+      if (inPhotoChat(event.target) || intoChat) return;
       if (event.key === "Escape") {
         event.preventDefault();
         close();
@@ -119,6 +126,7 @@ export default function PhotoView({ photos, index, from, credit, siteName, label
         go(-1);
       } else if (event.key === "Tab" && rootRef.current) {
         const stops = Array.from(rootRef.current.querySelectorAll<HTMLElement>("button:not([disabled])"));
+        if (companion) stops.push(companion);
         const at = stops.indexOf(document.activeElement as HTMLElement);
         const next = event.shiftKey ? (at <= 0 ? stops.length - 1 : at - 1) : at === stops.length - 1 ? 0 : at + 1;
         event.preventDefault();

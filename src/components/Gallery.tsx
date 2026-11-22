@@ -10,6 +10,7 @@ import { MUSEUM_COMPACT_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "@/lib
 import { formatNumber, formatYear } from "@/lib/format";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
+import { carriedTo, forgetCarried, useLanguageCarry } from "@/lib/language-switch";
 import { INITIAL_POSE } from "@/lib/museum-layout";
 import type { WorldPose } from "@/lib/museum-world";
 import type { MuseumApi } from "@/components/gallery/MuseumCanvas";
@@ -139,8 +140,16 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
 
   // ?site=nanak-math preselects a tab (links from the detail pages use it).
   const preselected = showFilter && requestedSite && sites.some((site) => site.slug === requestedSite) ? requestedSite : "all";
-  const [filter, setFilter] = useState<string>(preselected);
-  const [open, setOpen] = useState<OpenState | null>(null);
+  // Just switched language: the same filter and the same photo open (photos by file), from the first render.
+  const [arrival] = useState(() => carriedTo(pathname)?.gallery);
+  const [filter, setFilter] = useState<string>(() =>
+    arrival && (arrival.filter === "all" || sites.some((site) => site.slug === arrival.filter)) ? arrival.filter : preselected,
+  );
+  const [open, setOpen] = useState<OpenState | null>(() => {
+    const list = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
+    const index = arrival?.photo ? list.findIndex((photo) => photo.thumb.src === arrival.photo) : -1;
+    return index >= 0 ? { index, from: null } : null;
+  });
   const captionId = useId();
   const roomId = useId();
   const viewId = useId();
@@ -183,6 +192,12 @@ export default function Gallery({ lang, photos, sites, credit, year, labels, req
 
   const siteName = new Map(sites.map((site) => [site.slug, site.name]));
   const shown = filter === "all" ? photos : photos.filter((photo) => photo.site === filter);
+  useLanguageCarry((carry) => {
+    carry.gallery = { filter, photo: open ? (shown[open.index]?.thumb.src ?? null) : null };
+  });
+  useEffect(() => {
+    forgetCarried("gallery");
+  }, []);
   const formatCount = (n: number) => (n === 1 ? labels.count.one : labels.count.other).replace("{n}", formatNumber(n, lang));
   const twoDigits = (n: number) => {
     const text = formatNumber(n, lang);

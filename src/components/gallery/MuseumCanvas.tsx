@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 
@@ -36,6 +36,8 @@ import {
   type ViewPose,
   type WorldPose,
 } from "@/lib/museum-world";
+import { carriedTo, forgetCarried, useLanguageCarry } from "@/lib/language-switch";
+import { PHOTO_COMPANION, inPhotoChat, usePhotoViewerOpen } from "@/lib/photo-viewer";
 import type { Locale } from "@/types/locale";
 import MuseumScene, { WING_VIDEOS } from "./MuseumScene";
 import { NarrationControl, useNarration, type NarrationLabels } from "./Narration";
@@ -190,7 +192,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 /** Real controls keep their own keyboard behaviour; accessible artwork frames stay navigable. */
 function isGuardedControl(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card, .museum-topbar, .museum-contact")) return true;
+  if (target.closest(`.photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card, .museum-topbar, .museum-contact, ${PHOTO_COMPANION}`)) return true;
   return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame, .museum-a11y");
 }
 
@@ -1005,6 +1007,8 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
 
   const focusedArt = focus?.kind === "art" ? world.artworks.find((item) => item.art.index === focus.index) : undefined;
   const focusedDisplay = focus?.kind === "display" ? world.displays.find((item) => item.key === focus.key) : undefined;
+  // Nani appears (bottom-right) while a photograph is looked at closely, also while stepping between them.
+  usePhotoViewerOpen(focus?.kind === "art");
   const siblings = useMemo(() => (focusedArt ? world.artworks.filter((item) => item.seg === focusedArt.seg) : []), [focusedArt, world]);
   const position = focusedArt ? siblings.indexOf(focusedArt) : -1;
   const step = useCallback(
@@ -1019,7 +1023,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   useEffect(() => {
     if (!focus) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target)) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target) || inPhotoChat(event.target)) return;
       if (event.key === "Escape" || event.key === "ArrowDown") {
         event.preventDefault();
         closeFocus();
@@ -1058,6 +1062,27 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   const wing = exhibit && zoneSeg > 0 ? world.signs.find((sign) => sign.target === zoneSeg) : undefined;
   const wingArtworks = exhibit && zoneSeg > 0 ? world.artworks.filter((item) => item.seg === zoneSeg) : [];
   const focusKey = focusedArt ? focusedArt.art.key : focusedDisplay ? focusedDisplay.key : null;
+
+  // Switching language keeps the picture that is open (photos by file: the same in both languages).
+  useLanguageCarry((carry) => {
+    carry.museum = { ...carry.museum, photo: focusedArt?.art.photo.thumb.src ?? null, display: focusedDisplay?.key ?? null };
+  });
+  const pathname = usePathname();
+  const [arrival] = useState(() => carriedTo(pathname)?.museum);
+  useEffect(() => {
+    forgetCarried("museum");
+    if (!arrival || !exhibit) return;
+    // On the next frame, once the canvas is in place: the camera (already back where it stood)
+    // then makes its usual short approach to the picture.
+    const frame = requestAnimationFrame(() => {
+      const placed = arrival.photo ? world.artworks.find((item) => item.art.photo.thumb.src === arrival.photo) : undefined;
+      if (placed) openFocus({ kind: "art", index: placed.art.index });
+      else if (arrival.display && world.displays.some((display) => display.key === arrival.display)) openFocus({ kind: "display", key: arrival.display });
+    });
+    return () => cancelAnimationFrame(frame);
+    // Once, on arriving; later changes of world or focus handlers must not reopen it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrival]);
   // The story belongs to its wing: walking out of it, or opening a page over the museum, stops it.
   const narratedArt = Boolean(narration && focusedArt?.art.photo.site === narration.site);
   const inStory = Boolean(narration && explore && (wing?.key === narration.site || narratedArt));

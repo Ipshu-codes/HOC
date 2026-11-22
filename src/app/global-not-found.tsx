@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { mukta, playfair } from "@/app/fonts";
+import { inter, mukta, playfair } from "@/app/fonts";
 import en from "@/i18n/en.json";
 import ne from "@/i18n/ne.json";
 import "@/app/globals.css";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en" className={`${mukta.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${mukta.variable} ${inter.variable} ${playfair.variable}`}>
       <body className="flex min-h-screen items-center justify-center bg-cream px-4">
         <main className="w-full max-w-xl rounded-xl bg-white p-8 text-center shadow-lg ring-1 ring-gold/50">
           <p aria-hidden="true" className="font-heading text-7xl font-bold text-crimson">

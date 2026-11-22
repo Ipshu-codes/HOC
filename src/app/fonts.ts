@@ -1,4 +1,4 @@
-import { Alegreya, Alegreya_Sans, JetBrains_Mono, Mukta, Playfair_Display } from "next/font/google";
+import { Alegreya, Alegreya_Sans, Inter, JetBrains_Mono, Mukta, Playfair_Display } from "next/font/google";
 
 // next/font downloads the fonts at build time and serves them from our own
 // domain, so there is no request to Google from the visitor's browser.
@@ -17,10 +17,18 @@ export const mukta = Mukta({
   display: "swap",
 });
 
-/** English headings (all bold). */
+/** English text and interface (globals.css → "English typography"). Nepali pages keep Mukta. */
+export const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+/** English headings: semibold and bold, never italic. */
 export const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["700"],
+  weight: ["600", "700"],
   variable: "--font-playfair",
   display: "swap",
 });
@@ -44,10 +52,10 @@ export const alegreyaSans = Alegreya_Sans({
   preload: false,
 });
 
-/** Small labels, counters and buttons in the gallery: the museum signage voice (English only). */
+/** English metadata only: small labels, credits, dates, numbers and times. */
 export const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
   variable: "--font-jetbrains",
   display: "swap",
 });

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { alegreya, alegreyaSans, jetbrains, mukta, playfair } from "@/app/fonts";
+import { alegreya, alegreyaSans, inter, jetbrains, mukta, playfair } from "@/app/fonts";
 import Chatbot from "@/components/Chatbot";
-import MapButton from "@/components/MapButton";
 import MuseumShell from "@/components/MuseumShell";
 import { getHeritageList, getHeroSlideConfig, getWard, phoneHref } from "@/lib/content";
 import { getChatData } from "@/lib/faq";
@@ -60,7 +59,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const ward = getWard();
 
   return (
-    <html lang={lang} className={`${mukta.variable} ${playfair.variable} ${jetbrains.variable} ${alegreya.variable} ${alegreyaSans.variable}`}>
+    <html lang={lang} className={`${mukta.variable} ${inter.variable} ${playfair.variable} ${jetbrains.variable} ${alegreya.variable} ${alegreyaSans.variable}`}>
       <body className="flex min-h-screen flex-col">
         <a
           href="#main-content"
@@ -71,8 +70,8 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         {/* The museum is the frame of every page, mounted once here so moving between pages never
             rebuilds it. The home page is the museum itself; the other pages appear in front of it. */}
         <MuseumShell {...museumShellProps(lang)}>{children}</MuseumShell>
-        <MapButton lang={lang} label={dict.map.floatingButton} short={dict.map.floatingButtonShort} />
-        {/* Topics and answers for visible sites only, in the page language. */}
+        {/* Nani's chat: she appears only while a photograph is open (src/lib/photo-viewer.ts).
+            Topics and answers for visible sites only, in the page language. */}
         <Chatbot
           data={getChatData(lang)}
           labels={dict.chat}
