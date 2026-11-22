@@ -176,7 +176,7 @@ export default function ChatPanel({ data, labels, mapLabels, lang, contact, onCl
       // To the LEFT of Nani's round face (bottom-right), bottom-aligned with it and one
       // gap away (1.5rem mobile / 2rem desktop — the same gap it used to leave above her).
       // The height cap keeps its top edge clear of the site header on every page.
-      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))_+_3.5rem_+_1.5rem)] bottom-4 z-40 mb-[env(safe-area-inset-bottom)] flex max-h-[min(38rem,calc(100dvh-10rem))] w-[min(24rem,calc(100vw-2rem))] max-w-[calc(100vw-7rem)] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:right-[calc(max(1.5rem,env(safe-area-inset-right))_+_3.5rem_+_2rem)] md:bottom-6 md:max-w-[calc(100vw-9rem)]"
+      className="fixed right-[calc(max(1rem,env(safe-area-inset-right))_+_3.5rem_+_1.5rem)] bottom-4 z-[90] mb-[env(safe-area-inset-bottom)] flex max-h-[min(38rem,calc(100dvh-10rem))] w-[min(24rem,calc(100vw-2rem))] max-w-[calc(100vw-7rem)] flex-col overflow-hidden rounded-xl bg-cream shadow-2xl ring-1 ring-gold/60 md:right-[calc(max(1.5rem,env(safe-area-inset-right))_+_3.5rem_+_2rem)] md:bottom-6 md:max-w-[calc(100vw-9rem)]"
     >
       <header className="flex items-center gap-2 bg-crimson px-4 py-2.5 text-white">
         <NaniAvatar size={40} alt={labels.naniAlt} className="size-10 ring-2 ring-white" />

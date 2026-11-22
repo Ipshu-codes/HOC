@@ -28,7 +28,8 @@ export function joinList(items: string[], and: string): string {
 /** Section links shared by the header nav and the footer. They point at sections of the home page. */
 /** Each menu item is its own page; Overview is the home page (the online museum). */
 export function getNavItems(lang: Locale, dict: Dictionary) {
-  const pages = { overview: "", about: "about/", heritages: "heritages/", gallery: "gallery/", contact: "contact/" } as const;
+  // The 3D map sits just before Contact in the menu (the site has no floating map button).
+  const pages = { overview: "", about: "about/", heritages: "heritages/", gallery: "gallery/", map: "map/", contact: "contact/" } as const;
   return (Object.keys(pages) as (keyof typeof pages)[]).map((id) => ({ href: `/${lang}/${pages[id]}`, label: dict.nav[id] }));
 }
 

@@ -5,6 +5,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { ChatPanelProps } from "@/components/ChatPanel";
 import NaniAvatar from "@/components/NaniAvatar";
 import type { Dictionary } from "@/lib/i18n";
+import { usePhotoViewerShown } from "@/lib/photo-viewer";
 
 // The chat window is a separate chunk: it is not needed to show the page,
 // so it is fetched while the browser is idle and is already loaded when someone opens it.
@@ -19,8 +20,9 @@ const FIGURE_SRCSET =
 const FIGURE_SIZES = "(min-width: 48rem) 207px, 104px";
 
 /**
- * Floating "How can I help?" button, bottom-right on every page (swapped with the 3D Map button, which
- * is bottom-left). Side offsets use max(gap, safe-area inset) so they stay clear of a notch if the page
+ * Floating "How can I help?" button, bottom-right, shown only while a photograph is open (the museum's
+ * close-up card or the gallery's PhotoView), above that viewer; closing the photo puts her (and her
+ * chat) away. Side offsets use max(gap, safe-area inset) so they stay clear of a notch if the page
  * ever opts into viewport-fit=cover.
  *
  * Nani is her round face; hovering over her with a mouse shows the big half-body figure
@@ -30,6 +32,9 @@ const FIGURE_SIZES = "(min-width: 48rem) 207px, 104px";
 export default function Chatbot(props: ChatbotProps) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const shown = usePhotoViewerShown();
+  // The photo closed: the chat goes with Nani (state adjusted during render, React's pattern for this).
+  if (!shown && open) setOpen(false);
 
   useEffect(() => {
     // Also warm the cache with the small avatars the panel shows (the file its srcset picks
@@ -61,8 +66,11 @@ export default function Chatbot(props: ChatbotProps) {
   // While the chat is open, hovering does not bring up the big figure or the bubble.
   const onHover = open ? "" : "group-hover:block";
 
+  if (!shown) return null;
+
   return (
-    <>
+    // Photo viewers leave keys pressed in here (arrows, Esc, Tab) to the chat.
+    <div data-photo-companion className="contents">
       {/* The button's accessible name is the sr-only bubble text, which names Nani, so the
           pictures are alt="" (they would only repeat the name). */}
       <button
@@ -71,7 +79,7 @@ export default function Chatbot(props: ChatbotProps) {
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => (open ? close() : setOpen(true))}
-        className="nani-fab group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-30 block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
+        className="nani-fab group fixed right-[max(1rem,env(safe-area-inset-right))] bottom-4 z-[90] block text-left md:right-[max(1.5rem,env(safe-area-inset-right))] md:bottom-6"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
         {/* invisible (not hidden) on hover: the face keeps its box, so the pointer stays over the button. */}
@@ -110,6 +118,6 @@ export default function Chatbot(props: ChatbotProps) {
           <ChatPanel {...props} onClose={close} />
         </Suspense>
       )}
-    </>
+    </div>
   );
 }

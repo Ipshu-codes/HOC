@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 
@@ -36,8 +36,11 @@ import {
   type ViewPose,
   type WorldPose,
 } from "@/lib/museum-world";
+import { carriedTo, forgetCarried, useLanguageCarry } from "@/lib/language-switch";
+import { PHOTO_COMPANION, inPhotoChat, usePhotoViewerOpen } from "@/lib/photo-viewer";
 import type { Locale } from "@/types/locale";
 import MuseumScene, { WING_VIDEOS } from "./MuseumScene";
+import { NarrationControl, useNarration, type NarrationLabels } from "./Narration";
 import WingVideo from "./WingVideo";
 
 export interface MuseumLabels {
@@ -58,6 +61,8 @@ export interface MuseumLabels {
   /** Wing video screen controls. */
   videoPlay?: string;
   videoPause?: string;
+  /** The narrated wing's Listen control (exhibit.narration). */
+  narration?: NarrationLabels;
 }
 
 /** intro: the slow walk before Start Exploring; explore: the visitor walks; backdrop: still and
@@ -187,7 +192,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 /** Real controls keep their own keyboard behaviour; accessible artwork frames stay navigable. */
 function isGuardedControl(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  if (target.closest(".photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card, .museum-topbar, .museum-contact")) return true;
+  if (target.closest(`.photo-view, .view-pill, .filter-tabs, .list-row, .museum-hud, .museum-card, .museum-topbar, .museum-contact, ${PHOTO_COMPANION}`)) return true;
   return Boolean(target.closest("button, a, [role='button']")) && !target.closest(".wall-frame, .museum-a11y");
 }
 
@@ -917,6 +922,10 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
 
   const explore = phase === "explore";
   const interactive = props.enabled && explore;
+  // The narrated site's story, in the page's language (a new language brings a new file).
+  const narration = exhibit?.narration;
+  const story = useNarration(narration?.src ?? null);
+  const toggleStory = story.toggle;
   const movable = interactive && focus === null && video === null;
 
   const openFocus = useCallback(
@@ -962,13 +971,17 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
         videoOpener.current = null;
         setHoverKey(null);
         setVideo(key.slice("video-".length));
+      } else if (key.startsWith("listen-")) {
+        // Pressed from the junction: walk into the wing as well, where the story belongs.
+        if (world.listen && zoneSeg !== world.listen.seg) goTo(world.listen.seg);
+        toggleStory();
       } else if (key.startsWith("link-")) {
         // A "Read About →" plaque: an in-app navigation, so Back returns to the museum.
         const link = world.links.find((item) => `link-${item.key}` === key);
         if (link) router.push(link.href);
       }
     },
-    [openFocus, goTo, world, router],
+    [openFocus, goTo, world, router, toggleStory, zoneSeg],
   );
 
   const onZone = useCallback(
@@ -994,6 +1007,8 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
 
   const focusedArt = focus?.kind === "art" ? world.artworks.find((item) => item.art.index === focus.index) : undefined;
   const focusedDisplay = focus?.kind === "display" ? world.displays.find((item) => item.key === focus.key) : undefined;
+  // Nani appears (bottom-right) while a photograph is looked at closely, also while stepping between them.
+  usePhotoViewerOpen(focus?.kind === "art");
   const siblings = useMemo(() => (focusedArt ? world.artworks.filter((item) => item.seg === focusedArt.seg) : []), [focusedArt, world]);
   const position = focusedArt ? siblings.indexOf(focusedArt) : -1;
   const step = useCallback(
@@ -1008,7 +1023,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   useEffect(() => {
     if (!focus) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target)) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || isEditableTarget(event.target) || inPhotoChat(event.target)) return;
       if (event.key === "Escape" || event.key === "ArrowDown") {
         event.preventDefault();
         closeFocus();
@@ -1047,6 +1062,37 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
   const wing = exhibit && zoneSeg > 0 ? world.signs.find((sign) => sign.target === zoneSeg) : undefined;
   const wingArtworks = exhibit && zoneSeg > 0 ? world.artworks.filter((item) => item.seg === zoneSeg) : [];
   const focusKey = focusedArt ? focusedArt.art.key : focusedDisplay ? focusedDisplay.key : null;
+
+  // Switching language keeps the picture that is open (photos by file: the same in both languages).
+  useLanguageCarry((carry) => {
+    carry.museum = { ...carry.museum, photo: focusedArt?.art.photo.thumb.src ?? null, display: focusedDisplay?.key ?? null };
+  });
+  const pathname = usePathname();
+  const [arrival] = useState(() => carriedTo(pathname)?.museum);
+  useEffect(() => {
+    forgetCarried("museum");
+    if (!arrival || !exhibit) return;
+    // On the next frame, once the canvas is in place: the camera (already back where it stood)
+    // then makes its usual short approach to the picture.
+    const frame = requestAnimationFrame(() => {
+      const placed = arrival.photo ? world.artworks.find((item) => item.art.photo.thumb.src === arrival.photo) : undefined;
+      if (placed) openFocus({ kind: "art", index: placed.art.index });
+      else if (arrival.display && world.displays.some((display) => display.key === arrival.display)) openFocus({ kind: "display", key: arrival.display });
+    });
+    return () => cancelAnimationFrame(frame);
+    // Once, on arriving; later changes of world or focus handlers must not reopen it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrival]);
+  // The story belongs to its wing: walking out of it, or opening a page over the museum, stops it.
+  const narratedArt = Boolean(narration && focusedArt?.art.photo.site === narration.site);
+  const inStory = Boolean(narration && explore && (wing?.key === narration.site || narratedArt));
+  const stopStory = story.stop;
+  useEffect(() => {
+    if (!inStory) stopStory();
+  }, [inStory, stopStory]);
+  useEffect(() => {
+    if (!explore) stopStory();
+  }, [explore, stopStory]);
 
   return (
     <div
@@ -1120,6 +1166,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
             gesture={gesture}
             openWings={openWings}
             videoPaused={phase === "backdrop"}
+            narrationPlaying={story.playing}
             onHover={setHoverKey}
             onSelect={select}
           />
@@ -1161,6 +1208,11 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
               {`${labels.videoPlay ?? "Play"}: ${wing.label.replace(/\n/g, " ")}`}
             </button>
           )}
+          {narration && labels.narration && wing?.key === narration.site && (
+            <button type="button" onClick={story.toggle}>
+              {(story.playing ? labels.narration.pauseLabel : labels.narration.label).replace("{name}", narration.name)}
+            </button>
+          )}
           {wingArtworks.map((placed) => (
             <button key={placed.art.key} type="button" onClick={(event) => openFocus({ kind: "art", index: placed.art.index }, event.currentTarget)}>
               {placed.art.caption}
@@ -1171,6 +1223,9 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
 
       {explore && !focus && (wing || (!compact && labels.hint)) && (
         <div className="museum-caption" aria-hidden={wing ? undefined : true}>
+          {narration && labels.narration && story.started && wing?.key === narration.site && (
+            <NarrationControl narration={story} name={narration.name} labels={labels.narration} lang={lang} floating />
+          )}
           {wing && <p className="museum-place">{wing.label}</p>}
           {!compact && labels.hint && <p className="museum-hint">{labels.hint}</p>}
         </div>
@@ -1185,7 +1240,7 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
           {focusedArt && <p className="mono muted mt-4">{siteName.get(focusedArt.art.photo.site)}</p>}
           <p className="museum-card-caption mt-2">{focusedArt ? focusedArt.art.caption : focusedDisplay?.alt}</p>
           {focusedArt && credit && <p className="mono muted mt-3">{credit}</p>}
-          {focusedArt && (siblings.length > 1 || (props.heritageBase && labels.readMore)) && (
+          {focusedArt && (siblings.length > 1 || (props.heritageBase && labels.readMore) || narratedArt) && (
             // Phones: arrow-only buttons (named for screen readers) share one row with "Read more".
             <div className="mt-5 flex flex-wrap items-center gap-2">
               {siblings.length > 1 && (
@@ -1214,11 +1269,20 @@ export default function MuseumCanvas(props: MuseumCanvasProps) {
                   </button>
                 </>
               )}
-              {props.heritageBase && labels.readMore && (
-                <div className={cardSide ? "mt-3 w-full" : undefined}>
-                  <a href={`${props.heritageBase}${focusedArt.art.photo.site}/`} className="museum-card-about">
-                    {labels.readMore} <span aria-hidden="true">→</span>
-                  </a>
+              {/* Phones' short sheet: Listen joins the arrows' row, which always stays in view. */}
+              {!cardSide && narration && narratedArt && labels.narration && (
+                <NarrationControl narration={story} name={narration.name} labels={labels.narration} lang={lang} iconOnly />
+              )}
+              {((props.heritageBase && labels.readMore) || (cardSide && narratedArt)) && (
+                <div className={`flex flex-wrap items-center gap-3${cardSide ? " mt-3 w-full" : ""}`}>
+                  {props.heritageBase && labels.readMore && (
+                    <a href={`${props.heritageBase}${focusedArt.art.photo.site}/`} className="museum-card-about">
+                      {labels.readMore} <span aria-hidden="true">→</span>
+                    </a>
+                  )}
+                  {cardSide && narration && narratedArt && labels.narration && (
+                    <NarrationControl narration={story} name={narration.name} labels={labels.narration} lang={lang} />
+                  )}
                 </div>
               )}
             </div>

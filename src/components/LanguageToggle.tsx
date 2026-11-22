@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import type { Dictionary } from "@/lib/i18n";
+import { carryLanguageSwitch } from "@/lib/language-switch";
 import { LOCALES, type Locale } from "@/types/locale";
 
 interface LanguageToggleProps {
@@ -17,7 +18,9 @@ interface LanguageToggleProps {
 const SHORT_LABEL: Record<Locale, string> = { en: "EN", ne: "ने" };
 
 /** "EN | ने" switch that keeps you on the same page AND the same section anchor:
-    /en/gallery/ ⇄ /ne/gallery/, /en/#about ⇄ /ne/#about. */
+    /en/gallery/ ⇄ /ne/gallery/, /en/#about ⇄ /ne/#about. A client-side navigation without Next's
+    scroll to the top; what is open and how far the panel is scrolled travel along
+    (src/lib/language-switch.ts). */
 export default function LanguageToggle({ lang, labels, variant = "bar" }: LanguageToggleProps) {
   const pathname = usePathname();
   const plain = variant === "plain";
@@ -51,6 +54,10 @@ export default function LanguageToggle({ lang, labels, variant = "bar" }: Langua
           <li key={locale}>
             <Link
               href={href}
+              scroll={false}
+              onClick={() => {
+                if (!current) carryLanguageSwitch(href);
+              }}
               lang={locale}
               hrefLang={locale}
               aria-current={current ? "true" : undefined}

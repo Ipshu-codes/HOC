@@ -94,6 +94,18 @@ export interface MuseumLink {
   height: number;
 }
 
+/** The "Listen" plaque under a wing's first photograph: plays that site's spoken story. */
+export interface MuseumListen {
+  /** The site whose story it plays. */
+  site: string;
+  text: string;
+  seg: number;
+  position: Vec3;
+  rotationY: number;
+  width: number;
+  height: number;
+}
+
 export interface PlacedArtwork {
   art: MuseumArtwork;
   seg: number;
@@ -106,6 +118,7 @@ export interface MuseumWorld {
   displays: MuseumDisplay[];
   signs: MuseumSign[];
   links: MuseumLink[];
+  listen: MuseumListen | null;
   /** Flat, ordered by photo index (the order of the accessible DOM frames and of PhotoView). */
   artworks: PlacedArtwork[];
   /** World floor point between the halls; flights between halls pass over it. */
@@ -135,6 +148,8 @@ export interface ExhibitInput {
   wings: { slug: string; label: string; side: -1 | 1; href?: string; readLabel?: string }[];
   /** "Read About →" plaques: under each signboard (to the site's page) and beside the emblem (to About). */
   readAbout?: { text: string; aboutHref: string; aboutLabel: string };
+  /** A site's spoken story in the page's language, started from a "Listen" plaque in its wing. */
+  narration?: { site: string; src: string; name: string; listen: string };
 }
 
 const MOUNT_CLEARANCE = 0.012;
@@ -275,7 +290,7 @@ export function buildHallWorld(rooms: MuseumRoomInput[], photos: GalleryPhoto[],
       carpet: [layout.path.start + 0.4, layout.path.end - 1.2],
     },
   ];
-  return { segments, displays: [], signs: [], links: [], artworks: placeArtworks(segments), junction: null, junctionFrom: null };
+  return { segments, displays: [], signs: [], links: [], listen: null, artworks: placeArtworks(segments), junction: null, junctionFrom: null };
 }
 
 /**
@@ -439,9 +454,33 @@ export function buildExhibitWorld(
     displays,
     signs,
     links,
+    listen: listenPlaque(segments, exhibit.narration, compact),
     artworks: placeArtworks(segments),
     junction: wings.length > 0 ? { x: 0, z: -junctionS } : null,
     junctionFrom: wings.length > 0 ? junctionStart - 2 : null,
+  };
+}
+
+/**
+ * The "Listen" plaque of the narrated wing: on the bare wall right under the wing's site-name plaque
+ * (which hangs high, opposite the first photograph), at about eye level. Same wall, same rotation.
+ */
+function listenPlaque(segments: MuseumSegment[], narration: ExhibitInput["narration"], compact: boolean): MuseumListen | null {
+  if (!narration) return null;
+  const seg = segments.findIndex((segment) => segment.site === narration.site);
+  const marker = seg < 0 ? undefined : segments[seg].layout.markers[0];
+  if (!marker) return null;
+  const width = compact ? 1.6 : 1.9;
+  const height = compact ? 0.44 : 0.52;
+  const y = MUSEUM.markerCentreY - MUSEUM.plaqueHeight / 2 - 0.22 - height / 2;
+  return {
+    site: narration.site,
+    text: narration.listen,
+    seg,
+    position: [marker.position[0], y, marker.position[2]],
+    rotationY: marker.rotationY,
+    width,
+    height,
   };
 }
 

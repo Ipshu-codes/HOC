@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState, type ComponentProps, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 
 import Gallery from "@/components/Gallery";
 import MuseumTopBar from "@/components/MuseumTopBar";
@@ -11,6 +11,7 @@ import type { MuseumPhase } from "@/components/gallery/MuseumCanvas";
 import { MUSEUM_COMPACT_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from "@/lib/breakpoints";
 import type { Dictionary } from "@/lib/i18n";
 import type { GalleryPhoto } from "@/lib/images";
+import { carriedTo, forgetCarried, panelPosition, restorePanelPosition, useLanguageCarry } from "@/lib/language-switch";
 import { EXHIBIT_START_POSE, type ExhibitInput, type WorldPose } from "@/lib/museum-world";
 import { useWebGL } from "@/lib/webgl";
 import type { Locale } from "@/types/locale";
@@ -59,14 +60,17 @@ export default function MuseumShell({ lang, photos, sites, credit, year, gallery
   const router = useRouter();
   const stageRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
-  const poseRef = useRef<WorldPose>({ ...EXHIBIT_START_POSE });
   const pathname = trimmed(usePathname());
   const home = pathname === `/${lang}`;
+  // Just switched language: the same page in the other language, picking up where the visitor was.
+  const [arrival] = useState(() => carriedTo(pathname));
+  const [arrivalPath] = useState(pathname);
+  const poseRef = useRef<WorldPose>({ ...(arrival?.museum?.pose ?? EXHIBIT_START_POSE) });
   const webgl = useWebGL();
   const compact = useMediaQuery(MUSEUM_COMPACT_QUERY);
   const reduced = useMediaQuery(REDUCED_MOTION_QUERY);
-  const [started, setStarted] = useState(false);
-  const [introGone, setIntroGone] = useState(false);
+  const [started, setStarted] = useState(Boolean(arrival?.museum?.started));
+  const [introGone, setIntroGone] = useState(Boolean(arrival?.museum?.started));
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -79,6 +83,19 @@ export default function MuseumShell({ lang, photos, sites, credit, year, gallery
     topBar.nav.items
       .filter((item) => trimmed(item.href) !== `/${lang}`)
       .find((item) => pathname.startsWith(trimmed(item.href)) || (pathname.startsWith(`/${lang}/heritage/`) && item.href.endsWith("/heritages/")));
+
+  // On a language switch: hand over the panel's scroll, the museum's intro state and its camera.
+  useLanguageCarry((carry) => {
+    const body = panelRef.current?.querySelector<HTMLElement>(".museum-panel-body");
+    if (!home && body) carry.panel = panelPosition(body);
+    carry.museum = { ...carry.museum, started, pose: { ...poseRef.current } };
+  });
+  // …and take the panel's scroll back before the first paint, so the page never shows its top first.
+  useLayoutEffect(() => {
+    const body = panelRef.current?.querySelector<HTMLElement>(".museum-panel-body");
+    if (arrival?.panel && body) restorePanelPosition(body, arrival.panel);
+    forgetCarried("panel");
+  }, [arrival]);
 
   const fail = useCallback(() => {
     setFailed(true);
@@ -144,6 +161,13 @@ export default function MuseumShell({ lang, photos, sites, credit, year, gallery
                 close: galleryLabels.lightbox.Close,
                 videoPlay: galleryLabels.videoPlay,
                 videoPause: galleryLabels.videoPause,
+                narration: {
+                  listen: galleryLabels.narrationListen,
+                  pause: galleryLabels.narrationPause,
+                  label: galleryLabels.narrationLabel,
+                  pauseLabel: galleryLabels.narrationPauseLabel,
+                  progress: galleryLabels.narrationProgress,
+                },
                 previous: galleryLabels.lightbox.Previous,
                 next: galleryLabels.lightbox.Next,
                 hint: labels.hint,
@@ -211,7 +235,8 @@ export default function MuseumShell({ lang, photos, sites, credit, year, gallery
               role="dialog"
               aria-label={current?.label ?? topBar.nav.menu}
               tabIndex={-1}
-              className="museum-panel"
+              // Arriving from a language switch, the panel is simply there (no slide-in again).
+              className={`museum-panel${arrival && pathname === arrivalPath ? " is-carried" : ""}`}
             >
               <button type="button" className="museum-panel-close" aria-label={galleryLabels.lightbox.Close} title={galleryLabels.lightbox.Close} onClick={close}>
                 <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8">

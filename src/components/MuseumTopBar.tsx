@@ -47,7 +47,7 @@ interface MuseumTopBarProps {
 
 /**
  * The museum's control row, the same on every page (the site has no header): the Ward No. 16 emblem
- * (home, i.e. the museum) and the menu on the left: About, Heritages and Gallery open their panels,
+ * (home, i.e. the museum) and the menu on the left: About, Heritages, Gallery and Map open their panels,
  * Contact its popup. Narrower screens fold the menu into a dropdown named after the current page.
  * The RatnaInTech logo sits beside the language toggle on the right.
  * The contact popup is a native <dialog>: Esc closes it, focus stays inside, and focus returns to the
@@ -61,7 +61,7 @@ export default function MuseumTopBar({ lang, nav, currentHref, wardLogo, languag
   const dialogRef = useRef<HTMLDialogElement>(null);
   const current = nav.items.find((item) => item.href === currentHref);
   const buttonText = current?.label ?? nav.menu;
-  // The menu's own pages (About, Heritages, Gallery) appear as buttons beside Contact on wide screens.
+  // The menu's own pages (About, Heritages, Gallery, Map) appear as buttons beside Contact on wide screens.
   const isContact = (href: string) => href.endsWith("/contact/");
   const isHome = (href: string) => href === wardLogo.homeHref;
   const panels = nav.items.filter((item) => !isContact(item.href) && !isHome(item.href));
@@ -159,7 +159,8 @@ export default function MuseumTopBar({ lang, nav, currentHref, wardLogo, languag
           </ul>
         </nav>
         <button type="button" className="museum-pill" aria-haspopup="dialog" aria-label={contactLabels.button} onClick={openContact}>
-          <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.5">
+          {/* Only phones show the envelope (instead of the word); elsewhere Contact is a plain pill like the rest. */}
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="15" height="15" className="museum-pill-icon" fill="none" stroke="currentColor" strokeWidth="1.5">
             <rect x="2" y="3.5" width="12" height="9" rx="1" />
             <path d="M2.5 4.5 8 9l5.5-4.5" />
           </svg>
