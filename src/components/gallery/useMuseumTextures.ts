@@ -598,7 +598,38 @@ export function useCarpetTexture(): THREE.CanvasTexture | null {
 
 const LINK_PX_PER_METRE = 420;
 
-export function drawMuseumLinkPlaque(ctx: CanvasRenderingContext2D, text: string, fontFamily: string, width: number, height: number): void {
+/** Headphones in the plaque's cream: a headband arc and two ear cups, about `size` px tall and 1.1 × `size`
+ *  wide, centred on (x, y). */
+function drawHeadphones(ctx: CanvasRenderingContext2D, x: number, y: number, size: number): void {
+  const r = size * 0.42;
+  y -= size * 0.08;
+  ctx.save();
+  ctx.strokeStyle = "#fff8f0";
+  ctx.fillStyle = "#fff8f0";
+  ctx.lineWidth = size * 0.11;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.arc(x, y + size * 0.08, r, Math.PI, 0);
+  ctx.lineTo(x + r, y + size * 0.3);
+  ctx.moveTo(x - r, y + size * 0.08);
+  ctx.lineTo(x - r, y + size * 0.3);
+  ctx.stroke();
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.roundRect(x + side * r - size * 0.14, y + size * 0.12, size * 0.28, size * 0.38, size * 0.08);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+export function drawMuseumLinkPlaque(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontFamily: string,
+  width: number,
+  height: number,
+  icon?: "headphones",
+): void {
   const face = ctx.createLinearGradient(0, 0, 0, height);
   face.addColorStop(0, "#b3142c");
   face.addColorStop(1, "#8b1e1e");
@@ -609,18 +640,25 @@ export function drawMuseumLinkPlaque(ctx: CanvasRenderingContext2D, text: string
   ctx.lineWidth = Math.max(2, height * 0.035);
   ctx.strokeRect(inset, inset, width - 2 * inset, height - 2 * inset);
   let size = Math.round(height * 0.46);
+  // The icon and its gap sit before the words; the pair is centred together.
+  const iconSize = icon ? height * 0.5 : 0;
+  const iconWidth = iconSize * 1.1;
+  const iconGap = icon ? height * 0.2 : 0;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   while (size > height * 0.2) {
     ctx.font = `700 ${size}px ${fontFamily}`;
-    if (ctx.measureText(text).width <= width - 4 * inset) break;
+    if (ctx.measureText(text).width + iconWidth + iconGap <= width - 4 * inset) break;
     size -= 2;
   }
+  const textWidth = ctx.measureText(text).width;
+  const left = (width - textWidth - iconWidth - iconGap) / 2;
+  if (icon) drawHeadphones(ctx, left + iconWidth / 2, height / 2, iconSize);
   ctx.fillStyle = "#fff8f0";
-  ctx.fillText(text, width / 2, height / 2 + size * 0.04);
+  ctx.fillText(text, left + iconWidth + iconGap + textWidth / 2, height / 2 + size * 0.04);
 }
 
-export function useMuseumLinkTexture(text: string, widthMetres: number, heightMetres: number): THREE.CanvasTexture | null {
+export function useMuseumLinkTexture(text: string, widthMetres: number, heightMetres: number, icon?: "headphones"): THREE.CanvasTexture | null {
   const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -637,7 +675,7 @@ export function useMuseumLinkTexture(text: string, widthMetres: number, heightMe
       canvas.height = Math.round(heightMetres * LINK_PX_PER_METRE);
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      drawMuseumLinkPlaque(ctx, text, fonts.sans, canvas.width, canvas.height);
+      drawMuseumLinkPlaque(ctx, text, fonts.sans, canvas.width, canvas.height, icon);
       created = new THREE.CanvasTexture(canvas);
       created.colorSpace = THREE.SRGBColorSpace;
       created.anisotropy = 8;
@@ -647,6 +685,6 @@ export function useMuseumLinkTexture(text: string, widthMetres: number, heightMe
       cancelled = true;
       created?.dispose();
     };
-  }, [text, widthMetres, heightMetres]);
+  }, [text, widthMetres, heightMetres, icon]);
   return texture;
 }

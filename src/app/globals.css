@@ -1806,6 +1806,95 @@ html[lang="ne"] .gallery-page .museum-hint {
   outline: 3px solid var(--color-cream);
   outline-offset: 2px;
 }
+/* Narration (Listen): a quiet cream outline pill beside "Read more"; once started, a thin crimson-to-gold
+   progress line and the time. In the wing it floats above the wing's name on the same dark ground as the card. */
+.gallery-page .narration {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+  color: var(--color-cream);
+}
+.gallery-page .narration-floating {
+  max-width: calc(100% - 2 * var(--gutter));
+  padding: 0.4rem 1rem 0.4rem 0.4rem;
+  border-radius: 999px;
+  background: rgb(32 20 18 / 0.88);
+  box-shadow: 0 12px 30px -16px rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+.gallery-page .narration-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  min-height: 2.75rem; /* 44 px taps */
+  padding: 0.55rem 1.15rem 0.55rem 0.95rem;
+  border: 1px solid rgb(255 248 240 / 0.7);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-cream);
+  font-weight: 700;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+.gallery-page .narration-icon-only .narration-button {
+  justify-content: center;
+  width: 2.75rem;
+  padding: 0;
+}
+.gallery-page .narration-icon-only .narration-track {
+  width: 2.5rem;
+}
+.gallery-page .narration.is-playing .narration-button {
+  border-color: var(--color-gold);
+  background: rgb(212 160 23 / 0.16);
+}
+@media (hover: hover) and (pointer: fine) {
+  .gallery-page .narration-button:hover {
+    border-color: var(--color-cream);
+    background: rgb(255 248 240 / 0.12);
+  }
+}
+.gallery-page .narration-button:focus-visible {
+  outline: 3px solid var(--color-cream);
+  outline-offset: 2px;
+}
+.gallery-page .narration-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.gallery-page .narration-track {
+  position: relative;
+  width: clamp(4.5rem, 14vw, 7rem);
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 248 240 / 0.25);
+}
+.gallery-page .narration-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--color-crimson), var(--color-gold));
+  transform-origin: left center;
+  transition: transform 0.25s linear;
+}
+.gallery-page .narration-time {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 248 240 / 0.8);
+  white-space: nowrap;
+}
+html[lang="ne"] .gallery-page .narration-time {
+  font-family: var(--font-mukta);
+  font-size: 0.9rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-page .narration-fill {
+    transition: none;
+  }
+}
 @keyframes museum-card-in {
   from {
     opacity: 0;

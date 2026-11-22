@@ -144,6 +144,11 @@
     "museumTurnRight": "दायाँ घुम्नुहोस्",
     "videoPlay": "चलाउनुहोस्",
     "videoPause": "रोक्नुहोस्",
+    "narrationListen": "सुन्नुहोस्",
+    "narrationPause": "रोक्नुहोस्",
+    "narrationLabel": "{name}को कथा सुन्नुहोस्",
+    "narrationPauseLabel": "{name}को कथा रोक्नुहोस्",
+    "narrationProgress": "{duration} मध्ये {time}",
     "museumNoWebGL": "तपाईंको ब्राउजरले थ्रीडी ग्यालरी देखाउन सक्दैन। झुन्डिएको ग्यालरी देखाइएको छ।",
     "empty": "यहाँ देखाउन अहिलेसम्म कुनै तस्बिर छैन।",
     "lightbox": {

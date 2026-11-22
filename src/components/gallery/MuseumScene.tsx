@@ -49,12 +49,14 @@ interface SceneProps {
   reducedMotion: boolean;
   gesture: MutableRefObject<{ moved: boolean }>;
   onHover: (key: string | null) => void;
-  /** "art-<index>", "map", "logo", "sign-<slug>" or "link-<key>". */
+  /** "art-<index>", "map", "logo", "sign-<slug>", "link-<key>", "video-<slug>" or "listen-<slug>". */
   onSelect: (key: string) => void;
   /** Wings the visitor has headed for: only these load their video. */
   openWings: ReadonlySet<number>;
   /** True while a page panel covers the museum: the wing videos wait. */
   videoPaused: boolean;
+  /** The wing's spoken story is playing: its "Listen" plaque shows it. */
+  narrationPlaying: boolean;
 }
 
 interface GeometryData {
@@ -655,35 +657,42 @@ function Signboard({
   );
 }
 
-/** "Read About →": a small crimson plaque with a gold rule on a dark mount. It lifts slightly and
- *  brightens on hover or keyboard focus, so it reads as something to press. */
+/** "Read About →" (and the wing's "Listen"): a small crimson plaque with a gold rule on a dark mount.
+ *  It lifts slightly and brightens on hover or keyboard focus, so it reads as something to press; its
+ *  mount turns gold while it is `on` (the story playing). */
 function LinkPlaque({
   link,
+  selectKey,
+  icon,
+  on = false,
   hovered,
   interactive,
   gesture,
   onHover,
   onSelect,
 }: {
-  link: MuseumLink;
+  link: Pick<MuseumLink, "text" | "position" | "rotationY" | "width" | "height">;
+  selectKey: string;
+  icon?: "headphones";
+  on?: boolean;
   hovered: boolean;
   interactive: boolean;
   gesture: MutableRefObject<{ moved: boolean }>;
   onHover: (key: string | null) => void;
   onSelect: (key: string) => void;
 }) {
-  const texture = useMuseumLinkTexture(link.text, link.width, link.height);
+  const texture = useMuseumLinkTexture(link.text, link.width, link.height, icon);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     invalidate();
-  }, [texture, hovered, invalidate]);
+  }, [texture, hovered, on, invalidate]);
   const mount = 0.05;
   const lift = hovered ? 0.03 : 0;
   return (
-    <group position={link.position} rotation={[0, link.rotationY, 0]} {...pointerHandlers(`link-${link.key}`, interactive, gesture, onHover, onSelect)}>
+    <group position={link.position} rotation={[0, link.rotationY, 0]} {...pointerHandlers(selectKey, interactive, gesture, onHover, onSelect)}>
       <mesh position={[0, 0, mount / 2]}>
         <boxGeometry args={[link.width + 0.08, link.height + 0.08, mount]} />
-        <meshStandardMaterial color={hovered ? "#d4a017" : "#3a2a17"} roughness={0.6} metalness={hovered ? 0.3 : 0} />
+        <meshStandardMaterial color={hovered || on ? "#d4a017" : "#3a2a17"} roughness={0.6} metalness={hovered || on ? 0.3 : 0} />
       </mesh>
       {texture && (
         <mesh position={[0, 0, mount + 0.002 + lift]}>
@@ -741,6 +750,7 @@ export default function MuseumScene({
   onSelect,
   openWings,
   videoPaused,
+  narrationPlaying,
 }: SceneProps) {
   const item = { interactive, gesture, onHover, onSelect };
   return (
@@ -803,8 +813,18 @@ export default function MuseumScene({
             {world.links
               .filter((link) => link.seg === seg)
               .map((link) => (
-                <LinkPlaque key={link.key} link={link} hovered={hoverKey === `link-${link.key}`} {...item} />
+                <LinkPlaque key={link.key} link={link} selectKey={`link-${link.key}`} hovered={hoverKey === `link-${link.key}`} {...item} />
               ))}
+            {world.listen?.seg === seg && (
+              <LinkPlaque
+                link={world.listen}
+                selectKey={`listen-${world.listen.site}`}
+                icon="headphones"
+                on={narrationPlaying}
+                hovered={hoverKey === `listen-${world.listen.site}`}
+                {...item}
+              />
+            )}
             {lights.map((position, index) => (
               <pointLight key={index} position={position} intensity={compact ? 18 : 22} distance={compact ? 14 : 16} decay={2} color="#fff1dc" />
             ))}
